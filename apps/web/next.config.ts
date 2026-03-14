@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // ESLint während Build überspringen (läuft separat in CI)
+  eslint: { ignoreDuringBuilds: true },
+
   // Vercel Deployment-Optimierungen
   output: "standalone",
 
