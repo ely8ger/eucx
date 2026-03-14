@@ -4,74 +4,19 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-enum UserRole {
-  ADMIN
-  SELLER
-  BUYER
-  OBSERVER
-}
-
-enum UserStatus {
-  ACTIVE
-  SUSPENDED
-  PENDING
-}
-
-enum SteelForm {
-  REBAR
-  WIRE_ROD
-  BEAM
-  PIPE
-  SHEET
-  COIL
-}
-
-enum SteelStandard {
-  EN_10080
-  ASTM_A615
-  GOST_5781
-  DIN_488
-  BS_4449
-}
-
-enum OrderDirection {
-  BUY
-  SELL
-}
-
-enum OrderStatus {
-  ACTIVE
-  PARTIALLY_FILLED
-  FILLED
-  CANCELLED
-  EXPIRED
-}
-
-enum SessionStatus {
-  SCHEDULED
-  PRE_TRADING
-  TRADING_1
-  CORRECTION_1
-  TRADING_2
-  CORRECTION_2
-  FINAL
-  CLOSED
-}
-
-enum DealStatus {
-  MATCHED
-  CONFIRMED
-  CANCELLED
-  DISPUTED
-}
-
-enum Currency {
-  EUR
-  PLN
-  USD
-}
+enum UserRole { ADMIN SELLER BUYER OBSERVER }
+enum UserStatus { ACTIVE SUSPENDED PENDING }
+enum SteelForm { REBAR WIRE_ROD BEAM PIPE SHEET COIL }
+enum SteelStandard { EN_10080 ASTM_A615 GOST_5781 DIN_488 BS_4449 }
+enum OrderDirection { BUY SELL }
+enum OrderStatus { ACTIVE PARTIALLY_FILLED FILLED CANCELLED EXPIRED }
+enum SessionStatus { SCHEDULED PRE_TRADING TRADING_1 CORRECTION_1 TRADING_2 CORRECTION_2 FINAL CLOSED }
+enum DealStatus { MATCHED CONFIRMED CANCELLED DISPUTED }
+enum Currency { EUR PLN USD }
 
 model Organization {
   id         String   @id @default(uuid())
@@ -81,13 +26,11 @@ model Organization {
   city       String
   isVerified Boolean  @default(false)
   createdAt  DateTime @default(now())
-
   users         User[]
   products      SteelProduct[]
   orders        Order[]
-  dealsAsSeller Deal[]         @relation("SellerOrg")
-  dealsAsBuyer  Deal[]         @relation("BuyerOrg")
-
+  dealsAsSeller Deal[] @relation("SellerOrg")
+  dealsAsBuyer  Deal[] @relation("BuyerOrg")
   @@map("organizations")
 }
 
@@ -102,12 +45,10 @@ model User {
   totpEnabled    Boolean    @default(false)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
-
   organization  Organization   @relation(fields: [organizationId], references: [id])
   orders        Order[]
   refreshTokens RefreshToken[]
   auditLogs     AuditLog[]
-
   @@index([organizationId])
   @@map("users")
 }
@@ -128,12 +69,10 @@ model SteelProduct {
   certificateNumber String?
   isActive          Boolean       @default(true)
   createdAt         DateTime      @default(now())
-
   organization    Organization     @relation(fields: [organizationId], references: [id])
   tradingSessions TradingSession[]
   orders          Order[]
   deals           Deal[]
-
   @@index([organizationId])
   @@index([form])
   @@map("steel_products")
@@ -146,11 +85,9 @@ model TradingSession {
   scheduledStart DateTime
   endedAt        DateTime?
   createdAt      DateTime      @default(now())
-
   product SteelProduct @relation(fields: [productId], references: [id])
   orders  Order[]
   deals   Deal[]
-
   @@index([productId])
   @@index([currentStatus])
   @@map("trading_sessions")
@@ -171,14 +108,12 @@ model Order {
   idempotencyKey String         @unique
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
-
   session      TradingSession @relation(fields: [sessionId], references: [id])
   user         User           @relation(fields: [userId], references: [id])
   organization Organization   @relation(fields: [organizationId], references: [id])
   product      SteelProduct   @relation(fields: [productId], references: [id])
   dealsAsSell  Deal[]         @relation("SellOrder")
   dealsAsBuy   Deal[]         @relation("BuyOrder")
-
   @@index([sessionId])
   @@index([userId])
   @@index([status])
@@ -200,14 +135,12 @@ model Deal {
   status         DealStatus @default(MATCHED)
   buyerSignature String?
   createdAt      DateTime   @default(now())
-
   session   TradingSession @relation(fields: [sessionId], references: [id])
   sellOrder Order          @relation("SellOrder", fields: [sellOrderId], references: [id])
   buyOrder  Order          @relation("BuyOrder", fields: [buyOrderId], references: [id])
   sellerOrg Organization   @relation("SellerOrg", fields: [sellerOrgId], references: [id])
   buyerOrg  Organization   @relation("BuyerOrg", fields: [buyerOrgId], references: [id])
   product   SteelProduct   @relation(fields: [productId], references: [id])
-
   @@index([sessionId])
   @@index([sellerOrgId])
   @@index([buyerOrgId])
@@ -221,9 +154,7 @@ model RefreshToken {
   expiresAt DateTime
   revoked   Boolean  @default(false)
   createdAt DateTime @default(now())
-
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@index([userId])
   @@map("refresh_tokens")
 }
@@ -237,9 +168,7 @@ model AuditLog {
   ipAddress  String?
   userAgent  String?
   createdAt  DateTime @default(now())
-
   user User? @relation(fields: [userId], references: [id])
-
   @@index([userId])
   @@index([entityType, entityId])
   @@map("audit_log")
