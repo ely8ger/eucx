@@ -45,3 +45,4 @@ logs/
 # Docker volumes (lokal)
 postgres_data/
 redis_data/
+.vercel

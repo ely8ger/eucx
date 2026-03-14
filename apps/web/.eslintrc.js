@@ -1,9 +1,11 @@
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   root: true,
-  extends: ["@eucx/config/eslint/nextjs"],
-  parserOptions: {
-    project: "./tsconfig.json",
-    tsconfigRootDir: __dirname,
+  extends: ["next/core-web-vitals", "next/typescript"],
+  rules: {
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
   },
 };
