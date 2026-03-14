@@ -1,0 +1,47 @@
+# Umgebungsvariablen (NIEMALS committen)
+.env
+.env.local
+.env.*.local
+
+# Abhängigkeiten
+node_modules/
+**/node_modules/
+
+# Build-Artefakte
+dist/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# Turborepo
+.turbo/
+
+# Go
+apps/api/bin/
+apps/api/vendor/
+
+# Zertifikate und Schlüssel (NIEMALS committen)
+infra/certs/*.pem
+infra/certs/*.key
+infra/certs/*.crt
+!infra/certs/.gitkeep
+
+# Logs
+*.log
+logs/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Docker volumes (lokal)
+postgres_data/
+redis_data/

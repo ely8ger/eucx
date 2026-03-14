@@ -1,0 +1,32 @@
+{
+  "name": "@eucx/web",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf .next out"
+  },
+  "dependencies": {
+    "@eucx/types": "*",
+    "next": "15.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.3",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@eucx/config": "*",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9.18.0",
+    "tailwindcss": "^4.0.6",
+    "@tailwindcss/postcss": "^4.0.6",
+    "typescript": "^5.7.3"
+  }
+}
