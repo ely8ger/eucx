@@ -3,6 +3,8 @@ import { db } from "@/lib/db/client";
 import { hashPassword } from "@/lib/auth/password";
 import { registerSchema } from "@/lib/validation/schemas";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json() as unknown;
@@ -21,10 +23,7 @@ export async function POST(req: NextRequest) {
     const passwordHash = await hashPassword(password);
     const org  = await db.organization.create({ data: { name: organizationName, taxId, country, city } });
     const user = await db.user.create({ data: { email, passwordHash, role, organizationId: org.id, status: "PENDING" } });
-    return NextResponse.json(
-      { data: { message: "Registrierung erfolgreich. Konto wird geprüft.", userId: user.id } },
-      { status: 201 }
-    );
+    return NextResponse.json({ data: { message: "Registrierung erfolgreich. Konto wird geprüft.", userId: user.id } }, { status: 201 });
   } catch (err) {
     console.error("[auth/register]", err);
     return NextResponse.json({ code: "INTERNAL_ERROR", message: "Serverfehler" }, { status: 500 });
