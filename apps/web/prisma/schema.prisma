@@ -1,0 +1,246 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  SELLER
+  BUYER
+  OBSERVER
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING
+}
+
+enum SteelForm {
+  REBAR
+  WIRE_ROD
+  BEAM
+  PIPE
+  SHEET
+  COIL
+}
+
+enum SteelStandard {
+  EN_10080
+  ASTM_A615
+  GOST_5781
+  DIN_488
+  BS_4449
+}
+
+enum OrderDirection {
+  BUY
+  SELL
+}
+
+enum OrderStatus {
+  ACTIVE
+  PARTIALLY_FILLED
+  FILLED
+  CANCELLED
+  EXPIRED
+}
+
+enum SessionStatus {
+  SCHEDULED
+  PRE_TRADING
+  TRADING_1
+  CORRECTION_1
+  TRADING_2
+  CORRECTION_2
+  FINAL
+  CLOSED
+}
+
+enum DealStatus {
+  MATCHED
+  CONFIRMED
+  CANCELLED
+  DISPUTED
+}
+
+enum Currency {
+  EUR
+  PLN
+  USD
+}
+
+model Organization {
+  id         String   @id @default(uuid())
+  name       String
+  taxId      String   @unique
+  country    String   @db.Char(2)
+  city       String
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  users         User[]
+  products      SteelProduct[]
+  orders        Order[]
+  dealsAsSeller Deal[]         @relation("SellerOrg")
+  dealsAsBuyer  Deal[]         @relation("BuyerOrg")
+
+  @@map("organizations")
+}
+
+model User {
+  id             String     @id @default(uuid())
+  organizationId String
+  email          String     @unique
+  passwordHash   String
+  role           UserRole   @default(BUYER)
+  status         UserStatus @default(PENDING)
+  totpSecret     String?
+  totpEnabled    Boolean    @default(false)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  organization  Organization   @relation(fields: [organizationId], references: [id])
+  orders        Order[]
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+
+  @@index([organizationId])
+  @@map("users")
+}
+
+model SteelProduct {
+  id                String        @id @default(uuid())
+  organizationId    String
+  form              SteelForm
+  grade             String
+  diameterMm        Decimal?      @db.Decimal(5, 1)
+  standard          SteelStandard
+  quantityTons      Decimal       @db.Decimal(10, 3)
+  minLotTons        Decimal       @default(1.0) @db.Decimal(10, 3)
+  originCountry     String        @db.Char(2)
+  productionYear    Int           @db.SmallInt
+  warehouseLocation String
+  hasCertificate    Boolean       @default(false)
+  certificateNumber String?
+  isActive          Boolean       @default(true)
+  createdAt         DateTime      @default(now())
+
+  organization    Organization     @relation(fields: [organizationId], references: [id])
+  tradingSessions TradingSession[]
+  orders          Order[]
+  deals           Deal[]
+
+  @@index([organizationId])
+  @@index([form])
+  @@map("steel_products")
+}
+
+model TradingSession {
+  id             String        @id @default(uuid())
+  productId      String
+  currentStatus  SessionStatus @default(SCHEDULED)
+  scheduledStart DateTime
+  endedAt        DateTime?
+  createdAt      DateTime      @default(now())
+
+  product SteelProduct @relation(fields: [productId], references: [id])
+  orders  Order[]
+  deals   Deal[]
+
+  @@index([productId])
+  @@index([currentStatus])
+  @@map("trading_sessions")
+}
+
+model Order {
+  id             String         @id @default(uuid())
+  sessionId      String
+  userId         String
+  organizationId String
+  productId      String
+  direction      OrderDirection
+  pricePerUnit   Decimal        @db.Decimal(12, 2)
+  currency       Currency       @default(EUR)
+  quantityTons   Decimal        @db.Decimal(10, 3)
+  filledQuantity Decimal        @default(0) @db.Decimal(10, 3)
+  status         OrderStatus    @default(ACTIVE)
+  idempotencyKey String         @unique
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  session      TradingSession @relation(fields: [sessionId], references: [id])
+  user         User           @relation(fields: [userId], references: [id])
+  organization Organization   @relation(fields: [organizationId], references: [id])
+  product      SteelProduct   @relation(fields: [productId], references: [id])
+  dealsAsSell  Deal[]         @relation("SellOrder")
+  dealsAsBuy   Deal[]         @relation("BuyOrder")
+
+  @@index([sessionId])
+  @@index([userId])
+  @@index([status])
+  @@index([direction, pricePerUnit])
+  @@map("orders")
+}
+
+model Deal {
+  id             String     @id @default(uuid())
+  sessionId      String
+  sellOrderId    String
+  buyOrderId     String
+  sellerOrgId    String
+  buyerOrgId     String
+  productId      String
+  quantityTons   Decimal    @db.Decimal(10, 3)
+  pricePerUnit   Decimal    @db.Decimal(12, 2)
+  currency       Currency   @default(EUR)
+  status         DealStatus @default(MATCHED)
+  buyerSignature String?
+  createdAt      DateTime   @default(now())
+
+  session   TradingSession @relation(fields: [sessionId], references: [id])
+  sellOrder Order          @relation("SellOrder", fields: [sellOrderId], references: [id])
+  buyOrder  Order          @relation("BuyOrder", fields: [buyOrderId], references: [id])
+  sellerOrg Organization   @relation("SellerOrg", fields: [sellerOrgId], references: [id])
+  buyerOrg  Organization   @relation("BuyerOrg", fields: [buyerOrgId], references: [id])
+  product   SteelProduct   @relation(fields: [productId], references: [id])
+
+  @@index([sessionId])
+  @@index([sellerOrgId])
+  @@index([buyerOrgId])
+  @@map("deals")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  action     String
+  entityType String
+  entityId   String?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@map("audit_log")
+}
