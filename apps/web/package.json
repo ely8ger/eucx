@@ -11,7 +11,6 @@
     "clean": "rm -rf .next out"
   },
   "dependencies": {
-    "@eucx/types": "*",
     "clsx": "^2.1.1",
     "next": "^15.3.0",
     "react": "^19.0.0",
@@ -20,7 +19,6 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@eucx/config": "*",
     "@tailwindcss/postcss": "^4.0.6",
     "@types/node": "^22",
     "@types/react": "^19",
