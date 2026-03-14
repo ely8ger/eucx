@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { hashPassword } from "@/lib/auth/password";
 import { registerSchema } from "@/lib/validation/schemas";
+import type { Prisma } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await hashPassword(password);
 
-    const result = await db.$transaction(async (tx) => {
+    const result = await db.$transaction(async (tx: Prisma.TransactionClient) => {
       const org = await tx.organization.create({
         data: { name: organizationName, taxId, country, city },
       });
@@ -38,12 +39,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(
-      {
-        data: {
-          message: "Registrierung erfolgreich. Ihr Konto wird geprüft.",
-          userId: result.user.id,
-        },
-      },
+      { data: { message: "Registrierung erfolgreich. Konto wird geprüft.", userId: result.user.id } },
       { status: 201 }
     );
   } catch (err) {
