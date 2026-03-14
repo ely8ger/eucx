@@ -9,21 +9,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      - name: Install dependencies
+      - name: Install
         run: npm install
         working-directory: apps/web
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        working-directory: apps/web
+        env:
+          DATABASE_URL: postgresql://placeholder:x@localhost/eucx
 
       - name: Build
         run: npm run build
         working-directory: apps/web
         env:
-          DATABASE_URL: postgresql://placeholder:placeholder@localhost/eucx
-          JWT_SECRET: build-time-placeholder-secret-32chars
+          DATABASE_URL: postgresql://placeholder:x@localhost/eucx
+          JWT_SECRET: build-time-placeholder-32-characters-min
 
       - name: Deploy to Vercel
         run: npx vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
