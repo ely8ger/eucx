@@ -46,3 +46,4 @@ logs/
 postgres_data/
 redis_data/
 .vercel
+.git_temp
