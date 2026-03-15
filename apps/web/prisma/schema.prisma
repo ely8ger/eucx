@@ -8,10 +8,13 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// ─── Nutzer & Organisationen ──────────────────────────────────────────────────
+
 enum UserRole {
   ADMIN
   SELLER
   BUYER
+  BROKER
   OBSERVER
 }
 
@@ -21,22 +24,29 @@ enum UserStatus {
   PENDING
 }
 
-enum SteelForm {
-  REBAR
-  WIRE_ROD
-  BEAM
-  PIPE
-  SHEET
-  COIL
+// ─── Warengruppen (wie BUTB) ──────────────────────────────────────────────────
+
+enum CommodityCategory {
+  METALS           // Metalle & Legierungen
+  SCRAP            // Schrott & Sekundärrohstoffe
+  TIMBER           // Holz & Forstprodukte
+  AGRICULTURE      // Agrarprodukte & Lebensmittel
+  CHEMICALS        // Chemikalien & Petrochemie
+  ENERGY           // Energie (Koks, Kohle, Pellets)
+  CONSTRUCTION     // Baustoffe
+  INDUSTRIALS      // Industriegüter & Maschinen
 }
 
-enum SteelStandard {
-  EN_10080
-  ASTM_A615
-  GOST_5781
-  DIN_488
-  BS_4449
+enum CommodityUnit {
+  TON              // Tonne
+  KG               // Kilogramm
+  CBM              // Kubikmeter (Holz)
+  LITER            // Liter
+  PIECE            // Stück
+  SQM              // Quadratmeter
 }
+
+// ─── Order & Deal ─────────────────────────────────────────────────────────────
 
 enum OrderDirection {
   BUY
@@ -73,7 +83,11 @@ enum Currency {
   EUR
   PLN
   USD
+  GBP
+  CZK
 }
+
+// ─── Modelle ──────────────────────────────────────────────────────────────────
 
 model Organization {
   id         String   @id @default(uuid())
@@ -85,10 +99,10 @@ model Organization {
   createdAt  DateTime @default(now())
 
   users         User[]
-  products      SteelProduct[]
+  products      Product[]
   orders        Order[]
-  dealsAsSeller Deal[]         @relation("SellerOrg")
-  dealsAsBuyer  Deal[]         @relation("BuyerOrg")
+  dealsAsSeller Deal[]    @relation("SellerOrg")
+  dealsAsBuyer  Deal[]    @relation("BuyerOrg")
 
   @@map("organizations")
 }
@@ -114,62 +128,34 @@ model User {
   @@map("users")
 }
 
-model SteelProduct {
-  id                String        @id @default(uuid())
-  organizationId    String
-  form              SteelForm
-  grade             String
-  diameterMm        Decimal?      @db.Decimal(5, 1)
-  lengthMm          Int?
-  standard          SteelStandard
-  quantityTons      Decimal       @db.Decimal(10, 3)
-  minLotTons        Decimal       @default(1.0) @db.Decimal(10, 3)
-  originCountry     String        @db.Char(2)
-  productionYear    Int           @db.SmallInt
-  warehouseLocation String
-  hasCertificate    Boolean       @default(false)
-  certificateNumber String?
-  isActive          Boolean       @default(true)
-  createdAt         DateTime      @default(now())
+// ─── Produkt (universell für alle Warengruppen) ───────────────────────────────
 
-  organization    Organization       @relation(fields: [organizationId], references: [id])
+model Product {
+  id                String            @id @default(uuid())
+  organizationId    String
+  category          CommodityCategory
+  subcategory       String            // z.B. "Rebar", "Round Wood", "Milk Powder"
+  name              String            // Handelsname
+  description       String?
+  unit              CommodityUnit     @default(TON)
+  quantity          Decimal           @db.Decimal(12, 3)
+  minLotQuantity    Decimal           @default(1.0) @db.Decimal(12, 3)
+  originCountry     String            @db.Char(2)
+  warehouseLocation String
+  hasCertificate    Boolean           @default(false)
+  certificateNumber String?
+  specifications    Json?             // Kategorie-spezifische Felder (JSONB)
+  isActive          Boolean           @default(true)
+  createdAt         DateTime          @default(now())
+
+  organization    Organization     @relation(fields: [organizationId], references: [id])
   tradingSessions TradingSession[]
   orders          Order[]
   deals           Deal[]
-  alloy           AlloyComposition?
-  mechanical      MechanicalProperties?
 
   @@index([organizationId])
-  @@index([form])
-  @@map("steel_products")
-}
-
-model AlloyComposition {
-  productId     String  @id
-  carbonPct     Decimal? @db.Decimal(5, 4)
-  manganesePct  Decimal? @db.Decimal(5, 4)
-  phosphorusPct Decimal? @db.Decimal(5, 4)
-  sulfurPct     Decimal? @db.Decimal(5, 4)
-  siliconPct    Decimal? @db.Decimal(5, 4)
-  chromiumPct   Decimal? @db.Decimal(5, 4)
-  nickelPct     Decimal? @db.Decimal(5, 4)
-  vanadiumPct   Decimal? @db.Decimal(5, 4)
-
-  product SteelProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@map("alloy_compositions")
-}
-
-model MechanicalProperties {
-  productId            String  @id
-  yieldStrengthMpa     Decimal? @db.Decimal(7, 1)
-  tensileStrengthMpa   Decimal? @db.Decimal(7, 1)
-  elongationPct        Decimal? @db.Decimal(5, 2)
-  bendTestDiameterMm   Decimal? @db.Decimal(5, 1)
-
-  product SteelProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@map("mechanical_properties")
+  @@index([category])
+  @@map("products")
 }
 
 model TradingSession {
@@ -180,7 +166,7 @@ model TradingSession {
   endedAt        DateTime?
   createdAt      DateTime      @default(now())
 
-  product SteelProduct @relation(fields: [productId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
   orders  Order[]
   deals   Deal[]
 
@@ -198,8 +184,8 @@ model Order {
   direction      OrderDirection
   pricePerUnit   Decimal        @db.Decimal(12, 2)
   currency       Currency       @default(EUR)
-  quantityTons   Decimal        @db.Decimal(10, 3)
-  filledQuantity Decimal        @default(0) @db.Decimal(10, 3)
+  quantity       Decimal        @db.Decimal(12, 3)
+  filledQuantity Decimal        @default(0) @db.Decimal(12, 3)
   status         OrderStatus    @default(ACTIVE)
   idempotencyKey String         @unique
   createdAt      DateTime       @default(now())
@@ -208,7 +194,7 @@ model Order {
   session      TradingSession @relation(fields: [sessionId], references: [id])
   user         User           @relation(fields: [userId], references: [id])
   organization Organization   @relation(fields: [organizationId], references: [id])
-  product      SteelProduct   @relation(fields: [productId], references: [id])
+  product      Product        @relation(fields: [productId], references: [id])
   dealsAsSell  Deal[]         @relation("SellOrder")
   dealsAsBuy   Deal[]         @relation("BuyOrder")
 
@@ -227,7 +213,7 @@ model Deal {
   sellerOrgId    String
   buyerOrgId     String
   productId      String
-  quantityTons   Decimal    @db.Decimal(10, 3)
+  quantity       Decimal    @db.Decimal(12, 3)
   pricePerUnit   Decimal    @db.Decimal(12, 2)
   currency       Currency   @default(EUR)
   status         DealStatus @default(MATCHED)
@@ -239,7 +225,7 @@ model Deal {
   buyOrder  Order          @relation("BuyOrder", fields: [buyOrderId], references: [id])
   sellerOrg Organization   @relation("SellerOrg", fields: [sellerOrgId], references: [id])
   buyerOrg  Organization   @relation("BuyerOrg", fields: [buyerOrgId], references: [id])
-  product   SteelProduct   @relation(fields: [productId], references: [id])
+  product   Product        @relation(fields: [productId], references: [id])
 
   @@index([sessionId])
   @@index([sellerOrgId])

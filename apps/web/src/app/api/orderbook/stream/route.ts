@@ -48,36 +48,27 @@ export async function GET(req: NextRequest) {
               where: { sessionId, direction: "SELL", status: { in: ["ACTIVE", "PARTIALLY_FILLED"] } },
               orderBy: { pricePerUnit: "asc" },
               take: 10,
-              select: {
-                id: true, pricePerUnit: true, quantityTons: true, filledQuantity: true,
-                organization: { select: { name: true, country: true } },
-              },
+              include: { organization: { select: { name: true, country: true } } },
             }),
             db.order.findMany({
               where: { sessionId, direction: "BUY", status: { in: ["ACTIVE", "PARTIALLY_FILLED"] } },
               orderBy: { pricePerUnit: "desc" },
               take: 10,
-              select: {
-                id: true, pricePerUnit: true, quantityTons: true, filledQuantity: true,
-                organization: { select: { name: true, country: true } },
-              },
+              include: { organization: { select: { name: true, country: true } } },
             }),
             db.deal.findMany({
               where: { sessionId, status: { in: ["MATCHED", "CONFIRMED"] } },
               orderBy: { createdAt: "desc" },
               take: 20,
-              select: {
-                id: true, pricePerUnit: true, quantityTons: true, currency: true,
-                createdAt: true, sellOrder: { select: { direction: true } },
-              },
+              include: { sellOrder: { select: { direction: true } } },
             }),
           ]);
 
           const s = (o: typeof asks[0]) => ({
             id:        o.id,
             price:     o.pricePerUnit.toString(),
-            qty:       o.quantityTons.toString(),
-            remaining: o.quantityTons.minus(o.filledQuantity).toString(),
+            qty:       o.quantity.toString(),
+            remaining: o.quantity.minus(o.filledQuantity).toString(),
             org:       o.organization.name,
             country:   o.organization.country,
           });
@@ -89,7 +80,7 @@ export async function GET(req: NextRequest) {
             deals: deals.map((d) => ({
               id:        d.id,
               price:     d.pricePerUnit.toString(),
-              qty:       d.quantityTons.toString(),
+              qty:       d.quantity.toString(),
               currency:  d.currency,
               direction: d.sellOrder.direction,
               time:      d.createdAt.toISOString(),

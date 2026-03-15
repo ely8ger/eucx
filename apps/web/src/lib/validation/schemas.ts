@@ -9,9 +9,8 @@ export const loginSchema = z.object({
 });
 
 export const registerSchema = z.object({
-  email:    z.string().email("Ungültige E-Mail-Adresse"),
-  password: z
-    .string()
+  email:            z.string().email("Ungültige E-Mail-Adresse"),
+  password:         z.string()
     .min(10, "Mindestens 10 Zeichen")
     .regex(/[A-Z]/, "Mindestens ein Großbuchstabe")
     .regex(/[0-9]/, "Mindestens eine Zahl")
@@ -23,20 +22,38 @@ export const registerSchema = z.object({
   role:             z.enum(["SELLER", "BUYER"]),
 });
 
-// ─── Produkte ─────────────────────────────────────────────────────────────────
+// ─── Warengruppen ─────────────────────────────────────────────────────────────
 
-export const steelProductSchema = z.object({
-  form: z.enum(["REBAR", "WIRE_ROD", "BEAM", "PIPE", "SHEET", "COIL"]),
-  grade:             z.string().min(1).max(50),
-  diameterMm:        z.number().positive().optional(),
-  standard:          z.enum(["EN_10080", "ASTM_A615", "GOST_5781", "DIN_488", "BS_4449"]),
-  quantityTons:      z.number().positive().max(100000),
-  minLotTons:        z.number().positive().default(1.0),
-  originCountry:     z.string().length(2),
-  productionYear:    z.number().int().min(2000).max(2030),
+export const COMMODITY_CATEGORIES = [
+  "METALS",
+  "SCRAP",
+  "TIMBER",
+  "AGRICULTURE",
+  "CHEMICALS",
+  "ENERGY",
+  "CONSTRUCTION",
+  "INDUSTRIALS",
+] as const;
+
+export const COMMODITY_UNITS = ["TON", "KG", "CBM", "LITER", "PIECE", "SQM"] as const;
+
+export const CURRENCIES = ["EUR", "PLN", "USD", "GBP", "CZK"] as const;
+
+// ─── Produkt (universell) ─────────────────────────────────────────────────────
+
+export const productSchema = z.object({
+  category:         z.enum(COMMODITY_CATEGORIES),
+  subcategory:      z.string().min(1).max(100),
+  name:             z.string().min(2).max(200),
+  description:      z.string().max(2000).optional(),
+  unit:             z.enum(COMMODITY_UNITS).default("TON"),
+  quantity:         z.number().positive().max(10_000_000, "Menge zu groß"),
+  minLotQuantity:   z.number().positive().default(1.0),
+  originCountry:    z.string().length(2),
   warehouseLocation: z.string().min(2).max(200),
-  hasCertificate:    z.boolean().default(false),
+  hasCertificate:   z.boolean().default(false),
   certificateNumber: z.string().optional(),
+  specifications:   z.record(z.string(), z.unknown()).optional(), // freie Felder je Kategorie
 });
 
 // ─── Orders ───────────────────────────────────────────────────────────────────
@@ -46,8 +63,8 @@ export const submitOrderSchema = z.object({
   productId:      z.string().uuid(),
   direction:      z.enum(["BUY", "SELL"]),
   pricePerUnit:   z.number().positive().multipleOf(0.01),
-  currency:       z.enum(["EUR", "PLN", "USD"]).default("EUR"),
-  quantityTons:   z.number().positive().multipleOf(0.001),
+  currency:       z.enum(CURRENCIES).default("EUR"),
+  quantity:       z.number().positive().multipleOf(0.001),
   idempotencyKey: z.string().uuid("Idempotency-Key muss eine UUID sein"),
 });
 
@@ -58,8 +75,8 @@ export const cancelOrderSchema = z.object({
 
 // ─── Abgeleitete Typen ────────────────────────────────────────────────────────
 
-export type LoginInput         = z.infer<typeof loginSchema>;
-export type RegisterInput      = z.infer<typeof registerSchema>;
-export type SteelProductInput  = z.infer<typeof steelProductSchema>;
-export type SubmitOrderInput   = z.infer<typeof submitOrderSchema>;
-export type CancelOrderInput   = z.infer<typeof cancelOrderSchema>;
+export type LoginInput       = z.infer<typeof loginSchema>;
+export type RegisterInput    = z.infer<typeof registerSchema>;
+export type ProductInput     = z.infer<typeof productSchema>;
+export type SubmitOrderInput = z.infer<typeof submitOrderSchema>;
+export type CancelOrderInput = z.infer<typeof cancelOrderSchema>;

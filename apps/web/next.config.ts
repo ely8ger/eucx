@@ -39,7 +39,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/",
-        destination: "/trading",
+        destination: "/dashboard",
         permanent: false,
       },
     ];

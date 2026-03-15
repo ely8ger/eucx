@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
 
     // ── 4. Financial Math: use Decimal for all price calculations ──
     const priceDecimal = new Decimal(input.pricePerUnit);
-    const qtyDecimal   = new Decimal(input.quantityTons);
+    const qtyDecimal   = new Decimal(input.quantity);
     const totalValue   = priceDecimal.times(qtyDecimal).toDecimalPlaces(2);
 
     // Sanity checks
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
         direction:      input.direction,
         pricePerUnit:   priceDecimal.toFixed(2),
         currency:       input.currency,
-        quantityTons:   qtyDecimal.toFixed(3),
+        quantity:   qtyDecimal.toFixed(3),
         idempotencyKey: input.idempotencyKey,
       },
     });
@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
         orderId:    order.id,
         status:     order.status,
         pricePerUnit: order.pricePerUnit.toString(),
-        quantityTons: order.quantityTons.toString(),
+        quantity: order.quantity.toString(),
         totalValue:   totalValue.toString(),
         currency:   order.currency,
         createdAt:  order.createdAt,
@@ -163,7 +163,7 @@ export async function GET(req: NextRequest) {
         id:             true,
         direction:      true,
         pricePerUnit:   true,
-        quantityTons:   true,
+        quantity:   true,
         filledQuantity: true,
         status:         true,
         currency:       true,
@@ -175,7 +175,7 @@ export async function GET(req: NextRequest) {
       orders: orders.map((o) => ({
         ...o,
         pricePerUnit:   o.pricePerUnit.toString(),
-        quantityTons:   o.quantityTons.toString(),
+        quantity:   o.quantity.toString(),
         filledQuantity: o.filledQuantity.toString(),
       })),
     });
