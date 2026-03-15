@@ -175,3 +175,37 @@ tr:hover td {
 .animate-slide-in {
   animation: slide-in-right 0.2s ease-out;
 }
+
+/* ─── Trade-Flash: Neue Abschlüsse kurz aufleuchten lassen ─────────────────── */
+@keyframes flash-buy {
+  0%   { background-color: rgba(0, 132, 61, 0.25); }  /* cb-success grün */
+  100% { background-color: transparent; }
+}
+
+@keyframes flash-sell {
+  0%   { background-color: rgba(227, 6, 19, 0.18); }  /* cb-error rot */
+  100% { background-color: transparent; }
+}
+
+.flash-deal-buy  { animation: flash-buy  0.7s ease-out forwards; }
+.flash-deal-sell { animation: flash-sell 0.7s ease-out forwards; }
+
+/* Flash auch auf td-Elemente übertragen */
+.flash-deal-buy  td { animation: flash-buy  0.7s ease-out forwards; }
+.flash-deal-sell td { animation: flash-sell 0.7s ease-out forwards; }
+
+/* ─── Connection-Guard: Warnung bei unterbrochener Verbindung ──────────────── */
+@keyframes blink-warning {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+.connection-warning {
+  animation: blink-warning 1.5s ease-in-out infinite;
+}
+
+/* ─── Tailwind text-2xs (fehlt in v4) ─────────────────────────────────────── */
+.text-2xs {
+  font-size: 0.625rem;
+  line-height: 0.875rem;
+}
