@@ -70,8 +70,15 @@ enum SessionStatus {
 enum DealStatus {
   MATCHED
   CONFIRMED
+  CONTRACT_SIGNED
   CANCELLED
   DISPUTED
+}
+
+enum ContractStatus {
+  PENDING_SIGNATURE  // PDF generiert, wartet auf EDS
+  SIGNED             // Digital signiert, rechtsgültig
+  EXPIRED            // Token abgelaufen, neu signieren erforderlich
 }
 
 enum Currency {
@@ -279,12 +286,47 @@ model Deal {
   sellerOrg Organization   @relation("SellerOrg", fields: [sellerOrgId], references: [id])
   buyerOrg  Organization   @relation("BuyerOrg", fields: [buyerOrgId], references: [id])
   product   Product        @relation(fields: [productId], references: [id])
+  contract  Contract?
 
   @@index([sessionId])
   @@index([sellerOrgId])
   @@index([buyerOrgId])
   @@index([createdAt])
   @@map("deals")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// VERTRÄGE — Automatisch generierte PDFs mit SHA-256-Fingerprint
+//
+// Ablauf:
+//   1. Deal MATCHED → POST /api/contracts erstellt PDF + Hash
+//   2. System zeigt 6-stelligen EDS-Token (Mock-QES)
+//   3. User bestätigt Token → Deal STATUS → CONTRACT_SIGNED
+//   4. pdfHash in AuditLog (unveränderlich) — Fälschungssicherheit
+//
+// Sicherheit:
+//   pdfHash = SHA-256(pdfBytes) — gespeichert VOR Signatur
+//   Nachträgliche PDF-Änderung → Hash-Mismatch → sofort erkennbar
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Contract {
+  id           String         @id @default(uuid())
+  dealId       String         @unique
+  pdfBase64    String         // Generated PDF, base64-encoded (stored once at signing time)
+  pdfHash      String         // SHA-256 hex — Integritätsbeweis (immutable nach Erstellung)
+  pdfSizeBytes Int
+  status       ContractStatus @default(PENDING_SIGNATURE)
+  edsTokenHash String?        // bcrypt-Hash des Mock-EDS-Tokens
+  edsTokenExp  DateTime?      // Token-Ablaufzeit (5 Minuten)
+  signedAt     DateTime?      // Zeitpunkt der Signatur
+  signerUserId String?        // Wer hat signiert
+  createdAt    DateTime       @default(now())
+
+  deal Deal @relation(fields: [dealId], references: [id])
+
+  @@index([dealId])
+  @@index([status])
+  @@map("contracts")
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

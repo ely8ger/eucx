@@ -13,17 +13,22 @@ export type AuditAction =
   | "ORDER_SUBMITTED"
   | "ORDER_CANCELLED"
   | "ORDER_MATCHED"
+  | "DEAL_MATCHED"
   | "DEAL_CONFIRMED"
   | "DEAL_DISPUTED"
   | "SESSION_OPENED"
   | "SESSION_CLOSED"
   | "PRODUCT_CREATED"
+  | "CONTRACT_GENERATED"
+  | "CONTRACT_SIGNED"
+  | "CONTRACT_SIGN_FAILED"
   | "ADMIN_ACTION";
 
 export type AuditEntityType =
   | "User"
   | "Order"
   | "Deal"
+  | "Contract"
   | "TradingSession"
   | "SteelProduct"
   | "Organization";
