@@ -1,34 +1,35 @@
-# ─── Stage 1: Builder ─────────────────────────────────────────────────────────
-FROM golang:1.26-alpine AS builder
-RUN apk add --no-cache git ca-certificates tzdata
+# ─── Stage 1: Builder ────────────────────────────────────────────────────────
+FROM node:20-alpine AS builder
+WORKDIR /app
 
-WORKDIR /build
-
-COPY go.mod go.sum ./
-RUN go mod download
+COPY package*.json ./
+RUN npm ci
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-    go build -ldflags="-w -s" -o bin/api ./cmd/api
+RUN npm run build
 
-# ─── Stage 2: Produktion (minimales Image) ────────────────────────────────────
-FROM scratch AS runner
-
-COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /build/bin/api /api
-
-EXPOSE 3001
-ENTRYPOINT ["/api"]
-
-# ─── Stage: Entwicklung (mit Hot-Reload) ─────────────────────────────────────
-FROM golang:1.26-alpine AS development
-RUN apk add --no-cache git
-RUN go install github.com/air-verse/air@latest
-
+# ─── Stage 2: Production ─────────────────────────────────────────────────────
+FROM node:20-alpine AS production
 WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
+
+ENV NODE_ENV=production
+
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
 
 EXPOSE 3001
-CMD ["air", "-c", ".air.toml"]
+
+CMD ["node", "dist/main"]
+
+# ─── Stage 3: Development (mit Hot-Reload) ───────────────────────────────────
+FROM node:20-alpine AS development
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+EXPOSE 3001
+CMD ["npm", "run", "dev"]
