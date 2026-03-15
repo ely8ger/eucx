@@ -8,7 +8,9 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// ─── Nutzer & Organisationen ──────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// ENUMS
+// ═══════════════════════════════════════════════════════════════════════════════
 
 enum UserRole {
   ADMIN
@@ -24,33 +26,26 @@ enum UserStatus {
   PENDING
 }
 
-// ─── Warengruppen (wie BUTB) ──────────────────────────────────────────────────
-
-enum CommodityCategory {
-  METALS           // Metalle & Legierungen
-  SCRAP            // Schrott & Sekundärrohstoffe
-  TIMBER           // Holz & Forstprodukte
-  AGRICULTURE      // Agrarprodukte & Lebensmittel
-  CHEMICALS        // Chemikalien & Petrochemie
-  ENERGY           // Energie (Koks, Kohle, Pellets)
-  CONSTRUCTION     // Baustoffe
-  INDUSTRIALS      // Industriegüter & Maschinen
-}
-
 enum CommodityUnit {
-  TON              // Tonne
-  KG               // Kilogramm
-  CBM              // Kubikmeter (Holz)
-  LITER            // Liter
-  PIECE            // Stück
-  SQM              // Quadratmeter
+  TON       // Tonne (Metalle, Agrar, Schrott)
+  KG        // Kilogramm
+  CBM       // Kubikmeter (Holz)
+  LITER     // Liter (Chemie, Öl)
+  PIECE     // Stück (Maschinen)
+  SQM       // Quadratmeter (Bleche, Platten)
+  MWH       // Megawattstunden (Energie)
 }
-
-// ─── Order & Deal ─────────────────────────────────────────────────────────────
 
 enum OrderDirection {
   BUY
   SELL
+}
+
+// LIMIT: Preis wird vom Händler festgelegt — wird nur ausgeführt wenn Marktpreis passt
+// MARKET: Sofort zum besten verfügbaren Preis ausführen
+enum OrderType {
+  LIMIT
+  MARKET
 }
 
 enum OrderStatus {
@@ -85,9 +80,35 @@ enum Currency {
   USD
   GBP
   CZK
+  CHF
 }
 
-// ─── Modelle ──────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// KATEGORIEN (eigene Tabelle, nicht nur Enum — erweiterbar ohne Migration)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Category {
+  id          String  @id @default(uuid())
+  slug        String  @unique  // z.B. "METALS", "AGRICULTURE"
+  label       String           // Anzeigename: "Metalle & Legierungen"
+  description String?
+  icon        String?          // Emoji oder Icon-Key
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
+
+  // Pflichtfelder-Spezifikation (JSONB): welche Attribute muss ein Produkt dieser Kategorie haben
+  // z.B. METALS: ["grade", "standard", "diameterMm"]
+  // z.B. AGRICULTURE: ["harvestYear", "moistureContent"]
+  requiredAttributes Json?
+
+  products Product[]
+
+  @@map("categories")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ORGANISATIONEN & NUTZER
+// ═══════════════════════════════════════════════════════════════════════════════
 
 model Organization {
   id         String   @id @default(uuid())
@@ -128,35 +149,59 @@ model User {
   @@map("users")
 }
 
-// ─── Produkt (universell für alle Warengruppen) ───────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// PRODUKTE — Multi-Commodity mit JSONB-Attributen
+//
+// Architektur-Entscheidung: JSONB statt EAV-Tabelle
+// Grund: PostgreSQL JSONB ist GIN-indexierbar, hat native Operatoren (@>, ?)
+//        und ist 10x schneller als 3-Table-Join beim EAV-Pattern.
+//        EAV eignet sich nur wenn Attribute selbst gehandelt werden (z.B. Config-Store).
+// ═══════════════════════════════════════════════════════════════════════════════
 
 model Product {
-  id                String            @id @default(uuid())
+  id                String        @id @default(uuid())
   organizationId    String
-  category          CommodityCategory
-  subcategory       String            // z.B. "Rebar", "Round Wood", "Milk Powder"
-  name              String            // Handelsname
+  categoryId        String
+
+  // Allgemeine Felder (für alle Kategorien)
+  sku               String        @unique   // Stock Keeping Unit — eindeutige Produktnummer
+  name              String
   description       String?
-  unit              CommodityUnit     @default(TON)
-  quantity          Decimal           @db.Decimal(12, 3)
-  minLotQuantity    Decimal           @default(1.0) @db.Decimal(12, 3)
-  originCountry     String            @db.Char(2)
+  unit              CommodityUnit @default(TON)
+  quantity          Decimal       @db.Decimal(18, 8)  // präzise für Millionen-Mengen
+  minLotQuantity    Decimal       @default(1.0) @db.Decimal(18, 8)
+  originCountry     String        @db.Char(2)
   warehouseLocation String
-  hasCertificate    Boolean           @default(false)
+  hasCertificate    Boolean       @default(false)
   certificateNumber String?
-  specifications    Json?             // Kategorie-spezifische Felder (JSONB)
-  isActive          Boolean           @default(true)
-  createdAt         DateTime          @default(now())
+  isActive          Boolean       @default(true)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  // Kategorie-spezifische Attribute (JSONB — GIN-indexiert)
+  // Metalle:      { grade, standard, diameterMm, lengthMm, yieldStrengthMpa, ... }
+  // Agrar:        { harvestYear, moistureContent, proteinContent, originFarm, ... }
+  // Energie:      { calorificValueMj, ashContentPct, sulfurPct, ... }
+  // Holz:         { woodSpecies, dryingMethod, moisturePct, ... }
+  attributes       Json?
 
   organization    Organization     @relation(fields: [organizationId], references: [id])
+  category        Category         @relation(fields: [categoryId], references: [id])
   tradingSessions TradingSession[]
   orders          Order[]
   deals           Deal[]
 
   @@index([organizationId])
-  @@index([category])
+  @@index([categoryId])
+  @@index([isActive])
+  // GIN-Index für JSONB-Attribut-Suche (z.B. alle Produkte mit grade="BSt500S")
+  @@index([attributes], type: Gin)
   @@map("products")
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HANDELSSITZUNGEN & ORDERBUCH
+// ═══════════════════════════════════════════════════════════════════════════════
 
 model TradingSession {
   id             String        @id @default(uuid())
@@ -172,6 +217,7 @@ model TradingSession {
 
   @@index([productId])
   @@index([currentStatus])
+  @@index([scheduledStart])
   @@map("trading_sessions")
 }
 
@@ -182,12 +228,17 @@ model Order {
   organizationId String
   productId      String
   direction      OrderDirection
-  pricePerUnit   Decimal        @db.Decimal(12, 2)
+  orderType      OrderType      @default(LIMIT)   // NEU: LIMIT oder MARKET
+
+  // Preise: Decimal(18,8) — 8 Nachkommastellen für Krypto-ähnliche Präzision
+  // Beispiel: 1.234.567,12345678 EUR/t — kein Rundungsfehler bei Millionen-Deals
+  pricePerUnit   Decimal        @db.Decimal(18, 8)
   currency       Currency       @default(EUR)
-  quantity       Decimal        @db.Decimal(12, 3)
-  filledQuantity Decimal        @default(0) @db.Decimal(12, 3)
+  quantity       Decimal        @db.Decimal(18, 8)
+  filledQuantity Decimal        @default(0) @db.Decimal(18, 8)
   status         OrderStatus    @default(ACTIVE)
-  idempotencyKey String         @unique
+  idempotencyKey String         @unique     // Double-Spend-Schutz Layer 1
+  expiresAt      DateTime?                  // für LIMIT Orders mit Ablaufzeit
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
@@ -201,24 +252,26 @@ model Order {
   @@index([sessionId])
   @@index([userId])
   @@index([status])
-  @@index([direction, pricePerUnit])
+  @@index([direction, pricePerUnit])   // Orderbuch-Sortierung
+  @@index([expiresAt])                 // Expired-Order Cleanup
   @@map("orders")
 }
 
+// Abgeschlossenes Geschäft (Trade) — entspricht einem "Matches" in der BUTB
 model Deal {
-  id             String     @id @default(uuid())
-  sessionId      String
-  sellOrderId    String
-  buyOrderId     String
-  sellerOrgId    String
-  buyerOrgId     String
-  productId      String
-  quantity       Decimal    @db.Decimal(12, 3)
-  pricePerUnit   Decimal    @db.Decimal(12, 2)
-  currency       Currency   @default(EUR)
-  status         DealStatus @default(MATCHED)
-  buyerSignature String?
-  createdAt      DateTime   @default(now())
+  id           String     @id @default(uuid())
+  sessionId    String
+  sellOrderId  String
+  buyOrderId   String
+  sellerOrgId  String
+  buyerOrgId   String
+  productId    String
+  quantity     Decimal    @db.Decimal(18, 8)
+  pricePerUnit Decimal    @db.Decimal(18, 8)
+  totalValue   Decimal    @db.Decimal(24, 8)  // pricePerUnit × quantity — extra Stellen
+  currency     Currency   @default(EUR)
+  status       DealStatus @default(MATCHED)
+  createdAt    DateTime   @default(now())
 
   session   TradingSession @relation(fields: [sessionId], references: [id])
   sellOrder Order          @relation("SellOrder", fields: [sellOrderId], references: [id])
@@ -230,8 +283,13 @@ model Deal {
   @@index([sessionId])
   @@index([sellerOrgId])
   @@index([buyerOrgId])
+  @@index([createdAt])
   @@map("deals")
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════════════════════════
 
 model RefreshToken {
   id        String   @id @default(uuid())
@@ -247,15 +305,22 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUDIT LOG — Event Sourcing, immutable
+//
+// Regel: NIEMALS löschen oder updaten. Nur INSERT erlaubt.
+// Revisionssicherheit: jeder Klick, jede Order, jede Preisänderung wird gespeichert.
+// ═══════════════════════════════════════════════════════════════════════════════
+
 model AuditLog {
   id         String   @id @default(uuid())
   userId     String?
-  action     String   // z.B. "AUTH_LOGIN", "ORDER_SUBMITTED", "PRODUCT_UPDATED"
-  entityType String   // z.B. "Order", "Product", "User"
+  action     String   // "AUTH_LOGIN" | "ORDER_SUBMITTED" | "PRODUCT_CREATED" | ...
+  entityType String   // "Order" | "Product" | "User" | "Deal"
   entityId   String?
   ipAddress  String?
   userAgent  String?
-  meta       Json?    // Freie Metadaten (JSONB) — unveränderlich nach Insert
+  meta       Json?    // Freie Metadaten (JSONB) — z.B. alter/neuer Wert bei Updates
   createdAt  DateTime @default(now())
 
   user User? @relation(fields: [userId], references: [id])
@@ -265,15 +330,3 @@ model AuditLog {
   @@index([createdAt])
   @@map("audit_log")
 }
-
-// ─── Double-Spending-Schutz: Product Lock ─────────────────────────────────────
-//
-// Problem: Verkäufer A hat 100t Stahl. Order X belegt 100t. Bevor Order X
-// abgeschlossen ist, stellt Verkäufer A Order Y für dieselben 100t auf.
-//
-// Lösung auf DB-Ebene:
-// 1. filledQuantity in Order: Cursor über tatsächlich reservierte Menge
-// 2. CHECK-Constraint (via Migration): filledQuantity <= quantity
-// 3. Beim Matching: SELECT FOR UPDATE auf die Order-Zeile (Row-Level Lock)
-//    → zwei parallele Transaktionen können nicht dieselbe Order gleichzeitig füllen
-// 4. idempotencyKey UNIQUE: verhindert doppelte Submission derselben Order
