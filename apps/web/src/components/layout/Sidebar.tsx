@@ -12,12 +12,12 @@ interface SidebarItem {
 }
 
 const sidebarItems: SidebarItem[] = [
-  { href: "/trading",         label: "Handelsraum",    icon: "⚡" },
-  { href: "/trading/history", label: "Handelshistorie", icon: "📋" },
-  { href: "/products",        label: "Mein Angebot",   icon: "🏗️" },
-  { href: "/deals",           label: "Abschlüsse",     icon: "✅", badge: "3" },
-  { href: "/reports",         label: "Berichte",       icon: "📊" },
-  { href: "/settings",        label: "Einstellungen",  icon: "⚙️" },
+  { href: "/dashboard",       label: "Übersicht",       icon: "◉" },
+  { href: "/trading",         label: "Handelsraum",     icon: "⚡" },
+  { href: "/products",        label: "Warenkatalog",    icon: "▦" },
+  { href: "/deals",           label: "Abschlüsse",      icon: "✓", badge: "3" },
+  { href: "/reports",         label: "Berichte",        icon: "▤" },
+  { href: "/settings",        label: "Einstellungen",   icon: "⚙" },
 ];
 
 export function Sidebar() {

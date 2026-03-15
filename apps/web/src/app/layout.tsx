@@ -5,16 +5,16 @@ import "@/styles/globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "EUCX — European Steel Exchange",
+    default: "EUCX — European Union Commodity Exchange",
     template: "%s | EUCX",
   },
-  description: "Digitale B2B-Warenbörse für Stahlprodukte. Rebar, Profile, Rohre — transparent und sicher gehandelt.",
-  keywords: ["Stahl", "Rebar", "Börse", "B2B", "Metall", "Steel Exchange"],
-  authors: [{ name: "EUCX GmbH" }],
+  description: "Digitale B2B-Warenbörse für Rohstoffe und Waren aller Kategorien — Metalle, Holz, Agrar, Chemie, Energie und mehr. Transparent, sicher, anonym.",
+  keywords: ["Warenbörse", "B2B", "Rohstoffe", "Metalle", "Holz", "Agrar", "Commodity Exchange", "EU"],
+  authors: [{ name: "EUCX" }],
   metadataBase: new URL("https://eucx.eu"),
   openGraph: {
     type:        "website",
-    siteName:    "EUCX — European Steel Exchange",
+    siteName:    "EUCX — European Union Commodity Exchange",
     locale:      "de_DE",
   },
   robots: {

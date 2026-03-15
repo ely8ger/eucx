@@ -54,7 +54,7 @@ export default function LoginPage() {
             <div className="w-1.5 h-7 bg-cb-yellow rounded-sm opacity-90" />
           </div>
           <h1 className="text-2xl font-bold text-cb-petrol">EUCX</h1>
-          <p className="text-sm text-cb-gray-500 mt-1">European Steel Exchange</p>
+          <p className="text-sm text-cb-gray-500 mt-1">EU Commodity Exchange</p>
         </div>
 
         {/* Formular */}

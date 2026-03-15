@@ -71,7 +71,7 @@ export default function RegisterPage() {
             <div className="w-1.5 h-7 bg-cb-yellow rounded-sm opacity-90" />
           </div>
           <h1 className="text-2xl font-bold text-cb-petrol">EUCX</h1>
-          <p className="text-sm text-cb-gray-500">European Steel Exchange</p>
+          <p className="text-sm text-cb-gray-500">EU Commodity Exchange</p>
         </div>
 
         <div className="bg-cb-white border border-cb-gray-200 rounded shadow-sm p-6">
@@ -87,7 +87,7 @@ export default function RegisterPage() {
                   hint="Min. 10 Zeichen, Großbuchstabe, Zahl, Sonderzeichen" />
               </div>
               <div className="col-span-2">
-                <Input label="Unternehmensname" name="organizationName" required placeholder="Stahlwerk GmbH" />
+                <Input label="Unternehmensname" name="organizationName" required placeholder="Muster Handels GmbH" />
               </div>
               <Input label="Steuernummer / VAT-ID" name="taxId" required placeholder="DE123456789" />
               <div>
@@ -110,8 +110,8 @@ export default function RegisterPage() {
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { value: "SELLER", label: "Verkäufer", desc: "Stahl anbieten" },
-                    { value: "BUYER",  label: "Käufer",    desc: "Stahl kaufen" },
+                    { value: "SELLER", label: "Verkäufer", desc: "Waren anbieten" },
+                    { value: "BUYER",  label: "Käufer",    desc: "Waren kaufen" },
                   ].map((r) => (
                     <label key={r.value}
                       className="flex items-start gap-2 p-3 border border-cb-gray-200 rounded cursor-pointer hover:border-cb-yellow has-[:checked]:border-cb-yellow has-[:checked]:bg-cb-yellow/5">

@@ -6,8 +6,9 @@ import { clsx } from "clsx";
 import { Badge } from "@/components/ui/Badge";
 
 const navLinks = [
+  { href: "/dashboard", label: "Übersicht" },
   { href: "/trading",   label: "Handelsraum" },
-  { href: "/products",  label: "Produkte" },
+  { href: "/products",  label: "Waren" },
   { href: "/deals",     label: "Abschlüsse" },
   { href: "/reports",   label: "Berichte" },
 ];
@@ -20,8 +21,7 @@ export function Navbar() {
       <div className="max-w-screen-2xl mx-auto h-full px-4 flex items-center justify-between">
 
         {/* ─── Logo ────────────────────────────────────────────────────── */}
-        <Link href="/trading" className="flex items-center gap-2 group">
-          {/* Commerzbank-Ribbon-Imitiation */}
+        <Link href="/dashboard" className="flex items-center gap-2 group">
           <div className="flex items-center gap-0.5">
             <div className="w-1 h-6 bg-cb-yellow rounded-sm" />
             <div className="w-1 h-4 bg-cb-yellow-light rounded-sm opacity-80" />
@@ -30,7 +30,7 @@ export function Navbar() {
           <div className="ml-1">
             <span className="text-cb-white font-bold text-lg tracking-tight">EUCX</span>
             <span className="hidden sm:inline text-cb-yellow text-xs ml-2 font-medium">
-              European Steel Exchange
+              EU Commodity Exchange
             </span>
           </div>
         </Link>
