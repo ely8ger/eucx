@@ -132,6 +132,7 @@ export default function TradingRoom() {
   const [submitting, setSubmitting]   = useState(false);
   const [submitMsg, setSubmitMsg]     = useState<{ ok: boolean; text: string } | null>(null);
   const [transport, setTransport]     = useState<"socket.io" | "sse" | "mock">("mock");
+  const [dealToast, setDealToast]     = useState<{ qty: string; price: string; currency: string } | null>(null);
   const eventSourceRef                = useRef<EventSource | null>(null);
   const socketRef                     = useRef<Socket | null>(null);
 
@@ -293,11 +294,30 @@ export default function TradingRoom() {
         }),
       });
 
-      const data = await res.json() as { orderId?: string; error?: string };
+      const data = await res.json() as {
+        orderId?: string;
+        error?: string;
+        deals?: Array<{ quantity: string; pricePerUnit: string; currency: string }>;
+        totalMatchedQty?: string;
+      };
       if (res.ok) {
         // Optimistischen Eintrag durch echte Order-ID ersetzen
         dispatch({ type: "ROLLBACK_OPTIMISTIC", tempId });
-        setSubmitMsg({ ok: true, text: `Auftrag ${data.orderId?.slice(0, 8)}… erteilt` });
+
+        // Deal-Benachrichtigung wenn Matching erfolgreich war
+        if (data.deals && data.deals.length > 0) {
+          const firstDeal = data.deals[0]!;
+          setDealToast({
+            qty:      data.totalMatchedQty ?? firstDeal.quantity,
+            price:    firstDeal.pricePerUnit,
+            currency: firstDeal.currency,
+          });
+          setSubmitMsg({ ok: true, text: `Handel abgeschlossen: ${data.totalMatchedQty} t @ ${firstDeal.pricePerUnit} ${firstDeal.currency}` });
+          // Toast nach 6s ausblenden
+          setTimeout(() => setDealToast(null), 6000);
+        } else {
+          setSubmitMsg({ ok: true, text: `Auftrag ${data.orderId?.slice(0, 8)}… erteilt` });
+        }
       } else {
         // Rollback: temporäre Order entfernen
         dispatch({ type: "ROLLBACK_OPTIMISTIC", tempId });
@@ -320,6 +340,31 @@ export default function TradingRoom() {
   // ─────────────────────────────────────────────────────────────────
   return (
     <div className="flex flex-col gap-5 max-w-screen-2xl">
+
+      {/* Deal-Toast: Glückwunsch-Banner nach erfolgreichem Abschluss */}
+      {dealToast && (
+        <div className="fixed top-5 right-5 z-50 animate-in slide-in-from-top-2 duration-300">
+          <div className="bg-cb-petrol text-white rounded-xl shadow-xl px-6 py-4 flex items-start gap-4 max-w-sm">
+            <div className="text-2xl">✓</div>
+            <div>
+              <p className="font-bold text-base">Handel abgeschlossen!</p>
+              <p className="text-sm mt-0.5 opacity-90">
+                {dealToast.qty} t × {parseFloat(dealToast.price).toLocaleString("de-DE", { style: "currency", currency: dealToast.currency })}
+              </p>
+              <p className="text-xs mt-1 opacity-70">
+                Gesamtwert:{" "}
+                {(parseFloat(dealToast.qty) * parseFloat(dealToast.price)).toLocaleString("de-DE", { style: "currency", currency: dealToast.currency })}
+              </p>
+            </div>
+            <button
+              onClick={() => setDealToast(null)}
+              className="ml-auto text-white/60 hover:text-white text-lg leading-none"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <div className="flex items-center justify-between">

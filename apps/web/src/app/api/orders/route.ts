@@ -11,6 +11,7 @@ import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { submitOrderSchema } from "@/lib/validation/schemas";
 import { audit } from "@/lib/audit/logger";
+import { runMatchingCycle } from "@/lib/trading/matching-engine";
 import Decimal from "decimal.js";
 
 export const dynamic = "force-dynamic";
@@ -118,6 +119,18 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // ── 7. Matching Engine ─────────────────────────────────────────
+    // Läuft nur wenn es sich um eine neue Order handelt (nicht idempotent-duplicate)
+    let matchResult = { deals: [] as ReturnType<typeof Array.prototype.map>, totalMatchedQty: "0" };
+    if (order.status === "ACTIVE") {
+      try {
+        matchResult = await runMatchingCycle(input.sessionId);
+      } catch (err) {
+        // Matching-Fehler darf Order-Erstellung nicht rückgängig machen
+        console.error("[POST /api/orders] Matching-Fehler:", err);
+      }
+    }
+
     return NextResponse.json(
       {
         orderId:    order.id,
@@ -127,6 +140,8 @@ export async function POST(req: NextRequest) {
         totalValue:   totalValue.toString(),
         currency:   order.currency,
         createdAt:  order.createdAt,
+        deals:      matchResult.deals,
+        totalMatchedQty: matchResult.totalMatchedQty,
       },
       { status: 201 }
     );
