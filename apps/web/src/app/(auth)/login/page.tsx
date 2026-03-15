@@ -33,7 +33,7 @@ export default function LoginPage() {
 
       if (data.data?.accessToken) {
         document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=900; samesite=lax${location.protocol === "https:" ? "; secure" : ""}`;
-        router.push("/trading");
+        router.push("/dashboard");
       }
     } catch {
       setError("Verbindungsfehler. Bitte erneut versuchen.");
@@ -43,8 +43,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cb-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
+    <div className="w-full max-w-sm">
 
         {/* Logo */}
         <div className="text-center mb-8">
@@ -103,7 +102,6 @@ export default function LoginPage() {
         <p className="text-center text-xs text-cb-gray-400 mt-6">
           © 2026 EUCX GmbH · eucx.eu
         </p>
-      </div>
     </div>
   );
 }
