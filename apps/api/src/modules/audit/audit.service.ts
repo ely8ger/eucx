@@ -2,9 +2,11 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../config/prisma.service";
 
 interface AuditEntry {
-  userId:   string;
-  action:   string;
-  meta?:    Record<string, unknown>;
+  userId:     string;
+  action:     string;
+  entityType?: string;
+  entityId?:  string;
+  meta?:      Record<string, unknown>;
 }
 
 /**
@@ -21,10 +23,12 @@ export class AuditService {
   async log(entry: AuditEntry): Promise<void> {
     await this.prisma.auditLog.create({
       data: {
-        userId:    entry.userId,
-        action:    entry.action,
-        meta:      entry.meta ? JSON.stringify(entry.meta) : null,
-        createdAt: new Date(),
+        userId:     entry.userId,
+        action:     entry.action,
+        entityType: entry.entityType ?? "System",
+        entityId:   entry.entityId,
+        meta:       entry.meta ? (entry.meta as import("@prisma/client").Prisma.InputJsonObject) : undefined,
+        createdAt:  new Date(),
       },
     });
   }
