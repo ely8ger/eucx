@@ -48,8 +48,9 @@ CREATE TABLE steel_products (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     organization_id     UUID NOT NULL REFERENCES organizations(id),
     form                steel_form NOT NULL,
-    grade               TEXT NOT NULL,
-    diameter_mm         NUMERIC(5,1),
+    grade               TEXT NOT NULL,          -- z.B. "BSt 500S", "A615 Gr.60"
+    diameter_mm         NUMERIC(5,1),           -- Nenndurchmesser [mm]
+    length_mm           INTEGER,                -- Stablänge [mm], optional
     standard            steel_standard NOT NULL,
     quantity_tons       NUMERIC(10,3) NOT NULL CHECK (quantity_tons > 0),
     min_lot_tons        NUMERIC(10,3) NOT NULL DEFAULT 1.0,
@@ -57,12 +58,40 @@ CREATE TABLE steel_products (
     production_year     SMALLINT NOT NULL,
     warehouse_location  TEXT NOT NULL,
     has_certificate     BOOLEAN NOT NULL DEFAULT FALSE,
+    certificate_number  TEXT,                   -- z.B. "EN10204-3.1"
     is_active           BOOLEAN NOT NULL DEFAULT TRUE,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_products_org ON steel_products(organization_id);
 CREATE INDEX idx_products_form ON steel_products(form);
+
+-- ─── Legierungszusammensetzung (normalisiert, 1:1 zu steel_products) ──────────
+-- Skill #2: Zod-Türsteher — kein Müll in Metall-Spezifikationen
+CREATE TABLE alloy_compositions (
+    product_id   UUID PRIMARY KEY REFERENCES steel_products(id) ON DELETE CASCADE,
+    carbon_pct   NUMERIC(5,4),   -- C %   max: 9.9999
+    manganese_pct NUMERIC(5,4),  -- Mn %
+    phosphorus_pct NUMERIC(5,4), -- P %
+    sulfur_pct   NUMERIC(5,4),   -- S %
+    silicon_pct  NUMERIC(5,4),   -- Si %
+    chromium_pct NUMERIC(5,4),   -- Cr %
+    nickel_pct   NUMERIC(5,4),   -- Ni %
+    vanadium_pct NUMERIC(5,4),   -- V %
+    CONSTRAINT alloy_carbon_max     CHECK (carbon_pct   IS NULL OR carbon_pct   BETWEEN 0 AND 2),
+    CONSTRAINT alloy_manganese_max  CHECK (manganese_pct IS NULL OR manganese_pct BETWEEN 0 AND 5)
+);
+
+-- ─── Mechanische Kennwerte (aus Prüfzeugnis 3.1) ─────────────────────────────
+CREATE TABLE mechanical_properties (
+    product_id             UUID PRIMARY KEY REFERENCES steel_products(id) ON DELETE CASCADE,
+    yield_strength_mpa     NUMERIC(7,1),  -- Streckgrenze Re [MPa]
+    tensile_strength_mpa   NUMERIC(7,1),  -- Zugfestigkeit Rm [MPa]
+    elongation_pct         NUMERIC(5,2),  -- Bruchdehnung A5 [%]
+    bend_test_diameter_mm  NUMERIC(5,1),  -- Biegeprobendurchmesser [mm]
+    CONSTRAINT mech_yield_positive CHECK (yield_strength_mpa   IS NULL OR yield_strength_mpa   > 0),
+    CONSTRAINT mech_tensile_positive CHECK (tensile_strength_mpa IS NULL OR tensile_strength_mpa > 0)
+);
 
 -- ─── Handelssitzungen ─────────────────────────────────────────────────────────
 CREATE TABLE trading_sessions (

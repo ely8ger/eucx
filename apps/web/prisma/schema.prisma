@@ -120,6 +120,7 @@ model SteelProduct {
   form              SteelForm
   grade             String
   diameterMm        Decimal?      @db.Decimal(5, 1)
+  lengthMm          Int?
   standard          SteelStandard
   quantityTons      Decimal       @db.Decimal(10, 3)
   minLotTons        Decimal       @default(1.0) @db.Decimal(10, 3)
@@ -131,14 +132,44 @@ model SteelProduct {
   isActive          Boolean       @default(true)
   createdAt         DateTime      @default(now())
 
-  organization    Organization     @relation(fields: [organizationId], references: [id])
+  organization    Organization       @relation(fields: [organizationId], references: [id])
   tradingSessions TradingSession[]
   orders          Order[]
   deals           Deal[]
+  alloy           AlloyComposition?
+  mechanical      MechanicalProperties?
 
   @@index([organizationId])
   @@index([form])
   @@map("steel_products")
+}
+
+model AlloyComposition {
+  productId     String  @id
+  carbonPct     Decimal? @db.Decimal(5, 4)
+  manganesePct  Decimal? @db.Decimal(5, 4)
+  phosphorusPct Decimal? @db.Decimal(5, 4)
+  sulfurPct     Decimal? @db.Decimal(5, 4)
+  siliconPct    Decimal? @db.Decimal(5, 4)
+  chromiumPct   Decimal? @db.Decimal(5, 4)
+  nickelPct     Decimal? @db.Decimal(5, 4)
+  vanadiumPct   Decimal? @db.Decimal(5, 4)
+
+  product SteelProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("alloy_compositions")
+}
+
+model MechanicalProperties {
+  productId            String  @id
+  yieldStrengthMpa     Decimal? @db.Decimal(7, 1)
+  tensileStrengthMpa   Decimal? @db.Decimal(7, 1)
+  elongationPct        Decimal? @db.Decimal(5, 2)
+  bendTestDiameterMm   Decimal? @db.Decimal(5, 1)
+
+  product SteelProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("mechanical_properties")
 }
 
 model TradingSession {
