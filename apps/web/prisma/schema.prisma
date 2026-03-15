@@ -250,16 +250,30 @@ model RefreshToken {
 model AuditLog {
   id         String   @id @default(uuid())
   userId     String?
-  action     String
-  entityType String
+  action     String   // z.B. "AUTH_LOGIN", "ORDER_SUBMITTED", "PRODUCT_UPDATED"
+  entityType String   // z.B. "Order", "Product", "User"
   entityId   String?
   ipAddress  String?
   userAgent  String?
+  meta       Json?    // Freie Metadaten (JSONB) — unveränderlich nach Insert
   createdAt  DateTime @default(now())
 
   user User? @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([entityType, entityId])
+  @@index([createdAt])
   @@map("audit_log")
 }
+
+// ─── Double-Spending-Schutz: Product Lock ─────────────────────────────────────
+//
+// Problem: Verkäufer A hat 100t Stahl. Order X belegt 100t. Bevor Order X
+// abgeschlossen ist, stellt Verkäufer A Order Y für dieselben 100t auf.
+//
+// Lösung auf DB-Ebene:
+// 1. filledQuantity in Order: Cursor über tatsächlich reservierte Menge
+// 2. CHECK-Constraint (via Migration): filledQuantity <= quantity
+// 3. Beim Matching: SELECT FOR UPDATE auf die Order-Zeile (Row-Level Lock)
+//    → zwei parallele Transaktionen können nicht dieselbe Order gleichzeitig füllen
+// 4. idempotencyKey UNIQUE: verhindert doppelte Submission derselben Order
