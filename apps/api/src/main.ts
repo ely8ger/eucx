@@ -3,10 +3,16 @@ import { ValidationPipe, Logger } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import helmet from "helmet";
 import { AppModule } from "./app.module";
+import { RedisIoAdapter } from "./config/redis.adapter";
 
 async function bootstrap() {
   const logger = new Logger("Bootstrap");
   const app = await NestFactory.create(AppModule);
+
+  // ─── Redis Adapter für Socket.io (Skalierung auf N Server) ────────────────
+  const redisAdapter = new RedisIoAdapter(app);
+  await redisAdapter.connectToRedis();
+  app.useWebSocketAdapter(redisAdapter);
 
   // ─── Security ──────────────────────────────────────────────────────────────
   app.use(helmet());

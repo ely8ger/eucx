@@ -3,11 +3,17 @@
 /**
  * TradingRoom — Live Handelsraum
  *
- * Skill #1: Real-Time SSE (Orderbook live alle 1,5s)
- * Skill #2: Zod-validierte Order-Submission
- * Skill #4: Decimal.js für Gesamtwert-Berechnung
+ * Transport-Strategie (Fallback-Kette):
+ *   1. Socket.io  → NestJS WebSocket Gateway (< 50ms, bidirektional)
+ *   2. SSE        → Next.js /api/orderbook/stream (Fallback bei fehlendem NestJS)
+ *   3. Mock-Daten → Demo-Modus (kein Backend)
+ *
+ * Optimistic UI:
+ *   Eigene Order erscheint sofort lokal bevor DB-Bestätigung kommt.
+ *   Bei Server-Fehler wird die temporäre Order entfernt (Rollback).
  */
 import { useEffect, useReducer, useRef, useState, useCallback } from "react";
+import { io, type Socket } from "socket.io-client";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -45,6 +51,10 @@ interface OrderbookState {
 
 type Action =
   | { type: "ORDERBOOK"; asks: OrderEntry[]; bids: OrderEntry[]; deals: DealEntry[]; ts: number }
+  | { type: "NEW_BID";   bid: OrderEntry }
+  | { type: "NEW_DEAL";  deal: DealEntry }
+  | { type: "OPTIMISTIC_ORDER"; entry: OrderEntry; direction: "BUY" | "SELL" }
+  | { type: "ROLLBACK_OPTIMISTIC"; tempId: string }
   | { type: "CONNECTED" }
   | { type: "DISCONNECTED" };
 
@@ -52,6 +62,31 @@ function reducer(state: OrderbookState, action: Action): OrderbookState {
   switch (action.type) {
     case "ORDERBOOK":
       return { ...state, asks: action.asks, bids: action.bids, deals: action.deals, lastTs: action.ts, connected: true };
+
+    // Optimistic UI: neue Order sofort anzeigen (vor DB-Bestätigung)
+    case "OPTIMISTIC_ORDER":
+      return action.direction === "SELL"
+        ? { ...state, asks: [action.entry, ...state.asks].sort((a, b) => parseFloat(a.price) - parseFloat(b.price)) }
+        : { ...state, bids: [action.entry, ...state.bids].sort((a, b) => parseFloat(b.price) - parseFloat(a.price)) };
+
+    // Rollback: temporäre Order entfernen wenn DB-Fehler
+    case "ROLLBACK_OPTIMISTIC":
+      return {
+        ...state,
+        asks: state.asks.filter((o) => o.id !== action.tempId),
+        bids: state.bids.filter((o) => o.id !== action.tempId),
+      };
+
+    // Neues Gebot von anderem Händler via Socket.io
+    case "NEW_BID":
+      return action.bid.id.startsWith("temp-")
+        ? state
+        : { ...state };  // Orderbuch-Snapshot wird separat aktualisiert
+
+    // Neuer Deal
+    case "NEW_DEAL":
+      return { ...state, deals: [action.deal, ...state.deals].slice(0, 20) };
+
     case "CONNECTED":
       return { ...state, connected: true };
     case "DISCONNECTED":
@@ -96,7 +131,9 @@ export default function TradingRoom() {
   const [clock, setClock]             = useState("");
   const [submitting, setSubmitting]   = useState(false);
   const [submitMsg, setSubmitMsg]     = useState<{ ok: boolean; text: string } | null>(null);
+  const [transport, setTransport]     = useState<"socket.io" | "sse" | "mock">("mock");
   const eventSourceRef                = useRef<EventSource | null>(null);
+  const socketRef                     = useRef<Socket | null>(null);
 
   // ── Clock ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -116,25 +153,71 @@ export default function TradingRoom() {
       .catch(() => {});
   }, []);
 
-  // ── SSE Connection ────────────────────────────────────────────────
+  // ── Transport: Socket.io → SSE → Mock ────────────────────────────
   useEffect(() => {
     if (!sessionId) return;
 
-    const es = new EventSource(`/api/orderbook/stream?sessionId=${sessionId}`);
-    eventSourceRef.current = es;
+    const apiUrl    = process.env.NEXT_PUBLIC_API_URL;
+    const token     = document.cookie.match(/access_token=([^;]+)/)?.[1];
 
-    es.addEventListener("connected", () => dispatch({ type: "CONNECTED" }));
+    // ── Versuch 1: Socket.io (NestJS Backend) ─────────────────────
+    if (apiUrl && token) {
+      const socket = io(`${apiUrl}/trading`, {
+        auth:       { token },
+        transports: ["websocket", "polling"],
+        timeout:    3000,
+      });
 
-    es.addEventListener("orderbook", (e: MessageEvent) => {
-      try {
-        const data = JSON.parse(e.data);
-        dispatch({ type: "ORDERBOOK", asks: data.asks, bids: data.bids, deals: data.deals, ts: data.ts });
-      } catch {/* ignore */}
-    });
+      socket.on("connect", () => {
+        dispatch({ type: "CONNECTED" });
+        setTransport("socket.io");
+        socket.emit("join_session", { sessionId });
+      });
 
-    es.onerror = () => dispatch({ type: "DISCONNECTED" });
+      socket.on("connect_error", () => {
+        socket.disconnect();
+        startSseFallback();
+      });
 
-    return () => es.close();
+      socket.on("new_bid", (e: { payload: OrderEntry }) => {
+        dispatch({ type: "NEW_BID", bid: e.payload });
+      });
+
+      socket.on("orderbook_update", (e: { payload: { asks: OrderEntry[]; bids: OrderEntry[]; deals: DealEntry[]; ts: number } }) => {
+        dispatch({ type: "ORDERBOOK", asks: e.payload.asks, bids: e.payload.bids, deals: e.payload.deals, ts: e.payload.ts });
+      });
+
+      socket.on("deal_matched", (e: { payload: DealEntry }) => {
+        dispatch({ type: "NEW_DEAL", deal: e.payload });
+      });
+
+      socket.on("disconnect", () => dispatch({ type: "DISCONNECTED" }));
+
+      socketRef.current = socket;
+      return () => { socket.disconnect(); };
+    }
+
+    // ── Versuch 2: SSE Fallback ────────────────────────────────────
+    startSseFallback();
+
+    function startSseFallback() {
+      const es = new EventSource(`/api/orderbook/stream?sessionId=${sessionId}`);
+      eventSourceRef.current = es;
+      setTransport("sse");
+
+      es.addEventListener("connected", () => dispatch({ type: "CONNECTED" }));
+      es.addEventListener("orderbook", (e: MessageEvent) => {
+        try {
+          const data = JSON.parse(e.data) as { asks: OrderEntry[]; bids: OrderEntry[]; deals: DealEntry[]; ts: number };
+          dispatch({ type: "ORDERBOOK", asks: data.asks, bids: data.bids, deals: data.deals, ts: data.ts });
+        } catch {/* ignore */}
+      });
+      es.onerror = () => dispatch({ type: "DISCONNECTED" });
+    }
+
+    return () => {
+      eventSourceRef.current?.close();
+    };
   }, [sessionId]);
 
   // ── Calculated total ─────────────────────────────────────────────
@@ -160,7 +243,7 @@ export default function TradingRoom() {
   const bestAsk   = state.asks[0];
   const bestBid   = state.bids[0];
 
-  // ── Submit order ─────────────────────────────────────────────────
+  // ── Submit order (mit Optimistic UI) ─────────────────────────────
   const handleSubmit = useCallback(async () => {
     if (!sessionId) {
       setSubmitMsg({ ok: false, text: "Keine aktive Handelssitzung" });
@@ -173,6 +256,21 @@ export default function TradingRoom() {
       setSubmitMsg({ ok: false, text: "Bitte einloggen" });
       return;
     }
+
+    // ── Optimistic UI: sofort anzeigen ────────────────────────────
+    const tempId = `temp-${crypto.randomUUID()}`;
+    dispatch({
+      type:      "OPTIMISTIC_ORDER",
+      direction,
+      entry: {
+        id:        tempId,
+        price,
+        qty,
+        remaining: qty,
+        org:       "Mein Auftrag",
+        country:   "DE",
+      },
+    });
 
     setSubmitting(true);
     setSubmitMsg(null);
@@ -195,13 +293,18 @@ export default function TradingRoom() {
         }),
       });
 
-      const data = await res.json();
+      const data = await res.json() as { orderId?: string; error?: string };
       if (res.ok) {
+        // Optimistischen Eintrag durch echte Order-ID ersetzen
+        dispatch({ type: "ROLLBACK_OPTIMISTIC", tempId });
         setSubmitMsg({ ok: true, text: `Auftrag ${data.orderId?.slice(0, 8)}… erteilt` });
       } else {
+        // Rollback: temporäre Order entfernen
+        dispatch({ type: "ROLLBACK_OPTIMISTIC", tempId });
         setSubmitMsg({ ok: false, text: data.error ?? "Fehler beim Erteilen" });
       }
     } catch {
+      dispatch({ type: "ROLLBACK_OPTIMISTIC", tempId });
       setSubmitMsg({ ok: false, text: "Netzwerkfehler" });
     } finally {
       setSubmitting(false);
@@ -228,7 +331,11 @@ export default function TradingRoom() {
         </div>
         <div className="flex items-center gap-3">
           <Badge variant={state.connected ? "success" : "warning"} dot>
-            {state.connected ? "Live · Periode 1" : "Verbinde…"}
+            {state.connected
+              ? transport === "socket.io" ? "Live · Socket.io"
+              : transport === "sse"       ? "Live · SSE"
+              : "Demo-Modus"
+              : "Verbinde…"}
           </Badge>
           <span className="text-sm text-cb-gray-500 font-mono">{clock}</span>
         </div>
