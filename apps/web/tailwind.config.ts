@@ -40,6 +40,23 @@ const config: Config = {
           // Weiß
           white:        "#FFFFFF",
         },
+
+        // ── Dark Mode Auth Palette ─────────────────────────────────────────
+        dm: {
+          bg:           "#06090F",   // near-black navy base
+          surface:      "#0D1522",   // card / panel
+          "surface-2":  "#111E30",   // elevated surface
+          border:       "#1A2B3F",   // subtle border
+          "border-2":   "#253A56",   // stronger border / hover
+          text:         "#E2E8F2",   // primary text
+          muted:        "#6B7D96",   // secondary text
+          "muted-2":    "#3D5066",   // placeholders
+          gold:         "#FBB809",   // accent (= cb-yellow)
+          "gold-hover": "#E5A500",   // gold hover
+          error:        "#F87171",   // error red (lightened for dark bg)
+          success:      "#4ADE80",   // success green (lightened for dark bg)
+          input:        "#070C17",   // input background
+        },
       },
 
       // ─── Commerzbank Typography ────────────────────────────────────────
