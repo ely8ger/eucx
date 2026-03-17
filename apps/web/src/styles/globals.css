@@ -1,5 +1,45 @@
 @import "tailwindcss";
 
+/* ─── Tailwind v4: Alle Custom-Farben via @theme ──────────────────────────── */
+@theme {
+  /* Commerzbank Brand Colors */
+  --color-cb-yellow:       #FBB809;
+  --color-cb-yellow-light: #FEDF33;
+  --color-cb-yellow-dark:  #E5A500;
+  --color-cb-yellow-hover: #E8A800;
+  --color-cb-petrol:       #003D6B;
+  --color-cb-petrol-dark:  #002A4A;
+  --color-cb-navy:         #001F3F;
+  --color-cb-gray-50:      #F7F7F7;
+  --color-cb-gray-100:     #F0F0F0;
+  --color-cb-gray-200:     #E0E0E0;
+  --color-cb-gray-300:     #C8C8C8;
+  --color-cb-gray-400:     #999999;
+  --color-cb-gray-500:     #666666;
+  --color-cb-gray-700:     #333333;
+  --color-cb-gray-900:     #1A1A1A;
+  --color-cb-success:      #00843D;
+  --color-cb-error:        #E30613;
+  --color-cb-warning:      #F5A623;
+  --color-cb-info:         #0066CC;
+  --color-cb-white:        #FFFFFF;
+
+  /* Dark Mode Auth Palette */
+  --color-dm-bg:           #06090F;
+  --color-dm-surface:      #0D1522;
+  --color-dm-surface-2:    #111E30;
+  --color-dm-border:       #1A2B3F;
+  --color-dm-border-2:     #253A56;
+  --color-dm-text:         #E2E8F2;
+  --color-dm-muted:        #6B7D96;
+  --color-dm-muted-2:      #3D5066;
+  --color-dm-gold:         #FBB809;
+  --color-dm-gold-hover:   #E5A500;
+  --color-dm-error:        #F87171;
+  --color-dm-success:      #4ADE80;
+  --color-dm-input:        #070C17;
+}
+
 /* ─── Commerzbank Design Tokens als CSS Custom Properties ─────────────────── */
 :root {
   /* Primär-Gelb */
