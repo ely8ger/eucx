@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* ─── Tailwind v4: Explizite Content-Pfade via @source ────────────────────── */
+@source "../app/**/*.{ts,tsx}";
+@source "../components/**/*.{ts,tsx}";
+@source "../providers/**/*.{ts,tsx}";
+@source "../store/**/*.{ts,tsx}";
+
 /* ─── Tailwind v4: Alle Custom-Farben via @theme ──────────────────────────── */
 @theme {
   /* Commerzbank Brand Colors */
