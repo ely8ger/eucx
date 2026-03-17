@@ -149,7 +149,7 @@ export default function LoginPage() {
       if (data.data?.accessToken) {
         const expiresAt = data.data.expiresAt ?? Date.now() + 15 * 60 * 1000;
         document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=900; samesite=lax${
-          location.protocol === "https:" ? "; secure" : ""
+          typeof window !== "undefined" && window.location.protocol === "https:" ? "; secure" : ""
         }`;
         if (data.data.user) setAuth(data.data.user, expiresAt);
         scheduleAutoLogout(expiresAt);
@@ -189,7 +189,7 @@ export default function LoginPage() {
       if (data.data?.accessToken) {
         const expiresAt = data.data.expiresAt ?? Date.now() + 15 * 60 * 1000;
         document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=900; samesite=lax${
-          location.protocol === "https:" ? "; secure" : ""
+          typeof window !== "undefined" && window.location.protocol === "https:" ? "; secure" : ""
         }`;
         if (data.data.user) setAuth(data.data.user, expiresAt);
         scheduleAutoLogout(expiresAt);
@@ -203,7 +203,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full max-w-[420px] mx-auto">
+    <div className="w-full max-w-[460px] mx-auto">
 
       {/* ── Logo & Wordmark ──────────────────────────────────────────────── */}
       <div className="flex flex-col items-center mb-10">
