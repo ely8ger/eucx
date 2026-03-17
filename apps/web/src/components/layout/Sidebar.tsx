@@ -14,10 +14,12 @@ interface SidebarItem {
 const sidebarItems: SidebarItem[] = [
   { href: "/dashboard",       label: "Übersicht",       icon: "◉" },
   { href: "/trading",         label: "Handelsraum",     icon: "⚡" },
+  { href: "/portfolio",       label: "Portfolio",       icon: "◈" },
   { href: "/products",        label: "Warenkatalog",    icon: "▦" },
   { href: "/deals",           label: "Abschlüsse",      icon: "✓", badge: "3" },
   { href: "/reports",         label: "Berichte",        icon: "▤" },
   { href: "/settings",        label: "Einstellungen",   icon: "⚙" },
+  { href: "/admin",           label: "Admin",           icon: "⚠" },
 ];
 
 export function Sidebar() {

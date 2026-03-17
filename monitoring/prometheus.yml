@@ -1,0 +1,88 @@
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+  scrape_timeout:      10s
+  external_labels:
+    environment: production
+    project:     eucx
+
+# ─── Alertmanager ─────────────────────────────────────────────────────────────
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+          # targets: ["alertmanager:9093"]
+
+# ─── Alert rules ──────────────────────────────────────────────────────────────
+rule_files:
+  - "/etc/prometheus/rules/*.yml"
+
+# ─── Scrape configs ───────────────────────────────────────────────────────────
+scrape_configs:
+
+  # ── Prometheus self-monitoring ──────────────────────────────────────────────
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # ── NestJS API — custom /metrics endpoint (prom-client) ────────────────────
+  - job_name: eucx_api
+    metrics_path: /api/v1/metrics
+    static_configs:
+      - targets: ["api:3001"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: eucx-api
+
+  # ── Next.js Web — Next.js metrics (if @next/bundle-analyzer or custom) ──────
+  - job_name: eucx_web
+    metrics_path: /api/metrics
+    static_configs:
+      - targets: ["web:3000"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: eucx-web
+
+  # ── PostgreSQL — postgres_exporter ─────────────────────────────────────────
+  # docker run -d --name postgres_exporter --network eucx_internal \
+  #   -e DATA_SOURCE_NAME="postgresql://eucx:pass@postgres:5432/eucx?sslmode=disable" \
+  #   quay.io/prometheuscommunity/postgres-exporter
+  - job_name: postgres
+    static_configs:
+      - targets: ["postgres_exporter:9187"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: eucx-postgres
+
+  # ── Redis — redis_exporter ──────────────────────────────────────────────────
+  # docker run -d --name redis_exporter --network eucx_internal \
+  #   -e REDIS_ADDR=redis://redis:6379 -e REDIS_PASSWORD=yourpass \
+  #   oliver006/redis_exporter
+  - job_name: redis
+    static_configs:
+      - targets: ["redis_exporter:9121"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: eucx-redis
+
+  # ── Nginx — nginx_exporter ──────────────────────────────────────────────────
+  - job_name: nginx
+    static_configs:
+      - targets: ["nginx_exporter:9113"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: eucx-nginx
+
+  # ── Node / Host metrics ─────────────────────────────────────────────────────
+  - job_name: node
+    static_configs:
+      - targets: ["node_exporter:9100"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: eucx-host

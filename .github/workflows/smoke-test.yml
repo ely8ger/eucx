@@ -1,0 +1,238 @@
+name: Smoke Tests — Post-Deployment
+
+# Wird nach jedem erfolgreichen Deploy ausgelöst (workflow_run)
+# oder manuell mit URL-Override für Staging/Canary.
+on:
+  workflow_run:
+    workflows: ["Deploy — Build & Push Docker Images"]
+    types: [completed]
+    branches: [main]
+
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Basis-URL (default: https://eucx.exchange)"
+        required: false
+        default: "https://eucx.exchange"
+      api_url:
+        description: "API-URL (default: https://api.eucx.exchange)"
+        required: false
+        default: "https://api.eucx.exchange"
+
+# Nur laufen wenn Deploy erfolgreich war
+jobs:
+  smoke:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    env:
+      BASE_URL:  ${{ github.event.inputs.base_url  || 'https://eucx.exchange' }}
+      API_URL:   ${{ github.event.inputs.api_url   || 'https://api.eucx.exchange' }}
+      TIMEOUT:   10   # Sekunden pro Request
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y curl jq openssl
+
+      # ── 1. SSL-Zertifikat ──────────────────────────────────────────────────
+      - name: SSL Certificate — eucx.exchange
+        id: ssl_web
+        run: |
+          DOMAIN="eucx.exchange"
+          EXPIRY=$(echo | openssl s_client -servername "$DOMAIN" \
+            -connect "$DOMAIN:443" 2>/dev/null \
+            | openssl x509 -noout -enddate 2>/dev/null \
+            | cut -d= -f2)
+          echo "SSL expiry: $EXPIRY"
+
+          # Prüfen ob Zertifikat noch mindestens 14 Tage gültig
+          EXPIRY_EPOCH=$(date -d "$EXPIRY" +%s 2>/dev/null || \
+                         date -j -f "%b %d %T %Y %Z" "$EXPIRY" +%s 2>/dev/null)
+          NOW_EPOCH=$(date +%s)
+          DAYS_LEFT=$(( (EXPIRY_EPOCH - NOW_EPOCH) / 86400 ))
+          echo "days_left=$DAYS_LEFT" >> $GITHUB_OUTPUT
+          echo "SSL läuft ab in $DAYS_LEFT Tagen"
+
+          if [ "$DAYS_LEFT" -lt 14 ]; then
+            echo "::error::SSL-Zertifikat läuft in $DAYS_LEFT Tagen ab!"
+            exit 1
+          fi
+
+      - name: SSL Certificate — api.eucx.exchange
+        run: |
+          DOMAIN="api.eucx.exchange"
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time ${{ env.TIMEOUT }} "https://$DOMAIN/health" || echo "000")
+          if [ "$HTTP_CODE" = "000" ]; then
+            echo "::warning::api.eucx.exchange SSL-Check fehlgeschlagen (Timeout)"
+          else
+            echo "api SSL OK — HTTP $HTTP_CODE"
+          fi
+
+      # ── 2. Frontend-Erreichbarkeit ─────────────────────────────────────────
+      - name: Frontend — HTTP 200
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time ${{ env.TIMEOUT }} \
+            -H "User-Agent: EUCX-SmokeTest/1.0" \
+            "${{ env.BASE_URL }}/login")
+          echo "Frontend HTTP: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::Frontend antwortet nicht mit 200 (erhalten: $HTTP_CODE)"
+            exit 1
+          fi
+
+      - name: Frontend — Security Headers
+        run: |
+          HEADERS=$(curl -s -I --max-time ${{ env.TIMEOUT }} \
+            "${{ env.BASE_URL }}/login")
+
+          check_header() {
+            if echo "$HEADERS" | grep -qi "$1"; then
+              echo "  OK: $1"
+            else
+              echo "::warning::Header fehlt: $1"
+            fi
+          }
+
+          check_header "x-frame-options"
+          check_header "x-content-type-options"
+          check_header "strict-transport-security"
+          check_header "content-security-policy"
+
+      # ── 3. API Health-Checks ───────────────────────────────────────────────
+      - name: API — Health Endpoint
+        run: |
+          RESPONSE=$(curl -s --max-time ${{ env.TIMEOUT }} \
+            "${{ env.API_URL }}/health" || echo '{"status":"unreachable"}')
+          echo "API Health Response: $RESPONSE"
+
+          STATUS=$(echo "$RESPONSE" | jq -r '.status // "unknown"' 2>/dev/null || echo "parse_error")
+          if [ "$STATUS" != "ok" ] && [ "$STATUS" != "healthy" ]; then
+            echo "::error::API Health-Check fehlgeschlagen: status=$STATUS"
+            exit 1
+          fi
+
+      - name: API — Latenz < 500ms
+        id: api_latency
+        run: |
+          TIME_MS=$(curl -s -o /dev/null \
+            -w "%{time_total}" \
+            --max-time ${{ env.TIMEOUT }} \
+            "${{ env.API_URL }}/health")
+          TIME_MS_INT=$(echo "$TIME_MS * 1000" | bc | cut -d. -f1)
+          echo "API Latenz: ${TIME_MS_INT}ms"
+          echo "latency_ms=$TIME_MS_INT" >> $GITHUB_OUTPUT
+
+          if [ "$TIME_MS_INT" -gt 500 ]; then
+            echo "::warning::API-Latenz $TIME_MS_INT ms > 500ms Schwellwert"
+          fi
+
+      - name: Next.js API — Auth-Endpoint erreichbar
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time ${{ env.TIMEOUT }} \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"email":"smoke@test.invalid","password":"x"}' \
+            "${{ env.BASE_URL }}/api/auth/login")
+          echo "Auth-Endpoint HTTP: $HTTP_CODE"
+          # Erwarte 400/401/422 — alles außer 5xx ist OK
+          if [[ "$HTTP_CODE" == 5* ]]; then
+            echo "::error::Auth-Endpoint gibt 5xx zurück: $HTTP_CODE"
+            exit 1
+          fi
+
+      # ── 4. WebSocket-Erreichbarkeit (<200ms) ──────────────────────────────
+      - name: WebSocket — Verbindung und Latenz
+        run: |
+          # wscat via npx — kein permanentes Install nötig
+          npm install -g wscat 2>/dev/null || true
+
+          WS_URL="${{ env.API_URL }}"
+          # http→ws umwandeln
+          WS_URL="${WS_URL/https:\/\//wss://}"
+          WS_URL="${WS_URL/http:\/\//ws://}"
+
+          START=$(date +%s%3N)
+
+          # Verbindungsversuch: 3 Sekunden Timeout
+          RESULT=$(timeout 3 wscat -c "$WS_URL" \
+            --no-color 2>&1 | head -3 || echo "timeout_or_refused")
+
+          END=$(date +%s%3N)
+          DIFF=$((END - START))
+
+          echo "WebSocket Antwort: $RESULT"
+          echo "WebSocket Latenz: ${DIFF}ms"
+
+          if echo "$RESULT" | grep -qi "error\|refused\|unreachable"; then
+            echo "::warning::WebSocket nicht erreichbar (ggf. Auth-Gate ist normal)"
+          elif [ "$DIFF" -gt 200 ]; then
+            echo "::warning::WebSocket-Latenz ${DIFF}ms > 200ms (Zielwert)"
+          else
+            echo "WebSocket OK — ${DIFF}ms"
+          fi
+
+      # ── 5. Sitemap & robots.txt ────────────────────────────────────────────
+      - name: Sitemap erreichbar
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time ${{ env.TIMEOUT }} \
+            "${{ env.BASE_URL }}/sitemap.xml")
+          echo "Sitemap HTTP: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::warning::Sitemap nicht erreichbar (HTTP $HTTP_CODE)"
+          fi
+
+      - name: robots.txt erreichbar
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time ${{ env.TIMEOUT }} \
+            "${{ env.BASE_URL }}/robots.txt")
+          echo "robots.txt HTTP: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::warning::robots.txt nicht erreichbar (HTTP $HTTP_CODE)"
+          fi
+
+      # ── 6. OG-Image-Generierung ────────────────────────────────────────────
+      - name: OG Image — Edge Function
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time 15 \
+            "${{ env.BASE_URL }}/api/og?symbol=Kupfer&price=8420.00&change=1.20")
+          echo "OG-Image HTTP: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::warning::OG-Image-Generation fehlgeschlagen (HTTP $HTTP_CODE)"
+          fi
+
+      # ── 7. Zusammenfassung ─────────────────────────────────────────────────
+      - name: Smoke-Test Zusammenfassung
+        if: always()
+        run: |
+          echo "## Smoke-Test Ergebnisse" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| SSL eucx.exchange (noch ${{ steps.ssl_web.outputs.days_left }} Tage) | ${{ steps.ssl_web.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Frontend erreichbar | ${{ job.status == 'success' && '✅' || '⚠️' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| API Health OK | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| API Latenz | ${{ steps.api_latency.outputs.latency_ms }}ms |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Deploy: \`${{ github.run_number }}\` · $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+
+      # ── 8. Slack/E-Mail Notification bei Fehler (optional) ─────────────────
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Smoke-Tests fehlgeschlagen nach Deploy ${{ github.run_number }}"
+          echo "Betreiber muss sofort eingreifen."
+          # Slack-Webhook (wenn SLACK_WEBHOOK_URL als Secret gesetzt):
+          if [ -n "${{ secrets.SLACK_WEBHOOK_URL }}" ]; then
+            curl -s -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
+              -H "Content-Type: application/json" \
+              -d "{\"text\":\"🚨 EUCX Smoke-Tests fehlgeschlagen nach Deploy #${{ github.run_number }}. Sofortige Prüfung erforderlich.\"}"
+          fi

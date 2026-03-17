@@ -209,3 +209,48 @@ tr:hover td {
   font-size: 0.625rem;
   line-height: 0.875rem;
 }
+
+/* ─── OrderBook Flash-Animationen (Dark + Light Variant) ──────────────────── */
+
+/* Menge-Flash: Partial Fill — gelb (beide Varianten) */
+@keyframes flash-qty {
+  0%   { background-color: rgba(251, 184, 9, 0.35); }
+  100% { background-color: transparent; }
+}
+
+/* Neue Ask (Verkaufsangebot) — licht-rot */
+@keyframes flash-new-ask-light {
+  0%   { background-color: rgba(227, 6, 19, 0.12); }
+  100% { background-color: transparent; }
+}
+
+/* Neue Bid (Kaufgebot) — licht-grün */
+@keyframes flash-new-bid-light {
+  0%   { background-color: rgba(0, 132, 61, 0.12); }
+  100% { background-color: transparent; }
+}
+
+/* Dark-Varianten — stärker gesättigt für dunklen Hintergrund */
+@keyframes flash-new-ask-dark {
+  0%   { background-color: rgba(239, 68, 68, 0.20); }
+  100% { background-color: transparent; }
+}
+
+@keyframes flash-new-bid-dark {
+  0%   { background-color: rgba(52, 211, 153, 0.20); }
+  100% { background-color: transparent; }
+}
+
+.flash-qty-ask { animation: flash-qty          0.6s ease-out forwards; }
+.flash-qty-bid { animation: flash-qty          0.6s ease-out forwards; }
+.flash-new-ask { animation: flash-new-ask-light 0.6s ease-out forwards; }
+.flash-new-bid { animation: flash-new-bid-light 0.6s ease-out forwards; }
+
+/* Dark-Terminal: eigene CSS-Klasse überschreibt light-Variante */
+.terminal .flash-new-ask { animation: flash-new-ask-dark 0.6s ease-out forwards; }
+.terminal .flash-new-bid { animation: flash-new-bid-dark 0.6s ease-out forwards; }
+
+/* Terminal-Scrollbar: dunkles Styling */
+.terminal ::-webkit-scrollbar-track { background: #0A0C10; }
+.terminal ::-webkit-scrollbar-thumb { background: #1E2330; border-radius: 3px; }
+.terminal ::-webkit-scrollbar-thumb:hover { background: #2A3450; }

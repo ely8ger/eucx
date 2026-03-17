@@ -1,0 +1,52 @@
+# Development artifacts
+node_modules
+**/node_modules
+**/.next
+**/dist
+**/build
+**/.turbo
+
+# Environment files
+.env
+.env.*
+!.env.production.example
+
+# Test files
+**/*.spec.ts
+**/*.test.ts
+**/jest.config.*
+**/coverage
+k6
+
+# Git
+.git
+.gitignore
+.github
+
+# Docs
+*.md
+*.mdx
+docs
+
+# Docker itself
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Logs
+*.log
+logs
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea
+*.swp
+
+# Monitoring configs (not needed in app images)
+monitoring
+nginx
+infra/certs

@@ -9,6 +9,8 @@ const PUBLIC_PATHS = [
   "/api/docs",
 ];
 
+const ADMIN_ROLES = ["ADMIN", "COMPLIANCE", "SUPER_ADMIN"] as const;
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -22,7 +24,18 @@ export async function middleware(req: NextRequest) {
       return NextResponse.json({ code: "UNAUTHORIZED", message: "Token fehlt" }, { status: 401 });
     }
     try {
-      await verifyAccessToken(auth.slice(7));
+      const payload = await verifyAccessToken(auth.slice(7));
+
+      // /api/admin/** — RBAC: nur ADMIN/COMPLIANCE/SUPER_ADMIN
+      if (pathname.startsWith("/api/admin/")) {
+        if (!ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
+          return NextResponse.json(
+            { code: "FORBIDDEN", message: "Keine Administrationsberechtigung" },
+            { status: 403 },
+          );
+        }
+      }
+
       return NextResponse.next();
     } catch {
       return NextResponse.json({ code: "INVALID_TOKEN", message: "Ungültiger Token" }, { status: 401 });
@@ -34,7 +47,15 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
   try {
-    await verifyAccessToken(token);
+    const payload = await verifyAccessToken(token);
+
+    // /admin/** — RBAC: nur ADMIN/COMPLIANCE/SUPER_ADMIN
+    if (pathname.startsWith("/admin")) {
+      if (!ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
+        return NextResponse.redirect(new URL("/dashboard?error=forbidden", req.url));
+      }
+    }
+
     return NextResponse.next();
   } catch {
     const res = NextResponse.redirect(new URL("/login", req.url));

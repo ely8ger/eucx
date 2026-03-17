@@ -159,6 +159,19 @@ export async function POST(
       },
     });
 
+    // ── BullMQ-Job einreihen (fire-and-forget, via NestJS enqueue endpoint) ─
+    // Fehler hier darf die Signatur-Antwort NICHT blockieren — async ohne await
+    const nestjsUrl = process.env.NESTJS_INTERNAL_URL;
+    if (nestjsUrl) {
+      fetch(`${nestjsUrl}/api/v1/clearing/enqueue`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ dealId: contract.dealId }),
+      }).catch((e) => {
+        console.error("[contracts/[id]] BullMQ-Enqueue fehlgeschlagen:", e);
+      });
+    }
+
     return NextResponse.json({
       status:   "SIGNED",
       signedAt: now.toISOString(),

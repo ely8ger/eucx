@@ -22,6 +22,8 @@ export type AuditAction =
   | "CONTRACT_GENERATED"
   | "CONTRACT_SIGNED"
   | "CONTRACT_SIGN_FAILED"
+  | "SETTLEMENT_COMPLETED"
+  | "SETTLEMENT_FAILED"
   | "ADMIN_ACTION";
 
 export type AuditEntityType =
@@ -29,6 +31,7 @@ export type AuditEntityType =
   | "Order"
   | "Deal"
   | "Contract"
+  | "Settlement"
   | "TradingSession"
   | "SteelProduct"
   | "Organization";

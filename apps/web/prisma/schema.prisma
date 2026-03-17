@@ -13,7 +13,10 @@ datasource db {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 enum UserRole {
-  ADMIN
+  SUPER_ADMIN           // Vollzugriff auf Backoffice + alle Systeme
+  COMPLIANCE_OFFICER    // KYC-Prüfung, Dispute-Entscheidung, Audit-Log-Einsicht
+  ADMIN                 // Allgemeine Admin-Rechte (Produkte, Nutzer verwalten)
+  WAREHOUSE_INSPECTOR   // Nur: Zertifikate hochladen, Mengen bestätigen
   SELLER
   BUYER
   BROKER
@@ -24,6 +27,28 @@ enum UserStatus {
   ACTIVE
   SUSPENDED
   PENDING
+}
+
+// KYC-Verifizierungsstatus — separater Lebenszyklus von UserStatus
+enum VerificationStatus {
+  GUEST                 // Registriert, keine Dokumente
+  PENDING_VERIFICATION  // Dokumente eingereicht, wartet auf Prüfung
+  VERIFIED              // Identität bestätigt, darf handeln
+  REJECTED              // Dokumente abgelehnt (z.B. unvollständig)
+  SUSPENDED             // Konto gesperrt (Compliance-Entscheidung)
+}
+
+enum DisputeStatus {
+  OPEN        // Streitfall eröffnet, Trade eingefroren
+  UNDER_REVIEW // Compliance-Mitarbeiter prüft
+  RESOLVED    // Streit beigelegt, Trade fortgesetzt
+  CANCELLED   // Trade storniert, Storno-Buchung ausgelöst
+}
+
+enum DisputeResolution {
+  TRADE_UPHELD    // Trade wie abgeschlossen, Käufer unterliegt
+  TRADE_REVERSED  // Storno — alle Ledger-Einträge werden gegengebucht
+  PARTIAL_REFUND  // Teilrückerstattung (manuell definierter Betrag)
 }
 
 enum CommodityUnit {
@@ -71,6 +96,7 @@ enum DealStatus {
   MATCHED
   CONFIRMED
   CONTRACT_SIGNED
+  SETTLEMENT_COMPLETE  // Clearing abgeschlossen, Rechnungen erstellt
   CANCELLED
   DISPUTED
 }
@@ -79,6 +105,48 @@ enum ContractStatus {
   PENDING_SIGNATURE  // PDF generiert, wartet auf EDS
   SIGNED             // Digital signiert, rechtsgültig
   EXPIRED            // Token abgelaufen, neu signieren erforderlich
+}
+
+// ─── Asset (physische Ware / Charge) ─────────────────────────────────────────
+//
+// State Machine:
+//   INCOMING → PENDING_VERIFICATION (Dokument hochgeladen)
+//            → VERIFIED             (alle Pflichtdokumente APPROVED)
+//            → AVAILABLE            (Verkäufer listet Ware)
+//            → RESERVED             (aktives Gebot läuft)
+//            → SOLD                 (Deal abgeschlossen)
+//            → IN_TRANSIT           (Logistik bestätigt)
+//            → DELIVERED            (Abgeliefert)
+//   * → QUARANTINE                  (Admin-Sperre)
+enum AssetStatus {
+  INCOMING             // Anlieferung registriert, noch keine Dokumente
+  PENDING_VERIFICATION // Dokumente hochgeladen, warten auf Prüfung
+  VERIFIED             // Alle Pflichtdokumente APPROVED — handelbar
+  AVAILABLE            // Im Orderbuch gelistet
+  RESERVED             // Aktives Gebot — kein weiteres Angebot möglich
+  SOLD                 // Deal abgeschlossen
+  IN_TRANSIT           // Transport zum Käufer läuft
+  DELIVERED            // Abgeliefert, Prozess abgeschlossen
+  QUARANTINE           // Gesperrt durch Admin (Qualitätsproblem o.ä.)
+}
+
+// Dokument-Typen (Pflicht je nach Kategorie — siehe REQUIRED_DOCS_PER_CATEGORY)
+enum DocumentType {
+  CERTIFICATE_OF_ANALYSIS   // CoA — Pflicht für Metalle, Chemie, Agrar
+  CERTIFICATE_OF_ORIGIN     // Herkunftsnachweis — Pflicht für Agrar, Holz
+  WEIGHT_CERTIFICATE        // Wiegeschein — Pflicht für Metalle, Schrott
+  LME_WARRANT               // LME-Lagerwarrant — Pflicht wenn lmeRegistered=true
+  PHYTOSANITARY             // Pflanzenschutzzertifikat — Agrar (EU-Import)
+  CUSTOMS_DECLARATION       // Zollanmeldung — Pflicht für Chemie, Drittlandware
+  TRANSPORT_DOCUMENT        // CMR / Frachtbrief — bei IN_TRANSIT
+  QUALITY_INSPECTION        // Prüfbericht — Pflicht für Energie, Holz
+  OTHER
+}
+
+enum DocumentStatus {
+  PENDING   // Hochgeladen, noch nicht geprüft
+  APPROVED  // Geprüft und akzeptiert
+  REJECTED  // Abgelehnt (abgelaufen, falsch, unleserlich)
 }
 
 enum Currency {
@@ -131,29 +199,97 @@ model Organization {
   orders        Order[]
   dealsAsSeller Deal[]    @relation("SellerOrg")
   dealsAsBuyer  Deal[]    @relation("BuyerOrg")
+  assets        Asset[]
+  wallet        Wallet?
+  apiKeys       ApiKey[]
+  webhooks      WebhookEndpoint[]
 
   @@map("organizations")
 }
 
 model User {
-  id             String     @id @default(uuid())
-  organizationId String
-  email          String     @unique
-  passwordHash   String
-  role           UserRole   @default(BUYER)
-  status         UserStatus @default(PENDING)
-  totpSecret     String?
-  totpEnabled    Boolean    @default(false)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  id                  String             @id @default(uuid())
+  organizationId      String
+  email               String             @unique
+  passwordHash        String
+  role                UserRole           @default(BUYER)
+  status              UserStatus         @default(PENDING)
+  verificationStatus  VerificationStatus @default(GUEST)
+  totpSecret          String?
+  totpEnabled         Boolean            @default(false)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
 
-  organization  Organization   @relation(fields: [organizationId], references: [id])
-  orders        Order[]
-  refreshTokens RefreshToken[]
-  auditLogs     AuditLog[]
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+  orders         Order[]
+  refreshTokens  RefreshToken[]
+  auditLogs      AuditLog[]
+  adminNotes     AdminNote[]      @relation("SubjectNotes")     // Notizen über diesen User
+  writtenNotes   AdminNote[]      @relation("AuthorNotes")      // Notizen von diesem Admin
+  disputesRaised TradeDispute[]   @relation("DisputeRaiser")    // Streitfälle eröffnet
+  disputesReviewed TradeDispute[] @relation("DisputeReviewer")  // Als Admin bearbeitet
 
   @@index([organizationId])
+  @@index([verificationStatus])   // KYC-Queue: alle PENDING_VERIFICATION schnell abrufen
   @@map("users")
+}
+
+// ─── AdminNote — interne Notizen zu Usern ────────────────────────────────────
+// Unveränderbar: Notizen werden NIE gelöscht (Compliance-Anforderung).
+// Zeitstempel + Author-ID machen den Audit-Trail vollständig.
+
+model AdminNote {
+  id        String   @id @default(uuid())
+  subjectId String   // User, über den die Notiz geschrieben wird
+  authorId  String   // Admin/Compliance-Mitarbeiter, der schreibt
+  content   String   // Freitext (z.B. "Gewerbeanmeldung unleserlich")
+  isFlag    Boolean  @default(false)  // true = kritische Markierung (rot anzeigen)
+  createdAt DateTime @default(now())
+
+  subject User @relation("SubjectNotes", fields: [subjectId], references: [id])
+  author  User @relation("AuthorNotes",  fields: [authorId],  references: [id])
+
+  @@index([subjectId])
+  @@map("admin_notes")
+}
+
+// ─── TradeDispute — Streitfall-Ticket ────────────────────────────────────────
+// Wird erstellt wenn Käufer oder Verkäufer einen Trade anfechten.
+// Deal.status → DISPUTED (Trade eingefroren, kein Settlement möglich)
+//
+// Auflösung durch COMPLIANCE_OFFICER oder SUPER_ADMIN:
+//   RESOLVED     → Deal weiter wie geplant
+//   CANCELLED    → cancelTrade() im ClearingService (Storno-Buchungen)
+//   PARTIAL_REFUND → manualRefundAmount wird vom Admin festgelegt
+
+model TradeDispute {
+  id               String             @id @default(uuid())
+  dealId           String             @unique  // 1 Dispute pro Deal
+  raisedById       String
+  reviewedById     String?
+
+  status           DisputeStatus      @default(OPEN)
+  resolution       DisputeResolution?
+
+  // Streitgrund
+  reason           String             // Freitext: "Metallqualität weicht von CoA ab"
+  evidenceUrls     String[]           // Links zu hochgeladenen Beweisdokumenten
+
+  // Admin-Entscheidung
+  adminComment     String?
+  manualRefundAmount Decimal?         @db.Decimal(18, 8)  // Nur bei PARTIAL_REFUND
+
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  resolvedAt       DateTime?
+
+  deal       Deal  @relation(fields: [dealId],       references: [id])
+  raisedBy   User  @relation("DisputeRaiser",  fields: [raisedById],   references: [id])
+  reviewedBy User? @relation("DisputeReviewer", fields: [reviewedById], references: [id])
+
+  @@index([status])
+  @@index([raisedById])
+  @@map("trade_disputes")
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -197,6 +333,8 @@ model Product {
   tradingSessions TradingSession[]
   orders          Order[]
   deals           Deal[]
+  assets          Asset[]
+  marketCandles   MarketCandle[]
 
   @@index([organizationId])
   @@index([categoryId])
@@ -280,13 +418,16 @@ model Deal {
   status       DealStatus @default(MATCHED)
   createdAt    DateTime   @default(now())
 
-  session   TradingSession @relation(fields: [sessionId], references: [id])
-  sellOrder Order          @relation("SellOrder", fields: [sellOrderId], references: [id])
-  buyOrder  Order          @relation("BuyOrder", fields: [buyOrderId], references: [id])
-  sellerOrg Organization   @relation("SellerOrg", fields: [sellerOrgId], references: [id])
-  buyerOrg  Organization   @relation("BuyerOrg", fields: [buyerOrgId], references: [id])
-  product   Product        @relation(fields: [productId], references: [id])
-  contract  Contract?
+  session    TradingSession @relation(fields: [sessionId], references: [id])
+  sellOrder  Order          @relation("SellOrder", fields: [sellOrderId], references: [id])
+  buyOrder   Order          @relation("BuyOrder", fields: [buyOrderId], references: [id])
+  sellerOrg  Organization   @relation("SellerOrg", fields: [sellerOrgId], references: [id])
+  buyerOrg   Organization   @relation("BuyerOrg", fields: [buyerOrgId], references: [id])
+  product    Product        @relation(fields: [productId], references: [id])
+  contract   Contract?
+  settlement Settlement?
+  invoices   Invoice[]
+  dispute    TradeDispute?
 
   @@index([sessionId])
   @@index([sellerOrgId])
@@ -371,4 +512,479 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([createdAt])
   @@map("audit_log")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LAGER & ASSET-VERWALTUNG — Digitaler Zwilling physischer Chargen
+//
+// Konzept:
+//   Product = Produktdefinition (Typ, Spezifikation)
+//   Asset   = Konkrete Charge im Lager (20t Kupfer, BatchID EUCX-2026-CU-0042)
+//
+// Ein Produkt kann mehrere Assets haben (verschiedene Chargen).
+// Jede Charge hat eigenen Status, eigene Dokumente, eigenes Lager.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Warehouse {
+  id           String   @id @default(uuid())
+  code         String   @unique  // z.B. "DE-HH-01" (Land-Stadt-Nummer)
+  name         String
+  address      String
+  city         String
+  country      String   @db.Char(2)
+  postalCode   String?
+  isActive     Boolean  @default(true)
+  // Koordinaten für Logistik-Optimierung
+  latitude     Float?
+  longitude    Float?
+  // Lagerkapazität gesamt (t / CBM je nach Typ)
+  capacityTotal  Decimal? @db.Decimal(18, 3)
+  capacityUsed   Decimal? @db.Decimal(18, 3)
+  createdAt    DateTime @default(now())
+
+  assets Asset[]
+
+  @@index([country])
+  @@map("warehouses")
+}
+
+model Asset {
+  id                String        @id @default(uuid())
+  batchId           String        @unique  // z.B. "EUCX-2026-CU-0042" — menschenlesbar
+
+  // Verknüpfungen
+  productId         String
+  organizationId    String        // Eigentümer (Verkäufer)
+  warehouseId       String
+
+  // Mengen
+  quantityTotal     Decimal       @db.Decimal(18, 8)  // ursprüngliche Einlieferungsmenge
+  quantityAvailable Decimal       @db.Decimal(18, 8)  // nach Teilverkäufen
+
+  unit              CommodityUnit @default(TON)
+
+  // ── State Machine ──────────────────────────────────────────────────────────
+  status            AssetStatus   @default(INCOMING)
+
+  // ── Physikalische Details ──────────────────────────────────────────────────
+  grossWeightKg     Decimal?      @db.Decimal(18, 3)  // Bruttogewicht
+  netWeightKg       Decimal?      @db.Decimal(18, 3)  // Nettogewicht
+  packagingType     String?       // "pallets" | "coils" | "drums" | "bulk" | "containers"
+  palletCount       Int?
+
+  // ── Verifizierte Kategorie-Attribute (erst nach VERIFIED befüllt) ──────────
+  // Metalle:  { purityPct: 99.95, lmeRegistered: true, lmeWarrantNumber: "LME-...", grade: "CU-CATH" }
+  // Agrar:    { moistureContentPct: 14.2, proteinContentPct: 12.1, harvestYear: 2025 }
+  // Energie:  { deliveryStart: "2026-04-01", deliveryEnd: "2026-04-30", feedInPoint: "DE-HH-01", powerMw: 50 }
+  verifiedAttributes Json?
+
+  // ── Logistik ───────────────────────────────────────────────────────────────
+  arrivalDate       DateTime?     // Eingang im Lager
+  expiryDate        DateTime?     // Ablaufdatum (z.B. Agrar-Ware)
+
+  // ── Verifikation ───────────────────────────────────────────────────────────
+  verifiedAt        DateTime?
+  verifiedByUserId  String?
+
+  // ── Reservation ────────────────────────────────────────────────────────────
+  // Gesetzt wenn status=RESERVED — welche Order hält die Reservierung
+  reservedByOrderId String?
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  product      Product      @relation(fields: [productId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+  warehouse    Warehouse    @relation(fields: [warehouseId], references: [id])
+  documents    AssetDocument[]
+
+  @@index([productId])
+  @@index([organizationId])
+  @@index([warehouseId])
+  @@index([status])
+  @@index([batchId])
+  @@map("assets")
+}
+
+model AssetDocument {
+  id               String         @id @default(uuid())
+  assetId          String
+  documentType     DocumentType
+  status           DocumentStatus @default(PENDING)
+
+  // Datei-Metadaten (kein direktes File-Storage — nur Hash + Referenz)
+  fileName         String
+  fileHash         String         // SHA-256 — Manipulationsschutz
+  fileSizeBytes    Int
+  mimeType         String         // "application/pdf" | "image/jpeg" | ...
+  storageUrl       String?        // Vercel Blob / S3 URL (optional für Phase 2)
+
+  // Zertifikats-Details
+  issuedBy         String?        // Ausstellende Organisation / Labor
+  issuedAt         DateTime?      // Ausstellungsdatum
+  expiresAt        DateTime?      // Ablaufdatum — REJECTED wenn abgelaufen
+
+  // Prüfung durch EUCX-Mitarbeiter (Admin-Workflow)
+  approvedAt        DateTime?
+  approvedByUserId  String?
+  rejectionReason   String?       // Pflicht bei REJECTED
+
+  createdAt         DateTime      @default(now())
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+  @@index([documentType])
+  @@index([status])
+  @@map("asset_documents")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CLEARING & FINANCIAL SETTLEMENT — Doppelte Buchführung
+//
+// Konzept (Double-Entry Bookkeeping):
+//   Jede Buchung = DEBIT (Soll) + CREDIT (Haben) mit gleicher correlationId
+//   Invariante: SUM(DEBIT) == SUM(CREDIT) für jede correlationId
+//
+// Settlement-Ablauf nach CONTRACT_SIGNED:
+//   1. Buyer zahlt Brutto   → DEBIT buyer_wallet   / CREDIT escrow
+//   2. EUCX zieht Fee ab    → DEBIT escrow          / CREDIT eucx_revenue
+//   3. MwSt. (falls fällig) → DEBIT escrow          / CREDIT vat_payable
+//   4. Verkäufer erhält Net → DEBIT escrow          / CREDIT seller_wallet
+//
+// Sicherheit gegen Doppelbuchung:
+//   LedgerEntry.idempotencyKey @unique — jeder Buchungssatz einmalig
+//   Deal.status CHECK: nur CONTRACT_SIGNED darf gecleart werden
+//   Gesamte Settlement-Runde in EINER DB-Transaktion
+// ═══════════════════════════════════════════════════════════════════════════════
+
+enum AccountType {
+  TRADER_WALLET    // Händler-Wallet (Organisation)
+  ESCROW           // Treuhandkonto während Transaktion
+  EUCX_FEE_REVENUE // EUCX-Plattformgebühren-Einnahmen
+  VAT_PAYABLE      // MwSt.-Verbindlichkeit (Finanzamt)
+}
+
+enum LedgerEntryType {
+  DEBIT   // Soll  — Abgang / Belastung
+  CREDIT  // Haben — Zugang / Gutschrift
+}
+
+enum InvoiceType {
+  BUYER_INVOICE  // Kaufrechnung an Käufer (inkl. MwSt. oder Reverse Charge)
+  SELLER_CREDIT  // Gutschrift an Verkäufer (Nettobetrag minus Fee)
+  FEE_INVOICE    // EUCX-Plattformgebühr
+}
+
+enum InvoiceStatus {
+  DRAFT      // Generiert, noch nicht versendet
+  ISSUED     // Versendet
+  PAID       // Bezahlt
+  CANCELLED  // Storniert
+}
+
+enum SettlementStatus {
+  REVERSED   // Storno: alle Buchungen wurden gegengebucht (Dispute TRADE_REVERSED)
+  PENDING    // CONTRACT_SIGNED, warte auf Clearing
+  PROCESSING // Clearing läuft gerade (BullMQ Job aktiv)
+  COMPLETED  // Alle Buchungen abgeschlossen
+  FAILED     // Fehler — manuelle Intervention nötig
+}
+
+model Wallet {
+  id               String   @id @default(uuid())
+  organizationId   String   @unique
+  currency         Currency @default(EUR)
+  // Gesamtguthaben (available + reserved)
+  balance          Decimal  @db.Decimal(18, 8) @default(0)
+  // Für laufende Gebote reservierter Betrag (nicht auszahlbar)
+  reservedBalance  Decimal  @db.Decimal(18, 8) @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  organization  Organization  @relation(fields: [organizationId], references: [id])
+  ledgerEntries LedgerEntry[]
+
+  @@index([organizationId])
+  @@map("wallets")
+}
+
+model LedgerEntry {
+  // ── Buchungsidentifikation ───────────────────────────────────────────────────
+  id             String          @id @default(uuid())
+  // Jeder Buchungssatz hat eine correlationId — DEBIT + CREDIT teilen sie sich
+  // Invariante: für jede correlationId gilt sum(DEBIT) == sum(CREDIT)
+  correlationId  String          // UUID des Buchungssatzes (STORNO-{id} für Gegenbuchungen)
+
+  // ── Konto ───────────────────────────────────────────────────────────────────
+  walletId       String?         // null für Systemkonten (EUCX_FEE_REVENUE, VAT_PAYABLE)
+  accountType    AccountType
+
+  // ── Buchungsart & Betrag ─────────────────────────────────────────────────────
+  entryType      LedgerEntryType
+  amount         Decimal         @db.Decimal(18, 8)  // immer positiv
+  currency       Currency        @default(EUR)
+
+  // ── Buchungstext (Pflicht — für Wirtschaftsprüfer) ───────────────────────────
+  description    String
+
+  // ── Referenzen ───────────────────────────────────────────────────────────────
+  dealId         String?
+  invoiceId      String?
+
+  // ── Idempotenz-Schutz (verhindert Doppelbuchung bei Retry) ───────────────────
+  // Format: "deal:{dealId}:step:{stepName}:{DEBIT|CREDIT}"
+  idempotencyKey String          @unique
+
+  createdAt      DateTime        @default(now())
+
+  wallet Wallet? @relation(fields: [walletId], references: [id])
+
+  @@index([correlationId])  // für Bilanzprüfung
+  @@index([walletId])
+  @@index([dealId])
+  @@index([createdAt])
+  @@map("ledger_entries")
+}
+
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique  // "EUCX-INV-2026-000001"
+  type          InvoiceType
+  status        InvoiceStatus @default(DRAFT)
+
+  dealId        String
+  issuerId      String        // Organization-ID (Aussteller)
+  recipientId   String        // Organization-ID (Empfänger)
+
+  // ── Beträge (alle in Decimal(18,8) — kein Float) ─────────────────────────────
+  grossAmount   Decimal       @db.Decimal(18, 8)  // Brutto: pricePerUnit × quantity
+  platformFee   Decimal       @db.Decimal(18, 8)  // EUCX-Gebühr (0.5% von gross)
+  vatAmount     Decimal       @db.Decimal(18, 8)  // MwSt.-Betrag (0 bei Reverse Charge)
+  vatRate       Decimal       @db.Decimal(5, 2)   // Satz: 19.00 | 0.00
+  netPayable    Decimal       @db.Decimal(18, 8)  // Tatsächlich zu zahlen / zu erhalten
+  currency      Currency      @default(EUR)
+
+  // ── Steuer-Details ────────────────────────────────────────────────────────────
+  isReverseCharge  Boolean    @default(false)  // EU B2B cross-border → Reverse Charge
+  buyerTaxId       String?                     // USt-IdNr. des Käufers
+  sellerTaxId      String?                     // USt-IdNr. des Verkäufers
+  buyerCountry     String?    @db.Char(2)
+  sellerCountry    String?    @db.Char(2)
+
+  // ── Zeitstempel ───────────────────────────────────────────────────────────────
+  issuedAt      DateTime?
+  dueAt         DateTime?     // Zahlungsziel: issuedAt + 30 Tage
+  paidAt        DateTime?
+
+  // ── Dokument (PDF) ────────────────────────────────────────────────────────────
+  pdfBase64     String?
+  pdfHash       String?       // SHA-256 für Integrität
+
+  createdAt     DateTime      @default(now())
+
+  deal Deal @relation(fields: [dealId], references: [id])
+
+  @@index([dealId])
+  @@index([status])
+  @@index([issuedAt])
+  @@index([invoiceNumber])
+  @@map("invoices")
+}
+
+model Settlement {
+  id             String          @id @default(uuid())
+  dealId         String          @unique  // 1:1 mit Deal
+  status         SettlementStatus @default(PENDING)
+
+  // ── Berechnete Werte (von ClearingService gesetzt) ────────────────────────────
+  grossAmount    Decimal         @db.Decimal(18, 8)
+  platformFee    Decimal         @db.Decimal(18, 8)
+  vatAmount      Decimal         @db.Decimal(18, 8)
+  netToSeller    Decimal         @db.Decimal(18, 8)
+  currency       Currency        @default(EUR)
+
+  // ── Verarbeitungs-Metadaten ───────────────────────────────────────────────────
+  processedAt    DateTime?       // Wann abgeschlossen
+  errorMessage   String?         // Bei FAILED: Fehlermeldung
+  retryCount     Int             @default(0)
+
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  deal Deal @relation(fields: [dealId], references: [id])
+
+  @@index([status])
+  @@map("settlements")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MARKET DATA — OHLC-Kerzendaten für Charts
+//
+// Konzept:
+//   MarketCandle = aggregierter Snapshot eines Zeitfensters (1m / 15m / 1h / 1d)
+//   Wird NICHT aus Deals berechnet (zu langsam), sondern aus dem Cache gelesen.
+//
+//   Cache-Befüllung:
+//     NestJS MarketDataService → @Cron() → runOhlcRefresh() → upsert()
+//     PostgreSQL Raw-SQL OHLC-Query → MAX/MIN/FIRST/LAST über Deals-Tabelle
+//
+//   Idempotenz:
+//     @@unique([productId, interval, periodStart]) → upsert ist idempotent
+//
+//   Index-Strategie:
+//     @@index([productId, interval, periodStart]) → Chart-Query nutzt diesen vollständig
+//     PostgreSQL kann einen einzigen Index-Scan machen (kein Sequential Scan)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+enum CandleInterval {
+  ONE_MIN       // 1 Minute
+  FIFTEEN_MIN   // 15 Minuten
+  ONE_HOUR      // 1 Stunde
+  ONE_DAY       // 1 Tag
+}
+
+model MarketCandle {
+  id          String         @id @default(uuid())
+  productId   String
+  interval    CandleInterval
+  periodStart DateTime       // Beginn des Zeitfensters (truncated auf Intervall)
+
+  // ── OHLC-Preise ────────────────────────────────────────────────────────────
+  open        Decimal        @db.Decimal(18, 8)  // Erster Trade im Fenster
+  high        Decimal        @db.Decimal(18, 8)  // Höchstpreis im Fenster
+  low         Decimal        @db.Decimal(18, 8)  // Tiefstkurs im Fenster
+  close       Decimal        @db.Decimal(18, 8)  // Letzter Trade im Fenster
+
+  // ── Volumen ────────────────────────────────────────────────────────────────
+  volume      Decimal        @db.Decimal(18, 8)  // Handelsmenge (Tonnen / MWh etc.)
+  turnover    Decimal        @db.Decimal(24, 8)  // Handelsvolumen in EUR (qty × price)
+  tradeCount  Int                                // Anzahl abgeschlossener Trades
+
+  updatedAt   DateTime       @updatedAt
+
+  product Product @relation(fields: [productId], references: [id])
+
+  // Idempotenter Upsert: jede (product, interval, period) Kombination einmalig
+  @@unique([productId, interval, periodStart])
+  @@index([productId, interval, periodStart])   // Chart-Query: vollständiger Index-Scan
+  @@index([productId, periodStart])             // für produktübergreifende Queries
+  @@map("market_candles")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// API-ECONOMY — API-Keys & Webhooks für externe Partneranbindung
+//
+// API-Key Sicherheitsmodell:
+//   Das secret wird NIE im Klartext gespeichert.
+//   Format beim Erstellen: "eucx_live_{prefix}_{random32}"  (einmalig an User übergeben)
+//   In DB:  prefix = "eucx_live_abc123"  + secretHash = bcrypt(full_secret)
+//   Bei Anfrage: Header "X-EUCX-API-KEY: eucx_live_abc123_..." → prefix extrahieren
+//               → ApiKey in DB suchen → bcrypt.compare(full, hash) → Scope-Check
+//
+// Webhook Sicherheitsmodell:
+//   Jeder WebhookEndpoint hat ein eigenes HMAC-Signing-Secret.
+//   Payload wird mit HMAC-SHA256 signiert: X-EUCX-Signature: sha256={hex}
+//   Empfänger prüft: HMAC(payload, secret) == signature → authentisch
+//   Retry via BullMQ: 5min → 15min → 60min (exponentiell)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+enum WebhookEvent {
+  TRADE_MATCHED          // Deal erstellt (Matching)
+  TRADE_SETTLEMENT_COMPLETE  // Clearing abgeschlossen
+  TRADE_CANCELLED        // Trade storniert
+  TRADE_DISPUTED         // Dispute eröffnet
+  CONTRACT_SIGNED        // Vertrag unterzeichnet
+  ORDER_PLACED           // Order eingegangen
+  ORDER_CANCELLED        // Order storniert
+  PRICE_ALERT            // Preis-Schwelle überschritten (zukünftig)
+}
+
+enum WebhookDeliveryStatus {
+  PENDING   // Noch nicht gesendet (in Queue)
+  SUCCESS   // HTTP 2xx erhalten
+  FAILED    // Alle Versuche erschöpft
+  RETRYING  // Nächster Versuch ausstehend
+}
+
+model ApiKey {
+  id             String   @id @default(uuid())
+  organizationId String
+  createdByUserId String
+
+  // ── Schlüsselidentifikation ───────────────────────────────────────────────
+  // prefix: öffentlich sichtbar für Identifikation (z.B. in Logs)
+  // secretHash: bcrypt(full_key) — NIEMALS Klartext speichern
+  prefix         String   @unique   // z.B. "eucx_live_k7mNpQ"
+  secretHash     String             // bcrypt-Hash des vollständigen Keys
+
+  // ── Berechtigungen ────────────────────────────────────────────────────────
+  // Scopes: ["market:read", "trade:write", "wallet:read", "admin:read"]
+  scopes         String[]
+
+  // ── Metadaten ─────────────────────────────────────────────────────────────
+  name           String             // Beschreibungstext (z.B. "ERP-System SAP")
+  isActive       Boolean  @default(true)
+  expiresAt      DateTime?          // null = kein Ablaufdatum
+  lastUsedAt     DateTime?
+  ipWhitelist    String[]           // optional: nur von diesen IPs
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([prefix])              // Schnelle Suche beim Auth-Check
+  @@index([organizationId])
+  @@map("api_keys")
+}
+
+model WebhookEndpoint {
+  id             String         @id @default(uuid())
+  organizationId String
+
+  url            String         // Ziel-URL des Partners
+  events         WebhookEvent[] // welche Events triggern diesen Webhook
+  signingSecret  String         // HMAC-Signing-Secret (32 Bytes Hex, Klartext ok — bleibt server-seitig)
+  isActive       Boolean        @default(true)
+  description    String?        // z.B. "SAP-ERP Produktionsserver"
+
+  // Statistiken
+  successCount   Int            @default(0)
+  failureCount   Int            @default(0)
+  lastTriggeredAt DateTime?
+  lastStatusCode  Int?
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  organization Organization     @relation(fields: [organizationId], references: [id])
+  deliveries   WebhookDelivery[]
+
+  @@index([organizationId])
+  @@map("webhook_endpoints")
+}
+
+model WebhookDelivery {
+  id          String                @id @default(uuid())
+  endpointId  String
+  event       WebhookEvent
+  payload     Json                  // Gesendeter Payload (für Re-Delivery)
+  status      WebhookDeliveryStatus @default(PENDING)
+
+  // Versuchs-Protokoll
+  attemptCount  Int      @default(0)
+  nextRetryAt   DateTime?
+  lastStatusCode Int?
+  lastError     String?
+  responseBody  String?   @db.Text  // Antwort des Partner-Servers (für Debugging)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  endpoint WebhookEndpoint @relation(fields: [endpointId], references: [id])
+
+  @@index([endpointId, status])
+  @@index([status, nextRetryAt])  // Retry-Queue: alle RETRYING mit nextRetryAt <= now()
+  @@map("webhook_deliveries")
 }
