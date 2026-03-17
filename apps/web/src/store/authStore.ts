@@ -149,7 +149,7 @@ export async function refreshAccessToken(): Promise<void> {
 
   // Neues Token ins Cookie schreiben
   document.cookie = `access_token=${data.accessToken}; path=/; max-age=900; samesite=lax${
-    location.protocol === "https:" ? "; secure" : ""
+    typeof window !== "undefined" && window.location.protocol === "https:" ? "; secure" : ""
   }`;
 
   if (data.user) {

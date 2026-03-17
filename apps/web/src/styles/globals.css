@@ -8,7 +8,39 @@
 
 /* ─── Tailwind v4: Alle Custom-Farben via @theme ──────────────────────────── */
 @theme {
-  /* Commerzbank Brand Colors */
+  /* ── BWDS / Förderdatenbank Gov-Design-System ──────────────────────────────
+     Quelle: Bundeswebsite Design System (digitalservice4germany/bundeswebsite)
+     Farbwerte extrahiert aus foerderdatenbank.de / BWDS v2 Spezifikation      */
+
+  /* Bundesblau — Primärfarbe (BWDS: --ds-color-primary) */
+  --color-gov-blue:         #154194;
+  --color-gov-blue-dark:    #0E2D6B;   /* Hover / Active */
+  --color-gov-blue-header:  #003366;   /* Header-Hintergrund */
+  --color-gov-blue-light:   #E8F0FC;   /* Tint / ausgewählter Zustand */
+  --color-gov-blue-mid:     #0057A8;   /* Links / sekundäre Akzente */
+
+  /* Typografie & Neutrale Töne */
+  --color-gov-text:         #1A1A1A;   /* Haupttext */
+  --color-gov-text-2:       #404040;   /* Sekundärtext */
+  --color-gov-text-muted:   #767676;   /* Hinweistext (AA-konform) */
+
+  /* Oberflächen */
+  --color-gov-white:        #FFFFFF;
+  --color-gov-bg:           #F5F5F5;   /* Seitengrundfarbe */
+  --color-gov-bg-2:         #EBEBEB;   /* Abwechselnde Sektionen */
+  --color-gov-bg-card:      #FFFFFF;
+
+  /* Rahmen */
+  --color-gov-border:       #CBCDD3;
+  --color-gov-border-light: #E8E8E8;
+
+  /* Semantisch */
+  --color-gov-success:      #00843D;
+  --color-gov-error:        #CC0000;
+  --color-gov-warning:      #E5A500;
+  --color-gov-info:         #0057A8;
+
+  /* ── Legacy cb-* Tokens (Trading-Seiten) ──────────────────────────────── */
   --color-cb-yellow:       #FBB809;
   --color-cb-yellow-light: #FEDF33;
   --color-cb-yellow-dark:  #E5A500;
@@ -29,21 +61,6 @@
   --color-cb-warning:      #F5A623;
   --color-cb-info:         #0066CC;
   --color-cb-white:        #FFFFFF;
-
-  /* Dark Mode Auth Palette */
-  --color-dm-bg:           #06090F;
-  --color-dm-surface:      #0D1522;
-  --color-dm-surface-2:    #111E30;
-  --color-dm-border:       #1A2B3F;
-  --color-dm-border-2:     #253A56;
-  --color-dm-text:         #E2E8F2;
-  --color-dm-muted:        #6B7D96;
-  --color-dm-muted-2:      #3D5066;
-  --color-dm-gold:         #FBB809;
-  --color-dm-gold-hover:   #E5A500;
-  --color-dm-error:        #F87171;
-  --color-dm-success:      #4ADE80;
-  --color-dm-input:        #070C17;
 }
 
 /* ─── Commerzbank Design Tokens als CSS Custom Properties ─────────────────── */

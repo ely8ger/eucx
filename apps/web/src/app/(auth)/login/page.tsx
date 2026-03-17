@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * Login-Seite — Dark Mode (Commerzbank Premium Dark)
- *
+ * Login-Seite — Behörden-Portal-Stil
+ * Pattern: ELSTER Online Portal / BundID
  * Ablauf:
- *   Step 1 (password): E-Mail + Passwort → Server prüft
+ *   Step 1: E-Mail + Passwort → Server
  *     - totpRequired: true → Step 2
  *     - totpRequired: false → accessToken → /dashboard
- *   Step 2 (totp): 6-stelliger Code → /api/auth/2fa/validate → /dashboard
+ *   Step 2: 6-stelliger TOTP-Code → /api/auth/2fa/validate → /dashboard
  */
 
 import { useState, useRef, useEffect } from "react";
@@ -16,24 +16,10 @@ import { useAuthStore, scheduleAutoLogout } from "@/store/authStore";
 import type { AuthUser }               from "@/store/authStore";
 
 type Step = "password" | "totp";
-
 interface FieldErrors { email?: string; password?: string; code?: string }
 
-// ── SVG Logo-Mark ──────────────────────────────────────────────────────────────
-// Drei horizontale Balken (stilisiertes "E" + Commodity-Chart-Metapher)
-const EucxMark = () => (
-  <svg width="36" height="30" viewBox="0 0 36 30" fill="none" aria-hidden="true">
-    {/* Top bar — volle Breite */}
-    <rect x="0" y="0"  width="36" height="6.5" rx="3.25" fill="#FBB809" />
-    {/* Mittlerer Balken — kürzer (Handels-Level / Mid-Price) */}
-    <rect x="0" y="11.75" width="24" height="6.5" rx="3.25" fill="#FBB809" />
-    {/* Unterer Balken — volle Breite */}
-    <rect x="0" y="23.5" width="36" height="6.5" rx="3.25" fill="#FBB809" />
-  </svg>
-);
-
-// ── Input-Feld (Dark Mode) ─────────────────────────────────────────────────────
-interface DarkInputProps {
+// ── Gov-Input-Komponente ────────────────────────────────────────────────────
+interface GovInputProps {
   id:            string;
   label:         string;
   type:          string;
@@ -43,12 +29,14 @@ interface DarkInputProps {
   error?:        string;
   autoComplete?: string;
   autoFocus?:    boolean;
+  required?:     boolean;
 }
 
-const DarkInput = ({ id, label, type, value, onChange, placeholder, error, autoComplete, autoFocus }: DarkInputProps) => (
-  <div className="flex flex-col gap-2">
-    <label htmlFor={id} className="text-xs font-semibold uppercase tracking-widest text-dm-muted">
+const GovInput = ({ id, label, type, value, onChange, placeholder, error, autoComplete, autoFocus, required }: GovInputProps) => (
+  <div className="flex flex-col gap-1.5">
+    <label htmlFor={id} className="text-sm font-semibold text-gov-text">
       {label}
+      {required && <span className="text-gov-error ml-1" aria-hidden="true">*</span>}
     </label>
     <input
       id={id}
@@ -58,40 +46,29 @@ const DarkInput = ({ id, label, type, value, onChange, placeholder, error, autoC
       placeholder={placeholder}
       autoComplete={autoComplete}
       autoFocus={autoFocus}
+      aria-required={required}
+      aria-invalid={!!error}
+      aria-describedby={error ? `${id}-error` : undefined}
       className={[
-        "w-full h-12 rounded-sm border bg-dm-input",
-        "text-sm text-dm-text placeholder:text-dm-muted-2",
-        "transition-all duration-200 px-4",
-        "focus:outline-none",
+        "w-full h-11 rounded-sm border bg-white",
+        "text-sm text-gov-text placeholder:text-gov-text-muted",
+        "px-3 transition-colors duration-150",
+        "focus:outline-none focus:ring-2",
         error
-          ? "border-dm-error focus:border-dm-error focus:ring-1 focus:ring-dm-error/30"
-          : "border-dm-border focus:border-dm-gold focus:ring-1 focus:ring-dm-gold/25",
+          ? "border-gov-error focus:ring-gov-error/20 focus:border-gov-error"
+          : "border-gov-border focus:ring-gov-blue/20 focus:border-gov-blue",
       ].join(" ")}
     />
     {error && (
-      <p className="text-xs text-dm-error flex items-center gap-1.5">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
-          <path d="M6 1L11 10H1L6 1Z" fill="none" stroke="currentColor" strokeWidth="1.5"/>
-          <line x1="6" y1="5" x2="6" y2="7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-          <circle cx="6" cy="9" r="0.6" fill="currentColor"/>
+      <p id={`${id}-error`} role="alert" className="text-sm text-gov-error flex items-start gap-1.5 mt-0.5">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0 mt-0.5" aria-hidden="true">
+          <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.4"/>
+          <line x1="7" y1="4.5" x2="7" y2="7.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+          <circle cx="7" cy="9.5" r="0.7" fill="currentColor"/>
         </svg>
         {error}
       </p>
     )}
-  </div>
-);
-
-// ── Trennlinie ─────────────────────────────────────────────────────────────────
-const Divider = () => (
-  <div className="relative my-6">
-    <div className="absolute inset-0 flex items-center">
-      <div className="w-full border-t border-dm-border" />
-    </div>
-    <div className="relative flex justify-center">
-      <span className="bg-dm-surface px-3 text-xs text-dm-muted-2 uppercase tracking-widest">
-        Sicherer Zugang
-      </span>
-    </div>
   </div>
 );
 
@@ -111,12 +88,11 @@ export default function LoginPage() {
     if (step === "totp") codeRef.current?.focus();
   }, [step]);
 
-  // ── Step 1: Passwort-Login ─────────────────────────────────────────────────
   async function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault();
     const fe: FieldErrors = {};
-    if (!email)    fe.email    = "E-Mail ist erforderlich";
-    if (!password) fe.password = "Passwort ist erforderlich";
+    if (!email)    fe.email    = "Bitte geben Sie Ihre E-Mail-Adresse ein.";
+    if (!password) fe.password = "Bitte geben Sie Ihr Passwort ein.";
     if (Object.keys(fe).length) { setErrors(fe); return; }
 
     setErrors({});
@@ -137,9 +113,9 @@ export default function LoginPage() {
 
       if (!res.ok) {
         if (res.status === 401) {
-          setErrors({ password: data.message ?? "E-Mail oder Passwort falsch" });
+          setErrors({ password: "E-Mail-Adresse oder Passwort ist nicht korrekt." });
         } else {
-          setErrors({ email: data.message ?? "Anmeldung fehlgeschlagen" });
+          setErrors({ email: data.message ?? "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut." });
         }
         return;
       }
@@ -156,16 +132,15 @@ export default function LoginPage() {
         router.push("/dashboard");
       }
     } catch {
-      setErrors({ email: "Verbindungsfehler. Bitte erneut versuchen." });
+      setErrors({ email: "Verbindungsfehler. Bitte prüfen Sie Ihre Internetverbindung." });
     } finally {
       setLoading(false);
     }
   }
 
-  // ── Step 2: TOTP-Validierung ───────────────────────────────────────────────
   async function handleTotpSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (code.length !== 6) { setErrors({ code: "Bitte 6-stelligen Code eingeben" }); return; }
+    if (code.length !== 6) { setErrors({ code: "Bitte geben Sie einen 6-stelligen Code ein." }); return; }
     setErrors({});
     setLoading(true);
 
@@ -181,7 +156,7 @@ export default function LoginPage() {
       };
 
       if (!res.ok) {
-        setErrors({ code: data.error ?? "Code ungültig. Bitte erneut versuchen." });
+        setErrors({ code: data.error ?? "Der Code ist ungültig oder abgelaufen." });
         setCode("");
         return;
       }
@@ -205,44 +180,28 @@ export default function LoginPage() {
   return (
     <div className="w-full max-w-[460px] mx-auto">
 
-      {/* ── Logo & Wordmark ──────────────────────────────────────────────── */}
-      <div className="flex flex-col items-center mb-10">
-        <div className="flex items-center gap-4 mb-4">
-          <EucxMark />
-          <div>
-            <h1 className="text-3xl font-bold text-dm-text tracking-tight leading-none">
-              EUCX
-            </h1>
-            <div className="h-[2px] w-full bg-dm-gold mt-1 rounded-full" />
-          </div>
+      {/* ── Karten-Container ───────────────────────────────────────────────── */}
+      <div className="bg-gov-white border border-gov-border rounded-sm shadow-sm overflow-hidden">
+
+        {/* Blauer Kopfbereich */}
+        <div className="bg-gov-blue px-8 py-6">
+          <h1 className="text-xl font-bold text-white leading-tight">
+            {step === "password" ? "Anmelden" : "Zwei-Faktor-Authentifizierung"}
+          </h1>
+          <p className="text-white/70 text-sm mt-1">
+            {step === "password"
+              ? "Melden Sie sich mit Ihren Zugangsdaten an."
+              : "Geben Sie den Code aus Ihrer Authenticator-App ein."}
+          </p>
         </div>
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-dm-muted">
-          European Union Commodity Exchange
-        </p>
-      </div>
 
-      {/* ── Card ─────────────────────────────────────────────────────────── */}
-      <div
-        className="w-full bg-dm-surface rounded-sm border border-dm-border relative overflow-hidden"
-        style={{ boxShadow: "0 32px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(251,184,9,0.06)" }}
-      >
-        {/* Gold-Akzentlinie oben */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-dm-gold" />
+        <div className="px-8 py-7">
 
-        <div className="p-8 pt-9">
-
-          {/* ── Step 1: Passwort ────────────────────────────────────────── */}
+          {/* ── Step 1: Passwort ─────────────────────────────────────────── */}
           {step === "password" && (
-            <>
-              <div className="mb-7">
-                <h2 className="text-xl font-semibold text-dm-text">Anmelden</h2>
-                <p className="text-sm text-dm-muted mt-1">
-                  Zugang zur institutionellen Handelsplattform
-                </p>
-              </div>
-
-              <form onSubmit={(e) => { void handlePasswordSubmit(e); }} className="space-y-5">
-                <DarkInput
+            <form onSubmit={(e) => { void handlePasswordSubmit(e); }} noValidate>
+              <div className="space-y-5">
+                <GovInput
                   id="email"
                   label="E-Mail-Adresse"
                   type="email"
@@ -252,30 +211,34 @@ export default function LoginPage() {
                   error={errors.email}
                   autoComplete="email"
                   autoFocus
+                  required
                 />
-                <DarkInput
+                <GovInput
                   id="password"
                   label="Passwort"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
+                  placeholder=""
                   error={errors.password}
                   autoComplete="current-password"
+                  required
                 />
 
-                {/* Submit Button */}
+                <p className="text-xs text-gov-text-muted">
+                  Mit <span className="text-gov-error font-medium">*</span> markierte Felder sind Pflichtfelder.
+                </p>
+
                 <button
                   type="submit"
                   disabled={loading}
                   className={[
-                    "w-full h-12 rounded-sm font-semibold text-sm tracking-wide",
-                    "bg-dm-gold text-[#06090F]",
-                    "transition-all duration-200",
-                    "hover:bg-dm-gold-hover active:scale-[0.99]",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dm-gold/50",
+                    "w-full h-11 rounded-sm font-semibold text-sm",
+                    "bg-gov-blue text-white",
+                    "hover:bg-gov-blue-dark transition-colors duration-150",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gov-blue/40",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
-                    "flex items-center justify-center gap-2.5",
+                    "flex items-center justify-center gap-2",
                   ].join(" ")}
                 >
                   {loading ? (
@@ -286,69 +249,33 @@ export default function LoginPage() {
                       </svg>
                       Anmelden…
                     </>
-                  ) : (
-                    <>
-                      Anmelden
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                        <path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </>
-                  )}
+                  ) : "Anmelden"}
                 </button>
-              </form>
-
-              {/* Trust-Indikatoren */}
-              <Divider />
-              <div className="flex items-center justify-center gap-5 text-[10px] uppercase tracking-widest text-dm-muted-2 font-medium">
-                <span className="flex items-center gap-1.5">
-                  <svg width="10" height="12" viewBox="0 0 10 12" fill="none" aria-hidden="true">
-                    <rect x="1" y="5" width="8" height="6" rx="1" stroke="currentColor" strokeWidth="1.2"/>
-                    <path d="M3 5V3.5a2 2 0 014 0V5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-                  </svg>
-                  TLS 1.3
-                </span>
-                <span className="text-dm-border">|</span>
-                <span className="flex items-center gap-1.5">
-                  <svg width="12" height="10" viewBox="0 0 12 10" fill="none" aria-hidden="true">
-                    <path d="M1 5.5L4 8.5L11 1.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  2FA verfügbar
-                </span>
-                <span className="text-dm-border">|</span>
-                <span>DSGVO</span>
               </div>
-
-              <p className="text-center text-sm text-dm-muted mt-6">
-                Noch kein Konto?{" "}
-                <a href="/register" className="text-dm-gold font-medium hover:text-dm-gold-hover transition-colors">
-                  Jetzt registrieren
-                </a>
-              </p>
-            </>
+            </form>
           )}
 
-          {/* ── Step 2: 2FA Code ─────────────────────────────────────────── */}
+          {/* ── Step 2: TOTP ─────────────────────────────────────────────── */}
           {step === "totp" && (
-            <>
-              <div className="text-center mb-7">
-                {/* Schild-Icon */}
-                <div className="w-14 h-14 mx-auto mb-4 rounded-sm border border-dm-border bg-dm-surface-2 flex items-center justify-center">
-                  <svg width="24" height="28" viewBox="0 0 24 28" fill="none" aria-hidden="true">
-                    <path d="M12 1L2 5v9c0 6 5 11 10 13 5-2 10-7 10-13V5L12 1Z"
-                      stroke="#FBB809" strokeWidth="1.5" fill="rgba(251,184,9,0.08)"/>
-                    <path d="M8 14l3 3 5-5" stroke="#FBB809" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-                <h2 className="text-xl font-semibold text-dm-text">Zwei-Faktor-Authentifizierung</h2>
-                <p className="text-sm text-dm-muted mt-1.5">
-                  Code aus Ihrer Authenticator-App eingeben
-                </p>
-              </div>
+            <form onSubmit={(e) => { void handleTotpSubmit(e); }} noValidate>
+              <div className="space-y-5">
 
-              <form onSubmit={(e) => { void handleTotpSubmit(e); }} className="space-y-5">
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="totp-code" className="text-xs font-semibold uppercase tracking-widest text-dm-muted">
-                    6-stelliger Code
+                {/* Hinweiskasten */}
+                <div className="flex items-start gap-3 bg-gov-blue-light border border-gov-blue/20 rounded-sm p-4">
+                  <svg width="18" height="20" viewBox="0 0 18 20" fill="none" className="shrink-0 text-gov-blue mt-0.5">
+                    <path d="M9 1L17 4.5v7c0 4-3 7.5-8 8.5C4 19 1 15.5 1 11.5v-7L9 1Z"
+                      stroke="currentColor" strokeWidth="1.4"/>
+                    <path d="M6 10.5l2 2 4-4" stroke="currentColor" strokeWidth="1.4"
+                      strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <p className="text-sm text-gov-text">
+                    Öffnen Sie Ihre Authenticator-App und geben Sie den 6-stelligen Code für <strong>{email}</strong> ein.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="totp-code" className="text-sm font-semibold text-gov-text">
+                    Einmal-Code <span className="text-gov-error" aria-hidden="true">*</span>
                   </label>
                   <input
                     ref={codeRef}
@@ -359,25 +286,25 @@ export default function LoginPage() {
                     maxLength={6}
                     value={code}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                    placeholder="000 000"
+                    placeholder="000000"
                     autoComplete="one-time-code"
                     className={[
-                      "w-full h-16 rounded-sm border bg-dm-input",
-                      "text-center text-2xl font-mono font-bold tracking-[0.6em]",
-                      "text-dm-text placeholder:text-dm-muted-2 placeholder:tracking-[0.3em]",
-                      "transition-all duration-200",
-                      "focus:outline-none",
+                      "w-full h-14 rounded-sm border bg-white",
+                      "text-center text-2xl font-mono font-bold tracking-[0.5em]",
+                      "text-gov-text placeholder:text-gov-text-muted",
+                      "transition-colors duration-150",
+                      "focus:outline-none focus:ring-2",
                       errors.code
-                        ? "border-dm-error focus:border-dm-error focus:ring-1 focus:ring-dm-error/30"
-                        : "border-dm-border focus:border-dm-gold focus:ring-1 focus:ring-dm-gold/25",
+                        ? "border-gov-error focus:ring-gov-error/20 focus:border-gov-error"
+                        : "border-gov-border focus:ring-gov-blue/20 focus:border-gov-blue",
                     ].join(" ")}
                   />
                   {errors.code && (
-                    <p className="text-xs text-dm-error flex items-center gap-1.5">
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                        <path d="M6 1L11 10H1L6 1Z" fill="none" stroke="currentColor" strokeWidth="1.5"/>
-                        <line x1="6" y1="5" x2="6" y2="7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                        <circle cx="6" cy="9" r="0.6" fill="currentColor"/>
+                    <p role="alert" className="text-sm text-gov-error flex items-start gap-1.5 mt-0.5">
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0 mt-0.5">
+                        <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.4"/>
+                        <line x1="7" y1="4.5" x2="7" y2="7.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                        <circle cx="7" cy="9.5" r="0.7" fill="currentColor"/>
                       </svg>
                       {errors.code}
                     </p>
@@ -388,46 +315,47 @@ export default function LoginPage() {
                   type="submit"
                   disabled={loading || code.length !== 6}
                   className={[
-                    "w-full h-12 rounded-sm font-semibold text-sm tracking-wide",
-                    "bg-dm-gold text-[#06090F]",
-                    "transition-all duration-200",
-                    "hover:bg-dm-gold-hover active:scale-[0.99]",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dm-gold/50",
+                    "w-full h-11 rounded-sm font-semibold text-sm",
+                    "bg-gov-blue text-white",
+                    "hover:bg-gov-blue-dark transition-colors duration-150",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gov-blue/40",
                     "disabled:opacity-40 disabled:cursor-not-allowed",
-                    "flex items-center justify-center gap-2.5",
+                    "flex items-center justify-center gap-2",
                   ].join(" ")}
                 >
-                  {loading ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                      </svg>
-                      Wird geprüft…
-                    </>
-                  ) : "Bestätigen"}
+                  {loading ? "Wird geprüft…" : "Bestätigen"}
                 </button>
-              </form>
 
-              <button
-                type="button"
-                onClick={() => { setStep("password"); setCode(""); setErrors({}); }}
-                className="w-full text-center text-sm text-dm-muted-2 mt-5 hover:text-dm-muted transition-colors flex items-center justify-center gap-1.5"
-              >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                  <path d="M11 7H3M6 4L3 7l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                Zurück zur Anmeldung
-              </button>
-            </>
+                <button
+                  type="button"
+                  onClick={() => { setStep("password"); setCode(""); setErrors({}); }}
+                  className="w-full text-center text-sm text-gov-blue-mid hover:text-gov-blue-dark transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <path d="M11 7H3M6 4L3 7l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Zurück zur Anmeldung
+                </button>
+              </div>
+            </form>
           )}
         </div>
       </div>
 
-      {/* ── Footer ───────────────────────────────────────────────────────── */}
-      <p className="text-center text-[10px] uppercase tracking-widest text-dm-muted-2 mt-8 font-medium">
-        © 2026 EUCX GmbH &nbsp;·&nbsp; eucx.eu &nbsp;·&nbsp; Frankfurt am Main
-      </p>
+      {/* ── Registrierungs-Link ────────────────────────────────────────────── */}
+      {step === "password" && (
+        <div className="mt-4 bg-gov-white border border-gov-border rounded-sm px-6 py-4 flex items-center justify-between">
+          <p className="text-sm text-gov-text-2">Noch kein Konto?</p>
+          <a href="/register"
+            className="text-sm font-semibold text-gov-blue-mid hover:text-gov-blue-dark transition-colors flex items-center gap-1.5">
+            Jetzt registrieren
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      )}
+
     </div>
   );
 }
