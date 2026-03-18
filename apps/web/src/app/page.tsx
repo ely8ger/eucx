@@ -5,6 +5,7 @@ import {
   ArrowRight, BarChart3, Layers, Lock,
   Globe, Building2, Wheat, Trees, Package,
 } from "lucide-react";
+import { EucxLogo } from "@/components/logo/EucxLogo";
 
 const S: Record<string, React.CSSProperties> = {
   container: { maxWidth: 1180, margin: "0 auto", padding: "0 40px" },
@@ -34,15 +35,7 @@ export default function HomePage() {
       {/* ── Header ── */}
       <header style={{ backgroundColor: "#fff", borderTop: "3px solid #154194", boxShadow: "0 1px 4px rgba(0,0,0,.15)", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ ...S.container, height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div className="flex items-center gap-3">
-            <div style={{ width: 36, height: 36, backgroundColor: "#154194", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>E</span>
-            </div>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 16, color: "#0d1b2a", letterSpacing: "-0.01em" }}>EUCX</div>
-              <div style={{ fontSize: 9, color: "#aaa", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 1 }}>European Union Commodity Exchange</div>
-            </div>
-          </div>
+          <EucxLogo size="md" />
 
           <nav className="hidden md:flex items-center">
             {["Marktbereiche", "So funktioniert's", "Regulierung", "Teilnehmer werden"].map((label, i) => (
@@ -330,14 +323,8 @@ export default function HomePage() {
         <div style={{ ...S.container, padding: "60px 40px 0" }}>
           <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 48, paddingBottom: 48, borderBottom: "1px solid #222" }}>
             <div>
-              <div className="flex items-center gap-2" style={{ marginBottom: 16 }}>
-                <div style={{ width: 32, height: 32, backgroundColor: "#154194", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ color: "#fff", fontWeight: 700, fontSize: 13 }}>E</span>
-                </div>
-                <div>
-                  <span style={{ color: "#fff", fontWeight: 600, fontSize: 15 }}>EUCX</span>
-                  <div style={{ fontSize: 9, color: "#555", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 2 }}>European Union Commodity Exchange</div>
-                </div>
+              <div style={{ marginBottom: 16 }}>
+                <EucxLogo variant="white" size="sm" showTagline />
               </div>
               <p style={{ fontSize: 13, color: "#555", lineHeight: 1.7 }}>
                 Digitale B2B-Warenbörse für institutionellen Rohstoffhandel in der Europäischen Union.
