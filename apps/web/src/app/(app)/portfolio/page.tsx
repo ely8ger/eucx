@@ -17,13 +17,13 @@
 import type { Metadata }      from "next";
 import Link                   from "next/link";
 import { useQueryClient }     from "@tanstack/react-query";
-import { Badge }              from "@/components/ui/Badge";
-import { Button }             from "@/components/ui/Button";
+import { Badge }              from "@/components/ui/badge";
+import { Button }             from "@/components/ui/button";
 import { BalanceCard }        from "@/components/portfolio/BalanceCard";
 import { ActiveOrders }       from "@/components/portfolio/ActiveOrders";
 import { DealHistory }        from "@/components/portfolio/DealHistory";
 import { usePrivateSocket }   from "@/hooks/usePrivateSocket";
-import { useToast }           from "@/components/ui/Toast";
+import { useToast }           from "@/components/ui/toast";
 import { PORTFOLIO_KEYS }     from "@/hooks/usePortfolio";
 import type {
   OrderFilledEvent,

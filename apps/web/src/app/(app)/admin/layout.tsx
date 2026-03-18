@@ -13,7 +13,7 @@ import { useEffect, useState }  from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link                      from "next/link";
 import { cn }                    from "@/lib/utils";
-import { Badge }                 from "@/components/ui/Badge";
+import { Badge }                 from "@/components/ui/badge";
 
 const ADMIN_ROLES = ["ADMIN", "COMPLIANCE", "SUPER_ADMIN"];
 

@@ -11,8 +11,8 @@
  */
 
 import Decimal                        from "decimal.js";
-import { Card, CardTitle }            from "@/components/ui/Card";
-import { Badge }                      from "@/components/ui/Badge";
+import { Card, CardTitle }            from "@/components/ui/card";
+import { Badge }                      from "@/components/ui/badge";
 import { EmptyState }                 from "@/components/portfolio/EmptyState";
 import { useBalanceQuery }            from "@/hooks/usePortfolio";
 import type { WalletBalance }         from "@/hooks/usePortfolio";

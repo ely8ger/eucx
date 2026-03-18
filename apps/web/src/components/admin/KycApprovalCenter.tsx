@@ -13,11 +13,11 @@
 import { useState, useCallback }      from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { cn }                         from "@/lib/utils";
-import { Card, CardTitle }            from "@/components/ui/Card";
-import { Button }                     from "@/components/ui/Button";
-import { Badge }                      from "@/components/ui/Badge";
+import { Card, CardTitle }            from "@/components/ui/card";
+import { Button }                     from "@/components/ui/button";
+import { Badge }                      from "@/components/ui/badge";
 import { EmptyState }                 from "@/components/portfolio/EmptyState";
-import { useToast }                   from "@/components/ui/Toast";
+import { useToast }                   from "@/components/ui/toast";
 
 // ─── Typen ────────────────────────────────────────────────────────────────────
 

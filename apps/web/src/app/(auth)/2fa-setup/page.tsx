@@ -10,7 +10,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter }                    from "next/navigation";
 import { QRCodeSVG }                    from "qrcode.react";
-import { Button }                       from "@/components/ui/Button";
+import { Button }                       from "@/components/ui/button";
 
 interface SetupData { otpAuthUrl: string; secret: string }
 

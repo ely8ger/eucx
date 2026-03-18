@@ -17,7 +17,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useQuery }          from "@tanstack/react-query";
-import { Card, CardTitle }   from "@/components/ui/Card";
+import { Card, CardTitle }   from "@/components/ui/card";
 import { EmptyState }        from "@/components/portfolio/EmptyState";
 
 // ─── Typen ────────────────────────────────────────────────────────────────────

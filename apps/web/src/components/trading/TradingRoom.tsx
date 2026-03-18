@@ -18,8 +18,8 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import Decimal                                       from "decimal.js";
-import { Card, CardTitle }                           from "@/components/ui/Card";
-import { Badge }                                     from "@/components/ui/Badge";
+import { Card, CardTitle }                           from "@/components/ui/card";
+import { Badge }                                     from "@/components/ui/badge";
 import { formatEur }                                 from "@/lib/finance/money";
 import { useTrading }                                from "@/hooks/useTrading";
 import OrderBook                                     from "@/components/trading/OrderBook";

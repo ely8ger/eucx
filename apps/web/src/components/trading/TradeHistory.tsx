@@ -16,8 +16,8 @@
 
 import React, { useEffect, useRef, useState, memo } from "react";
 import Decimal from "decimal.js";
-import { Card, CardTitle } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
+import { Card, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import type { DealEntry } from "@/hooks/useTrading";
 
 // ─── Memoized Deal-Zeile ──────────────────────────────────────────────────────

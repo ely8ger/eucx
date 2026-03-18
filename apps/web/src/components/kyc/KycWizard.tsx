@@ -15,8 +15,8 @@ import { useState, useCallback }      from "react";
 import { useRouter }                  from "next/navigation";
 import { motion, AnimatePresence }    from "framer-motion";
 import { useDropzone }                from "react-dropzone";
-import { Button }                     from "@/components/ui/Button";
-import { Input }                      from "@/components/ui/Input";
+import { Button }                     from "@/components/ui/button";
+import { Input }                      from "@/components/ui/input";
 import { useAuthStore }               from "@/store/authStore";
 import { cn }                         from "@/lib/utils";
 

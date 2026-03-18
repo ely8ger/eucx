@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Badge } from "@/components/ui/Badge";
-import { TableWrapper, Table, TableHead, TableBody, TableRow, TableTh, TableTd } from "@/components/ui/Table";
+import { Badge } from "@/components/ui/badge";
+import { TableWrapper, Table, TableHead, TableBody, TableRow, TableTh, TableTd } from "@/components/ui/table";
 
 export const metadata: Metadata = { title: "Mein Bereich — EUCX" };
 

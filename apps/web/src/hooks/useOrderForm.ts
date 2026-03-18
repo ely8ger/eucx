@@ -18,7 +18,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Decimal                                        from "decimal.js";
 import { orderSchema, LARGE_ORDER_EUR }               from "@/lib/validation/order-schema";
-import { useToast }                                   from "@/components/ui/Toast";
+import { useToast }                                   from "@/components/ui/toast";
 import { makeOptimisticEntry }                        from "@/hooks/useTrading";
 import type { TradingAction }                         from "@/hooks/useTrading";
 
