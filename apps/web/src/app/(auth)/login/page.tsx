@@ -178,7 +178,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full max-w-[460px] mx-auto">
+    <div className="w-full max-w-md mx-auto">
 
       {/* ── Portal-Bezeichnung über der Karte ──────────────────────────────── */}
       <div className="mb-5 text-center">

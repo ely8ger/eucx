@@ -32,10 +32,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       {/* ── Zentrierter Inhalt ────────────────────────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full">
-          {children}
-        </div>
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+        {children}
       </div>
 
       {/* ── Portal-Footer ─────────────────────────────────────────────────── */}
