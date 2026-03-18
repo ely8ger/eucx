@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import { MarketSparkline } from "@/components/dashboard/MarketSparkline";
 
-export const metadata: Metadata = { title: "Dashboard — EUCX" };
 
 const KPI = [
   { label: "Aktive Sitzungen",  value: "20",        sub: "in 8 Warengruppen",  trend: "+2 heute", up: true,  Icon: Activity  },
