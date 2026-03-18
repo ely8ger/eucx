@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+"use client";
 import Link from "next/link";
 import {
   TrendingUp, TrendingDown, Activity, Users, BarChart3,

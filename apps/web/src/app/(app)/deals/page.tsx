@@ -1,6 +1,5 @@
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = { title: "Abschlüsse — EUCX" };
 export const dynamic = "force-dynamic";
 
 const DEALS = [

@@ -1,6 +1,4 @@
-import type { Metadata } from "next";
-
-export const metadata: Metadata = { title: "Mein Bereich — EUCX" };
+"use client";
 
 const CONTRACT_MONITOR = [
   { id: "D-2026-0089", date: "17.03.2026", commodity: "Träger HEA 200",  qty: "60 t",  total: "45.600 EUR", role: "Käufer",    payStatus: "AUSSTEHEND"  as const, delivStatus: "AUSSTEHEND" as const, deadline: "27.03.2026" },
