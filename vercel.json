@@ -17,14 +17,6 @@
     }
   ],
 
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/dashboard",
-      "permanent": false
-    }
-  ],
-
   "git": {
     "deploymentEnabled": {
       "main": true
