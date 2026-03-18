@@ -2,44 +2,43 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { clsx } from "clsx";
 import {
   LayoutDashboard, TrendingUp, FileText, Briefcase,
-  CheckSquare, User, Shield, ChevronDown, LogOut,
-  Bell,
+  CheckSquare, User, Shield, LogOut, Bell,
 } from "lucide-react";
 
 const NAV_LINKS = [
-  { href: "/dashboard", label: "Übersicht",      Icon: LayoutDashboard },
-  { href: "/trading",   label: "Handelssitzung", Icon: TrendingUp      },
-  { href: "/orders",    label: "Aufträge",        Icon: FileText        },
-  { href: "/portfolio", label: "Portfolio",        Icon: Briefcase       },
-  { href: "/deals",     label: "Abschlüsse",      Icon: CheckSquare     },
-  { href: "/personal",  label: "Mein Bereich",    Icon: User            },
+  { href: "/dashboard", label: "Übersicht",       Icon: LayoutDashboard },
+  { href: "/trading",   label: "Handelssitzung",  Icon: TrendingUp      },
+  { href: "/orders",    label: "Aufträge",         Icon: FileText        },
+  { href: "/portfolio", label: "Portfolio",         Icon: Briefcase       },
+  { href: "/deals",     label: "Abschlüsse",       Icon: CheckSquare     },
+  { href: "/personal",  label: "Mein Bereich",     Icon: User            },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50">
+    <header className="sticky top-0 z-50" style={{ fontFamily: "'IBM Plex Sans', Arial, sans-serif" }}>
 
-      {/* Topbar — BaFin-Hinweis */}
-      <div className="bg-[#1E293B] border-b border-white/5">
-        <div className="max-w-6xl mx-auto px-6 lg:px-10 h-8 flex items-center justify-between">
-          <span className="text-white/40 text-[11px] font-medium tracking-wide hidden sm:block">
+      {/* Topbar — HSBC-Stil: dünne dunkle Info-Leiste */}
+      <div style={{ backgroundColor: "#1a1a1a" }}>
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 flex items-center justify-between" style={{ height: 36 }}>
+          <span className="hidden sm:block text-white/40 text-xs tracking-wide">
             BaFin-reguliert · Institutionelle Handelsplattform · Frankfurt am Main
           </span>
           <div className="flex items-center gap-4 ml-auto">
             <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 status-dot-live" />
-              <span className="text-white/50 text-[11px] font-medium">Börse geöffnet</span>
+              <span className="w-1.5 h-1.5 bg-emerald-400" style={{ borderRadius: 0 }} />
+              <span className="text-white/50 text-xs">Börse geöffnet</span>
             </div>
-            <div className="w-px h-3 bg-white/10" />
-            <a
-              href="/login"
-              className="flex items-center gap-1.5 text-white/40 text-[11px] font-medium hover:text-white/70 transition-colors duration-150 cursor-pointer"
-            >
+            <div style={{ width: 1, height: 12, backgroundColor: "rgba(255,255,255,.1)" }} />
+            <a href="/login"
+              className="flex items-center gap-1.5 text-xs transition-colors"
+              style={{ color: "rgba(255,255,255,.4)" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,.7)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,.4)")}>
               <LogOut size={11} />
               Abmelden
             </a>
@@ -47,78 +46,87 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Main Header */}
-      <div className="bg-white border-b border-slate-200" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-        <div className="max-w-6xl mx-auto px-6 lg:px-10 h-13 flex items-center gap-5" style={{ height: "52px" }}>
+      {/* Main Header — HSBC-Stil: weiß, Marken-Linie oben, Schatten unten */}
+      <div style={{
+        backgroundColor: "#ffffff",
+        borderTop: "3px solid #154194",
+        boxShadow: "0 1px 4px 0 rgba(0,0,0,.2)",
+      }}>
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 flex items-center gap-6" style={{ height: 56 }}>
 
           {/* Logo */}
-          <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0 group">
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200"
-              style={{ backgroundColor: "#2563EB" }}
-            >
-              <span className="text-white font-bold text-sm tracking-wider">E</span>
+          <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
+            <div style={{ width: 34, height: 34, backgroundColor: "#154194", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 0 }}>
+              <span className="text-white font-bold text-sm">E</span>
             </div>
             <div className="hidden sm:flex flex-col leading-none">
-              <span className="font-bold text-slate-900 text-[15px] tracking-tight">EUCX</span>
-              <span className="text-[9px] text-slate-400 font-medium tracking-widest uppercase">Exchange</span>
+              <span style={{ fontWeight: 700, fontSize: 15, color: "#1a1a1a", letterSpacing: "-0.01em" }}>EUCX</span>
+              <span style={{ fontSize: 9, color: "#929292", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase" }}>Exchange</span>
             </div>
           </Link>
 
-          <div className="w-px h-5 bg-slate-200 shrink-0" />
+          <div style={{ width: 1, height: 20, backgroundColor: "#e8e8e8", flexShrink: 0 }} />
 
-          {/* Nav Links */}
-          <nav className="flex items-center overflow-x-auto flex-1 gap-0.5">
+          {/* Nav Links — HSBC-Stil: aktiver Link mit blauer Unterlinie */}
+          <nav className="flex items-center overflow-x-auto flex-1 gap-0">
             {NAV_LINKS.map(({ href, label, Icon }) => {
               const active = pathname === href || pathname.startsWith(href + "/");
               return (
                 <Link
                   key={href}
                   href={href}
-                  className={clsx(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-150",
-                    active
-                      ? "bg-blue-50 text-blue-700"
-                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-                  )}
+                  className="flex items-center gap-1.5 whitespace-nowrap transition-colors"
+                  style={{
+                    padding: "0 14px",
+                    height: 56,
+                    fontSize: 13,
+                    fontWeight: active ? 600 : 400,
+                    color: active ? "#154194" : "#333333",
+                    borderBottom: active ? "2px solid #154194" : "2px solid transparent",
+                    textDecoration: "none",
+                  }}
+                  onMouseEnter={e => { if (!active) e.currentTarget.style.color = "#154194"; }}
+                  onMouseLeave={e => { if (!active) e.currentTarget.style.color = "#333333"; }}
                 >
-                  <Icon size={14} />
+                  <Icon size={13} />
                   <span className="hidden md:inline">{label}</span>
                 </Link>
               );
             })}
           </nav>
 
-          {/* Right: Actions */}
-          <div className="flex items-center gap-1.5 ml-auto shrink-0">
+          {/* Right Actions */}
+          <div className="flex items-center gap-2 ml-auto shrink-0">
             <button
-              className="relative w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors duration-150 cursor-pointer"
+              className="relative flex items-center justify-center transition-colors cursor-pointer"
+              style={{ width: 34, height: 34, color: "#505050", backgroundColor: "transparent" }}
               aria-label="Benachrichtigungen"
-            >
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f5f5f5")}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
               <Bell size={16} />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
+              <span className="absolute" style={{ top: 7, right: 7, width: 6, height: 6, backgroundColor: "#cc0000", borderRadius: "50%" }} />
             </button>
 
-            <Link
-              href="/admin"
-              className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors duration-150"
+            <Link href="/admin"
+              className="flex items-center justify-center transition-colors"
+              style={{ width: 34, height: 34, color: "#505050", backgroundColor: "transparent" }}
               aria-label="Administration"
-            >
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f5f5f5")}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
               <Shield size={15} />
             </Link>
 
-            <div className="w-px h-5 bg-slate-200 mx-1" />
+            <div style={{ width: 1, height: 20, backgroundColor: "#e8e8e8" }} />
 
-            {/* User Pill */}
-            <button className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-lg hover:bg-slate-50 transition-colors duration-150 cursor-pointer">
-              <div
-                className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                style={{ backgroundColor: "#2563EB" }}
-              >
+            {/* User Pill — HSBC-Stil: eckig, klar */}
+            <button className="flex items-center gap-2 transition-colors cursor-pointer"
+              style={{ padding: "6px 10px", backgroundColor: "transparent" }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f5f5f5")}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
+              <div style={{ width: 28, height: 28, backgroundColor: "#154194", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 0, color: "#ffffff", fontSize: 12, fontWeight: 700 }}>
                 A
               </div>
-              <span className="text-sm font-semibold text-slate-700 hidden lg:block">Admin</span>
-              <ChevronDown size={13} className="text-slate-400 hidden lg:block" />
+              <span className="hidden lg:block" style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a" }}>Admin</span>
             </button>
           </div>
         </div>
