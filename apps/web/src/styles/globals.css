@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
 
 /* ─── Tailwind v4: Explizite Content-Pfade via @source ────────────────────── */
 @source "../app/**/*.{ts,tsx}";
@@ -7,35 +7,49 @@
 @source "../providers/**/*.{ts,tsx}";
 @source "../store/**/*.{ts,tsx}";
 
-/* ─── Tailwind v4: Alle Custom-Farben via @theme ──────────────────────────── */
+/* ─── Tailwind v4: Design Tokens via @theme ──────────────────────────────── */
 @theme {
-  /* ── BWDS / Förderdatenbank Gov-Design-System ──────────────────────────────
-     Quelle: Bundeswebsite Design System (digitalservice4germany/bundeswebsite)
-     Farbwerte extrahiert aus foerderdatenbank.de / BWDS v2 Spezifikation      */
 
-  /* Bundesblau — Primärfarbe (BWDS: --ds-color-primary) */
+  /* ── EUCX Core Palette (UI UX Pro Max — Fintech/Swiss Style) ──────────── */
+  --color-eucx-blue:        #2563EB;   /* Primary */
+  --color-eucx-blue-dark:   #1D4ED8;   /* Hover */
+  --color-eucx-blue-light:  #EFF6FF;   /* Tint */
+  --color-eucx-blue-mid:    #3B82F6;   /* Secondary */
+  --color-eucx-cta:         #F97316;   /* CTA Orange */
+  --color-eucx-cta-dark:    #EA6C00;   /* CTA Hover */
+  --color-eucx-bg:          #F8FAFC;   /* Page background */
+  --color-eucx-surface:     #FFFFFF;   /* Card surface */
+  --color-eucx-text:        #1E293B;   /* Primary text */
+  --color-eucx-text-2:      #475569;   /* Secondary text */
+  --color-eucx-text-muted:  #94A3B8;   /* Muted/hint */
+  --color-eucx-border:      #E2E8F0;   /* Borders */
+  --color-eucx-border-dark: #CBD5E1;   /* Stronger borders */
+
+  /* ── Semantische Status-Farben ─────────────────────────────────────────── */
+  --color-eucx-success:     #059669;   /* Kauf / positiv */
+  --color-eucx-success-bg:  #ECFDF5;
+  --color-eucx-error:       #DC2626;   /* Verkauf / negativ */
+  --color-eucx-error-bg:    #FEF2F2;
+  --color-eucx-warning:     #D97706;
+  --color-eucx-warning-bg:  #FFFBEB;
+  --color-eucx-info:        #0284C7;
+  --color-eucx-info-bg:     #F0F9FF;
+
+  /* ── Legacy Gov-Tokens (bleiben erhalten für Auth-Pages) ──────────────── */
   --color-gov-blue:         #154194;
-  --color-gov-blue-dark:    #0E2D6B;   /* Hover / Active */
-  --color-gov-blue-header:  #003366;   /* Header-Hintergrund */
-  --color-gov-blue-light:   #E8F0FC;   /* Tint / ausgewählter Zustand */
-  --color-gov-blue-mid:     #0057A8;   /* Links / sekundäre Akzente */
-
-  /* Typografie & Neutrale Töne */
-  --color-gov-text:         #1A1A1A;   /* Haupttext */
-  --color-gov-text-2:       #404040;   /* Sekundärtext */
-  --color-gov-text-muted:   #767676;   /* Hinweistext (AA-konform) */
-
-  /* Oberflächen */
+  --color-gov-blue-dark:    #0E2D6B;
+  --color-gov-blue-header:  #003366;
+  --color-gov-blue-light:   #E8F0FC;
+  --color-gov-blue-mid:     #0057A8;
+  --color-gov-text:         #1A1A1A;
+  --color-gov-text-2:       #404040;
+  --color-gov-text-muted:   #767676;
   --color-gov-white:        #FFFFFF;
-  --color-gov-bg:           #F5F5F5;   /* Seitengrundfarbe */
-  --color-gov-bg-2:         #EBEBEB;   /* Abwechselnde Sektionen */
+  --color-gov-bg:           #F5F5F5;
+  --color-gov-bg-2:         #EBEBEB;
   --color-gov-bg-card:      #FFFFFF;
-
-  /* Rahmen */
   --color-gov-border:       #CBCDD3;
   --color-gov-border-light: #E8E8E8;
-
-  /* Semantisch */
   --color-gov-success:      #00843D;
   --color-gov-error:        #CC0000;
   --color-gov-warning:      #E5A500;
@@ -64,44 +78,56 @@
   --color-cb-white:        #FFFFFF;
 }
 
-/* ─── Commerzbank Design Tokens als CSS Custom Properties ─────────────────── */
+/* ─── CSS Custom Properties ──────────────────────────────────────────────── */
 :root {
-  /* Primär-Gelb */
-  --cb-yellow:          #FBB809;
-  --cb-yellow-light:    #FEDF33;
-  --cb-yellow-dark:     #E5A500;
-  --cb-yellow-hover:    #E8A800;
+  /* EUCX Design Tokens */
+  --eucx-primary:       #2563EB;
+  --eucx-primary-dark:  #1D4ED8;
+  --eucx-cta:           #F97316;
+  --eucx-bg:            #F8FAFC;
+  --eucx-surface:       #FFFFFF;
+  --eucx-text:          #1E293B;
+  --eucx-text-2:        #475569;
+  --eucx-text-muted:    #94A3B8;
+  --eucx-border:        #E2E8F0;
+  --eucx-success:       #059669;
+  --eucx-error:         #DC2626;
 
-  /* Petrol / Dark Blue */
-  --cb-petrol:          #003D6B;
-  --cb-petrol-dark:     #002A4A;
-  --cb-navy:            #001F3F;
+  /* Shadows (Swiss Style — scharf, nicht diffus) */
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:  0 4px 6px rgba(0,0,0,0.07);
+  --shadow-lg:  0 10px 15px rgba(0,0,0,0.08);
+  --shadow-xl:  0 20px 25px rgba(0,0,0,0.10);
 
-  /* Grautöne */
-  --cb-gray-50:         #F7F7F7;
-  --cb-gray-100:        #F0F0F0;
-  --cb-gray-200:        #E0E0E0;
-  --cb-gray-300:        #C8C8C8;
-  --cb-gray-400:        #999999;
-  --cb-gray-500:        #666666;
-  --cb-gray-700:        #333333;
-  --cb-gray-900:        #1A1A1A;
+  /* Focus Ring */
+  --focus-ring: 0 0 0 3px rgba(37,99,235,0.25);
 
-  /* Semantisch */
-  --cb-success:         #00843D;
-  --cb-error:           #E30613;
-  --cb-warning:         #F5A623;
-  --cb-info:            #0066CC;
-
-  /* UI */
-  --cb-white:           #FFFFFF;
-  --cb-bg:              #F7F7F7;
-  --cb-border:          #E0E0E0;
-  --cb-text:            #1A1A1A;
-  --cb-text-muted:      #666666;
-
-  /* Focus-Ring (Accessibility) */
-  --cb-focus-ring:      0 0 0 3px rgba(251, 184, 9, 0.45);
+  /* Legacy cb-* */
+  --cb-yellow:       #FBB809;
+  --cb-yellow-light: #FEDF33;
+  --cb-yellow-dark:  #E5A500;
+  --cb-yellow-hover: #E8A800;
+  --cb-petrol:       #003D6B;
+  --cb-petrol-dark:  #002A4A;
+  --cb-navy:         #001F3F;
+  --cb-gray-50:      #F7F7F7;
+  --cb-gray-100:     #F0F0F0;
+  --cb-gray-200:     #E0E0E0;
+  --cb-gray-300:     #C8C8C8;
+  --cb-gray-400:     #999999;
+  --cb-gray-500:     #666666;
+  --cb-gray-700:     #333333;
+  --cb-gray-900:     #1A1A1A;
+  --cb-success:      #00843D;
+  --cb-error:        #E30613;
+  --cb-warning:      #F5A623;
+  --cb-info:         #0066CC;
+  --cb-white:        #FFFFFF;
+  --cb-bg:           #F7F7F7;
+  --cb-border:       #E0E0E0;
+  --cb-text:         #1A1A1A;
+  --cb-text-muted:   #666666;
+  --cb-focus-ring:   0 0 0 3px rgba(251,184,9,0.45);
 }
 
 /* ─── Reset & Base ────────────────────────────────────────────────────────── */
@@ -119,199 +145,164 @@ html {
 }
 
 body {
-  font-family: "Inter", "Compatil Fact", system-ui, -apple-system, sans-serif;
+  font-family: "IBM Plex Sans", "Inter", system-ui, -apple-system, sans-serif;
   font-size: 1rem;
   line-height: 1.5;
-  color: var(--cb-gray-900);
-  background-color: var(--cb-gray-50);
+  color: var(--eucx-text);
+  background-color: var(--eucx-bg);
 }
 
-/* ─── Commerzbank Typography Scale ────────────────────────────────────────── */
+/* ─── Typography Scale (IBM Plex Sans — Financial/Institutional) ─────────── */
 h1, h2, h3, h4, h5, h6 {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
   font-weight: 700;
-  color: var(--cb-petrol);
+  color: var(--eucx-text);
   line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
-h1 { font-size: 2.25rem; }
-h2 { font-size: 1.875rem; }
+h1 { font-size: 2.25rem;  letter-spacing: -0.02em; }
+h2 { font-size: 1.875rem; letter-spacing: -0.015em; }
 h3 { font-size: 1.5rem; }
 h4 { font-size: 1.25rem; }
 h5 { font-size: 1.125rem; }
 h6 { font-size: 1rem; }
 
-/* ─── Focus-Styles (Accessibility) ───────────────────────────────────────── */
+/* ─── Focus-Styles (Accessibility — WCAG AA) ─────────────────────────────── */
 :focus-visible {
   outline: none;
-  box-shadow: var(--cb-focus-ring);
+  box-shadow: var(--focus-ring);
   border-radius: 4px;
 }
 
-/* ─── Scrollbar (Commerzbank-stil) ────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--cb-gray-100);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--cb-gray-300);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--cb-gray-400);
-}
+/* ─── Scrollbar (minimal, professionell) ─────────────────────────────────── */
+::-webkit-scrollbar        { width: 5px; height: 5px; }
+::-webkit-scrollbar-track  { background: #F1F5F9; }
+::-webkit-scrollbar-thumb  { background: #CBD5E1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 
 /* ─── Selection ───────────────────────────────────────────────────────────── */
 ::selection {
-  background-color: var(--cb-yellow-light);
-  color: var(--cb-gray-900);
+  background-color: #BFDBFE;
+  color: #1E293B;
 }
 
 /* ─── Links ───────────────────────────────────────────────────────────────── */
 a {
-  color: var(--cb-petrol);
+  color: var(--eucx-primary);
   text-decoration: none;
   transition: color 150ms ease;
 }
 
 a:hover {
-  color: var(--cb-yellow-dark);
-  text-decoration: underline;
+  color: var(--eucx-primary-dark);
 }
 
 /* ─── Tables (Trading-Daten) ──────────────────────────────────────────────── */
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
+table { border-collapse: collapse; width: 100%; }
 
 th {
   font-weight: 600;
   font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--cb-gray-500);
-  background-color: var(--cb-gray-100);
+  letter-spacing: 0.06em;
+  color: var(--eucx-text-muted);
+  background-color: transparent;
   padding: 0.625rem 1rem;
   text-align: left;
-  border-bottom: 2px solid var(--cb-gray-200);
+  border-bottom: 1px solid var(--eucx-border);
 }
 
 td {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--cb-gray-200);
+  border-bottom: 1px solid var(--eucx-border);
   font-size: 0.875rem;
-  color: var(--cb-gray-900);
+  color: var(--eucx-text);
 }
 
-tr:hover td {
-  background-color: rgba(251, 184, 9, 0.05);
-}
+tr:hover td { background-color: #F8FAFC; }
 
-/* ─── Number-Formatting (Preise) ──────────────────────────────────────────── */
-.price-up   { color: var(--cb-success); font-weight: 600; }
-.price-down { color: var(--cb-error);   font-weight: 600; }
-.price-flat { color: var(--cb-gray-500); }
+/* ─── Preise / Status ────────────────────────────────────────────────────── */
+.price-up   { color: var(--eucx-success); font-weight: 600; }
+.price-down { color: var(--eucx-error);   font-weight: 600; }
+.price-flat { color: var(--eucx-text-muted); }
 
 /* ─── Animationen ─────────────────────────────────────────────────────────── */
-@keyframes pulse-yellow {
+@keyframes pulse-blue {
   0%, 100% { background-color: transparent; }
-  50%       { background-color: rgba(251, 184, 9, 0.15); }
+  50%       { background-color: rgba(37,99,235,0.08); }
 }
-
-.animate-price-update {
-  animation: pulse-yellow 0.6s ease-in-out;
-}
+.animate-price-update { animation: pulse-blue 0.6s ease-in-out; }
 
 @keyframes slide-in-right {
   from { transform: translateX(100%); opacity: 0; }
   to   { transform: translateX(0);    opacity: 1; }
 }
+.animate-slide-in { animation: slide-in-right 0.2s ease-out; }
 
-.animate-slide-in {
-  animation: slide-in-right 0.2s ease-out;
-}
-
-/* ─── Trade-Flash: Neue Abschlüsse kurz aufleuchten lassen ─────────────────── */
+/* ─── Trade-Flash ─────────────────────────────────────────────────────────── */
 @keyframes flash-buy {
-  0%   { background-color: rgba(0, 132, 61, 0.25); }  /* cb-success grün */
+  0%   { background-color: rgba(5,150,105,0.15); }
   100% { background-color: transparent; }
 }
-
 @keyframes flash-sell {
-  0%   { background-color: rgba(227, 6, 19, 0.18); }  /* cb-error rot */
+  0%   { background-color: rgba(220,38,38,0.12); }
   100% { background-color: transparent; }
 }
-
 .flash-deal-buy  { animation: flash-buy  0.7s ease-out forwards; }
 .flash-deal-sell { animation: flash-sell 0.7s ease-out forwards; }
-
-/* Flash auch auf td-Elemente übertragen */
 .flash-deal-buy  td { animation: flash-buy  0.7s ease-out forwards; }
 .flash-deal-sell td { animation: flash-sell 0.7s ease-out forwards; }
 
-/* ─── Connection-Guard: Warnung bei unterbrochener Verbindung ──────────────── */
+/* ─── Connection-Warning ──────────────────────────────────────────────────── */
 @keyframes blink-warning {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.6; }
+  50%       { opacity: 0.5; }
 }
+.connection-warning { animation: blink-warning 1.5s ease-in-out infinite; }
 
-.connection-warning {
-  animation: blink-warning 1.5s ease-in-out infinite;
-}
+/* ─── Tailwind: text-2xs ──────────────────────────────────────────────────── */
+.text-2xs { font-size: 0.625rem; line-height: 0.875rem; }
 
-/* ─── Tailwind text-2xs (fehlt in v4) ─────────────────────────────────────── */
-.text-2xs {
-  font-size: 0.625rem;
-  line-height: 0.875rem;
-}
-
-/* ─── OrderBook Flash-Animationen (Dark + Light Variant) ──────────────────── */
-
-/* Menge-Flash: Partial Fill — gelb (beide Varianten) */
+/* ─── OrderBook Flash-Animationen ─────────────────────────────────────────── */
 @keyframes flash-qty {
-  0%   { background-color: rgba(251, 184, 9, 0.35); }
+  0%   { background-color: rgba(37,99,235,0.20); }
   100% { background-color: transparent; }
 }
-
-/* Neue Ask (Verkaufsangebot) — licht-rot */
 @keyframes flash-new-ask-light {
-  0%   { background-color: rgba(227, 6, 19, 0.12); }
+  0%   { background-color: rgba(220,38,38,0.10); }
   100% { background-color: transparent; }
 }
-
-/* Neue Bid (Kaufgebot) — licht-grün */
 @keyframes flash-new-bid-light {
-  0%   { background-color: rgba(0, 132, 61, 0.12); }
+  0%   { background-color: rgba(5,150,105,0.10); }
   100% { background-color: transparent; }
 }
-
-/* Dark-Varianten — stärker gesättigt für dunklen Hintergrund */
 @keyframes flash-new-ask-dark {
-  0%   { background-color: rgba(239, 68, 68, 0.20); }
+  0%   { background-color: rgba(239,68,68,0.20); }
   100% { background-color: transparent; }
 }
-
 @keyframes flash-new-bid-dark {
-  0%   { background-color: rgba(52, 211, 153, 0.20); }
+  0%   { background-color: rgba(52,211,153,0.20); }
   100% { background-color: transparent; }
 }
 
-.flash-qty-ask { animation: flash-qty          0.6s ease-out forwards; }
-.flash-qty-bid { animation: flash-qty          0.6s ease-out forwards; }
+.flash-qty-ask { animation: flash-qty           0.6s ease-out forwards; }
+.flash-qty-bid { animation: flash-qty           0.6s ease-out forwards; }
 .flash-new-ask { animation: flash-new-ask-light 0.6s ease-out forwards; }
 .flash-new-bid { animation: flash-new-bid-light 0.6s ease-out forwards; }
 
-/* Dark-Terminal: eigene CSS-Klasse überschreibt light-Variante */
 .terminal .flash-new-ask { animation: flash-new-ask-dark 0.6s ease-out forwards; }
 .terminal .flash-new-bid { animation: flash-new-bid-dark 0.6s ease-out forwards; }
-
-/* Terminal-Scrollbar: dunkles Styling */
 .terminal ::-webkit-scrollbar-track { background: #0A0C10; }
 .terminal ::-webkit-scrollbar-thumb { background: #1E2330; border-radius: 3px; }
 .terminal ::-webkit-scrollbar-thumb:hover { background: #2A3450; }
+
+/* ─── Pulse-Status-Dot ────────────────────────────────────────────────────── */
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(0.85); }
+}
+.status-dot-live { animation: status-pulse 2s ease-in-out infinite; }
+
+/* ─── Number: Tabular Figures (Preise, Zahlen) ───────────────────────────── */
+.tabular { font-variant-numeric: tabular-nums; }
