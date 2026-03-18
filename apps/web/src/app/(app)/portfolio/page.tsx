@@ -1,24 +1,7 @@
 "use client";
 
-/**
- * Portfolio-Seite — /portfolio
- *
- * Drei-Spalten-Layout:
- *   Links  (col 4): BalanceCard + Quick-Links
- *   Rechts (col 8): ActiveOrders + DealHistory (übereinander)
- *
- * Private WebSocket-Events:
- *   - order:filled / order:partially_filled → Orders + Balance invalidieren + Toast
- *   - order:cancelled                       → Orders invalidieren
- *   - balance:updated                       → Balance invalidieren
- *   - deal:matched_user                     → DealHistory invalidieren + Toast
- */
-
-import type { Metadata }      from "next";
 import Link                   from "next/link";
 import { useQueryClient }     from "@tanstack/react-query";
-import { Badge }              from "@/components/ui/badge";
-import { Button }             from "@/components/ui/button";
 import { BalanceCard }        from "@/components/portfolio/BalanceCard";
 import { ActiveOrders }       from "@/components/portfolio/ActiveOrders";
 import { DealHistory }        from "@/components/portfolio/DealHistory";
@@ -33,124 +16,104 @@ import type {
   DealMatchedUserEvent,
 } from "@/hooks/usePrivateSocket";
 
-// Next.js Metadata kann bei "use client" nicht exportiert werden —
-// daher im Wrapper-Segment (layout.tsx oder separater Server-Component)
-// Hier direkt den Titel via document.title setzen wäre alternativ möglich.
-
-// ─── Haupt-Seite ──────────────────────────────────────────────────────────────
+const F = "'IBM Plex Sans', Arial, sans-serif";
 
 export default function PortfolioPage() {
   const queryClient = useQueryClient();
   const toast       = useToast();
 
-  // ── Private WebSocket Events ──────────────────────────────────────────────
   usePrivateSocket({
-
     onOrderFilled: (e: OrderFilledEvent) => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("active") });
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("filled") });
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.balance() });
       const qty   = parseFloat(e.filledQuantity).toLocaleString("de-DE");
-      const price = parseFloat(e.pricePerUnit).toLocaleString("de-DE", {
-        minimumFractionDigits: 2, maximumFractionDigits: 2,
-      });
-      toast.success(
-        "Auftrag vollständig ausgeführt",
-        `${qty} t × ${price} €/t · ${e.currency}`,
-      );
+      const price = parseFloat(e.pricePerUnit).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      toast.success("Auftrag vollständig ausgeführt", `${qty} t × ${price} €/t · ${e.currency}`);
     },
-
     onOrderPartiallyFilled: (e: OrderPartiallyFilledEvent) => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("active") });
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.balance() });
       const qty = parseFloat(e.filledQuantity).toLocaleString("de-DE");
-      toast.info(
-        "Teilausführung",
-        `${qty} t ausgeführt — ${parseFloat(e.remainingQuantity).toLocaleString("de-DE")} t verbleiben`,
-      );
+      toast.info("Teilausführung", `${qty} t ausgeführt — ${parseFloat(e.remainingQuantity).toLocaleString("de-DE")} t verbleiben`);
     },
-
     onOrderCancelled: (e: OrderCancelledEvent) => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("active") });
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.balance() });
-      if (e.reason !== "USER_REQUEST") {
-        toast.warning("Auftrag storniert", `Grund: ${e.reason}`);
-      }
+      if (e.reason !== "USER_REQUEST") toast.warning("Auftrag storniert", `Grund: ${e.reason}`);
     },
-
     onBalanceUpdated: (_e: BalanceUpdatedEvent) => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.balance() });
     },
-
     onDealMatchedUser: (e: DealMatchedUserEvent) => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("filled") });
       const qty   = parseFloat(e.quantity).toLocaleString("de-DE");
-      const price = parseFloat(e.pricePerUnit).toLocaleString("de-DE", {
-        minimumFractionDigits: 2, maximumFractionDigits: 2,
-      });
-      toast.success(
-        "Handel abgeschlossen",
-        `${qty} t × ${price} €/t`,
-      );
+      const price = parseFloat(e.pricePerUnit).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      toast.success("Handel abgeschlossen", `${qty} t × ${price} €/t`);
     },
   });
 
   return (
-    <div className="flex flex-col gap-6 max-w-screen-2xl">
+    <div style={{ display: "flex", flexDirection: "column", gap: 24, fontFamily: F }}>
 
-      {/* ── Seitenkopf ─────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
+      {/* ── Seitenkopf ──────────────────────────────────────────────────────── */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <h1 className="text-2xl font-bold text-cb-petrol">Portfolio</h1>
-          <p className="text-sm text-cb-gray-500 mt-0.5">
-            Kontostand, offene Aufträge und Handelshistorie
-          </p>
+          <h1 style={{ fontSize: 22, fontWeight: 300, color: "#0d1b2a", margin: 0 }}>Portfolio</h1>
+          <p style={{ fontSize: 13, color: "#888", marginTop: 4 }}>Kontostand, offene Aufträge und Handelshistorie</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Link href="/deals">
-            <Button variant="outline" size="sm">Alle Abschlüsse</Button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Link href="/deals" style={{
+            display: "inline-flex", alignItems: "center", height: 34, padding: "0 14px",
+            border: "1px solid #154194", color: "#154194", fontSize: 13, fontWeight: 600,
+            textDecoration: "none", backgroundColor: "#fff",
+          }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f0f4fb")}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#fff")}>
+            Alle Abschlüsse
           </Link>
-          <Link href="/trading">
-            <Button variant="primary" size="sm">Handelsraum</Button>
+          <Link href="/trading" style={{
+            display: "inline-flex", alignItems: "center", height: 34, padding: "0 14px",
+            backgroundColor: "#154194", color: "#fff", fontSize: 13, fontWeight: 600,
+            textDecoration: "none",
+          }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#0f3070")}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#154194")}>
+            Handelsraum
           </Link>
         </div>
       </div>
 
-      {/* ── Hauptlayout: 4 + 8 Spalten ─────────────────────────────────────── */}
-      <div className="grid grid-cols-12 gap-5 items-start">
+      {/* ── 4 + 8 Layout ────────────────────────────────────────────────────── */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 16, alignItems: "start" }}>
 
-        {/* ── Links: Balance + Quick-Links ─────────────────────────────────── */}
-        <div className="col-span-4 flex flex-col gap-4">
+        {/* Links: Balance + Schnellzugriff */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <BalanceCard />
-
-          {/* Quick-Links */}
-          <div className="bg-cb-white rounded border border-cb-gray-200 p-4 space-y-2">
-            <p className="text-xs font-semibold text-cb-gray-500 uppercase tracking-wider mb-3">
-              Schnellzugriff
-            </p>
+          <div style={{ backgroundColor: "#fff", padding: "16px 20px", boxShadow: "0 1px 3px rgba(0,0,0,.08)" }}>
+            <p style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#888", fontWeight: 500, margin: "0 0 12px" }}>Schnellzugriff</p>
             {[
-              { href: "/trading",          label: "Handelsraum",      icon: "⚡", badge: null       },
-              { href: "/trading/terminal", label: "Pro Terminal",      icon: "▦", badge: "NEU"      },
-              { href: "/deals",            label: "Alle Abschlüsse",   icon: "✓", badge: null       },
-              { href: "/reports",          label: "Handelsberichte",   icon: "▤", badge: null       },
+              { href: "/trading",          label: "Handelsraum"    },
+              { href: "/trading/terminal", label: "Pro Terminal",   badge: "NEU" },
+              { href: "/deals",            label: "Alle Abschlüsse" },
+              { href: "/reports",          label: "Handelsberichte" },
             ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex items-center gap-2.5 px-3 py-2 rounded text-sm text-cb-gray-700 hover:bg-cb-gray-50 hover:text-cb-petrol transition-colors"
-              >
-                <span className="w-5 text-center text-base">{item.icon}</span>
-                <span className="flex-1">{item.label}</span>
-                {item.badge && (
-                  <Badge variant="blue">{item.badge}</Badge>
-                )}
+              <Link key={item.href} href={item.href} style={{ textDecoration: "none" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px", cursor: "pointer" }}
+                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f7f7f7")}
+                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
+                  <span style={{ fontSize: 13, color: "#333" }}>{item.label}</span>
+                  {item.badge && (
+                    <span style={{ fontSize: 10, fontWeight: 700, color: "#154194", backgroundColor: "#eef2fb", padding: "2px 6px" }}>{item.badge}</span>
+                  )}
+                </div>
               </Link>
             ))}
           </div>
         </div>
 
-        {/* ── Rechts: Aufträge + Historie ──────────────────────────────────── */}
-        <div className="col-span-8 flex flex-col gap-5">
+        {/* Rechts: Aufträge + Historie */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <ActiveOrders />
           <DealHistory />
         </div>

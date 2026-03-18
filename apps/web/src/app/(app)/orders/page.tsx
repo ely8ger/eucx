@@ -3,10 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Plus, Filter, Download, TrendingUp, TrendingDown } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type OrderStatus = "OFFEN" | "ANGENOMMEN" | "ABGELAUFEN" | "STORNIERT" | "ABGESCHLOSSEN";
 interface Order {
@@ -18,157 +14,175 @@ interface Order {
 }
 
 const ORDERS: Order[] = [
-  { id: "A-2026-0041", sessionDate: "18.03.2026", sessionNo: "M-2026-041", direction: "VERKAUF", category: "Metalle", commodity: "Walzdraht", spec: "5,5 mm · SAE 1006", qty: 120, unit: "t", pricePerUnit: 680, currency: "EUR", total: 81600, delivery: "Franko Lager, Hamburg", status: "OFFEN", submittedAt: "18.03.2026 08:14" },
-  { id: "A-2026-0038", sessionDate: "17.03.2026", sessionNo: "M-2026-038", direction: "KAUF", category: "Metalle", commodity: "Betonstahl", spec: "Ø 16 mm · B500B", qty: 80, unit: "t", pricePerUnit: 710, currency: "EUR", total: 56800, delivery: "Franko Lager, Berlin", status: "ANGENOMMEN", submittedAt: "17.03.2026 09:02" },
-  { id: "A-2026-0035", sessionDate: "15.03.2026", sessionNo: "M-2026-035", direction: "VERKAUF", category: "Metalle", commodity: "Träger HEA", spec: "HEA 160 · S235JR", qty: 45, unit: "t", pricePerUnit: 740, currency: "EUR", total: 33300, delivery: "DAP München", status: "ABGESCHLOSSEN", submittedAt: "15.03.2026 07:55" },
-  { id: "A-2026-0031", sessionDate: "12.03.2026", sessionNo: "M-2026-031", direction: "KAUF", category: "Schrott", commodity: "Shredder", spec: "ISRI 210", qty: 200, unit: "t", pricePerUnit: 320, currency: "EUR", total: 64000, delivery: "Franko Lager, Duisburg", status: "ABGELAUFEN", submittedAt: "12.03.2026 10:30" },
-  { id: "A-2026-0027", sessionDate: "10.03.2026", sessionNo: "M-2026-027", direction: "VERKAUF", category: "Holz", commodity: "Fichte rund", spec: "2b-Qualität", qty: 300, unit: "m³", pricePerUnit: 110, currency: "EUR", total: 33000, delivery: "Franko Forst", status: "STORNIERT", submittedAt: "10.03.2026 11:15" },
+  { id: "A-2026-0041", sessionDate: "18.03.2026", sessionNo: "M-2026-041", direction: "VERKAUF", category: "Metalle", commodity: "Walzdraht",   spec: "5,5 mm · SAE 1006",  qty: 120, unit: "t",  pricePerUnit: 680,  currency: "EUR", total: 81600,  delivery: "Franko Lager, Hamburg", status: "OFFEN",         submittedAt: "18.03.2026 08:14" },
+  { id: "A-2026-0038", sessionDate: "17.03.2026", sessionNo: "M-2026-038", direction: "KAUF",    category: "Metalle", commodity: "Betonstahl",  spec: "Ø 16 mm · B500B",    qty: 80,  unit: "t",  pricePerUnit: 710,  currency: "EUR", total: 56800,  delivery: "Franko Lager, Berlin",  status: "ANGENOMMEN",    submittedAt: "17.03.2026 09:02" },
+  { id: "A-2026-0035", sessionDate: "15.03.2026", sessionNo: "M-2026-035", direction: "VERKAUF", category: "Metalle", commodity: "Träger HEA",  spec: "HEA 160 · S235JR",   qty: 45,  unit: "t",  pricePerUnit: 740,  currency: "EUR", total: 33300,  delivery: "DAP München",           status: "ABGESCHLOSSEN", submittedAt: "15.03.2026 07:55" },
+  { id: "A-2026-0031", sessionDate: "12.03.2026", sessionNo: "M-2026-031", direction: "KAUF",    category: "Schrott", commodity: "Shredder",    spec: "ISRI 210",            qty: 200, unit: "t",  pricePerUnit: 320,  currency: "EUR", total: 64000,  delivery: "Franko Lager, Duisburg",status: "ABGELAUFEN",    submittedAt: "12.03.2026 10:30" },
+  { id: "A-2026-0027", sessionDate: "10.03.2026", sessionNo: "M-2026-027", direction: "VERKAUF", category: "Holz",    commodity: "Fichte rund", spec: "2b-Qualität",         qty: 300, unit: "m³", pricePerUnit: 110,  currency: "EUR", total: 33000,  delivery: "Franko Forst",          status: "STORNIERT",     submittedAt: "10.03.2026 11:15" },
 ];
 
-const STATUS_MAP: Record<OrderStatus, { label: string; cls: string }> = {
-  OFFEN:          { label: "Offen",          cls: "bg-blue-50 text-blue-700 border-blue-200" },
-  ANGENOMMEN:     { label: "Angenommen",     cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  ABGESCHLOSSEN:  { label: "Abgeschlossen",  cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  ABGELAUFEN:     { label: "Abgelaufen",     cls: "bg-amber-50 text-amber-700 border-amber-200" },
-  STORNIERT:      { label: "Storniert",      cls: "bg-red-50 text-red-700 border-red-200" },
+const STATUS_MAP: Record<OrderStatus, { label: string; color: string; bg: string }> = {
+  OFFEN:         { label: "Offen",         color: "#154194", bg: "#eef2fb" },
+  ANGENOMMEN:    { label: "Angenommen",    color: "#166534", bg: "#f0fdf4" },
+  ABGESCHLOSSEN: { label: "Abgeschlossen", color: "#166534", bg: "#f0fdf4" },
+  ABGELAUFEN:    { label: "Abgelaufen",    color: "#92400e", bg: "#fffbeb" },
+  STORNIERT:     { label: "Storniert",     color: "#991b1b", bg: "#fff1f1" },
 };
+
+const TABS = [
+  { key: "alle",   label: (o: Order[]) => `Alle (${o.length})` },
+  { key: "offen",  label: (o: Order[]) => `Offen (${o.filter(x => x.status === "OFFEN").length})` },
+  { key: "aktiv",  label: (o: Order[]) => `Angenommen (${o.filter(x => x.status === "ANGENOMMEN").length})` },
+  { key: "archiv", label: () => "Archiv" },
+];
+
+const F = "'IBM Plex Sans', Arial, sans-serif";
 
 export default function OrdersPage() {
   const [tab, setTab] = useState("alle");
 
   const filtered = ORDERS.filter((o) => {
-    if (tab === "offen")     return o.status === "OFFEN";
-    if (tab === "aktiv")     return o.status === "ANGENOMMEN";
-    if (tab === "archiv")    return ["ABGELAUFEN", "STORNIERT", "ABGESCHLOSSEN"].includes(o.status);
+    if (tab === "offen")  return o.status === "OFFEN";
+    if (tab === "aktiv")  return o.status === "ANGENOMMEN";
+    if (tab === "archiv") return ["ABGELAUFEN", "STORNIERT", "ABGESCHLOSSEN"].includes(o.status);
     return true;
   });
 
-  const totalValue = ORDERS.filter(o => o.status === "OFFEN").reduce((a, o) => a + o.total, 0);
-  const openCount = ORDERS.filter(o => o.status === "OFFEN").length;
+  const totalValue  = ORDERS.filter(o => o.status === "OFFEN").reduce((a, o) => a + o.total, 0);
+  const openCount   = ORDERS.filter(o => o.status === "OFFEN").length;
   const acceptedCount = ORDERS.filter(o => o.status === "ANGENOMMEN").length;
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
+    <div style={{ display: "flex", flexDirection: "column", gap: 24, fontFamily: F }}>
+
+      {/* ── Seitenkopf ──────────────────────────────────────────────────────── */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Meine Aufträge</h1>
-          <p className="text-sm text-gray-500 mt-1">Alle eingereichten Kauf- und Verkaufsaufträge</p>
+          <h1 style={{ fontSize: 22, fontWeight: 300, color: "#0d1b2a", margin: 0 }}>Meine Aufträge</h1>
+          <p style={{ fontSize: 13, color: "#888", marginTop: 4 }}>Alle eingereichten Kauf- und Verkaufsaufträge</p>
         </div>
-        <Link href="/orders/new" className="inline-flex items-center gap-2 h-9 px-4 bg-[#154194] text-white text-sm font-semibold rounded-md hover:bg-[#0E2D6B] transition-colors">
-          <Plus size={15} />
+        <Link href="/orders/new" style={{
+          display: "inline-flex", alignItems: "center", gap: 6,
+          height: 36, padding: "0 16px", backgroundColor: "#154194", color: "#fff",
+          fontSize: 13, fontWeight: 600, textDecoration: "none",
+        }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#0f3070")}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#154194")}>
+          <Plus size={14} />
           Neuer Auftrag
         </Link>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card className="border border-gray-100 shadow-sm">
-          <CardContent className="p-4">
-            <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Offene Aufträge</p>
-            <p className="text-2xl font-bold text-gray-900">{openCount}</p>
-          </CardContent>
-        </Card>
-        <Card className="border border-gray-100 shadow-sm">
-          <CardContent className="p-4">
-            <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Angenommen</p>
-            <p className="text-2xl font-bold text-emerald-600">{acceptedCount}</p>
-          </CardContent>
-        </Card>
-        <Card className="border border-gray-100 shadow-sm">
-          <CardContent className="p-4">
-            <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Offenes Volumen</p>
-            <p className="text-2xl font-bold text-gray-900">€ {(totalValue / 1000).toFixed(0)}k</p>
-          </CardContent>
-        </Card>
+      {/* ── KPI-Zeile ───────────────────────────────────────────────────────── */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2, backgroundColor: "#e0e0e0" }}>
+        {[
+          { label: "Offene Aufträge",  value: String(openCount),                        color: "#0d1b2a" },
+          { label: "Angenommen",       value: String(acceptedCount),                    color: "#166534" },
+          { label: "Offenes Volumen",  value: `€ ${(totalValue / 1000).toFixed(0)}k`,  color: "#0d1b2a" },
+        ].map(k => (
+          <div key={k.label} style={{ backgroundColor: "#fff", padding: "18px 24px" }}>
+            <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "#888", margin: 0, fontWeight: 500 }}>{k.label}</p>
+            <p style={{ fontSize: 28, fontWeight: 300, color: k.color, marginTop: 8, lineHeight: 1 }}>{k.value}</p>
+          </div>
+        ))}
       </div>
 
-      {/* Table Card */}
-      <Card className="border border-gray-100 shadow-sm">
-        <CardHeader className="pb-0">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-semibold text-gray-900">Auftragsübersicht</CardTitle>
-            <div className="flex items-center gap-2">
-              <button className="inline-flex items-center gap-1.5 h-8 px-3 border border-gray-200 rounded-md text-xs text-gray-600 hover:bg-gray-50 transition-colors">
-                <Filter size={13} /> Filter
-              </button>
-              <button className="inline-flex items-center gap-1.5 h-8 px-3 border border-gray-200 rounded-md text-xs text-gray-600 hover:bg-gray-50 transition-colors">
-                <Download size={13} /> Export
-              </button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-4">
-          <Tabs value={tab} onValueChange={setTab}>
-            <TabsList className="h-9 bg-gray-100/70 mb-4">
-              <TabsTrigger value="alle" className="text-xs">Alle ({ORDERS.length})</TabsTrigger>
-              <TabsTrigger value="offen" className="text-xs">Offen ({openCount})</TabsTrigger>
-              <TabsTrigger value="aktiv" className="text-xs">Angenommen ({acceptedCount})</TabsTrigger>
-              <TabsTrigger value="archiv" className="text-xs">Archiv</TabsTrigger>
-            </TabsList>
+      {/* ── Tabellen-Container ──────────────────────────────────────────────── */}
+      <div style={{ backgroundColor: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,.08)" }}>
 
-            <TabsContent value={tab} className="mt-0">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-gray-100 hover:bg-transparent">
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-gray-400 pl-0">Auftrags-Nr.</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-gray-400">Richtung</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-gray-400">Ware</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-gray-400 text-right">Menge</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-gray-400 text-right">Gesamtwert</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-gray-400">Sitzung</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-gray-400 text-center">Status</TableHead>
-                    <TableHead className="pr-0" />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filtered.map((o) => {
-                    const s = STATUS_MAP[o.status];
-                    return (
-                      <TableRow key={o.id} className="border-gray-100 hover:bg-gray-50/50">
-                        <TableCell className="pl-0">
-                          <span className="text-xs font-mono font-semibold text-[#154194]">{o.id}</span>
-                        </TableCell>
-                        <TableCell>
-                          <span className={`inline-flex items-center gap-1 text-xs font-semibold ${o.direction === "KAUF" ? "text-emerald-600" : "text-red-500"}`}>
-                            {o.direction === "KAUF" ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
-                            {o.direction}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <p className="text-sm font-medium text-gray-900">{o.commodity}</p>
-                          <p className="text-xs text-gray-400">{o.spec}</p>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <span className="text-sm font-mono text-gray-700">{o.qty.toLocaleString("de-DE")} {o.unit}</span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <span className="text-sm font-mono font-semibold text-gray-900">{o.total.toLocaleString("de-DE")} €</span>
-                        </TableCell>
-                        <TableCell>
-                          <p className="text-xs text-gray-600">{o.sessionDate}</p>
-                          <p className="text-xs text-gray-400">{o.sessionNo}</p>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${s.cls}`}>
-                            {s.label}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right pr-0">
-                          <button className="text-xs text-[#154194] hover:text-[#0E2D6B] font-medium">Details</button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-              {filtered.length === 0 && (
-                <div className="text-center py-12 text-gray-400 text-sm">Keine Aufträge in dieser Kategorie.</div>
-              )}
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+        {/* Header + Toolbar */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px", borderBottom: "1px solid #f0f0f0" }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>Auftragsübersicht</p>
+          <div style={{ display: "flex", gap: 8 }}>
+            {[{ Icon: Filter, label: "Filter" }, { Icon: Download, label: "Export" }].map(({ Icon, label }) => (
+              <button key={label} style={{ display: "inline-flex", alignItems: "center", gap: 5, height: 30, padding: "0 12px", border: "1px solid #e0e0e0", backgroundColor: "#fff", fontSize: 12, color: "#505050", cursor: "pointer" }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f7f7f7")}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#fff")}>
+                <Icon size={12} /> {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div style={{ display: "flex", borderBottom: "1px solid #f0f0f0", padding: "0 20px" }}>
+          {TABS.map(t => (
+            <button key={t.key} onClick={() => setTab(t.key)}
+              style={{
+                padding: "10px 14px", fontSize: 13, fontWeight: tab === t.key ? 600 : 400,
+                color: tab === t.key ? "#154194" : "#505050",
+                borderBottom: tab === t.key ? "2px solid #154194" : "2px solid transparent",
+                backgroundColor: "transparent", border: "none", borderBottom: tab === t.key ? "2px solid #154194" : "2px solid transparent",
+                cursor: "pointer", marginRight: 4,
+              }}>
+              {t.label(ORDERS)}
+            </button>
+          ))}
+        </div>
+
+        {/* Tabelle */}
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ backgroundColor: "#fafafa", borderBottom: "1px solid #f0f0f0" }}>
+                {["Auftrags-Nr.", "Richtung", "Ware", "Menge", "Gesamtwert", "Sitzung", "Status", ""].map((h, i) => (
+                  <th key={i} style={{
+                    padding: "10px 16px", fontSize: 11, fontWeight: 600, textTransform: "uppercase",
+                    letterSpacing: "0.08em", color: "#888",
+                    textAlign: i === 3 || i === 4 ? "right" : i === 6 ? "center" : "left",
+                  }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((o) => {
+                const s = STATUS_MAP[o.status];
+                return (
+                  <tr key={o.id} style={{ borderBottom: "1px solid #f7f7f7" }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#fafafa")}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
+                    <td style={{ padding: "12px 16px" }}>
+                      <span style={{ fontFamily: "monospace", fontSize: 12, fontWeight: 600, color: "#154194" }}>{o.id}</span>
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600, color: o.direction === "KAUF" ? "#166534" : "#dc2626" }}>
+                        {o.direction === "KAUF" ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+                        {o.direction}
+                      </span>
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <p style={{ fontSize: 13, fontWeight: 500, color: "#0d1b2a", margin: 0 }}>{o.commodity}</p>
+                      <p style={{ fontSize: 11, color: "#aaa", marginTop: 2 }}>{o.spec}</p>
+                    </td>
+                    <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 13, fontFamily: "monospace", color: "#505050" }}>
+                      {o.qty.toLocaleString("de-DE")} {o.unit}
+                    </td>
+                    <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 13, fontFamily: "monospace", fontWeight: 600, color: "#0d1b2a" }}>
+                      {o.total.toLocaleString("de-DE")} €
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <p style={{ fontSize: 12, color: "#505050", margin: 0 }}>{o.sessionDate}</p>
+                      <p style={{ fontSize: 11, color: "#aaa", marginTop: 2 }}>{o.sessionNo}</p>
+                    </td>
+                    <td style={{ padding: "12px 16px", textAlign: "center" }}>
+                      <span style={{ display: "inline-block", fontSize: 11, fontWeight: 600, color: s.color, backgroundColor: s.bg, padding: "2px 8px" }}>{s.label}</span>
+                    </td>
+                    <td style={{ padding: "12px 16px", textAlign: "right" }}>
+                      <button style={{ fontSize: 12, fontWeight: 600, color: "#154194", background: "none", border: "none", cursor: "pointer" }}
+                        onMouseEnter={e => (e.currentTarget.style.color = "#0f3070")}
+                        onMouseLeave={e => (e.currentTarget.style.color = "#154194")}>Details</button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {filtered.length === 0 && (
+            <div style={{ textAlign: "center", padding: "48px 0", fontSize: 13, color: "#aaa" }}>Keine Aufträge in dieser Kategorie.</div>
+          )}
+        </div>
+      </div>
+
     </div>
   );
 }

@@ -14,6 +14,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter }                    from "next/navigation";
 import { useAuthStore, scheduleAutoLogout } from "@/store/authStore";
 import type { AuthUser }               from "@/store/authStore";
+import { EucxLogo }                    from "@/components/logo/EucxLogo";
 
 type Step = "password" | "totp";
 interface FieldErrors { email?: string; password?: string; code?: string }
@@ -178,31 +179,28 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div style={{ width: "100%", maxWidth: 440, margin: "0 auto", fontFamily: "'IBM Plex Sans', Arial, sans-serif" }}>
 
-      {/* ── Portal-Bezeichnung über der Karte ──────────────────────────────── */}
-      <div className="mb-5 text-center">
-        <p className="text-xs uppercase tracking-widest text-gov-text-muted font-medium">
-          Gesicherter Zugang · Teilnehmerportal
-        </p>
+      {/* ── Logo ────────────────────────────────────────────────────────────── */}
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <EucxLogo size="md" showTagline />
       </div>
 
       {/* ── Karten-Container ───────────────────────────────────────────────── */}
-      <div className="bg-gov-white border border-gov-border rounded-sm shadow-sm overflow-hidden"
-           style={{ borderTop: "4px solid #154194" }}>
+      <div style={{ backgroundColor: "#fff", border: "1px solid #e0e0e0", borderTop: "4px solid #154194", boxShadow: "0 2px 8px rgba(0,0,0,.08)" }}>
 
-        <div className="px-8 pt-7 pb-2">
-          <h1 className="text-xl font-bold text-gov-text">
+        <div style={{ padding: "24px 32px 8px" }}>
+          <h1 style={{ fontSize: 18, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>
             {step === "password" ? "Anmelden" : "Zwei-Faktor-Authentifizierung"}
           </h1>
-          <p className="text-sm text-gov-text-muted mt-1">
+          <p style={{ fontSize: 13, color: "#888", marginTop: 6 }}>
             {step === "password"
               ? "Melden Sie sich mit Ihren EUCX-Zugangsdaten an."
               : "Geben Sie den Code aus Ihrer Authenticator-App ein."}
           </p>
         </div>
 
-        <div className="px-8 py-6">
+        <div style={{ padding: "16px 32px 24px" }}>
 
           {/* ── Step 1: Passwort ─────────────────────────────────────────── */}
           {step === "password" && (
@@ -349,18 +347,18 @@ export default function LoginPage() {
         </div>
 
         {/* ── Vertrauenszeichen ──────────────────────────────────────────────── */}
-        <div className="border-t border-gov-border-light px-8 py-4 bg-gov-bg">
-          <div className="flex items-center justify-center gap-6 text-xs text-gov-text-muted">
-            <span className="flex items-center gap-1.5">
+        <div style={{ borderTop: "1px solid #f0f0f0", padding: "12px 32px", backgroundColor: "#fafafa" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 20, fontSize: 11, color: "#aaa" }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
               <svg width="12" height="13" viewBox="0 0 12 13" fill="none" aria-hidden="true">
                 <rect x="1" y="5.5" width="10" height="7" rx="1" stroke="currentColor" strokeWidth="1.2"/>
                 <path d="M3.5 5.5V3.5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
               </svg>
               TLS 1.3 verschlüsselt
             </span>
-            <span className="text-gov-border-light">|</span>
+            <span style={{ color: "#e0e0e0" }}>|</span>
             <span>DSGVO-konform</span>
-            <span className="text-gov-border-light">|</span>
+            <span style={{ color: "#e0e0e0" }}>|</span>
             <span>BaFin-regulierter Markt</span>
           </div>
         </div>
@@ -368,10 +366,11 @@ export default function LoginPage() {
 
       {/* ── Registrierungs-Link ────────────────────────────────────────────── */}
       {step === "password" && (
-        <div className="mt-4 bg-gov-white border border-gov-border rounded-sm px-6 py-4 flex items-center justify-between">
-          <p className="text-sm text-gov-text-muted">Noch kein Konto?</p>
-          <a href="/register"
-            className="text-sm font-semibold text-gov-blue hover:text-gov-blue-dark transition-colors flex items-center gap-1.5">
+        <div style={{ marginTop: 12, backgroundColor: "#fff", border: "1px solid #e0e0e0", padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <p style={{ fontSize: 13, color: "#888", margin: 0 }}>Noch kein Konto?</p>
+          <a href="/register" style={{ fontSize: 13, fontWeight: 600, color: "#154194", textDecoration: "none", display: "flex", alignItems: "center", gap: 5 }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#0f3070")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#154194")}>
             Jetzt registrieren
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
               <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>

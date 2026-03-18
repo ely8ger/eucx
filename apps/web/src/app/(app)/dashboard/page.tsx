@@ -5,77 +5,42 @@ import {
   ArrowRight, Package, Trees, Wheat, Building2, FlaskConical,
   Flame, ChevronRight, Clock, Zap, ExternalLink,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { MarketSparkline } from "@/components/dashboard/MarketSparkline";
 
 export const metadata: Metadata = { title: "Dashboard — EUCX" };
 
 const KPI = [
-  {
-    label: "Aktive Sitzungen",
-    value: "20",
-    sub: "in 8 Warengruppen",
-    trend: "+2 heute",
-    up: true,
-    Icon: Activity,
-    accent: "#2563EB",
-    accentBg: "#EFF6FF",
-  },
-  {
-    label: "Tagesumsatz",
-    value: "€ 48,2 Mio.",
-    sub: "vs. gestern",
-    trend: "+4,7 %",
-    up: true,
-    Icon: TrendingUp,
-    accent: "#059669",
-    accentBg: "#ECFDF5",
-  },
-  {
-    label: "Teilnehmer",
-    value: "1.240",
-    sub: "in 31 EU-Ländern",
-    trend: "+12 neu",
-    up: true,
-    Icon: Users,
-    accent: "#7C3AED",
-    accentBg: "#F5F3FF",
-  },
-  {
-    label: "Abschlüsse heute",
-    value: "843",
-    sub: "Ø 57 t / Deal",
-    trend: "+63 vs. Ø",
-    up: true,
-    Icon: BarChart3,
-    accent: "#D97706",
-    accentBg: "#FFFBEB",
-  },
+  { label: "Aktive Sitzungen",  value: "20",        sub: "in 8 Warengruppen",  trend: "+2 heute", up: true,  Icon: Activity  },
+  { label: "Tagesumsatz",       value: "€ 48,2 Mio.", sub: "vs. gestern",      trend: "+4,7 %",   up: true,  Icon: TrendingUp },
+  { label: "Teilnehmer",        value: "1.240",      sub: "in 31 EU-Ländern",  trend: "+12 neu",  up: true,  Icon: Users     },
+  { label: "Abschlüsse heute",  value: "843",        sub: "Ø 57 t / Deal",     trend: "+63 vs. Ø",up: true,  Icon: BarChart3 },
 ];
 
 const CATEGORIES = [
-  { id: "METALS",       label: "Metallprodukte",      sub: "Stahl · Alu · Kupfer",        sessions: 4, volume: "12.400 t", change: "+2,3 %", up: true,  Icon: Package,      color: "#2563EB", bg: "#EFF6FF" },
-  { id: "SCRAP",        label: "Schrott & Sekundär",  sub: "Eisenschrott · NE",            sessions: 2, volume: "5.800 t",  change: "−0,8 %", up: false, Icon: Zap,          color: "#64748B", bg: "#F1F5F9" },
-  { id: "TIMBER",       label: "Holz & Forst",        sub: "Rundholz · Schnittholz",       sessions: 3, volume: "3.200 m³", change: "+1,1 %", up: true,  Icon: Trees,        color: "#059669", bg: "#ECFDF5" },
-  { id: "AGRICULTURE",  label: "Agrar & Lebensmittel",sub: "Getreide · Milch · Öle",       sessions: 5, volume: "8.600 t",  change: "+0,4 %", up: true,  Icon: Wheat,        color: "#D97706", bg: "#FFFBEB" },
-  { id: "CHEMICALS",    label: "Chemie & Petrochem.", sub: "Polymere · Düngemittel",       sessions: 2, volume: "1.900 t",  change: "−1,2 %", up: false, Icon: FlaskConical, color: "#7C3AED", bg: "#F5F3FF" },
-  { id: "ENERGY",       label: "Energie & Brennstoffe",sub: "Koks · Kohle · Pellets",     sessions: 1, volume: "4.200 t",  change: "+3,1 %", up: true,  Icon: Flame,        color: "#EA580C", bg: "#FFF7ED" },
-  { id: "CONSTRUCTION", label: "Baustoffe",           sub: "Zement · Splitt · Ziegel",    sessions: 2, volume: "6.700 t",  change: "+0,9 %", up: true,  Icon: Building2,    color: "#0284C7", bg: "#F0F9FF" },
-  { id: "INDUSTRIALS",  label: "Industriegüter",      sub: "Maschinen · Kabel · Elektronik",sessions: 1, volume: "240 Stk",change: "—",      up: null,  Icon: BarChart3,    color: "#94A3B8", bg: "#F8FAFC" },
+  { id: "METALS",       label: "Metallprodukte",       sub: "Stahl · Alu · Kupfer",          sessions: 4, volume: "12.400 t", change: "+2,3 %", up: true,  Icon: Package      },
+  { id: "SCRAP",        label: "Schrott & Sekundär",   sub: "Eisenschrott · NE",              sessions: 2, volume: "5.800 t",  change: "−0,8 %", up: false, Icon: Zap          },
+  { id: "TIMBER",       label: "Holz & Forst",         sub: "Rundholz · Schnittholz",         sessions: 3, volume: "3.200 m³", change: "+1,1 %", up: true,  Icon: Trees        },
+  { id: "AGRICULTURE",  label: "Agrar & Lebensmittel", sub: "Getreide · Milch · Öle",         sessions: 5, volume: "8.600 t",  change: "+0,4 %", up: true,  Icon: Wheat        },
+  { id: "CHEMICALS",    label: "Chemie & Petrochem.",  sub: "Polymere · Düngemittel",         sessions: 2, volume: "1.900 t",  change: "−1,2 %", up: false, Icon: FlaskConical },
+  { id: "ENERGY",       label: "Energie & Brennstoffe",sub: "Koks · Kohle · Pellets",         sessions: 1, volume: "4.200 t",  change: "+3,1 %", up: true,  Icon: Flame        },
+  { id: "CONSTRUCTION", label: "Baustoffe",            sub: "Zement · Splitt · Ziegel",       sessions: 2, volume: "6.700 t",  change: "+0,9 %", up: true,  Icon: Building2    },
+  { id: "INDUSTRIALS",  label: "Industriegüter",       sub: "Maschinen · Kabel · Elektronik", sessions: 1, volume: "240 Stk",  change: "—",      up: null,  Icon: BarChart3    },
 ];
 
 const ACTIVE_SESSIONS = [
-  { id: "247", name: "Bewehrungsstahl A1 Ø12mm",   cat: "Metalle", time: "14:00–16:30", orders: 34, volume: "420 t",   status: "OFFEN" },
-  { id: "248", name: "Kupfer Cu-ETP Walzdraht",    cat: "Metalle", time: "14:00–16:30", orders: 18, volume: "85 t",    status: "OFFEN" },
-  { id: "249", name: "Weizenmehl Type 550",        cat: "Agrar",   time: "10:00–12:00", orders: 22, volume: "1.200 t", status: "NUR_VERKAUF" },
-  { id: "250", name: "Fichtenstammholz I/II",      cat: "Holz",    time: "09:00–11:00", orders: 11, volume: "340 m³",  status: "OFFEN" },
-  { id: "251", name: "Aluminiumschrott 6061",      cat: "Schrott", time: "13:00–15:00", orders: 9,  volume: "60 t",    status: "OFFEN" },
+  { id: "247", name: "Bewehrungsstahl A1 Ø12mm",  cat: "Metalle", time: "14:00–16:30", orders: 34, volume: "420 t",   status: "OFFEN"     },
+  { id: "248", name: "Kupfer Cu-ETP Walzdraht",   cat: "Metalle", time: "14:00–16:30", orders: 18, volume: "85 t",    status: "OFFEN"     },
+  { id: "249", name: "Weizenmehl Type 550",        cat: "Agrar",   time: "10:00–12:00", orders: 22, volume: "1.200 t", status: "NUR_VERKAUF"},
+  { id: "250", name: "Fichtenstammholz I/II",      cat: "Holz",    time: "09:00–11:00", orders: 11, volume: "340 m³",  status: "OFFEN"     },
+  { id: "251", name: "Aluminiumschrott 6061",      cat: "Schrott", time: "13:00–15:00", orders: 9,  volume: "60 t",    status: "OFFEN"     },
 ];
 
-const statusStyle: Record<string, { label: string; cls: string }> = {
-  OFFEN:       { label: "Offen",      cls: "bg-emerald-50 text-emerald-700 border border-emerald-200" },
-  NUR_VERKAUF: { label: "Nur Verkauf",cls: "bg-amber-50 text-amber-700 border border-amber-200" },
+const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> = {
+  OFFEN:       { label: "Offen",      color: "#166534", bg: "#f0fdf4" },
+  NUR_VERKAUF: { label: "Nur Verkauf",color: "#92400e", bg: "#fffbeb" },
 };
+
+const F = "'IBM Plex Sans', Arial, sans-serif";
 
 export default function DashboardPage() {
   const now = new Date().toLocaleDateString("de-DE", {
@@ -83,142 +48,113 @@ export default function DashboardPage() {
   });
 
   return (
-    <div className="flex flex-col gap-6">
+    <div style={{ display: "flex", flexDirection: "column", gap: 24, fontFamily: F }}>
 
-      {/* ── Page Header ──────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
+      {/* ── Seitenkopf ──────────────────────────────────────────────────────── */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Handelsübersicht</h1>
-          <p className="text-sm text-slate-400 mt-0.5 flex items-center gap-1.5">
+          <h1 style={{ fontSize: 22, fontWeight: 300, color: "#0d1b2a", margin: 0 }}>Handelsübersicht</h1>
+          <p style={{ fontSize: 13, color: "#888", marginTop: 4, display: "flex", alignItems: "center", gap: 6 }}>
             <Clock size={12} />
             {now} · Frankfurt am Main
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 status-dot-live" />
-          <span className="text-xs font-semibold text-emerald-700">Börse geöffnet</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid #bbf7d0", backgroundColor: "#f0fdf4", padding: "6px 12px" }}>
+          <span style={{ width: 7, height: 7, backgroundColor: "#22c55e", display: "inline-block" }} />
+          <span style={{ fontSize: 12, fontWeight: 600, color: "#166534" }}>Börse geöffnet</span>
         </div>
       </div>
 
-      {/* ── KPI Row ──────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {KPI.map(({ label, value, sub, trend, up, Icon, accent, accentBg }) => (
-          <div
-            key={label}
-            className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm hover:shadow-md transition-shadow duration-200"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center"
-                style={{ backgroundColor: accentBg }}
-              >
-                <Icon size={16} style={{ color: accent }} />
+      {/* ── KPI-Zeile ───────────────────────────────────────────────────────── */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 2, backgroundColor: "#e0e0e0" }}>
+        {KPI.map(({ label, value, sub, trend, up, Icon }) => (
+          <div key={label} style={{ backgroundColor: "#fff", padding: "20px 24px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+              <div style={{ width: 36, height: 36, backgroundColor: "#f0f4fb", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Icon size={15} style={{ color: "#154194" }} />
               </div>
-              <span
-                className="flex items-center gap-0.5 text-xs font-semibold tabular"
-                style={{ color: up ? "#059669" : "#DC2626" }}
-              >
+              <span style={{ fontSize: 12, fontWeight: 600, color: up ? "#166534" : "#dc2626", display: "flex", alignItems: "center", gap: 3 }}>
                 {up ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
                 {trend}
               </span>
             </div>
-            <p className="text-2xl font-bold text-slate-900 leading-none mb-1 tabular">{value}</p>
-            <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">{label}</p>
-            <p className="text-xs text-slate-400 mt-0.5">{sub}</p>
+            <p style={{ fontSize: 26, fontWeight: 300, color: "#0d1b2a", lineHeight: 1, margin: 0 }}>{value}</p>
+            <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "#154194", marginTop: 6, fontWeight: 500 }}>{label}</p>
+            <p style={{ fontSize: 12, color: "#888", marginTop: 3 }}>{sub}</p>
           </div>
         ))}
       </div>
 
-      {/* ── Bento Grid: Chart + Top-Sektionen ────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+      {/* ── Chart + Top-Sektionen ───────────────────────────────────────────── */}
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 2, backgroundColor: "#e0e0e0" }}>
 
-        {/* Chart — 2/3 Breite */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-          <div className="flex items-center justify-between mb-4">
+        <div style={{ backgroundColor: "#fff", padding: "20px 24px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
             <div>
-              <p className="text-sm font-semibold text-slate-900">Tagesumsatz — Verlauf</p>
-              <p className="text-xs text-slate-400">Heute · stündlich · Frankfurt</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>Tagesumsatz — Verlauf</p>
+              <p style={{ fontSize: 12, color: "#888", marginTop: 3 }}>Heute · stündlich · Frankfurt</p>
             </div>
-            <span className="text-xs bg-blue-50 text-blue-700 border border-blue-100 rounded-full px-2.5 py-1 font-semibold">
-              EUR
-            </span>
+            <span style={{ fontSize: 11, border: "1px solid #c7d7f0", color: "#154194", padding: "3px 10px", fontWeight: 600 }}>EUR</span>
           </div>
           <MarketSparkline />
         </div>
 
-        {/* Top-Sektionen Summary — 1/3 Breite */}
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5 flex flex-col">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-semibold text-slate-900">Top-Sektionen</p>
-            <span className="text-xs text-slate-400">nach Volumen</span>
+        <div style={{ backgroundColor: "#fff", padding: "20px 24px", display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>Top-Sektionen</p>
+            <span style={{ fontSize: 11, color: "#888" }}>nach Volumen</span>
           </div>
-          <div className="flex flex-col gap-2 flex-1">
+          <div style={{ display: "flex", flexDirection: "column", gap: 0, flex: 1 }}>
             {[...CATEGORIES]
-              .sort((a, b) => {
-                const aV = parseFloat(a.volume.replace(/[^\d]/g, ""));
-                const bV = parseFloat(b.volume.replace(/[^\d]/g, ""));
-                return bV - aV;
-              })
+              .sort((a, b) => parseFloat(b.volume) - parseFloat(a.volume))
               .slice(0, 5)
-              .map(({ id, label, volume, change, up, color, bg, Icon }) => (
-                <Link
-                  key={id}
-                  href={`/trading?category=${id}`}
-                  className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-50 transition-colors duration-150 cursor-pointer group"
-                >
-                  <div className="w-7 h-7 rounded-md flex items-center justify-center shrink-0" style={{ backgroundColor: bg }}>
-                    <Icon size={13} style={{ color }} />
-                  </div>
-                  <span className="text-sm text-slate-700 font-medium flex-1 truncate">{label}</span>
-                  <div className="text-right shrink-0">
-                    <p className="text-xs font-semibold text-slate-900 tabular">{volume}</p>
-                    <p className="text-xs font-semibold tabular" style={{ color: up === true ? "#059669" : up === false ? "#DC2626" : "#94A3B8" }}>
-                      {change}
-                    </p>
+              .map(({ id, label, volume, change, up, Icon }) => (
+                <Link key={id} href={`/trading?category=${id}`} style={{ textDecoration: "none" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", cursor: "pointer" }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f7f7f7")}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
+                    <div style={{ width: 28, height: 28, backgroundColor: "#f0f4fb", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Icon size={13} style={{ color: "#154194" }} />
+                    </div>
+                    <span style={{ fontSize: 13, color: "#333", flex: 1 }}>{label}</span>
+                    <div style={{ textAlign: "right" }}>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>{volume}</p>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: up === true ? "#166534" : up === false ? "#dc2626" : "#888", margin: 0 }}>{change}</p>
+                    </div>
                   </div>
                 </Link>
               ))}
           </div>
-          <Link
-            href="/trading"
-            className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold transition-colors"
-          >
+          <Link href="/trading" style={{ textDecoration: "none", borderTop: "1px solid #f0f0f0", marginTop: 8, paddingTop: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 4, fontSize: 12, color: "#154194", fontWeight: 600 }}>
             Alle Warengruppen <ExternalLink size={11} />
           </Link>
         </div>
+
       </div>
 
-      {/* ── Warengruppen Bento Grid ───────────────────────────────────────── */}
+      {/* ── Warengruppen ────────────────────────────────────────────────────── */}
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-semibold text-slate-900">Warengruppen</p>
-          <span className="text-xs text-slate-400">
-            8 Sektionen · {CATEGORIES.reduce((a, c) => a + c.sessions, 0)} aktive Sitzungen
-          </span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>Warengruppen</p>
+          <span style={{ fontSize: 12, color: "#888" }}>8 Sektionen · {CATEGORIES.reduce((a, c) => a + c.sessions, 0)} aktive Sitzungen</span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
-          {CATEGORIES.map(({ id, label, sub, sessions, change, up, Icon, color, bg }) => (
-            <Link key={id} href={`/trading?category=${id}`} className="group">
-              <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-3.5 hover:shadow-md hover:border-slate-200 transition-all duration-200 cursor-pointer h-full flex flex-col">
-                <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center mb-3"
-                  style={{ backgroundColor: bg }}
-                >
-                  <Icon size={15} style={{ color }} />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: 2, backgroundColor: "#e0e0e0" }}>
+          {CATEGORIES.map(({ id, label, sub, sessions, change, up, Icon }) => (
+            <Link key={id} href={`/trading?category=${id}`} style={{ textDecoration: "none" }}>
+              <div style={{ backgroundColor: "#fff", padding: "14px 12px", display: "flex", flexDirection: "column", height: "100%", cursor: "pointer", boxSizing: "border-box" }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f7f7f7")}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#fff")}>
+                <div style={{ width: 30, height: 30, backgroundColor: "#f0f4fb", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
+                  <Icon size={14} style={{ color: "#154194" }} />
                 </div>
-                <p className="text-xs font-semibold text-slate-800 leading-tight mb-0.5 line-clamp-2">{label}</p>
-                <p className="text-[10px] text-slate-400 mb-auto">{sub}</p>
-                <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-slate-50">
-                  <span className="flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    <span className="text-[10px] text-slate-400 font-medium">{sessions}</span>
+                <p style={{ fontSize: 11, fontWeight: 600, color: "#0d1b2a", margin: 0, lineHeight: 1.3 }}>{label}</p>
+                <p style={{ fontSize: 10, color: "#888", marginTop: 3, flex: 1 }}>{sub}</p>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 10, paddingTop: 8, borderTop: "1px solid #f0f0f0" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ width: 6, height: 6, backgroundColor: "#22c55e", display: "inline-block" }} />
+                    <span style={{ fontSize: 10, color: "#888", fontWeight: 500 }}>{sessions}</span>
                   </span>
-                  <span
-                    className="text-[10px] font-bold tabular"
-                    style={{ color: up === true ? "#059669" : up === false ? "#DC2626" : "#94A3B8" }}
-                  >
-                    {change}
-                  </span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: up === true ? "#166534" : up === false ? "#dc2626" : "#888" }}>{change}</span>
                 </div>
               </div>
             </Link>
@@ -226,68 +162,49 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ── Aktive Handelssitzungen ───────────────────────────────────────── */}
-      <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <p className="text-sm font-semibold text-slate-900">Aktive Handelssitzungen</p>
-          <Link
-            href="/trading"
-            className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold transition-colors"
-          >
+      {/* ── Aktive Handelssitzungen ──────────────────────────────────────────── */}
+      <div style={{ backgroundColor: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,.08)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px", borderBottom: "1px solid #f0f0f0" }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>Aktive Handelssitzungen</p>
+          <Link href="/trading" style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#154194", fontWeight: 600, textDecoration: "none" }}>
             Alle anzeigen <ArrowRight size={12} />
           </Link>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/50">
-                <th className="text-left pl-5 pr-3 py-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Sitzung</th>
-                <th className="text-left px-3 py-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Sektion</th>
-                <th className="text-left px-3 py-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Zeit</th>
-                <th className="text-right px-3 py-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Aufträge</th>
-                <th className="text-right px-3 py-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Volumen</th>
-                <th className="text-center px-3 py-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Status</th>
-                <th className="pr-5 py-3" />
+              <tr style={{ backgroundColor: "#fafafa", borderBottom: "1px solid #f0f0f0" }}>
+                {["Sitzung", "Sektion", "Zeit", "Aufträge", "Volumen", "Status", ""].map((h, i) => (
+                  <th key={i} style={{ padding: "10px 16px", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "#888", textAlign: i >= 3 && i <= 4 ? "right" : i === 5 ? "center" : "left" }}>{h}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {ACTIVE_SESSIONS.map((s, i) => (
-                <tr
-                  key={s.id}
-                  className="border-b border-slate-50 hover:bg-slate-50/60 transition-colors duration-150"
-                  style={{ borderBottomColor: i === ACTIVE_SESSIONS.length - 1 ? "transparent" : undefined }}
-                >
-                  <td className="pl-5 pr-3 py-3.5">
-                    <p className="text-sm font-semibold text-slate-900">{s.name}</p>
-                    <p className="text-xs text-slate-400 mt-0.5 tabular">#{s.id}</p>
-                  </td>
-                  <td className="px-3 py-3.5">
-                    <span className="text-sm text-slate-600">{s.cat}</span>
-                  </td>
-                  <td className="px-3 py-3.5">
-                    <span className="text-sm font-mono text-slate-500 tabular">{s.time}</span>
-                  </td>
-                  <td className="px-3 py-3.5 text-right">
-                    <span className="text-sm font-semibold text-slate-900 tabular">{s.orders}</span>
-                  </td>
-                  <td className="px-3 py-3.5 text-right">
-                    <span className="text-sm font-mono text-slate-600 tabular">{s.volume}</span>
-                  </td>
-                  <td className="px-3 py-3.5 text-center">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${statusStyle[s.status]?.cls ?? ""}`}>
-                      {statusStyle[s.status]?.label ?? s.status}
-                    </span>
-                  </td>
-                  <td className="pr-5 py-3.5 text-right">
-                    <Link
-                      href={`/trading/session/${s.id}`}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors"
-                    >
-                      Teilnehmen <ChevronRight size={12} />
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {ACTIVE_SESSIONS.map((s, i) => {
+                const st = STATUS_MAP[s.status];
+                return (
+                  <tr key={s.id} style={{ borderBottom: i < ACTIVE_SESSIONS.length - 1 ? "1px solid #f7f7f7" : "none" }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#fafafa")}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
+                    <td style={{ padding: "12px 16px" }}>
+                      <p style={{ fontSize: 13, fontWeight: 500, color: "#0d1b2a", margin: 0 }}>{s.name}</p>
+                      <p style={{ fontSize: 11, color: "#aaa", marginTop: 2, fontFamily: "monospace" }}>#{s.id}</p>
+                    </td>
+                    <td style={{ padding: "12px 16px", fontSize: 13, color: "#505050" }}>{s.cat}</td>
+                    <td style={{ padding: "12px 16px", fontSize: 13, fontFamily: "monospace", color: "#505050" }}>{s.time}</td>
+                    <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 13, fontWeight: 600, color: "#0d1b2a" }}>{s.orders}</td>
+                    <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 13, fontFamily: "monospace", color: "#505050" }}>{s.volume}</td>
+                    <td style={{ padding: "12px 16px", textAlign: "center" }}>
+                      <span style={{ display: "inline-block", fontSize: 11, fontWeight: 600, color: st?.color, backgroundColor: st?.bg, padding: "2px 8px" }}>{st?.label ?? s.status}</span>
+                    </td>
+                    <td style={{ padding: "12px 16px", textAlign: "right" }}>
+                      <Link href={`/trading/session/${s.id}`} style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600, color: "#154194", textDecoration: "none" }}>
+                        Teilnehmen <ChevronRight size={12} />
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
