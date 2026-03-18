@@ -230,6 +230,18 @@ export default function LoginPage() {
                   required
                 />
 
+                {/* 2FA-Hinweis */}
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "10px 12px", backgroundColor: "#eef2fb", borderLeft: "3px solid #154194" }}>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, marginTop: 1, color: "#154194" }} aria-hidden="true">
+                    <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.3"/>
+                    <line x1="7" y1="6" x2="7" y2="10" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                    <circle cx="7" cy="4.5" r="0.7" fill="currentColor"/>
+                  </svg>
+                  <p style={{ fontSize: 12, color: "#154194", margin: 0, lineHeight: 1.55 }}>
+                    Nach der Anmeldung werden Sie zur <strong>Zwei-Faktor-Verifizierung</strong> weitergeleitet.
+                  </p>
+                </div>
+
                 <p className="text-xs text-gov-text-muted">
                   Mit <span className="text-gov-error font-medium">*</span> markierte Felder sind Pflichtfelder.
                 </p>
@@ -347,19 +359,49 @@ export default function LoginPage() {
         </div>
 
         {/* ── Vertrauenszeichen ──────────────────────────────────────────────── */}
-        <div style={{ borderTop: "1px solid #f0f0f0", padding: "12px 32px", backgroundColor: "#fafafa" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 20, fontSize: 11, color: "#aaa" }}>
-            <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <svg width="12" height="13" viewBox="0 0 12 13" fill="none" aria-hidden="true">
-                <rect x="1" y="5.5" width="10" height="7" rx="1" stroke="currentColor" strokeWidth="1.2"/>
-                <path d="M3.5 5.5V3.5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+        <div style={{ borderTop: "1px solid #eef0f4", padding: "14px 32px", backgroundColor: "#fafbfd" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4 }}>
+
+            {/* TLS */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, padding: "8px 4px" }}>
+              <svg width="18" height="20" viewBox="0 0 18 20" fill="none" aria-hidden="true" style={{ color: "#154194" }}>
+                <rect x="1" y="9" width="16" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
+                <path d="M5.5 9V6a3.5 3.5 0 017 0v3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                <circle cx="9" cy="13.5" r="1.5" fill="currentColor"/>
+                <line x1="9" y1="15" x2="9" y2="16.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
               </svg>
-              TLS 1.3 verschlüsselt
-            </span>
-            <span style={{ color: "#e0e0e0" }}>|</span>
-            <span>DSGVO-konform</span>
-            <span style={{ color: "#e0e0e0" }}>|</span>
-            <span>BaFin-regulierter Markt</span>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#505050", textAlign: "center", letterSpacing: "0.02em", lineHeight: 1.3 }}>TLS 1.3{"\n"}verschlüsselt</span>
+            </div>
+
+            {/* DSGVO */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, padding: "8px 4px", borderLeft: "1px solid #eef0f4", borderRight: "1px solid #eef0f4" }}>
+              <svg width="18" height="20" viewBox="0 0 18 20" fill="none" aria-hidden="true" style={{ color: "#154194" }}>
+                <path d="M9 1L17 4.5v7c0 4-3 7.5-8 8.5C4 19 1 15.5 1 11.5v-7L9 1Z" stroke="currentColor" strokeWidth="1.3"/>
+                {/* EU-Sterne — vereinfacht: 5 Punkte */}
+                <circle cx="9"   cy="7"    r="0.85" fill="currentColor"/>
+                <circle cx="12"  cy="9"    r="0.85" fill="currentColor"/>
+                <circle cx="11"  cy="12.5" r="0.85" fill="currentColor"/>
+                <circle cx="7"   cy="12.5" r="0.85" fill="currentColor"/>
+                <circle cx="6"   cy="9"    r="0.85" fill="currentColor"/>
+              </svg>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#505050", textAlign: "center", letterSpacing: "0.02em", lineHeight: 1.3 }}>DSGVO-konform</span>
+            </div>
+
+            {/* BaFin */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, padding: "8px 4px" }}>
+              <svg width="18" height="20" viewBox="0 0 18 20" fill="none" aria-hidden="true" style={{ color: "#154194" }}>
+                {/* Gebäude-Säulen */}
+                <rect x="1"  y="16" width="16" height="2" rx="0.5" fill="currentColor" opacity="0.8"/>
+                <rect x="1"  y="6"  width="16" height="2" rx="0.5" fill="currentColor" opacity="0.8"/>
+                <rect x="3"  y="8"  width="2"  height="8" fill="currentColor" opacity="0.6"/>
+                <rect x="8"  y="8"  width="2"  height="8" fill="currentColor" opacity="0.6"/>
+                <rect x="13" y="8"  width="2"  height="8" fill="currentColor" opacity="0.6"/>
+                {/* Dach */}
+                <path d="M1 6L9 1l8 5H1Z" fill="currentColor" opacity="0.5"/>
+              </svg>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#505050", textAlign: "center", letterSpacing: "0.02em", lineHeight: 1.3 }}>BaFin-regulierter{"\n"}Markt</span>
+            </div>
+
           </div>
         </div>
       </div>
