@@ -142,7 +142,7 @@ export default function PersonalPage() {
                   <TH>Status</TH>
                   <TH>Gültig bis</TH>
                   <TH>Broker / Verwalter</TH>
-                  <TH></TH>
+                  <TH>{""}</TH>
                 </tr>
               </thead>
               <tbody>
