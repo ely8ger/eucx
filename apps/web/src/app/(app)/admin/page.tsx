@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { AnalyticsCharts } from "@/components/admin/AnalyticsCharts";
 
-export const metadata: Metadata = { title: "Admin Analytics — EUCX" };
+export const metadata: Metadata = { title: "Admin Analytics - EUCX" };
 
 export default function AdminDashboardPage() {
   return (

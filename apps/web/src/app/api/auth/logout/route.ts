@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
   const refreshToken = req.cookies.get("refresh_token")?.value;
 
-  // Refresh-Token aus DB revozieren (auch wenn Cookie fehlt — kein Fehler)
+  // Refresh-Token aus DB revozieren (auch wenn Cookie fehlt - kein Fehler)
   if (refreshToken) {
     const tokenHash = createHash("sha256").update(refreshToken).digest("hex");
     await db.refreshToken

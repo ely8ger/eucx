@@ -1,17 +1,17 @@
 "use client";
 
 /**
- * usePortfolio — TanStack Query Hooks für Portfolio-Daten
+ * usePortfolio - TanStack Query Hooks für Portfolio-Daten
  *
  * Hooks:
- *   useBalanceQuery()       — GET /api/portfolio/balance
- *   useActiveOrdersQuery()  — GET /api/orders (ACTIVE + PARTIALLY_FILLED)
- *   useUserDealsQuery()     — GET /api/orders (FILLED — abgeschlossene Aufträge)
- *   useCancelOrder()        — PATCH /api/orders/{id} → CANCELLED
+ *   useBalanceQuery()       - GET /api/portfolio/balance
+ *   useActiveOrdersQuery()  - GET /api/orders (ACTIVE + PARTIALLY_FILLED)
+ *   useUserDealsQuery()     - GET /api/orders (FILLED - abgeschlossene Aufträge)
+ *   useCancelOrder()        - PATCH /api/orders/{id} → CANCELLED
  *
  * Query-Key-Struktur:
- *   ["portfolio", "balance"]        — Kontostand
- *   ["portfolio", "orders", status] — Aufträge nach Status
+ *   ["portfolio", "balance"]        - Kontostand
+ *   ["portfolio", "orders", status] - Aufträge nach Status
  *
  * Invalidierung:
  *   Nach Stornierung werden "balance" und "orders" invalidiert.
@@ -134,7 +134,7 @@ async function cancelOrder(orderId: string): Promise<void> {
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Stornierung fehlgeschlagen: HTTP ${res.status}${text ? ` — ${text}` : ""}`);
+    throw new Error(`Stornierung fehlgeschlagen: HTTP ${res.status}${text ? ` - ${text}` : ""}`);
   }
 }
 
@@ -144,7 +144,7 @@ export function useBalanceQuery(): UseQueryResult<BalanceResponse, Error> {
   return useQuery({
     queryKey:   PORTFOLIO_KEYS.balance(),
     queryFn:    fetchBalance,
-    staleTime:  15_000,   // 15s — Kontostand ändern sich selten, aber wichtig aktuell
+    staleTime:  15_000,   // 15s - Kontostand ändern sich selten, aber wichtig aktuell
     gcTime:     120_000,
     retry:      2,
     refetchOnWindowFocus: true,   // Bei Tab-Rückkehr aktualisieren
@@ -155,7 +155,7 @@ export function useActiveOrdersQuery(): UseQueryResult<PortfolioOrder[], Error> 
   return useQuery({
     queryKey:        PORTFOLIO_KEYS.orders("active"),
     queryFn:         () => fetchOrders(["ACTIVE", "PARTIALLY_FILLED"]),
-    staleTime:       10_000,   // 10s — offene Orders können sich schnell ändern
+    staleTime:       10_000,   // 10s - offene Orders können sich schnell ändern
     gcTime:          60_000,
     refetchInterval: 30_000,   // Background-Refresh alle 30s
     retry:           2,

@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * useTrading — WebSocket/SSE State Management Hook
+ * useTrading - WebSocket/SSE State Management Hook
  *
  * Kern-Mechanik:
  *   1. Transport-Chain: Socket.io → SSE → Mock
  *   2. Throttled UI-Updates: Orderbook-Snapshots werden max. 1x pro 100ms
  *      an den Reducer weitergegeben. Bei 200 Events/s friert der Browser
- *      nicht ein — der Renderer sieht nur ca. 10 Updates/s.
+ *      nicht ein - der Renderer sieht nur ca. 10 Updates/s.
  *   3. Deal & Bid Events werden SOFORT dispatcht (selten, wichtig für UX).
  *
  * Throttle-Mechanismus (pendingSnapshot Pattern):
@@ -17,7 +17,7 @@
  *
  * Clean State:
  *   Gefüllte Orders (status FILLED) sind im Orderbuch-Snapshot nicht
- *   enthalten — der Server filtert bereits status IN [ACTIVE, PARTIALLY_FILLED].
+ *   enthalten - der Server filtert bereits status IN [ACTIVE, PARTIALLY_FILLED].
  *   Beim ORDERBOOK-Dispatch werden alte Einträge komplett ersetzt, nicht gemerged.
  */
 
@@ -78,7 +78,7 @@ function reducer(state: OrderbookState, action: TradingAction): OrderbookState {
       };
 
     case "OPTIMISTIC_ORDER":
-      // Sofort anzeigen — wird bei Server-Bestätigung durch echten Snapshot ersetzt
+      // Sofort anzeigen - wird bei Server-Bestätigung durch echten Snapshot ersetzt
       return action.direction === "SELL"
         ? { ...state, asks: [action.entry, ...state.asks].sort((a, b) => parseFloat(a.price) - parseFloat(b.price)) }
         : { ...state, bids: [action.entry, ...state.bids].sort((a, b) => parseFloat(b.price) - parseFloat(a.price)) };
@@ -94,7 +94,7 @@ function reducer(state: OrderbookState, action: TradingAction): OrderbookState {
       return { ...state, deals: [action.deal, ...state.deals].slice(0, 20) };
 
     case "NEW_BID":
-      // Snapshot kommt separat via orderbook_update — hier nur ignorieren
+      // Snapshot kommt separat via orderbook_update - hier nur ignorieren
       return state;
 
     case "CONNECTED":    return { ...state, connected: true };
@@ -145,7 +145,7 @@ export function useTrading(sessionId: string | null): {
     ts: number;
   } | null>(null);
 
-  // Flush alle 100ms — so sieht der React-Renderer max. 10 Renders/s
+  // Flush alle 100ms - so sieht der React-Renderer max. 10 Renders/s
   useEffect(() => {
     const id = setInterval(() => {
       if (pendingSnapshot.current) {
@@ -233,7 +233,7 @@ export function useTrading(sessionId: string | null): {
   return { state, transport, dispatch };
 }
 
-/** Optimistic-Order-Helper — außerhalb des Hooks nutzbar */
+/** Optimistic-Order-Helper - außerhalb des Hooks nutzbar */
 export function makeOptimisticEntry(
   tempId: string,
   price: string,

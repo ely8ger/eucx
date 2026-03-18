@@ -1,9 +1,9 @@
 /**
- * PATCH /api/orders/[id]  — Auftrag stornieren
+ * PATCH /api/orders/[id]  - Auftrag stornieren
  *
  * Erlaubte Transitionen: ACTIVE | PARTIALLY_FILLED → CANCELLED
  * Nur der Eigentümer des Auftrags darf stornieren.
- * Session-Phase wird NICHT geprüft — Stornierung ist immer möglich.
+ * Session-Phase wird NICHT geprüft - Stornierung ist immer möglich.
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * useOrderForm — Formular-Hook für Order-Eingabe
+ * useOrderForm - Formular-Hook für Order-Eingabe
  *
  * Verantwortlichkeiten:
  *   1. Formular-State: direction, price, qty

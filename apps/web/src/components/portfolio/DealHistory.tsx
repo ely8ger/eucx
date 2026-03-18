@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * DealHistory — Tabelle der abgeschlossenen Aufträge (FILLED)
+ * DealHistory - Tabelle der abgeschlossenen Aufträge (FILLED)
  *
  * Features:
  *   - Sortiert nach Ausführungszeit (neueste zuerst)

@@ -1,5 +1,5 @@
 /**
- * Dynamische Sitemap — /sitemap.xml
+ * Dynamische Sitemap - /sitemap.xml
  *
  * Enthält:
  *  - Statische Marketing-Seiten

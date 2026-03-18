@@ -22,7 +22,7 @@ import { validateLedgerBalance } from "@/lib/clearing/fee-calculator";
 
 // ─── Idempotency-Key Kollision ────────────────────────────────────────────────
 
-describe("Double-Spend Schutz — idempotencyKey Eindeutigkeit", () => {
+describe("Double-Spend Schutz - idempotencyKey Eindeutigkeit", () => {
 
   /**
    * Simuliert den Prisma-Unique-Constraint Fehler (P2002).
@@ -73,9 +73,9 @@ describe("Double-Spend Schutz — idempotencyKey Eindeutigkeit", () => {
   });
 });
 
-// ─── Race Condition — Advisory Lock Simulation ────────────────────────────────
+// ─── Race Condition - Advisory Lock Simulation ────────────────────────────────
 
-describe("Matching Engine — Race Condition Prävention", () => {
+describe("Matching Engine - Race Condition Prävention", () => {
 
   /**
    * Simuliert zwei gleichzeitige Matching-Runs für dieselbe Session.
@@ -139,7 +139,7 @@ describe("Matching Engine — Race Condition Prävention", () => {
 
 // ─── Negative Inventur ────────────────────────────────────────────────────────
 
-describe("Order Inventur — Negative Quantities verboten", () => {
+describe("Order Inventur - Negative Quantities verboten", () => {
 
   function calcRemaining(qty: string, filled: string): Decimal {
     return new Decimal(qty).minus(filled);
@@ -151,7 +151,7 @@ describe("Order Inventur — Negative Quantities verboten", () => {
   });
 
   it("Überfüllung (filledQty > quantity) → verletzte Invariante", () => {
-    // Dies MUSS false liefern — würde in der echten DB nie passieren
+    // Dies MUSS false liefern - würde in der echten DB nie passieren
     // weil der Matching-Engine immer min(bidQty, askQty) berechnet
     const remaining = calcRemaining("60", "70");
     expect(remaining.lt(0)).toBe(true);  // Beweist: das wäre ein Fehler
@@ -183,7 +183,7 @@ describe("Order Inventur — Negative Quantities verboten", () => {
 
 // ─── Ledger-Invariante nach Storno ────────────────────────────────────────────
 
-describe("Clearing — Ledger-Invariante nach Stornierungen", () => {
+describe("Clearing - Ledger-Invariante nach Stornierungen", () => {
 
   type LedgerEntry = {
     entryType:     "DEBIT" | "CREDIT";

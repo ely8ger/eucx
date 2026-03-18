@@ -2,7 +2,7 @@
  * POST /api/auth/2fa/setup
  *
  * Generiert ein TOTP-Secret für den eingeloggten Nutzer.
- * Das Secret wird NOCH NICHT aktiviert — erst nach Verifikation (2fa/verify).
+ * Das Secret wird NOCH NICHT aktiviert - erst nach Verifikation (2fa/verify).
  *
  * Response: { otpAuthUrl, secret }
  *   otpAuthUrl → direkt als qrcode.react Wert verwendbar

@@ -6,7 +6,7 @@
  * oder als JSON-Metadaten in einem temporären KYC-Feld.
  *
  * Da das User-Modell kein direktes documents-Feld hat, wird der Status
- * auf PENDING_VERIFICATION gesetzt — Admin sieht alle solchen User im KYC-Center.
+ * auf PENDING_VERIFICATION gesetzt - Admin sieht alle solchen User im KYC-Center.
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";

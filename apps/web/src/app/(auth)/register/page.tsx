@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Registrierungs-Seite — Behörden-Antragsformular-Stil
+ * Registrierungs-Seite - Behörden-Antragsformular-Stil
  * Pattern: ELSTER / BundID Registrierungsformular
  */
 

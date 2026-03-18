@@ -66,9 +66,9 @@ export async function GET(_req: NextRequest) {
         status:       o.status,
         currency:     o.currency,
         createdAt:    o.createdAt.toISOString(),
-        orgName:      o.organization?.name ?? "—",
-        country:      o.organization?.country ?? "—",
-        productName:  o.product?.name ?? "—",
+        orgName:      o.organization?.name ?? "-",
+        country:      o.organization?.country ?? "-",
+        productName:  o.product?.name ?? "-",
         sessionId:    o.session?.id ?? null,
         anomalies,
       };

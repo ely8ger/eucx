@@ -1,5 +1,5 @@
 /**
- * EUCX Matching Engine — Next.js API Layer
+ * EUCX Matching Engine - Next.js API Layer
  *
  * Läuft direkt in den Next.js API Routes (Vercel-kompatibel).
  * Identische Logik wie der NestJS MatchingService.
@@ -30,13 +30,13 @@
  *
  * ─── Race Conditions: Pessimistic Locking ────────────────────────────────────
  *
- * Wir nutzen PESSIMISTISCHES Locking (SELECT FOR UPDATE) — nicht optimistisches.
- * Grund: Bei Warenbörsen darf es KEINE "retry on conflict" geben — ein Deal
+ * Wir nutzen PESSIMISTISCHES Locking (SELECT FOR UPDATE) - nicht optimistisches.
+ * Grund: Bei Warenbörsen darf es KEINE "retry on conflict" geben - ein Deal
  * muss entweder 100% sicher abgeschlossen werden oder gar nicht.
  *
- * Schicht 1: pg_advisory_xact_lock(sessionId) — nur 1 Matching-Run pro Session
- * Schicht 2: SELECT FOR UPDATE auf Order-Zeilen — Row-Level Lock
- * Schicht 3: SERIALIZABLE Isolation — verhindert Phantom Reads
+ * Schicht 1: pg_advisory_xact_lock(sessionId) - nur 1 Matching-Run pro Session
+ * Schicht 2: SELECT FOR UPDATE auf Order-Zeilen - Row-Level Lock
+ * Schicht 3: SERIALIZABLE Isolation - verhindert Phantom Reads
  *
  * Ergebnis: Zwei gleichzeitige Käufer für die letzten 50t Kupfer →
  *   Transaktion A gewinnt den Lock → schließt Deal ab

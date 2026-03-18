@@ -281,7 +281,7 @@ export async function generateContract(data: ContractData): Promise<GeneratedCon
   y -= sigBoxH + 20;
 
   // ── Footer: SHA-256 Fingerprint ─────────────────────────────────────────────
-  // Dieser Footer enthält zunächst einen Platzhalter — der echte Hash wird
+  // Dieser Footer enthält zunächst einen Platzhalter - der echte Hash wird
   // erst NACH der PDF-Generierung berechnet und separat in der DB gespeichert.
   // Das PDF selbst ist nach der Erstellung unveränderlich.
 
@@ -292,9 +292,9 @@ export async function generateContract(data: ContractData): Promise<GeneratedCon
   drawText(page, "EUCX INTEGRITÄTS-FINGERPRINT / INTEGRITY FINGERPRINT", margin + 8, 66, fontBold, 7, COLORS.petrol);
   drawText(page, "Algorithmus: SHA-256  ·  Dieses Dokument ist fälschungssicher. Jede nachträgliche Änderung ergibt einen anderen Hash.", margin + 8, 53, fontNormal, 6, COLORS.gray);
 
-  // Platzhalter — wird beim Abruf mit echtem Hash ersetzt
+  // Platzhalter - wird beim Abruf mit echtem Hash ersetzt
   drawText(page, "SHA-256:", margin + 8, 40, fontBold, 6.5, COLORS.gray);
-  drawText(page, "[WIRD NACH SIGNATUR BERECHNET — SIEHE EUCX AUDITLOG]", margin + 55, 40, fontMono, 6, COLORS.gray);
+  drawText(page, "[WIRD NACH SIGNATUR BERECHNET - SIEHE EUCX AUDITLOG]", margin + 55, 40, fontMono, 6, COLORS.gray);
 
   drawText(page, `Vertrag generiert: ${new Date().toLocaleString("de-DE")}  ·  EUCX Platform  ·  eucx.eu`, margin + 8, 26, fontNormal, 6, COLORS.gray);
 

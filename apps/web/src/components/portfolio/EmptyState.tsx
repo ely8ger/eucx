@@ -1,5 +1,5 @@
 /**
- * EmptyState — Wiederverwendbarer Leer-Zustand
+ * EmptyState - Wiederverwendbarer Leer-Zustand
  *
  * Zeigt Icon + Titel + Beschreibung + optionalen CTA-Button.
  * Passend für Tabellen, Listen, Diagramme ohne Daten.

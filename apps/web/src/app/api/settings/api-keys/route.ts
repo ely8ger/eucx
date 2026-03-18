@@ -1,6 +1,6 @@
 /**
- * GET  /api/settings/api-keys — Liste aller API-Keys der Organisation
- * POST /api/settings/api-keys — Neuen API-Key erstellen
+ * GET  /api/settings/api-keys - Liste aller API-Keys der Organisation
+ * POST /api/settings/api-keys - Neuen API-Key erstellen
  *
  * Key-Format: eucx_live_{prefix6}_{random32}
  * Gespeichert: prefix (eindeutig) + bcrypt-Hash des Full-Keys

@@ -35,7 +35,7 @@ export default function PortfolioPage() {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("active") });
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.balance() });
       const qty = parseFloat(e.filledQuantity).toLocaleString("de-DE");
-      toast.info("Teilausführung", `${qty} t ausgeführt — ${parseFloat(e.remainingQuantity).toLocaleString("de-DE")} t verbleiben`);
+      toast.info("Teilausführung", `${qty} t ausgeführt - ${parseFloat(e.remainingQuantity).toLocaleString("de-DE")} t verbleiben`);
     },
     onOrderCancelled: (e: OrderCancelledEvent) => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("active") });

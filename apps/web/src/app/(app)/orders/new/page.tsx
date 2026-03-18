@@ -134,10 +134,10 @@ export default function NewOrderPage() {
             {/* Warenidentifikation */}
             <Card header={<span className="text-sm font-semibold text-gov-text">Warenidentifikation</span>}>
               <div className="grid grid-cols-2 gap-4 pt-1">
-                <Select label="Warengruppe" required placeholder="— auswählen —" {...register("category")} error={errors.category?.message}>
+                <Select label="Warengruppe" required placeholder="- auswählen -" {...register("category")} error={errors.category?.message}>
                   {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                 </Select>
-                <Select label="Untergruppe" required placeholder="— auswählen —" {...register("subcategory")} error={errors.subcategory?.message}>
+                <Select label="Untergruppe" required placeholder="- auswählen -" {...register("subcategory")} error={errors.subcategory?.message}>
                   {(SUBCATEGORIES[category] ?? []).map((s) => <option key={s} value={s}>{s}</option>)}
                 </Select>
                 <Input label="Warenbezeichnung" required placeholder="z. B. Walzdraht" {...register("commodity")} error={errors.commodity?.message} />
@@ -177,10 +177,10 @@ export default function NewOrderPage() {
             <Card header={<span className="text-sm font-semibold text-gov-text">Preisangabe</span>}>
               <div className="grid grid-cols-3 gap-4 pt-1">
                 <Select label="Währung" required {...register("currency")}>
-                  <option value="EUR">EUR — Euro</option>
-                  <option value="USD">USD — US-Dollar</option>
-                  <option value="CHF">CHF — Schweizer Franken</option>
-                  <option value="GBP">GBP — Britisches Pfund</option>
+                  <option value="EUR">EUR - Euro</option>
+                  <option value="USD">USD - US-Dollar</option>
+                  <option value="CHF">CHF - Schweizer Franken</option>
+                  <option value="GBP">GBP - Britisches Pfund</option>
                 </Select>
                 <Input label="Preis netto (je Einheit)" required type="number" step="0.01" placeholder="0,00" {...register("priceNet")} error={errors.priceNet?.message} />
                 <Select label="MwSt.-Satz" required {...register("vatRate")}>
@@ -218,7 +218,7 @@ export default function NewOrderPage() {
             {/* Lieferung & Zahlung */}
             <Card header={<span className="text-sm font-semibold text-gov-text">Lieferung & Zahlung</span>}>
               <div className="grid grid-cols-2 gap-4 pt-1">
-                <Select label="Lieferbedingungen (Incoterms)" required placeholder="— auswählen —" {...register("deliveryTerms")} error={errors.deliveryTerms?.message}>
+                <Select label="Lieferbedingungen (Incoterms)" required placeholder="- auswählen -" {...register("deliveryTerms")} error={errors.deliveryTerms?.message}>
                   {DELIVERY_TERMS.map((t) => <option key={t} value={t}>{t}</option>)}
                 </Select>
                 <Input label="Lieferort / Lagerort" required placeholder="z. B. Hamburg, Lager Nord" {...register("deliveryPlace")} error={errors.deliveryPlace?.message} />

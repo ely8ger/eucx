@@ -1,5 +1,5 @@
 /**
- * EUCX ClearingService — Double-Entry Buchführung & Financial Settlement
+ * EUCX ClearingService - Double-Entry Buchführung & Financial Settlement
  *
  * Wird aufgerufen wenn ein Deal STATUS = CONTRACT_SIGNED erreicht.
  *
@@ -73,7 +73,7 @@ export async function runSettlement(dealId: string): Promise<SettlementResult> {
 
   if (deal.status !== "CONTRACT_SIGNED") {
     throw new Error(
-      `Deal ${dealId} hat Status ${deal.status} — nur CONTRACT_SIGNED kann gecleart werden`
+      `Deal ${dealId} hat Status ${deal.status} - nur CONTRACT_SIGNED kann gecleart werden`
     );
   }
 
@@ -124,7 +124,7 @@ export async function runSettlement(dealId: string): Promise<SettlementResult> {
       },
     });
 
-    // 2. LedgerEntries — 4 Buchungssätze (8 Einträge)
+    // 2. LedgerEntries - 4 Buchungssätze (8 Einträge)
     const entries = buildLedgerEntries(
       dealId,
       settlement.id,
@@ -139,13 +139,13 @@ export async function runSettlement(dealId: string): Promise<SettlementResult> {
       skipDuplicates: true,  // Idempotenz: @unique(idempotencyKey) schlägt fehlt, skip
     });
 
-    // Bilanzprüfung — DEBIT == CREDIT Invariante
+    // Bilanzprüfung - DEBIT == CREDIT Invariante
     const balance = validateLedgerBalance(entries.map((e) => ({
       entryType: e.entryType,
       amount:    e.amount,
     })));
     if (!balance) {
-      throw new Error("Bilanzierungsfehler: DEBIT ≠ CREDIT — Transaktion abgebrochen");
+      throw new Error("Bilanzierungsfehler: DEBIT ≠ CREDIT - Transaktion abgebrochen");
     }
 
     // 3. Wallet-Salden aktualisieren

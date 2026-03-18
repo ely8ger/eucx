@@ -1,9 +1,9 @@
 /**
- * EUCX OHLC-Queries — PostgreSQL Raw-SQL für Time-Series-Aggregation
+ * EUCX OHLC-Queries - PostgreSQL Raw-SQL für Time-Series-Aggregation
  *
  * Warum Raw-SQL statt Prisma-ORM:
  *   OHLC braucht FIRST/LAST-Wert eines geordneten Fensters.
- *   PostgreSQL unterstützt das nativ via ROW_NUMBER()-Window-Functions —
+ *   PostgreSQL unterstützt das nativ via ROW_NUMBER()-Window-Functions -
  *   Prisma ORM kann keine Window-Functions ausdrücken.
  *
  * ─── OHLC-Algorithmus ────────────────────────────────────────────────────────
@@ -51,7 +51,7 @@ export interface OhlcRow {
 
 /** Lightweight-Charts-kompatibles Candlestick-Datum */
 export interface CandleData {
-  time:   number;   // Unix-Timestamp (Sekunden) — Lightweight Charts erwartet das
+  time:   number;   // Unix-Timestamp (Sekunden) - Lightweight Charts erwartet das
   open:   number;
   high:   number;
   low:    number;
@@ -87,7 +87,7 @@ export async function computeOhlc(
   until:     Date = new Date(),
 ): Promise<OhlcRow[]> {
   // ── Fenster-Ausdruck für PostgreSQL ──────────────────────────────────────
-  // FIFTEEN_MIN braucht floor(extract(minute)/15)*15 — etwas aufwändiger
+  // FIFTEEN_MIN braucht floor(extract(minute)/15)*15 - etwas aufwändiger
   const periodExpr =
     interval === "FIFTEEN_MIN"
       ? `date_trunc('hour', d.created_at) + INTERVAL '1 minute' * (floor(extract(minute FROM d.created_at) / 15) * 15)`
@@ -103,8 +103,8 @@ export async function computeOhlc(
    * SUM(quantity) für Volume, SUM(total_value) für Turnover.
    *
    * Gesamtstruktur:
-   *   1. CTE "ordered" — alle relevanten Deals mit period_start + Zeilennummern
-   *   2. Hauptquery — aggregiert über period_start
+   *   1. CTE "ordered" - alle relevanten Deals mit period_start + Zeilennummern
+   *   2. Hauptquery - aggregiert über period_start
    */
   type RawRow = {
     period_start: Date;
@@ -171,7 +171,7 @@ export async function computeOhlc(
 
 /**
  * Liest OHLC-Kerzen aus dem market_candles Cache.
- * Deutlich schneller als computeOhlc() — nutzt den gecachten Index.
+ * Deutlich schneller als computeOhlc() - nutzt den gecachten Index.
  */
 export async function getCachedCandles(
   productId: string,

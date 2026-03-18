@@ -5,7 +5,7 @@
  * Liest aus der Wallet-Tabelle (Double-Entry-Buchhaltung via Clearing Service).
  *
  * Wenn noch kein Wallet existiert (noch keine Settlements), werden Nullwerte
- * zurückgegeben — graceful empty state statt 404.
+ * zurückgegeben - graceful empty state statt 404.
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";

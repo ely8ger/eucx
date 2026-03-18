@@ -54,7 +54,7 @@ export default function AgbPage() {
             Allgemeine Geschäftsbedingungen
           </h1>
           <p style={{ fontSize: 15, color: "rgba(255,255,255,.5)", lineHeight: 1.7, margin: "0 0 12px" }}>
-            EUCX GmbH — Betreiberin des Organisierten Handelssystems &ldquo;EUCX — European Union Commodity Exchange&rdquo;
+            EUCX GmbH - Betreiberin des Organisierten Handelssystems &ldquo;EUCX - European Union Commodity Exchange&rdquo;
           </p>
           <p style={{ fontSize: 13, color: "rgba(255,255,255,.3)", margin: 0 }}>
             Version 1.0 · Gültig ab 1. April 2026 · Rechtsstand: Deutschland / EU
@@ -103,7 +103,7 @@ export default function AgbPage() {
             <span style={S.label}>Präambel</span>
             <p style={{ ...S.p, marginBottom: 8 }}>
               Die EUCX GmbH (nachfolgend &ldquo;EUCX&rdquo; oder &ldquo;Betreiberin&rdquo;) betreibt die digitale Handelsplattform
-              &ldquo;EUCX — European Union Commodity Exchange&rdquo; als Organisiertes Handelssystem (OTF) im Sinne
+              &ldquo;EUCX - European Union Commodity Exchange&rdquo; als Organisiertes Handelssystem (OTF) im Sinne
               des § 72 Wertpapierhandelsgesetz (WpHG) in Verbindung mit Art. 4 Abs. 1 Nr. 23 und Art. 18–20 der
               Richtlinie 2014/65/EU (MiFID II).
             </p>

@@ -1,15 +1,15 @@
 "use client";
 
 /**
- * useOhlcQuery — TanStack Query Hook für OHLC-Kerzendaten
+ * useOhlcQuery - TanStack Query Hook für OHLC-Kerzendaten
  *
  * Endpunkt: GET /api/market/{productId}/candles?interval={iv}&limit={n}
  * (Next.js Route → liest aus market_candles Cache, < 5ms)
  *
  * Cache-Strategie:
- *   staleTime:      30s  — REST-Cache-TTL des Backends; kein unnötiges Re-Fetch
- *   refetchInterval: 60s — Background-Refresh damit Chart auch ohne WebSocket aktuell bleibt
- *   gcTime:          5m  — Daten im Speicher halten beim Intervall-Wechsel (kein Re-Fetch)
+ *   staleTime:      30s  - REST-Cache-TTL des Backends; kein unnötiges Re-Fetch
+ *   refetchInterval: 60s - Background-Refresh damit Chart auch ohne WebSocket aktuell bleibt
+ *   gcTime:          5m  - Daten im Speicher halten beim Intervall-Wechsel (kein Re-Fetch)
  *
  * Query-Key-Struktur: ["ohlc", productId, interval]
  *   → Intervall-Wechsel → neuer Key → sofortiger Re-Fetch für das neue Intervall
@@ -78,7 +78,7 @@ async function fetchCandles(
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`OHLC-Fetch fehlgeschlagen: HTTP ${res.status}${text ? ` — ${text}` : ""}`);
+    throw new Error(`OHLC-Fetch fehlgeschlagen: HTTP ${res.status}${text ? ` - ${text}` : ""}`);
   }
 
   return res.json() as Promise<OhlcApiResponse>;

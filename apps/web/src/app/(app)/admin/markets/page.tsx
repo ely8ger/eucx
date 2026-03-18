@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { GlobalOrdersTable } from "@/components/admin/GlobalOrdersTable";
 
-export const metadata: Metadata = { title: "Live-Märkte — EUCX Admin" };
+export const metadata: Metadata = { title: "Live-Märkte - EUCX Admin" };
 
 export default function AdminMarketsPage() {
   return (

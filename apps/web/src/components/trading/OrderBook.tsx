@@ -1,14 +1,14 @@
 "use client";
 
 /**
- * OrderBook — Hochperformantes Orderbuch mit Echtzeit-Animationen
+ * OrderBook - Hochperformantes Orderbuch mit Echtzeit-Animationen
  *
  * Performance-Strategie:
  *   - React.memo auf Zeilen-Ebene: AskRow/BidRow re-rendern nur wenn sich
  *     price, remaining, org oder flashVersion für DIESE Zeile geändert hat.
  *   - useMemo für Spread und Tiefenberechnung.
  *   - Heatmap: Maximales Volumen im Buch bestimmt Balkenbreite (CSS width%).
- *     Absolut positionierter hintergrund — Layout wird NICHT verschoben.
+ *     Absolut positionierter hintergrund - Layout wird NICHT verschoben.
  *
  * Flash-Animationen:
  *   1. Menge-Flash (gelb): Wenn `remaining` einer Order sich ändert
@@ -433,7 +433,7 @@ const OrderBook = memo(function OrderBook({
             </span>
           </>
         ) : (
-          <span className={cn("font-mono", isDark ? "text-slate-600" : "text-[#999999]")}>—</span>
+          <span className={cn("font-mono", isDark ? "text-slate-600" : "text-[#999999]")}>-</span>
         )}
       </div>
 

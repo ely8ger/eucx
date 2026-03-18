@@ -10,7 +10,7 @@
  *   6. Antworte mit contractId + edsToken (User muss Token bestätigen)
  *
  * GET /api/contracts?dealId=<uuid>
- *   Gibt Contract-Status + contractId zurück (kein PDF in GET — zu groß)
+ *   Gibt Contract-Status + contractId zurück (kein PDF in GET - zu groß)
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
       pdfHash,
       pdfSizeBytes,
       status:     "PENDING_SIGNATURE",
-      edsToken:   rawToken,          // Nur bei Generierung zurückgegeben — nie wieder
+      edsToken:   rawToken,          // Nur bei Generierung zurückgegeben - nie wieder
       edsTokenExp: tokenExpiry.toISOString(),
     }, { status: 201 });
 

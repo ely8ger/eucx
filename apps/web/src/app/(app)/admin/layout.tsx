@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Admin-Layout — Zweite Navigationsebene für /admin/*
+ * Admin-Layout - Zweite Navigationsebene für /admin/*
  *
  * Client-seitiger RBAC-Guard: liest Rolle aus JWT-Cookie.
  * (Echte Sicherheit liegt in der Next.js Middleware.)

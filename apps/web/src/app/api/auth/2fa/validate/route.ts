@@ -2,7 +2,7 @@
  * POST /api/auth/2fa/validate
  *
  * Validiert den TOTP-Code beim Login (nach Passwort-Check).
- * Kein auth-Header nötig — nutzt pendingUserId aus temporärem Cookie.
+ * Kein auth-Header nötig - nutzt pendingUserId aus temporärem Cookie.
  *
  * body: { email: string; code: string }
  *
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
   const user = await db.user.findUnique({
     where:   { email: parsed.data.email },
     include: { organization: { select: { id: true, name: true } } },
-    // select is not used — include returns all user fields
+    // select is not used - include returns all user fields
   });
 
   if (!user || !user.totpSecret || !user.totpEnabled) {

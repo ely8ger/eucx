@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * TradingTerminalWrapper — Client-Wrapper für den Trading-Terminal
+ * TradingTerminalWrapper - Client-Wrapper für den Trading-Terminal
  *
  * Kapselt das interaktive Trading-UI (Orderbuch, Chart, Order-Form) als
  * Client-Komponente, damit die übergeordnete SSR-Seite (trading/[symbol]/page.tsx)

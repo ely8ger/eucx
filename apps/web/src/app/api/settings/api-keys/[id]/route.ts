@@ -1,5 +1,5 @@
 /**
- * DELETE /api/settings/api-keys/[id] — API-Key widerrufen (isActive = false)
+ * DELETE /api/settings/api-keys/[id] - API-Key widerrufen (isActive = false)
  *
  * Soft-delete: Key bleibt in DB für Audit-Trail, wird aber deaktiviert.
  * Nur Keys der eigenen Organisation können widerrufen werden.

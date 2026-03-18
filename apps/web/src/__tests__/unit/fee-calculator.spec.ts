@@ -40,7 +40,7 @@ function d(val: string) { return new Decimal(val); }
 
 // ─── Gebühren-Staffel ─────────────────────────────────────────────────────────
 
-describe("FeeCalculator — Gebühren-Staffel", () => {
+describe("FeeCalculator - Gebühren-Staffel", () => {
 
   it("unter 100.000 EUR → 50 BPS (0.50%)", () => {
     const r = calc("50000", "DE", "DE");
@@ -111,7 +111,7 @@ describe("FeeCalculator — Gebühren-Staffel", () => {
 
 // ─── MwSt. & EU Reverse Charge ────────────────────────────────────────────────
 
-describe("FeeCalculator — MwSt. & EU Reverse Charge", () => {
+describe("FeeCalculator - MwSt. & EU Reverse Charge", () => {
 
   it("Inland DE → DE: MwSt. 19% wird berechnet (positiver Betrag)", () => {
     const r = calc("100000", "DE", "DE");
@@ -169,7 +169,7 @@ describe("FeeCalculator — MwSt. & EU Reverse Charge", () => {
   });
 
   it("verschiedene EU-Länder als Verkäufer: DE→AT, vatRate = 20%", () => {
-    // AT hat 20% MwSt. — aber Reverse Charge gilt für cross-border B2B
+    // AT hat 20% MwSt. - aber Reverse Charge gilt für cross-border B2B
     // Mit taxId → Reverse Charge, vatRate=0
     const r = calc("100000", "DE", "AT", "ATU12345678");
     expect(r.isReverseCharge).toBe(true);
@@ -179,7 +179,7 @@ describe("FeeCalculator — MwSt. & EU Reverse Charge", () => {
 
 // ─── Decimal-Präzision & Sicherheit ──────────────────────────────────────────
 
-describe("FeeCalculator — Decimal-Präzision", () => {
+describe("FeeCalculator - Decimal-Präzision", () => {
 
   it("Kein IEEE 754-Fehler: 0.1 + 0.2 = exakt 0.3 mit Decimal.js", () => {
     // Native float: 0.1 + 0.2 === 0.30000000000000004 → FALSCH
@@ -228,10 +228,10 @@ describe("FeeCalculator — Decimal-Präzision", () => {
   });
 });
 
-// ─── validateLedgerBalance — Double-Entry Invariante ─────────────────────────
+// ─── validateLedgerBalance - Double-Entry Invariante ─────────────────────────
 
-describe("validateLedgerBalance — Double-Entry Buchführung", () => {
-  // WICHTIG: validateLedgerBalance erwartet { entryType, amount } — NICHT "type"
+describe("validateLedgerBalance - Double-Entry Buchführung", () => {
+  // WICHTIG: validateLedgerBalance erwartet { entryType, amount } - NICHT "type"
 
   it("ausgeglichener Satz: SUM(DEBIT) == SUM(CREDIT) → true", () => {
     const entries = [

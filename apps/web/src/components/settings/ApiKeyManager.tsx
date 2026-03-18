@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * ApiKeyManager — API-Key-Verwaltung für /settings/api
+ * ApiKeyManager - API-Key-Verwaltung für /settings/api
  *
  * Features:
  * - Tabelle: Name, Prefix (maskiert als eucx_***a8f), Scopes, Status, Ablauf, Letzte Nutzung
@@ -57,7 +57,7 @@ function getAuthHeader(): string {
 }
 
 function fmtDate(iso: string | null): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   return new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 

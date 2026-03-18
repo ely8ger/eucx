@@ -4,10 +4,10 @@
  * Exportiert die eigenen abgeschlossenen Trades als CSV oder Excel (XLSX).
  *
  * Query-Parameter:
- *   format     — "csv" | "xlsx" (Default: "csv")
- *   from       — ISO-Datum, z.B. "2026-01-01"
- *   to         — ISO-Datum, z.B. "2026-03-31"
- *   productId  — optional, Filter auf ein Produkt
+ *   format     - "csv" | "xlsx" (Default: "csv")
+ *   from       - ISO-Datum, z.B. "2026-01-01"
+ *   to         - ISO-Datum, z.B. "2026-03-31"
+ *   productId  - optional, Filter auf ein Produkt
  *
  * Zweck: Händler exportieren ihre Trades für die interne Buchhaltung.
  * Spalten:
@@ -236,8 +236,8 @@ export async function GET(req: NextRequest) {
     const metaSheet = XLSX.utils.aoa_to_sheet([
       ["Export erstellt am:", new Date().toLocaleString("de-DE")],
       ["Organisation:",       user.organization.name],
-      ["Zeitraum von:",       fromDate?.toLocaleDateString("de-DE") ?? "—"],
-      ["Zeitraum bis:",       toDate?.toLocaleDateString("de-DE")   ?? "—"],
+      ["Zeitraum von:",       fromDate?.toLocaleDateString("de-DE") ?? "-"],
+      ["Zeitraum bis:",       toDate?.toLocaleDateString("de-DE")   ?? "-"],
       ["Anzahl Trades:",      deals.length],
     ]);
     XLSX.utils.book_append_sheet(wb, metaSheet, "Export-Info");

@@ -1,5 +1,5 @@
 /**
- * Unit-Tests: Matching Engine — Price-Time Priority (FIFO)
+ * Unit-Tests: Matching Engine - Price-Time Priority (FIFO)
  *
  * Strategie: White-Box-Tests der Matching-Logik.
  * DB wird vollständig gemockt (kein echtes Prisma, kein Neon).
@@ -11,7 +11,7 @@
  *   3. Partial Fill (ASK qty > BID qty → BID komplett, ASK teilgefüllt)
  *   4. Kein Match (BID.price < ASK.price)
  *   5. Preis-Priorät: günstigstes ASK gewinnt
- *   6. Zeit-Priorität: bei gleichem Preis — ältestes ASK gewinnt
+ *   6. Zeit-Priorität: bei gleichem Preis - ältestes ASK gewinnt
  *   7. Mehrere Matches in einer Runde
  *   8. Race Condition: Advisory-Lock verhindert Doppelbuchung
  */
@@ -19,7 +19,7 @@
 import Decimal from "decimal.js";
 
 // ─── Matching Logic isolieren ─────────────────────────────────────────────────
-// Wir testen die mathematische Kernlogik direkt — ohne DB-Overhead.
+// Wir testen die mathematische Kernlogik direkt - ohne DB-Overhead.
 // Die matching-engine.ts ist eng mit Prisma verkoppelt, deshalb extrahieren
 // wir die reine Kalkulationslogik als testbare Funktion hier.
 
@@ -99,7 +99,7 @@ function makeOrder(overrides: Partial<MockOrder> & { direction: "BUY"|"SELL"; pr
 
 // ─── Tests ───────────────────────────────────────────────────────────────────
 
-describe("Matching Engine — Price-Time Priority", () => {
+describe("Matching Engine - Price-Time Priority", () => {
 
   // ── Vollständiger Match ──────────────────────────────────────────────────
 
@@ -123,7 +123,7 @@ describe("Matching Engine — Price-Time Priority", () => {
 
     const result = computeMatch(bid, ask);
     expect(result?.matches).toBe(true);
-    // ASK ist älter (standard createdAt = now — in gleichem Aufruf, bid etwas später)
+    // ASK ist älter (standard createdAt = now - in gleichem Aufruf, bid etwas später)
     // Price-Time: wer zuerst → ASK entscheidet den Preis
     // Hier beide gleichzeitig, also bidPrice gewinnt (bid.createdAt <= ask.createdAt)
     // Für den Test: Preis ist einer der beiden Preise (540 oder 545)
@@ -201,7 +201,7 @@ describe("Matching Engine — Price-Time Priority", () => {
     expect(sorted[2].pricePerUnit).toBe("550");
   });
 
-  it("Zeit-Priorität: bei gleichem Preis — ältestes ASK zuerst", () => {
+  it("Zeit-Priorität: bei gleichem Preis - ältestes ASK zuerst", () => {
     const t1 = new Date("2026-01-01T10:00:00Z");
     const t2 = new Date("2026-01-01T10:01:00Z");
     const t3 = new Date("2026-01-01T10:02:00Z");
@@ -284,7 +284,7 @@ describe("Matching Engine — Price-Time Priority", () => {
 
 // ─── Double-Spend Prävention (logisch) ──────────────────────────────────────
 
-describe("Matching Engine — Double-Spend Invarianten", () => {
+describe("Matching Engine - Double-Spend Invarianten", () => {
 
   it("filledQty überschreitet nie quantity", () => {
     const ask    = makeOrder({ direction: "SELL", pricePerUnit: "540", quantity: "50" });
@@ -303,7 +303,7 @@ describe("Matching Engine — Double-Spend Invarianten", () => {
 
     // Gesamte gematchte Menge == ursprüngliche ASK-Menge
     const totalMatched = new Decimal(r1!.matchQty).plus(r2!.matchQty);
-    expect(totalMatched.toString()).toBe("50");   // genau 50t — nicht mehr
+    expect(totalMatched.toString()).toBe("50");   // genau 50t - nicht mehr
   });
 
   it("leeres Orderbuch (keine ASKs): kein Match", () => {

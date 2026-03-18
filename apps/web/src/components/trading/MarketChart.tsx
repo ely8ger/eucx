@@ -1,15 +1,15 @@
 "use client";
 
 /**
- * MarketChart — Interaktiver OHLC-Candlestick-Chart (TradingView Lightweight Charts v5)
+ * MarketChart - Interaktiver OHLC-Candlestick-Chart (TradingView Lightweight Charts v5)
  *
  * ─── Daten-Architektur ────────────────────────────────────────────────────────
  *
  *   1. Initiale Daten: TanStack Query → GET /api/market/{productId}/candles
- *      staleTime: 30s, refetchInterval: 60s — automatisches Background-Refresh
+ *      staleTime: 30s, refetchInterval: 60s - automatisches Background-Refresh
  *
  *   2. Live-Updates: useMarketTicker({symbol}) via SocketProvider
- *      Wenn neuer Preis eintrifft → series.update(candle) — kein Re-Mount!
+ *      Wenn neuer Preis eintrifft → series.update(candle) - kein Re-Mount!
  *      Algorithmus:
  *        a) Liegt der Trade im aktuellen Kerzen-Zeitraum?
  *           → Bestehende Kerze: update(high/low/close)
@@ -30,9 +30,9 @@
  *
  * ─── Props ───────────────────────────────────────────────────────────────────
  *
- *   productId  — Produkt-UUID (Pflicht)
- *   symbol     — Trading-Symbol (z.B. "REBAR-EU") — aktiviert Live-Ticker-Updates
- *   className  — Optionale CSS-Klasse für den Wrapper
+ *   productId  - Produkt-UUID (Pflicht)
+ *   symbol     - Trading-Symbol (z.B. "REBAR-EU") - aktiviert Live-Ticker-Updates
+ *   className  - Optionale CSS-Klasse für den Wrapper
  */
 
 import {
@@ -245,7 +245,7 @@ const MarketChart: FC<MarketChartProps> = ({ productId, symbol, className = "" }
       liveDataRef.current = [...liveData, updated];
     }
 
-    // Lightweight Charts series.update() — kein Re-Mount, kein setData()
+    // Lightweight Charts series.update() - kein Re-Mount, kein setData()
     candleSeries.update(updated as unknown as CandlestickData);
 
     if (volSeries && qty > 0) {

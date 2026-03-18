@@ -1,5 +1,5 @@
 /**
- * Web App Manifest — /manifest.webmanifest
+ * Web App Manifest - /manifest.webmanifest
  *
  * Grundlage für "Add to Home Screen" auf Mobile und PWA-Erkennung.
  */
@@ -7,7 +7,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name:             "EUCX — European Union Commodity Exchange",
+    name:             "EUCX - European Union Commodity Exchange",
     short_name:       "EUCX",
     description:      "Institutioneller B2B-Rohstoffhandel in der EU",
     start_url:        "/dashboard",

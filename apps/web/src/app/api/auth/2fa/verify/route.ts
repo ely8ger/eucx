@@ -4,7 +4,7 @@
  * Bestätigt den 2FA-Setup mit dem ersten TOTP-Code.
  * Aktiviert 2FA auf dem Konto (totpEnabled = true).
  *
- * body: { code: string }  — 6-stelliger TOTP-Code
+ * body: { code: string }  - 6-stelliger TOTP-Code
  */
 import { NextRequest, NextResponse } from "next/server";
 import { verify as totpVerify }      from "otplib";

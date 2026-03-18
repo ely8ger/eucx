@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * SocketProvider — Globale WebSocket-Verbindung (Single Connection Pattern)
+ * SocketProvider - Globale WebSocket-Verbindung (Single Connection Pattern)
  *
  * Warum ein globaler Provider?
  *   Ohne Provider erstellt jede Komponente/Hook ihre eigene Socket-Verbindung.
@@ -15,7 +15,7 @@
  *
  * JWT-Authentifizierung:
  *   Socket.io übergibt { auth: { token } } beim Handshake. Das Token wird
- *   beim Connect-Zeitpunkt aus dem Cookie oder localStorage gelesen —
+ *   beim Connect-Zeitpunkt aus dem Cookie oder localStorage gelesen -
  *   nicht gecacht, damit Token-Rotation funktioniert.
  *
  * Nutzung:
@@ -78,7 +78,7 @@ function getToken(): string | null {
 
 interface SocketProviderProps {
   children:   ReactNode;
-  /** NestJS API URL — defaults to NEXT_PUBLIC_API_URL */
+  /** NestJS API URL - defaults to NEXT_PUBLIC_API_URL */
   apiUrl?:    string;
   namespace?: string;
 }
@@ -120,7 +120,7 @@ export function SocketProvider({
       auth:              { token },
       transports:        ["websocket", "polling"],
       timeout:           5_000,
-      // Socket.io's eigenes Reconnect deaktivieren — wir steuern das selbst
+      // Socket.io's eigenes Reconnect deaktivieren - wir steuern das selbst
       reconnection:      false,
       forceNew:          true,
     });
@@ -165,7 +165,7 @@ export function SocketProvider({
     }, delay);
   }, [connect]);
 
-  /** Expliziter Reconnect — setzt Backoff zurück */
+  /** Expliziter Reconnect - setzt Backoff zurück */
   const reconnect = useCallback(() => {
     attemptRef.current = 0;
     setReconnectAttempt(0);
@@ -200,7 +200,7 @@ export function SocketProvider({
       reconnectAttempt,
       reconnect,
     }),
-    // socketRef.current ist kein reaktiver Wert — connected/reconnectAttempt sind es
+    // socketRef.current ist kein reaktiver Wert - connected/reconnectAttempt sind es
     [connected, reconnectAttempt, reconnect] // eslint-disable-line react-hooks/exhaustive-deps
   );
 

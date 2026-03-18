@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { KillSwitch }    from "@/components/admin/KillSwitch";
 
-export const metadata: Metadata = { title: "Notfall-Konsole — EUCX Admin" };
+export const metadata: Metadata = { title: "Notfall-Konsole - EUCX Admin" };
 
 export default function AdminEmergencyPage() {
   return (

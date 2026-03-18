@@ -4,14 +4,14 @@
  * Dynamische OG-Image-Generierung (1200×630) via next/og (Satori Engine).
  *
  * Parameter:
- *   symbol  — Produktname (URL-encoded)
- *   price   — Letzter Schlusskurs
- *   change  — 24h-Änderung in % (z.B. "1.20" oder "-0.80")
- *   unit    — Preiseinheit (default: "€/t")
- *   high    — 24h-Hoch
- *   low     — 24h-Tief
- *   vol     — 24h-Volumen in Tonnen
- *   p       — Sparkline-Daten (komma-getrennte Schlusskurse, max. 48 Werte)
+ *   symbol  - Produktname (URL-encoded)
+ *   price   - Letzter Schlusskurs
+ *   change  - 24h-Änderung in % (z.B. "1.20" oder "-0.80")
+ *   unit    - Preiseinheit (default: "€/t")
+ *   high    - 24h-Hoch
+ *   low     - 24h-Tief
+ *   vol     - 24h-Volumen in Tonnen
+ *   p       - Sparkline-Daten (komma-getrennte Schlusskurse, max. 48 Werte)
  *
  * Cache: public, 15min (via next.config.ts headers)
  */
@@ -24,16 +24,16 @@ export const runtime = "edge";
 // ── Formatierung ──────────────────────────────────────────────────────────────
 
 function fmtPrice(raw: string | null): string {
-  if (!raw || raw === "—") return "—";
+  if (!raw || raw === "-") return "-";
   const n = parseFloat(raw);
-  if (isNaN(n)) return "—";
+  if (isNaN(n)) return "-";
   return new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
 }
 
 function fmtVol(raw: string | null): string {
-  if (!raw) return "—";
+  if (!raw) return "-";
   const n = parseFloat(raw);
-  if (isNaN(n)) return "—";
+  if (isNaN(n)) return "-";
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)} Mio. t`;
   if (n >= 1_000)     return `${(n / 1_000).toFixed(1)} Tsd. t`;
   return `${n.toFixed(0)} t`;

@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
     // ── 5. Create Order (idempotent) ───────────────────────────────
     const order = await db.order.upsert({
       where:  { idempotencyKey: input.idempotencyKey },
-      update: {}, // noop — idempotent
+      update: {}, // noop - idempotent
       create: {
         sessionId:      input.sessionId,
         userId:         user.id,
@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// GET /api/orders — eigene Aufträge des eingeloggten Nutzers
+// GET /api/orders - eigene Aufträge des eingeloggten Nutzers
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {

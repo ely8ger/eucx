@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * API-Key-Einstellungen — /settings/api
+ * API-Key-Einstellungen - /settings/api
  */
 
 import { ApiKeyManager } from "@/components/settings/ApiKeyManager";

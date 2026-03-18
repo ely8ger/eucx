@@ -4,11 +4,11 @@ import { BASE_URL } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: {
-    default:  "EUCX — European Union Commodity Exchange",
+    default:  "EUCX - European Union Commodity Exchange",
     template: "%s | EUCX",
   },
   description:
-    "Digitale B2B-Warenbörse für institutionellen Rohstoffhandel in der EU — " +
+    "Digitale B2B-Warenbörse für institutionellen Rohstoffhandel in der EU - " +
     "Metalle, Holz, Agrar, Chemie, Energie. Transparentes Orderbuch, sofortige Abwicklung.",
   keywords: [
     "European Commodity Exchange",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 
   openGraph: {
     type:     "website",
-    siteName: "EUCX — European Union Commodity Exchange",
+    siteName: "EUCX - European Union Commodity Exchange",
     locale:   "de_DE",
     url:      BASE_URL,
     images: [
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
         url:    `/api/og?symbol=EUCX%20Exchange`,
         width:  1200,
         height: 630,
-        alt:    "EUCX — European Union Commodity Exchange",
+        alt:    "EUCX - European Union Commodity Exchange",
       },
     ],
   },

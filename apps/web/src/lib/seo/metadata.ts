@@ -1,8 +1,8 @@
 /**
- * SEO-Hilfsfunktionen — gemeinsam genutzte Metadata-Utilities
+ * SEO-Hilfsfunktionen - gemeinsam genutzte Metadata-Utilities
  *
  * Wird von allen Seiten mit dynamischen Metadaten genutzt.
- * Caching: revalidate=900s (15min) — ausreichend frisch für Crawler,
+ * Caching: revalidate=900s (15min) - ausreichend frisch für Crawler,
  * schont die DB und verhindert DDoS durch Bot-Traffic.
  */
 import type { Metadata } from "next";
@@ -22,7 +22,7 @@ export const CATEGORY_LABELS: Record<string, string> = {
 
 // Bekannte `sameAs`-Identifier für Rohstoff-Kategorien (schema.org Identitätsverknüpfung)
 // Zweck: Suchmaschinen erkennen, dass EUCX-"Kupfer" das gleiche Konzept wie
-// Wikidata Q753 (Copper) ist — verbessert Entity-Erkennung, KEIN Ranking-Trick.
+// Wikidata Q753 (Copper) ist - verbessert Entity-Erkennung, KEIN Ranking-Trick.
 export const CATEGORY_SAME_AS: Record<string, string[]> = {
   METALS:      [
     "https://www.wikidata.org/wiki/Q753",          // Copper (generisch)
@@ -81,10 +81,10 @@ interface FinancialProductJsonLd {
  * Erstellt JSON-LD Structured Data nach schema.org.
  *
  * Typen:
- *   FinancialProduct         — Das Produkt selbst
- *   ExchangeRateSpecification — Aktueller Preis mit Zeitstempel
- *   Dataset                  — Maschinenlesbare Preis-Zeitreihe (Google Data Search)
- *   BreadcrumbList           — Navigation
+ *   FinancialProduct         - Das Produkt selbst
+ *   ExchangeRateSpecification - Aktueller Preis mit Zeitstempel
+ *   Dataset                  - Maschinenlesbare Preis-Zeitreihe (Google Data Search)
+ *   BreadcrumbList           - Navigation
  *
  * sameAs: Identitätsverknüpfung mit Wikidata/LME (semantisch korrekt, kein SEO-Trick)
  */
@@ -107,7 +107,7 @@ export function buildFinancialProductJsonLd(p: FinancialProductJsonLd): Record<s
         provider: {
           "@type": "Organization",
           "@id":   `${BASE_URL}#organization`,
-          name:    "EUCX — European Union Commodity Exchange",
+          name:    "EUCX - European Union Commodity Exchange",
           url:     BASE_URL,
           logo: {
             "@type":  "ImageObject",
@@ -147,11 +147,11 @@ export function buildFinancialProductJsonLd(p: FinancialProductJsonLd): Record<s
         },
       },
 
-      // ── Dataset (24h Preisdaten — Google Data Search Indexierung) ──────────
+      // ── Dataset (24h Preisdaten - Google Data Search Indexierung) ──────────
       {
         "@type":       "Dataset",
         "@id":         `${productUrl}#dataset`,
-        name:          `${p.productName} — 24h Marktdaten`,
+        name:          `${p.productName} - 24h Marktdaten`,
         description:   `Echtzeit-Marktdaten für ${p.productName} auf EUCX. Spot-Preis, Hoch, Tief, Volumen.`,
         url:           productUrl,
         creator: {
@@ -185,7 +185,7 @@ export function buildFinancialProductJsonLd(p: FinancialProductJsonLd): Record<s
 }
 
 // ── hreflang (7 EU-Kernmärkte) ────────────────────────────────────────────────
-// Sprachvarianten zeigen auf dieselbe URL — die Plattform ist einsprachig Deutsch,
+// Sprachvarianten zeigen auf dieselbe URL - die Plattform ist einsprachig Deutsch,
 // EN dient als europäischer Fallback. Wenn i18n hinzukommt, werden die Pfade ersetzt.
 
 export function buildAlternateLanguages(path: string): Metadata["alternates"] {
@@ -196,7 +196,7 @@ export function buildAlternateLanguages(path: string): Metadata["alternates"] {
       "de-AT": `${BASE_URL}${path}`,
       "de-CH": `${BASE_URL}${path}`,
       "en-EU": `${BASE_URL}${path}`,       // EU-weiter EN-Fallback
-      "fr-FR": `${BASE_URL}${path}`,       // Aktuell gleiche URL — für späteres i18n
+      "fr-FR": `${BASE_URL}${path}`,       // Aktuell gleiche URL - für späteres i18n
       "pl-PL": `${BASE_URL}${path}`,
       "it-IT": `${BASE_URL}${path}`,
       "es-ES": `${BASE_URL}${path}`,

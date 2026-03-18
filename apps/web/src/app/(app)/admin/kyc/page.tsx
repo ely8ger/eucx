@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { KycApprovalCenter } from "@/components/admin/KycApprovalCenter";
 
-export const metadata: Metadata = { title: "KYC-Verifizierung — EUCX Admin" };
+export const metadata: Metadata = { title: "KYC-Verifizierung - EUCX Admin" };
 
 export default function AdminKycPage() {
   return (

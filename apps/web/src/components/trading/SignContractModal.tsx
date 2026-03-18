@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * SignContractModal — Elektronische Signatur (Mock-QES)
+ * SignContractModal - Elektronische Signatur (Mock-QES)
  *
  * Workflow im Modal:
  *   [Schritt 1] Deal-Zusammenfassung anzeigen → "Vertrag generieren"
@@ -98,7 +98,7 @@ export default function SignContractModal({ deal, token, onClose, onSigned }: Si
       setEdsTokenExp(data.edsTokenExp ?? "");
       setStep("sign");
     } catch {
-      setErrorMsg("Netzwerkfehler — bitte erneut versuchen");
+      setErrorMsg("Netzwerkfehler - bitte erneut versuchen");
       setStep("error");
     } finally {
       setLoading(false);
@@ -152,7 +152,7 @@ export default function SignContractModal({ deal, token, onClose, onSigned }: Si
     const a   = document.createElement("a");
     a.href    = url;
     a.setAttribute("download", `eucx-vertrag-${contractId.slice(0, 8)}.pdf`);
-    // Auth-Header geht nicht bei <a download> — separat fetchen
+    // Auth-Header geht nicht bei <a download> - separat fetchen
     fetch(url, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.blob())
       .then((blob) => {

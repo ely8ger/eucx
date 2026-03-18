@@ -23,15 +23,15 @@ export function EucxLogo({ variant = "default", size = "md", showTagline = false
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
-        {/* Äußerer Rahmen — eckig (HSBC-Stil) */}
+        {/* Äußerer Rahmen - eckig (HSBC-Stil) */}
         <rect width="36" height="36" fill={primary} />
 
-        {/* Orderbuch-Linien — Symbol für Preisfindung/Exchange */}
-        {/* Linie 1: Kauf — breit */}
+        {/* Orderbuch-Linien - Symbol für Preisfindung/Exchange */}
+        {/* Linie 1: Kauf - breit */}
         <rect x="7" y="10" width="15" height="2.5" fill="white" opacity="0.9" />
-        {/* Linie 2: Spread — mittel */}
+        {/* Linie 2: Spread - mittel */}
         <rect x="7" y="16.75" width="22" height="2.5" fill="white" opacity="0.55" />
-        {/* Linie 3: Verkauf — schmal */}
+        {/* Linie 3: Verkauf - schmal */}
         <rect x="7" y="23.5" width="10" height="2.5" fill="white" opacity="0.9" />
 
         {/* Vertikale Akzentlinie rechts */}

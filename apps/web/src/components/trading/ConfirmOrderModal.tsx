@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * ConfirmOrderModal — Bestätigungsdialog für große Aufträge
+ * ConfirmOrderModal - Bestätigungsdialog für große Aufträge
  *
  * Wird angezeigt wenn der Gesamtwert ≥ LARGE_ORDER_EUR (500.000 €).
  * Zeigt eine vollständige Auftragsübersicht inkl. Gebührenschätzung bevor
@@ -75,7 +75,7 @@ export function ConfirmOrderModal({
   const feeCalc = estimateFee(price, qty);
   const total   = feeCalc
     ? new Decimal(feeCalc.grossAmount).toLocaleString()
-    : "—";
+    : "-";
 
   return (
     <>
@@ -111,7 +111,7 @@ export function ConfirmOrderModal({
                 Großauftrag bestätigen
               </h2>
               <p className="text-xs text-gray-500 mt-0.5">
-                Auftragsvolumen überschreitet 500.000 € — bitte prüfen
+                Auftragsvolumen überschreitet 500.000 € - bitte prüfen
               </p>
             </div>
           </div>
@@ -131,16 +131,16 @@ export function ConfirmOrderModal({
                 ? new Decimal(feeCalc.grossAmount).toNumber().toLocaleString("de-DE", {
                     style: "currency", currency: "EUR",
                   })
-                : "—",
+                : "-",
                 highlight: true,
               },
               { label: "EUCX-Gebühr", value: feeCalc
                 ? `${new Decimal(feeCalc.platformFee).toNumber().toLocaleString("de-DE", {
                     style: "currency", currency: "EUR",
                   })} (${feeCalc.feeRatePct})`
-                : "—",
+                : "-",
               },
-              { label: "MwSt.-Hinweis", value: feeCalc?.taxNote ?? "—", small: true },
+              { label: "MwSt.-Hinweis", value: feeCalc?.taxNote ?? "-", small: true },
             ].map(({ label, value, accent, highlight, small }) => (
               <div key={label} className="flex justify-between items-baseline py-2 border-b border-gray-100 last:border-0">
                 <span className="text-sm text-gray-500">{label}</span>

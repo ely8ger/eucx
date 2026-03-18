@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * 2FA-Setup-Seite — /2fa-setup
+ * 2FA-Setup-Seite - /2fa-setup
  *
  * Zeigt QR-Code + manuellen Secret für Authenticator-App.
  * Verifikation mit erstem TOTP-Code → 2FA aktiviert → /settings

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * ActiveOrders — Tabelle der offenen Aufträge mit Stornierungsfunktion
+ * ActiveOrders - Tabelle der offenen Aufträge mit Stornierungsfunktion
  *
  * Features:
  *   - Live-Polling (30s) + sofortige Invalidierung nach Stornierung

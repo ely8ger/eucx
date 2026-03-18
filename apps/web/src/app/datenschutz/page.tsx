@@ -70,7 +70,7 @@ export default function DatenschutzPage() {
             Datenschutzerklärung
           </h1>
           <p style={{ fontSize: 15, color: "rgba(255,255,255,.5)", lineHeight: 1.7, margin: 0 }}>
-            Informationen gemäß Art. 13 und 14 der Datenschutz-Grundverordnung (DSGVO) — Stand: März 2026
+            Informationen gemäß Art. 13 und 14 der Datenschutz-Grundverordnung (DSGVO) - Stand: März 2026
           </p>
         </div>
       </section>
@@ -165,7 +165,7 @@ export default function DatenschutzPage() {
             {[
               "Transaktionsmeldepflichten gemäß Art. 26 MiFIR an die BaFin und ESMA",
               "Aufzeichnung und Aufbewahrung von Aufträgen und Transaktionen (§ 83 WpHG, Art. 25 MiFID II)",
-              "Identifizierung und Verifizierung von Geschäftskunden (§§ 10–17 GwG — KYC/AML)",
+              "Identifizierung und Verifizierung von Geschäftskunden (§§ 10–17 GwG - KYC/AML)",
               "Geldwäscheverdachtsmeldungen an die Financial Intelligence Unit (FIU) gemäß § 43 GwG",
               "Abgleich mit EU-Sanktionslisten (Art. 11 VO (EU) 269/2014 etc.)",
               "Buchführungs- und Aufbewahrungspflichten (§§ 238 ff. HGB, §§ 140 ff. AO)",
@@ -235,12 +235,12 @@ export default function DatenschutzPage() {
           <p style={S.p}>Wir sind gesetzlich verpflichtet, Daten an folgende Behörden zu übermitteln:</p>
           <ul style={{ paddingLeft: 20, margin: "0 0 16px" }}>
             {[
-              "BaFin (Bundesanstalt für Finanzdienstleistungsaufsicht) — Transaktionsmeldungen, Marktmissbrauchsverdacht",
-              "ESMA (European Securities and Markets Authority) — Handelsberichte, MiFIR Art. 26",
-              "FIU (Financial Intelligence Unit) — Geldwäscheverdachtsmeldungen gem. § 43 GwG",
-              "Deutsche Bundesbank — Zahlungsverkehrsmeldungen, statistisches Meldewesen",
-              "Finanzämter und Steuerbehörden — bei Betriebsprüfungen und nach AO",
-              "Staatsanwaltschaft und Gerichte — bei gesetzlicher Verpflichtung",
+              "BaFin (Bundesanstalt für Finanzdienstleistungsaufsicht) - Transaktionsmeldungen, Marktmissbrauchsverdacht",
+              "ESMA (European Securities and Markets Authority) - Handelsberichte, MiFIR Art. 26",
+              "FIU (Financial Intelligence Unit) - Geldwäscheverdachtsmeldungen gem. § 43 GwG",
+              "Deutsche Bundesbank - Zahlungsverkehrsmeldungen, statistisches Meldewesen",
+              "Finanzämter und Steuerbehörden - bei Betriebsprüfungen und nach AO",
+              "Staatsanwaltschaft und Gerichte - bei gesetzlicher Verpflichtung",
             ].map(item => <li key={item} style={S.li}>{item}</li>)}
           </ul>
 
@@ -251,7 +251,7 @@ export default function DatenschutzPage() {
           </p>
           <ul style={{ paddingLeft: 20, margin: "0 0 16px" }}>
             {[
-              "Cloud-Infrastruktur (Serverhosting) — ausschließlich in der EU (Deutschland)",
+              "Cloud-Infrastruktur (Serverhosting) - ausschließlich in der EU (Deutschland)",
               "E-Mail-Versanddienstleister für transaktionale Benachrichtigungen",
               "KYC/AML-Identifizierungsdienstleister für die Kundenverifizierung",
               "IT-Sicherheitsdienstleister für Penetrationstests und Security Operations",
@@ -364,8 +364,8 @@ export default function DatenschutzPage() {
           </p>
           <ul style={{ paddingLeft: 20, margin: "0 0 16px" }}>
             {[
-              "Sanktionslistenabgleich (automatisierter Abgleich mit EU- und UN-Sanktionslisten gem. Art. 22 Abs. 2 lit. b DSGVO — gesetzliche Verpflichtung)",
-              "Risikobewertung im Rahmen des KYC-Prozesses (Risikoklassifizierung LOW/MEDIUM/HIGH gem. § 14 GwG — notwendig für Vertragsschluss, Art. 22 Abs. 2 lit. a DSGVO)",
+              "Sanktionslistenabgleich (automatisierter Abgleich mit EU- und UN-Sanktionslisten gem. Art. 22 Abs. 2 lit. b DSGVO - gesetzliche Verpflichtung)",
+              "Risikobewertung im Rahmen des KYC-Prozesses (Risikoklassifizierung LOW/MEDIUM/HIGH gem. § 14 GwG - notwendig für Vertragsschluss, Art. 22 Abs. 2 lit. a DSGVO)",
             ].map(item => <li key={item} style={S.li}>{item}</li>)}
           </ul>
           <p style={S.p}>

@@ -1,13 +1,13 @@
 /**
- * EUCX Fee Calculator — Gebühren & Steuerberechnung
+ * EUCX Fee Calculator - Gebühren & Steuerberechnung
  *
- * Alle Berechnungen mit Decimal.js — NIEMALS native float für Geldbeträge.
+ * Alle Berechnungen mit Decimal.js - NIEMALS native float für Geldbeträge.
  * Warum: 0.1 + 0.2 === 0.30000000000000004 in IEEE 754 → Katastrophe in der Buchhaltung.
  *
  * ─── Gebührenstruktur ────────────────────────────────────────────────────────
  *
  *   EUCX-Plattformgebühr: 0.50% des Bruttohandelswertes
- *   (Anpassbar via FEE_RATE_BPS in .env — Default: 50 Basispunkte)
+ *   (Anpassbar via FEE_RATE_BPS in .env - Default: 50 Basispunkte)
  *
  *   Staffelung (Volumen-Rabatt):
  *     < 100.000 EUR  →  0.50% (Standardsatz)
@@ -56,7 +56,7 @@ const EU_COUNTRIES = new Set([
   "NL","PL","PT","RO","SE","SI","SK",
 ]);
 
-// Standard-MwSt. pro Land (vereinfacht — in Produktion: vollständige Tabelle)
+// Standard-MwSt. pro Land (vereinfacht - in Produktion: vollständige Tabelle)
 const VAT_RATES: Record<string, number> = {
   DE: 19, AT: 20, PL: 23, FR: 20, IT: 22, NL: 21,
   ES: 21, BE: 21, SE: 25, DK: 25, CZ: 21, HU: 27,
@@ -69,7 +69,7 @@ export interface FeeCalculationInput {
   currency:       string;
   buyerCountry:   string;   // 2-Buchstaben ISO
   sellerCountry:  string;
-  buyerTaxId?:    string;   // USt-IdNr. — wenn vorhanden: B2B-Geschäft
+  buyerTaxId?:    string;   // USt-IdNr. - wenn vorhanden: B2B-Geschäft
   sellerTaxId?:   string;
 }
 

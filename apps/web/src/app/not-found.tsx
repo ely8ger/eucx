@@ -1,5 +1,5 @@
 /**
- * 404 — Seite nicht gefunden (Global)
+ * 404 - Seite nicht gefunden (Global)
  */
 import type { Metadata } from "next";
 import Link              from "next/link";

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * KillSwitch — Emergency Console (Redis-Handelsstopp)
+ * KillSwitch - Emergency Console (Redis-Handelsstopp)
  *
  * Doppelte Bestätigung:
  *   Schritt 1: Klick auf "HANDEL EINFRIEREN" → Formular mit Begründung
@@ -265,14 +265,14 @@ export function KillSwitch() {
           {step === "confirm1" && (
             <div className="space-y-4">
               <div className="bg-red-50 border border-red-200 rounded p-4">
-                <p className="text-sm font-semibold text-red-700 mb-1">Schritt 1 von 2 — Begründung</p>
+                <p className="text-sm font-semibold text-red-700 mb-1">Schritt 1 von 2 - Begründung</p>
                 <p className="text-xs text-red-600 mb-3">
                   Geben Sie die Begründung für den Handelsstopp ein. Diese wird im Audit-Log gespeichert.
                 </p>
                 <textarea
                   className="w-full border border-red-200 rounded p-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-red-400 bg-cb-white"
                   rows={3}
-                  placeholder="z.B. Verdacht auf Marktmanipulation — Untersuchung eingeleitet"
+                  placeholder="z.B. Verdacht auf Marktmanipulation - Untersuchung eingeleitet"
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   autoFocus
@@ -326,7 +326,7 @@ export function KillSwitch() {
             <div className="space-y-4">
               <div className="bg-red-100 border-2 border-red-400 rounded p-4">
                 <p className="text-sm font-bold text-red-800 mb-3">
-                  Schritt 2 von 2 — Letzte Bestätigung
+                  Schritt 2 von 2 - Letzte Bestätigung
                 </p>
                 <p className="text-sm text-red-700 mb-4">
                   Tippen Sie <strong className="font-mono">{CONFIRM_WORD}</strong> ein, um den Handelsstopp zu aktivieren:
@@ -360,7 +360,7 @@ export function KillSwitch() {
                 onClick={() => { setStep("idle"); setReason(""); setConfirmInput(""); }}
                 className="w-full"
               >
-                Abbrechen — zurück zur Übersicht
+                Abbrechen - zurück zur Übersicht
               </Button>
             </div>
           )}
@@ -370,7 +370,7 @@ export function KillSwitch() {
       {/* Redis-Status */}
       {data && !data.redisAvailable && (
         <div className="mt-4 px-3 py-2 bg-orange-50 border border-orange-200 rounded text-xs text-orange-700">
-          ⚠ Redis nicht erreichbar — Kill-Switch Status unbekannt
+          ⚠ Redis nicht erreichbar - Kill-Switch Status unbekannt
           {data.warning && <span className="ml-1">({data.warning})</span>}
         </div>
       )}

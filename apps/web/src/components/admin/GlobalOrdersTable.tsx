@@ -1,12 +1,12 @@
 "use client";
 
 /**
- * GlobalOrdersTable — Systemweite Live-Orders-Übersicht
+ * GlobalOrdersTable - Systemweite Live-Orders-Übersicht
  *
  * Zeigt alle aktiven Orders aller Organisationen.
  * Anomalie-Markierungen:
- *   LARGE_ORDER — Menge > 10.000 t (oranges Dreieck)
- *   ORG_FLOOD   — Selbe Org mit > 5 aktiven Orders (rotes Ausrufezeichen)
+ *   LARGE_ORDER - Menge > 10.000 t (oranges Dreieck)
+ *   ORG_FLOOD   - Selbe Org mit > 5 aktiven Orders (rotes Ausrufezeichen)
  */
 
 import { useState }         from "react";
@@ -93,7 +93,7 @@ export function GlobalOrdersTable() {
   const header = (
     <div className="flex items-center justify-between w-full">
       <div className="flex items-center gap-3">
-        <CardTitle>Live-Orders — Gesamtsystem</CardTitle>
+        <CardTitle>Live-Orders - Gesamtsystem</CardTitle>
         {data && (
           <Badge variant="info">{data.totalActive} aktiv</Badge>
         )}

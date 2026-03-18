@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * TradingRoom — Handelsraum (Light / Commerzbank-Design)
+ * TradingRoom - Handelsraum (Light / Commerzbank-Design)
  *
  * Orchestriert:
  *   - Daten-Anbindung      → useTrading (throttled WebSocket/SSE Hook)
@@ -82,7 +82,7 @@ export default function TradingRoom() {
         <div className="connection-warning flex items-center gap-3 bg-amber-50 border border-amber-300 text-amber-800 rounded-lg px-4 py-3 text-sm font-medium">
           <span className="text-base">⚠</span>
           <span>
-            <strong>Live-Daten unterbrochen</strong> — Die angezeigten Preise sind möglicherweise
+            <strong>Live-Daten unterbrochen</strong> - Die angezeigten Preise sind möglicherweise
             nicht aktuell. Bitte erteilen Sie keine Aufträge bis die Verbindung wiederhergestellt ist.
           </span>
         </div>
@@ -113,20 +113,20 @@ export default function TradingRoom() {
         {[
           {
             label: "Letzter Preis",
-            value: lastDeal ? formatEur(lastDeal.price) : "—",
+            value: lastDeal ? formatEur(lastDeal.price) : "-",
             sub:   lastDeal?.direction === "BUY" ? "▲ Kauf" : lastDeal ? "▼ Verkauf" : "",
             up:    lastDeal?.direction === "BUY" ? true : lastDeal ? false : null,
           },
           {
             label: "Bestes Angebot",
-            value: bestAsk ? formatEur(bestAsk.price) : "—",
-            sub:   bestAsk ? bestAsk.remaining + " t verfügbar" : "—",
+            value: bestAsk ? formatEur(bestAsk.price) : "-",
+            sub:   bestAsk ? bestAsk.remaining + " t verfügbar" : "-",
             up:    null,
           },
           {
             label: "Bestes Gebot",
-            value: bestBid ? formatEur(bestBid.price) : "—",
-            sub:   bestBid ? bestBid.remaining + " t gesucht" : "—",
+            value: bestBid ? formatEur(bestBid.price) : "-",
+            sub:   bestBid ? bestBid.remaining + " t gesucht" : "-",
             up:    null,
           },
           {

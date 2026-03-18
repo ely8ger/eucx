@@ -63,7 +63,7 @@ export function computeSparklinePath(
   const max = Math.max(...prices) as number;
   const range = max - min;
 
-  // Wenn alle Preise gleich sind — flache Linie in der Mitte
+  // Wenn alle Preise gleich sind - flache Linie in der Mitte
   const effectiveRange = range === 0 ? 1 : range;
 
   const toX = (i: number)  => (i / (prices.length - 1)) * width;

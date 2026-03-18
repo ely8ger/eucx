@@ -1,6 +1,6 @@
 /**
  * Financial math utilities using Decimal.js.
- * NEVER use native float arithmetic for money — 0.1 + 0.2 ≠ 0.3.
+ * NEVER use native float arithmetic for money - 0.1 + 0.2 ≠ 0.3.
  */
 import Decimal from "decimal.js";
 

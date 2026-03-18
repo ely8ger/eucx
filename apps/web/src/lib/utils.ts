@@ -1,5 +1,5 @@
 /**
- * cn() — Tailwind className utility
+ * cn() - Tailwind className utility
  * Kombiniert clsx (conditional classes) mit dedup-Logik.
  * Standard-Pattern für shadcn/ui-kompatible Komponenten.
  */

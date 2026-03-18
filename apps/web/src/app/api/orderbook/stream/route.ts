@@ -1,7 +1,7 @@
 /**
  * GET /api/orderbook/stream?sessionId=<uuid>
  *
- * Skill #1: Real-Time Messaging — Server-Sent Events (SSE).
+ * Skill #1: Real-Time Messaging - Server-Sent Events (SSE).
  * Vercel-kompatibel (kein persistent WebSocket nötig).
  * Sendet alle 1,5s ein "orderbook"-Event mit frischen Daten.
  * Target-Latenz: < 50ms nach DB-Abfrage.

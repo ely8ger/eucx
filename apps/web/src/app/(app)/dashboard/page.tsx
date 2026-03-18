@@ -23,7 +23,7 @@ const CATEGORIES = [
   { id: "CHEMICALS",    label: "Chemie & Petrochem.",  sub: "Polymere · Düngemittel",         sessions: 2, volume: "1.900 t",  change: "−1,2 %", up: false, Icon: FlaskConical },
   { id: "ENERGY",       label: "Energie & Brennstoffe",sub: "Koks · Kohle · Pellets",         sessions: 1, volume: "4.200 t",  change: "+3,1 %", up: true,  Icon: Flame        },
   { id: "CONSTRUCTION", label: "Baustoffe",            sub: "Zement · Splitt · Ziegel",       sessions: 2, volume: "6.700 t",  change: "+0,9 %", up: true,  Icon: Building2    },
-  { id: "INDUSTRIALS",  label: "Industriegüter",       sub: "Maschinen · Kabel · Elektronik", sessions: 1, volume: "240 Stk",  change: "—",      up: null,  Icon: BarChart3    },
+  { id: "INDUSTRIALS",  label: "Industriegüter",       sub: "Maschinen · Kabel · Elektronik", sessions: 1, volume: "240 Stk",  change: "-",      up: null,  Icon: BarChart3    },
 ];
 
 const ACTIVE_SESSIONS = [
@@ -90,7 +90,7 @@ export default function DashboardPage() {
         <div style={{ backgroundColor: "#fff", padding: "20px 24px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
             <div>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>Tagesumsatz — Verlauf</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>Tagesumsatz - Verlauf</p>
               <p style={{ fontSize: 12, color: "#888", marginTop: 3 }}>Heute · stündlich · Frankfurt</p>
             </div>
             <span style={{ fontSize: 11, border: "1px solid #c7d7f0", color: "#154194", padding: "3px 10px", fontWeight: 600 }}>EUR</span>

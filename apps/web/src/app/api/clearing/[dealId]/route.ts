@@ -1,6 +1,6 @@
 /**
- * POST /api/clearing/[dealId] — Settlement eines signierten Deals auslösen
- * GET  /api/clearing/[dealId] — Settlement-Status abfragen
+ * POST /api/clearing/[dealId] - Settlement eines signierten Deals auslösen
+ * GET  /api/clearing/[dealId] - Settlement-Status abfragen
  *
  * Aufruf-Zeitpunkt:
  *   Automatisch nach erfolgreicher Signatur (POST /api/contracts/[id])
@@ -20,7 +20,7 @@ import { runSettlement }             from "@/lib/clearing/clearing-service";
 
 export const dynamic = "force-dynamic";
 
-// ─── POST /api/clearing/[dealId] — Settlement auslösen ───────────────────────
+// ─── POST /api/clearing/[dealId] - Settlement auslösen ───────────────────────
 
 export async function POST(
   req:     NextRequest,
@@ -75,7 +75,7 @@ export async function POST(
     if (deal.status !== "CONTRACT_SIGNED") {
       return NextResponse.json(
         {
-          error:  `Settlement nicht möglich — Deal hat Status: ${deal.status}`,
+          error:  `Settlement nicht möglich - Deal hat Status: ${deal.status}`,
           detail: "Nur CONTRACT_SIGNED Deals können gecleart werden.",
         },
         { status: 409 }
@@ -141,7 +141,7 @@ export async function POST(
   }
 }
 
-// ─── GET /api/clearing/[dealId] — Status abfragen ────────────────────────────
+// ─── GET /api/clearing/[dealId] - Status abfragen ────────────────────────────
 
 export async function GET(
   req:     NextRequest,

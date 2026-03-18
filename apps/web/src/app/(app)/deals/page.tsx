@@ -27,7 +27,7 @@ export default function DealsPage() {
       <div>
         <h1 style={{ fontSize: 22, fontWeight: 300, color: "#0d1b2a", margin: 0 }}>Abschlüsse</h1>
         <p style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
-          Alle bestätigten Handelstransaktionen — Ausführungsstatus &amp; Gegenpartei
+          Alle bestätigten Handelstransaktionen - Ausführungsstatus &amp; Gegenpartei
         </p>
       </div>
 

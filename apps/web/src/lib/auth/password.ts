@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 
-const COST = 12; // 12 Runden — sicher und schnell genug für Produktion
+const COST = 12; // 12 Runden - sicher und schnell genug für Produktion
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, COST);

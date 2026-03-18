@@ -21,7 +21,7 @@ const DELIV_MAP = {
 const ACCREDITATIONS = [
   { section: "Metalle",            status: "AKTIV"     as const, validUntil: "31.12.2026", broker: "EUCX Intern"       },
   { section: "Schrott & Sekundär", status: "AKTIV"     as const, validUntil: "31.12.2026", broker: "EUCX Intern"       },
-  { section: "Holz & Forst",       status: "BEANTRAGT" as const, validUntil: "—",          broker: "—"                 },
+  { section: "Holz & Forst",       status: "BEANTRAGT" as const, validUntil: "-",          broker: "-"                 },
   { section: "Agrar",              status: "INAKTIV"   as const, validUntil: "31.03.2026", broker: "Broker Meyer GmbH" },
 ];
 
@@ -87,7 +87,7 @@ export default function PersonalPage() {
 
       {/* ── Vertragserfüllung ───────────────────────────────────────────────── */}
       <section>
-        <h2 style={{ fontSize: 15, fontWeight: 600, color: "#0d1b2a", margin: "0 0 12px" }}>Vertragserfüllung — Laufende Abschlüsse</h2>
+        <h2 style={{ fontSize: 15, fontWeight: 600, color: "#0d1b2a", margin: "0 0 12px" }}>Vertragserfüllung - Laufende Abschlüsse</h2>
         <div style={{ backgroundColor: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,.08)" }}>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>

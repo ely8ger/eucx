@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * BalanceCard — Wallet-Kontostand-Anzeige
+ * BalanceCard - Wallet-Kontostand-Anzeige
  *
  * Zeigt verfügbares Guthaben, reserviertes Guthaben und Gesamtkapital
  * für jede Währung (typischerweise EUR).
  *
  * Live-Update: Aufrufer kann queryClient.invalidateQueries nach
- * BalanceUpdatedEvent aufrufen — diese Komponente re-rendert automatisch.
+ * BalanceUpdatedEvent aufrufen - diese Komponente re-rendert automatisch.
  */
 
 import Decimal                        from "decimal.js";

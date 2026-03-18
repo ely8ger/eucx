@@ -1,5 +1,5 @@
 /**
- * EUCX Asset-Validatoren — Deep Validation für physische Commodities
+ * EUCX Asset-Validatoren - Deep Validation für physische Commodities
  *
  * Jede Warengruppe hat eigene Pflichtfelder und Grenzwerte.
  * Diese Validatoren laufen ZWEIMAL:
@@ -54,18 +54,18 @@ export const metalAttributesSchema = z.object({
 // ─── Landwirtschaft (Getreide, Hülsenfrüchte, Ölsaaten, etc.) ────────────────
 
 export const agricultureAttributesSchema = z.object({
-  // Feuchtigkeitsgehalt — Qualitätskriterium #1
+  // Feuchtigkeitsgehalt - Qualitätskriterium #1
   // Weizen: max 14%, Mais: max 14%, Raps: max 9%
   moistureContentPct: z
     .number()
     .min(0)
-    .max(30, "Feuchtigkeitsgehalt > 30% — Ware nicht handelbar")
+    .max(30, "Feuchtigkeitsgehalt > 30% - Ware nicht handelbar")
     .refine((v) => Number(v.toFixed(1)) === v, "Max. 1 Nachkommastelle"),
 
   // Proteingehalt (pflanzliche Nahrungsmittel)
   proteinContentPct: z.number().min(0).max(50).optional(),
 
-  // Erntejahr — Ware älter als 2 Jahre in der Regel nicht handelbar
+  // Erntejahr - Ware älter als 2 Jahre in der Regel nicht handelbar
   harvestYear: z
     .number()
     .int()
@@ -91,7 +91,7 @@ export const agricultureAttributesSchema = z.object({
 // ─── Energie (Strom, Gas, Kohle, Biomasse) ───────────────────────────────────
 
 export const energyAttributesSchema = z.object({
-  // Lieferzeitraum — Pflicht für alle Energieprodukte
+  // Lieferzeitraum - Pflicht für alle Energieprodukte
   deliveryStart: z.string().datetime({ message: "ISO 8601 Datum erforderlich" }),
   deliveryEnd:   z.string().datetime({ message: "ISO 8601 Datum erforderlich" }),
 
@@ -162,7 +162,7 @@ export const chemicalsAttributesSchema = z.object({
   flashPointC:    z.number().optional(),            // Flammpunkt
 });
 
-// ─── Discriminated Union — alle Kategorien ────────────────────────────────────
+// ─── Discriminated Union - alle Kategorien ────────────────────────────────────
 
 export const categoryAttributesSchema = z.discriminatedUnion("categorySlug", [
   z.object({ categorySlug: z.literal("METALS"),       attributes: metalAttributesSchema }),

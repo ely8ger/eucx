@@ -1,5 +1,5 @@
 /**
- * Trading-Paar-Seite — /trading/[symbol]
+ * Trading-Paar-Seite - /trading/[symbol]
  *
  * SSR + ISR (revalidate=900s).
  *
@@ -119,7 +119,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = priceStr
     ? `${product.name} Spot-Preis Echtzeit: ${priceStr} ${unit} (${changeSign}${changeNum.toFixed(1)}%)`
-    : `${product.name} — Live Spot-Preis & Handel`;
+    : `${product.name} - Live Spot-Preis & Handel`;
 
   // ── Reichhaltige Description mit 24h-Daten ─────────────────────────────────
   const highStr   = high24h   ? new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2 }).format(parseFloat(high24h))   : null;
@@ -127,7 +127,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const volStr    = volume24h ? new Intl.NumberFormat("de-DE").format(parseFloat(volume24h)) : null;
 
   const descParts = [
-    `${product.name} (${product.sku}) — Institutioneller ${categoryLabel}-Handel auf EUCX.`,
+    `${product.name} (${product.sku}) - Institutioneller ${categoryLabel}-Handel auf EUCX.`,
     priceStr && `Aktueller Spot-Preis: ${priceStr} ${unit} (${changeSign}${changeNum.toFixed(2)}% 24h).`,
     highStr && lowStr && `24h-Spanne: ${lowStr}–${highStr} ${unit}.`,
     volStr && `Handelsvolumen 24h: ${volStr} t.`,
@@ -169,14 +169,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description: descParts,
       url:         `${BASE_URL}${path}`,
-      siteName:    "EUCX — European Union Commodity Exchange",
+      siteName:    "EUCX - European Union Commodity Exchange",
       locale:      "de_DE",
       type:        "website",
       images: [{
         url:    ogImageUrl,
         width:  1200,
         height: 630,
-        alt:    `${product.name} Live Spot-Preis Echtzeit Chart — EUCX`,
+        alt:    `${product.name} Live Spot-Preis Echtzeit Chart - EUCX`,
       }],
     },
     twitter: {
@@ -225,7 +225,7 @@ export default async function TradingSymbolPage({ params }: Props) {
     sku:          product.sku,
     categoryName: categoryLabel,
     categorySlug: product.category.slug,
-    description:  product.description ?? `${product.name} — institutioneller Handel auf EUCX`,
+    description:  product.description ?? `${product.name} - institutioneller Handel auf EUCX`,
     currentPrice: currentPrice ?? "0",
     high24h:      high24h    ?? undefined,
     low24h:       low24h     ?? undefined,
@@ -273,7 +273,7 @@ export default async function TradingSymbolPage({ params }: Props) {
             )}
           </div>
 
-          {/* 24h-Statistiken (SSR — für Crawler indexierbar) */}
+          {/* 24h-Statistiken (SSR - für Crawler indexierbar) */}
           {(high24h ?? low24h ?? volume24h) && (
             <div className="flex gap-6 mt-4 pt-4 border-t border-cb-gray-100">
               {high24h && (

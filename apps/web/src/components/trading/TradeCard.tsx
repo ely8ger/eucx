@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * TradeCard — Order-Eingabe mit vollständiger UX
+ * TradeCard - Order-Eingabe mit vollständiger UX
  *
  * Features:
  *   - BUY/SELL-Toggle
@@ -14,8 +14,8 @@
  *   - Toast-Feedback nach Einreichung (via useOrderForm + useToast)
  *
  * Varianten:
- *   "light" — Commerzbank-Hell-Design (für TradingRoom)
- *   "dark"  — Terminal-Dark-Design (für TradingTerminal)
+ *   "light" - Commerzbank-Hell-Design (für TradingRoom)
+ *   "dark"  - Terminal-Dark-Design (für TradingTerminal)
  */
 
 import { useState, useCallback, useEffect } from "react";
@@ -34,13 +34,13 @@ interface TradeCardProps {
   dispatch:   React.Dispatch<TradingAction>;
   symbol?:    string;
   variant?:   "light" | "dark";
-  /** Bestes Verkaufsangebot — für Marktpreis-Warnung */
+  /** Bestes Verkaufsangebot - für Marktpreis-Warnung */
   bestAsk?:   string | null;
-  /** Bestes Kaufgebot — für Marktpreis-Warnung */
+  /** Bestes Kaufgebot - für Marktpreis-Warnung */
   bestBid?:   string | null;
   /**
    * Überschreibt Preis + Richtung von außen (Klick im Orderbuch).
-   * `key` muss bei jedem Klick inkrementiert werden — auch bei gleichem Preis.
+   * `key` muss bei jedem Klick inkrementiert werden - auch bei gleichem Preis.
    */
   priceOverride?: { price: string; direction: "BUY" | "SELL"; key: number };
 }
@@ -97,7 +97,7 @@ export function TradeCard({
     if (!priceOverride) return;
     form.setPrice(priceOverride.price);
     form.setDirection(priceOverride.direction);
-  // key-basierter Trigger — kein vollständiges Dep-Array gewünscht
+  // key-basierter Trigger - kein vollständiges Dep-Array gewünscht
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [overrideKey]);
 
@@ -319,7 +319,7 @@ export function TradeCard({
               ? form.totalEur.toNumber().toLocaleString("de-DE", {
                   style: "currency", currency: "EUR",
                 })
-              : "—"
+              : "-"
             }
           </p>
           <p className={cn("text-xs mt-0.5", dark ? "text-[#4A5A7A]" : "text-cb-gray-400")}>

@@ -4,9 +4,9 @@
  * Liefert OHLC-Kerzendaten für TradingView Lightweight Charts.
  *
  * Query-Parameter:
- *   interval  — ONE_MIN | FIFTEEN_MIN | ONE_HOUR | ONE_DAY (Default: ONE_HOUR)
- *   limit     — Anzahl Kerzen (Default: 500, Max: 1000)
- *   live      — "true" → direkte DB-Berechnung statt Cache (für Echtzeit-Updates)
+ *   interval  - ONE_MIN | FIFTEEN_MIN | ONE_HOUR | ONE_DAY (Default: ONE_HOUR)
+ *   limit     - Anzahl Kerzen (Default: 500, Max: 1000)
+ *   live      - "true" → direkte DB-Berechnung statt Cache (für Echtzeit-Updates)
  *
  * Response-Format (Lightweight-Charts-kompatibel):
  *   {
@@ -97,7 +97,7 @@ export async function GET(
         };
       });
     } else {
-      // ── Cache lesen (Standard-Pfad — schnell) ──────────────────────────
+      // ── Cache lesen (Standard-Pfad - schnell) ──────────────────────────
       [candles, volume] = await Promise.all([
         getCachedCandles(productId, rawInterval, limit),
         getCachedVolume(productId, rawInterval, limit),
@@ -135,7 +135,7 @@ export async function GET(
       },
     }, {
       headers: {
-        // 30 Sekunden Cache für CDN — bei Live-Daten kein Cache
+        // 30 Sekunden Cache für CDN - bei Live-Daten kein Cache
         "Cache-Control": live ? "no-store" : "public, s-maxage=30, stale-while-revalidate=60",
       },
     });

@@ -19,7 +19,7 @@ import { verifyContractIntegrity } from "@/lib/contracts/generator";
 
 export const dynamic = "force-dynamic";
 
-// ─── POST /api/contracts/[id] — Signieren ────────────────────────────────────
+// ─── POST /api/contracts/[id] - Signieren ────────────────────────────────────
 
 export async function POST(
   req:     NextRequest,
@@ -118,7 +118,7 @@ export async function POST(
     // Stellt sicher dass das gespeicherte PDF nicht verändert wurde
     const integrityOk = verifyContractIntegrity(contract.pdfBase64, contract.pdfHash);
     if (!integrityOk) {
-      return NextResponse.json({ error: "PDF-Integritätsfehler — Vertrag kompromittiert" }, { status: 500 });
+      return NextResponse.json({ error: "PDF-Integritätsfehler - Vertrag kompromittiert" }, { status: 500 });
     }
 
     const now = new Date();
@@ -131,7 +131,7 @@ export async function POST(
           status:       "SIGNED",
           signedAt:     now,
           signerUserId: tokenPayload.userId,
-          edsTokenHash: null,  // Token einmalig verwendbar — nach Nutzung löschen
+          edsTokenHash: null,  // Token einmalig verwendbar - nach Nutzung löschen
           edsTokenExp:  null,
         },
       }),
@@ -160,7 +160,7 @@ export async function POST(
     });
 
     // ── BullMQ-Job einreihen (fire-and-forget, via NestJS enqueue endpoint) ─
-    // Fehler hier darf die Signatur-Antwort NICHT blockieren — async ohne await
+    // Fehler hier darf die Signatur-Antwort NICHT blockieren - async ohne await
     const nestjsUrl = process.env.NESTJS_INTERNAL_URL;
     if (nestjsUrl) {
       fetch(`${nestjsUrl}/api/v1/clearing/enqueue`, {
@@ -185,7 +185,7 @@ export async function POST(
   }
 }
 
-// ─── GET /api/contracts/[id]?action=pdf — PDF-Download ───────────────────────
+// ─── GET /api/contracts/[id]?action=pdf - PDF-Download ───────────────────────
 
 export async function GET(
   req:     NextRequest,

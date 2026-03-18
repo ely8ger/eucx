@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * /api/docs — Swagger UI via CDN iframe
+ * /api/docs - Swagger UI via CDN iframe
  * Skill #5: API-First Documentation für Copper-Entwickler
  */
 export default function ApiDocsPage() {
@@ -16,7 +16,7 @@ export default function ApiDocsPage() {
           <span className="text-cb-yellow">EUCX</span> API Docs
         </div>
         <span className="text-sm text-white/60">
-          OpenAPI 3.0 — für Copper-Entwickler
+          OpenAPI 3.0 - für Copper-Entwickler
         </span>
         <a
           href={specUrl}

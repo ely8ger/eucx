@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Einstellungen — /settings
+ * Einstellungen - /settings
  *
  * Tabs:
  *   - Profil: Anzeige der Kontodaten (read-only)
@@ -44,7 +44,7 @@ export default function SettingsPage() {
       .then((d) => {
         if (!d.error) setTfaStatus(d);
       })
-      .catch(() => {/* ignorieren — zeige Fallback */})
+      .catch(() => {/* ignorieren - zeige Fallback */})
       .finally(() => setTfaLoad(false));
   }, [tab]);
 

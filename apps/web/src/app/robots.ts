@@ -1,5 +1,5 @@
 /**
- * robots.txt — /robots.txt
+ * robots.txt - /robots.txt
  *
  * Schützt sensible API- und Auth-Routen vor Crawler-Indexierung.
  */

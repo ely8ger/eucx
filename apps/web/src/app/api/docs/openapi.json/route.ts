@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 const spec = {
   openapi: "3.0.3",
   info: {
-    title:       "EUCX — European Commodity Exchange API",
+    title:       "EUCX - European Commodity Exchange API",
     description: "Digitale Warenbörse für Metallprodukte. Enterprise-Ready.",
     version:     "1.0.0",
     contact:     { name: "EUCX Support", url: "https://eucx.eu" },
@@ -92,7 +92,7 @@ const spec = {
     },
     "/auth/login": {
       post: {
-        summary: "Einloggen — gibt JWT Access + Refresh Token zurück",
+        summary: "Einloggen - gibt JWT Access + Refresh Token zurück",
         tags: ["Auth"],
         requestBody: {
           required: true,
@@ -154,7 +154,7 @@ const spec = {
                   pricePerUnit:   { type: "number", minimum: 0, example: 545.00 },
                   quantityTons:   { type: "number", minimum: 0, example: 100 },
                   currency:       { type: "string", enum: ["EUR", "PLN", "USD"], default: "EUR" },
-                  idempotencyKey: { type: "string", format: "uuid", description: "UUID v4 — verhindert Doppel-Submissions" },
+                  idempotencyKey: { type: "string", format: "uuid", description: "UUID v4 - verhindert Doppel-Submissions" },
                 },
               },
             },

@@ -1,6 +1,6 @@
 /**
- * Auth-Layout — Behörden-Portal-Stil
- * Pattern: ELSTER / BundID — schlichter hellgrauer Hintergrund,
+ * Auth-Layout - Behörden-Portal-Stil
+ * Pattern: ELSTER / BundID - schlichter hellgrauer Hintergrund,
  * zentrierte Karte, dezenter institutioneller Header
  */
 export default function AuthLayout({ children }: { children: React.ReactNode }) {

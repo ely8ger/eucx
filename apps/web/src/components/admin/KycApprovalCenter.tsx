@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * KycApprovalCenter — KYC-Verifizierungszentrum
+ * KycApprovalCenter - KYC-Verifizierungszentrum
  *
  * Tabelle aller Organisationen + Detail-Slide-Over mit:
  *   - Dokumentenvorschau (PDF via iframe, Bilder via img)

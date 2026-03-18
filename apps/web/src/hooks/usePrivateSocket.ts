@@ -1,19 +1,19 @@
 "use client";
 
 /**
- * usePrivateSocket — Privater WebSocket-Listener für benutzerspezifische Events
+ * usePrivateSocket - Privater WebSocket-Listener für benutzerspezifische Events
  *
  * Nutzt den globalen SocketProvider (Single Connection). Abonniert nach dem
- * Connect den privaten Channel "subscribe:private" — der Server identifiziert
+ * Connect den privaten Channel "subscribe:private" - der Server identifiziert
  * den Nutzer am JWT und leitet folgende Events weiter:
  *
- *   order:filled          — Auftrag vollständig ausgeführt
- *   order:partially_filled — Teilausführung
- *   order:cancelled        — Stornierung (Admin/Session-Ende)
- *   balance:updated        — Kontostand geändert (nach Settlement)
- *   deal:matched_user      — Privater Abschluss (inkl. Gegenpartei-Details)
+ *   order:filled          - Auftrag vollständig ausgeführt
+ *   order:partially_filled - Teilausführung
+ *   order:cancelled        - Stornierung (Admin/Session-Ende)
+ *   balance:updated        - Kontostand geändert (nach Settlement)
+ *   deal:matched_user      - Privater Abschluss (inkl. Gegenpartei-Details)
  *
- * Callbacks werden nicht im Reducer gespeichert — Aufrufer entscheidet selbst,
+ * Callbacks werden nicht im Reducer gespeichert - Aufrufer entscheidet selbst,
  * was mit dem Event passiert (z.B. TanStack Query invalidieren oder Toast zeigen).
  *
  * Nutzung:
@@ -80,7 +80,7 @@ export interface UsePrivateSocketOptions {
 export function usePrivateSocket(options: UsePrivateSocketOptions): void {
   const { socket, connected } = useSocket();
 
-  // Callbacks als Ref — damit useEffect nicht bei jedem Render neu läuft
+  // Callbacks als Ref - damit useEffect nicht bei jedem Render neu läuft
   const cbRef = useRef(options);
   cbRef.current = options;
 

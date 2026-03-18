@@ -1,17 +1,17 @@
 "use client";
 
 /**
- * TradeHistory — Liste der letzten Abschlüsse mit Flash-Animation
+ * TradeHistory - Liste der letzten Abschlüsse mit Flash-Animation
  *
  * Flash-Mechanik:
  *   Wenn ein neuer Deal in die Liste kommt, bekommt seine Zeile die
  *   CSS-Klasse "flash-deal-buy" oder "flash-deal-sell".
- *   Nach 700ms wird die Klasse wieder entfernt — der Browser führt
+ *   Nach 700ms wird die Klasse wieder entfernt - der Browser führt
  *   die Keyframe-Animation genau einmal aus.
  *
  *   Vorteil gegenüber key-Trick: Kein Unmount/Remount, keine Layout-Shifts.
  *   React.memo auf DealRow: Re-render nur wenn sich Daten der Zeile ändern.
- *   (Abschlüsse sind immutable — passiert nie nach dem ersten Render.)
+ *   (Abschlüsse sind immutable - passiert nie nach dem ersten Render.)
  */
 
 import React, { useEffect, useRef, useState, memo } from "react";

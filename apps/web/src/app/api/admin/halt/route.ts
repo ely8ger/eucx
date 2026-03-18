@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     halts:          [],
     redisAvailable: false,
-    warning:        "NestJS nicht erreichbar — Status unbekannt",
+    warning:        "NestJS nicht erreichbar - Status unbekannt",
   });
 }
 
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json(
-    { error: "NestJS nicht erreichbar — Kill-Switch konnte nicht aktiviert werden" },
+    { error: "NestJS nicht erreichbar - Kill-Switch konnte nicht aktiviert werden" },
     { status: 503 },
   );
 }
@@ -151,7 +151,7 @@ export async function DELETE(req: NextRequest) {
   }
 
   return NextResponse.json(
-    { error: "NestJS nicht erreichbar — Halt konnte nicht aufgehoben werden" },
+    { error: "NestJS nicht erreichbar - Halt konnte nicht aufgehoben werden" },
     { status: 503 },
   );
 }

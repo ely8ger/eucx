@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * useMarketTicker — Echtzeit-Marktdaten für ein Handelspaar
+ * useMarketTicker - Echtzeit-Marktdaten für ein Handelspaar
  *
  * Strategie:
  *   1. WebSocket (bevorzugt): Abonniert "ticker:{symbol}" Events über den
@@ -19,7 +19,7 @@
  *   // ticker.price, ticker.changePercent24h, ticker.direction
  *
  * Symbol-Konvention: productId aus der DB (UUID) oder kurzer Alias
- *   "COPPER-LME", "REBAR-EU", "HRC-EU" — was der Server unter ticker:{x} schickt
+ *   "COPPER-LME", "REBAR-EU", "HRC-EU" - was der Server unter ticker:{x} schickt
  */
 
 import { useEffect, useRef, useState, useCallback } from "react";

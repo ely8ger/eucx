@@ -23,7 +23,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50" style={{ fontFamily: "'IBM Plex Sans', Arial, sans-serif" }}>
 
-      {/* Topbar — HSBC-Stil: dünne dunkle Info-Leiste */}
+      {/* Topbar - HSBC-Stil: dünne dunkle Info-Leiste */}
       <div style={{ backgroundColor: "#1a1a1a" }}>
         <div className="max-w-6xl mx-auto px-6 lg:px-10 flex items-center justify-between" style={{ height: 36 }}>
           <span className="hidden sm:block text-white/40 text-xs tracking-wide">
@@ -47,7 +47,7 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Main Header — HSBC-Stil: weiß, Marken-Linie oben, Schatten unten */}
+      {/* Main Header - HSBC-Stil: weiß, Marken-Linie oben, Schatten unten */}
       <div style={{
         backgroundColor: "#ffffff",
         borderTop: "3px solid #154194",
@@ -62,7 +62,7 @@ export function Navbar() {
 
           <div style={{ width: 1, height: 20, backgroundColor: "#e8e8e8", flexShrink: 0 }} />
 
-          {/* Nav Links — HSBC-Stil: aktiver Link mit blauer Unterlinie */}
+          {/* Nav Links - HSBC-Stil: aktiver Link mit blauer Unterlinie */}
           <nav className="flex items-center overflow-x-auto flex-1 gap-0">
             {NAV_LINKS.map(({ href, label, Icon }) => {
               const active = pathname === href || pathname.startsWith(href + "/");
@@ -113,7 +113,7 @@ export function Navbar() {
 
             <div style={{ width: 1, height: 20, backgroundColor: "#e8e8e8" }} />
 
-            {/* User Pill — HSBC-Stil: eckig, klar */}
+            {/* User Pill - HSBC-Stil: eckig, klar */}
             <button className="flex items-center gap-2 transition-colors cursor-pointer"
               style={{ padding: "6px 10px", backgroundColor: "transparent" }}
               onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f5f5f5")}

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * AnalyticsCharts — Tägliches Handelsvolumen & Plattform-Gebühren
+ * AnalyticsCharts - Tägliches Handelsvolumen & Plattform-Gebühren
  *
  * Recharts:
  *   - BarChart: tägliches Volumen (30 Tage)
@@ -54,7 +54,7 @@ async function fetchAnalytics(): Promise<AnalyticsResponse> {
 
 function fmtEur(val: unknown): string {
   const n = typeof val === "number" ? val : parseFloat(String(val));
-  if (isNaN(n)) return "—";
+  if (isNaN(n)) return "-";
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)} Mio €`;
   if (n >= 1_000)     return `${(n / 1_000).toFixed(1)} Tsd €`;
   return `${n.toFixed(2)} €`;
@@ -91,7 +91,7 @@ export function AnalyticsCharts() {
   const { data, isLoading, isError } = useQuery({
     queryKey:  ["admin", "analytics"],
     queryFn:   fetchAnalytics,
-    staleTime: 120_000,   // 2min — Historische Daten ändern sich selten
+    staleTime: 120_000,   // 2min - Historische Daten ändern sich selten
     gcTime:    300_000,
   });
 

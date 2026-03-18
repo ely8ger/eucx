@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * KycWizard — KYC Multi-Step Onboarding
+ * KycWizard - KYC Multi-Step Onboarding
  *
  * 3 Schritte mit framer-motion Slide-Übergängen:
  *   1. Unternehmensinfo bestätigen (aus Auth-Token)

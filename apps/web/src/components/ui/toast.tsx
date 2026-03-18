@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Toast — Globales Benachrichtigungssystem
+ * Toast - Globales Benachrichtigungssystem
  *
  * Architektur:
  *   ToastProvider  → hält [toasts]-State, stellt Context bereit
@@ -19,7 +19,7 @@
  *   error("Fehler", "Server nicht erreichbar.");
  *
  * Auto-Dismiss: 5s (success/info) oder 8s (error/warning).
- * Maximal 4 gleichzeitige Toasts — ältester wird verdrängt.
+ * Maximal 4 gleichzeitige Toasts - ältester wird verdrängt.
  */
 
 import {

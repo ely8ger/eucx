@@ -1,12 +1,12 @@
 /**
- * orderSchema — Zod-Validierung für das Order-Eingabeformular
+ * orderSchema - Zod-Validierung für das Order-Eingabeformular
  *
  * Strategie: String-Eingaben + Decimal.js-Refinements.
  *   Warum String statt z.coerce.number()? Weil "542.0" und "542,0" in Trader-
  *   Eingaben auftreten. Decimal.js ist toleranter und präziser als Number.
  *
  * Chained .refine() mit try/catch-Guard:
- *   Spätere Refinements geben `true` zurück wenn Decimal-Parsing fehlschlägt —
+ *   Spätere Refinements geben `true` zurück wenn Decimal-Parsing fehlschlägt -
  *   das frühere Refinement hat den Fehler bereits gefangen. So sieht der Nutzer
  *   nur eine Fehlermeldung pro Feld.
  */
@@ -32,7 +32,7 @@ export const orderSchema = z.object({
     .min(1, "Preis ist erforderlich")
     .refine(
       (v) => safeD(v) !== null && safeD(v)!.gt(0),
-      "Ungültiger Preis — muss eine positive Zahl sein",
+      "Ungültiger Preis - muss eine positive Zahl sein",
     )
     .refine(
       (v) => { const d = safeD(v); return d === null || d.gte("1"); },
@@ -51,7 +51,7 @@ export const orderSchema = z.object({
     .min(1, "Menge ist erforderlich")
     .refine(
       (v) => safeD(v) !== null && safeD(v)!.gt(0),
-      "Ungültige Menge — muss eine positive Zahl sein",
+      "Ungültige Menge - muss eine positive Zahl sein",
     )
     .refine(
       (v) => { const d = safeD(v); return d === null || d.gte(1); },

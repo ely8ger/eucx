@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Login-Seite — Behörden-Portal-Stil
+ * Login-Seite - Behörden-Portal-Stil
  * Pattern: ELSTER Online Portal / BundID
  * Ablauf:
  *   Step 1: E-Mail + Passwort → Server

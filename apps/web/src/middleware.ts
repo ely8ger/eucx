@@ -27,7 +27,7 @@ export async function middleware(req: NextRequest) {
     try {
       const payload = await verifyAccessToken(auth.slice(7));
 
-      // /api/admin/** — RBAC: nur ADMIN/COMPLIANCE/SUPER_ADMIN
+      // /api/admin/** - RBAC: nur ADMIN/COMPLIANCE/SUPER_ADMIN
       if (pathname.startsWith("/api/admin/")) {
         if (!ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
           return NextResponse.json(
@@ -50,7 +50,7 @@ export async function middleware(req: NextRequest) {
   try {
     const payload = await verifyAccessToken(token);
 
-    // /admin/** — RBAC: nur ADMIN/COMPLIANCE/SUPER_ADMIN
+    // /admin/** - RBAC: nur ADMIN/COMPLIANCE/SUPER_ADMIN
     if (pathname.startsWith("/admin")) {
       if (!ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
         return NextResponse.redirect(new URL("/dashboard?error=forbidden", req.url));

@@ -73,7 +73,7 @@ export default function HomePage() {
             Die institutionelle Warenbörse für die Europäische Union
           </h1>
           <p style={{ fontSize: 17, color: "rgba(255,255,255,.5)", maxWidth: 520, lineHeight: 1.7, margin: "0 0 44px" }}>
-            Transparentes Orderbuch, sofortige Abwicklung und BaFin-regulierter Marktbetrieb —
+            Transparentes Orderbuch, sofortige Abwicklung und BaFin-regulierter Marktbetrieb -
             für Metalle, Holz, Agrar und Industriegüter.
           </p>
 
@@ -204,7 +204,7 @@ export default function HomePage() {
                 Börseninfrastruktur auf institutionellem Niveau
               </h2>
               <p style={{ fontSize: 14, color: "rgba(255,255,255,.55)", lineHeight: 1.8, marginBottom: 36 }}>
-                EUCX wurde für regulierten Warenterminhandel entwickelt — mit denselben Standards wie etablierte Rohstoffbörsen.
+                EUCX wurde für regulierten Warenterminhandel entwickelt - mit denselben Standards wie etablierte Rohstoffbörsen.
               </p>
               {[
                 { Icon: Layers,      title: "Zentrales Orderbuch",  desc: "Price-Time-Priority Matching, vollständige Preistransparenz" },
@@ -225,7 +225,7 @@ export default function HomePage() {
             {/* Orderbuch-Mockup */}
             <div style={{ backgroundColor: "#fff", boxShadow: "0 2px 16px rgba(0,0,0,.1)" }}>
               <div style={{ backgroundColor: "#154194", padding: "12px 20px" }}>
-                <span style={{ fontSize: 12, color: "rgba(255,255,255,.6)" }}>Handelssitzung — Metalle #247 · Live</span>
+                <span style={{ fontSize: 12, color: "rgba(255,255,255,.6)" }}>Handelssitzung - Metalle #247 · Live</span>
               </div>
               <div style={{ padding: 24 }}>
                 <div className="flex items-start justify-between" style={{ marginBottom: 20, paddingBottom: 16, borderBottom: "1px solid #f0f0f0" }}>
@@ -311,7 +311,7 @@ export default function HomePage() {
                 style={{ display: "inline-flex", alignItems: "center", fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,.75)", border: "1px solid rgba(255,255,255,.2)", padding: "13px 28px", textDecoration: "none" }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor="rgba(255,255,255,.06)")}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor="transparent")}>
-                Bereits Teilnehmer — Anmelden
+                Bereits Teilnehmer - Anmelden
               </Link>
             </div>
           </div>

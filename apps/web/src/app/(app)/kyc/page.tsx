@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * KYC Onboarding-Seite — /kyc
+ * KYC Onboarding-Seite - /kyc
  *
  * Zeigt KycWizard für nicht-verifizierte Nutzer.
  * Verifizierte Nutzer sehen eine Erfolgsanzeige.
@@ -85,7 +85,7 @@ export default function KycPage() {
     );
   }
 
-  // GUEST — zeige Wizard
+  // GUEST - zeige Wizard
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">

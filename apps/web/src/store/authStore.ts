@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * authStore — Zustand Auth-State
+ * authStore - Zustand Auth-State
  *
  * Enthält User-Profil, Token-Metadaten und Auth-Aktionen.
  * Persistiert im sessionStorage (Tab-sicher, kein XSS-Risiko durch localStorage).
@@ -131,7 +131,7 @@ export function scheduleAutoLogout(expiresAtMs: number): void {
 
 /**
  * Erneuert den Access Token via /api/auth/refresh.
- * Refresh-Token liegt im HttpOnly Cookie — wird automatisch mitgesendet.
+ * Refresh-Token liegt im HttpOnly Cookie - wird automatisch mitgesendet.
  */
 export async function refreshAccessToken(): Promise<void> {
   const res = await fetch("/api/auth/refresh", { method: "POST", credentials: "include" });

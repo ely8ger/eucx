@@ -39,7 +39,7 @@ export async function GET() {
         orderBy: { createdAt: "asc" },
       });
     } catch {
-      // LedgerEntry noch nicht befüllt — ignorieren
+      // LedgerEntry noch nicht befüllt - ignorieren
     }
 
     // ── Aggregation nach Tag ──────────────────────────────────────────────

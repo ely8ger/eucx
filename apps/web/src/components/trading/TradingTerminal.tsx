@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * TradingTerminal — Dark-Mode Professional Trading Interface
+ * TradingTerminal - Dark-Mode Professional Trading Interface
  *
  * Layout (3 Spalten, volles Viewport):
  *   Links  (col 3): TradeCard (dark) + Session-Timeline
@@ -150,7 +150,7 @@ export default function TradingTerminal() {
           <span className={cn("text-[14px] font-bold font-mono", dirCls)}>
             {ticker.price !== "0"
               ? new Decimal(ticker.price).toFixed(2)
-              : "—"
+              : "-"
             } EUR/t
           </span>
           {!isNaN(pricePct) && (
@@ -263,32 +263,32 @@ export default function TradingTerminal() {
             </p>
             <TickerStat
               label="Letzter Preis"
-              value={ticker.price !== "0" ? `${new Decimal(ticker.price).toFixed(2)} €` : "—"}
+              value={ticker.price !== "0" ? `${new Decimal(ticker.price).toFixed(2)} €` : "-"}
               accent={ticker.direction === "up" ? "green" : ticker.direction === "down" ? "red" : null}
             />
             <TickerStat
               label="Änderung"
               value={!isNaN(pricePct)
                 ? `${pricePct >= 0 ? "+" : ""}${ticker.changePercent24h}%`
-                : "—"
+                : "-"
               }
               accent={!isNaN(pricePct) ? (pricePct >= 0 ? "green" : "red") : null}
             />
             <TickerStat
               label="Hoch 24h"
-              value={ticker.high24h !== "0" ? `${new Decimal(ticker.high24h).toFixed(2)} €` : "—"}
+              value={ticker.high24h !== "0" ? `${new Decimal(ticker.high24h).toFixed(2)} €` : "-"}
             />
             <TickerStat
               label="Tief 24h"
-              value={ticker.low24h !== "0" ? `${new Decimal(ticker.low24h).toFixed(2)} €` : "—"}
+              value={ticker.low24h !== "0" ? `${new Decimal(ticker.low24h).toFixed(2)} €` : "-"}
             />
             <TickerStat
               label="Volumen 24h"
-              value={ticker.volume24h !== "0" ? `${ticker.volume24h} t` : "—"}
+              value={ticker.volume24h !== "0" ? `${ticker.volume24h} t` : "-"}
             />
             <TickerStat
               label="Quelle"
-              value={ticker.source === "socket" ? "Live WS" : ticker.source === "rest" ? "REST" : "—"}
+              value={ticker.source === "socket" ? "Live WS" : ticker.source === "rest" ? "REST" : "-"}
             />
           </div>
 

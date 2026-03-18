@@ -1,5 +1,5 @@
 /**
- * Audit Logger — Skill #3: Event Sourcing & Audit Logs.
+ * Audit Logger - Skill #3: Event Sourcing & Audit Logs.
  * In einer Börse ist "Löschen" verboten. Jeder Klick wird als
  * unveränderlicher Zeitstempel gespeichert.
  */
@@ -48,7 +48,7 @@ interface AuditParams {
 
 /**
  * Write an immutable audit log entry.
- * Never throws — audit must not break the main flow.
+ * Never throws - audit must not break the main flow.
  */
 export async function audit(params: AuditParams): Promise<void> {
   try {
@@ -65,7 +65,7 @@ export async function audit(params: AuditParams): Promise<void> {
       },
     });
   } catch {
-    // Audit failures are silent — never block business logic
+    // Audit failures are silent - never block business logic
     console.error("[audit] Failed to write audit log:", params.action);
   }
 }
