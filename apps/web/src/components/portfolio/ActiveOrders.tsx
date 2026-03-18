@@ -204,7 +204,7 @@ export function ActiveOrders() {
           <span className="text-xs text-cb-gray-400 animate-pulse">↺</span>
         )}
         {orders && orders.length > 0 && (
-          <Badge variant="yellow">{orders.length}</Badge>
+          <Badge variant="blue">{orders.length}</Badge>
         )}
       </div>
     </div>

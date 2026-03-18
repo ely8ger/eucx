@@ -103,7 +103,7 @@ export function BalanceCard() {
         {isFetching && !isLoading && (
           <span className="text-xs text-cb-gray-400 animate-pulse">↺</span>
         )}
-        <Badge variant="petrol">EUR-Konto</Badge>
+        <Badge variant="info">EUR-Konto</Badge>
       </div>
     </div>
   );

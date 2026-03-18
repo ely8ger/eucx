@@ -95,7 +95,7 @@ export function GlobalOrdersTable() {
       <div className="flex items-center gap-3">
         <CardTitle>Live-Orders — Gesamtsystem</CardTitle>
         {data && (
-          <Badge variant="petrol">{data.totalActive} aktiv</Badge>
+          <Badge variant="info">{data.totalActive} aktiv</Badge>
         )}
         {data && data.anomalyCount > 0 && (
           <Badge variant="error" dot>{data.anomalyCount} Anomalien</Badge>

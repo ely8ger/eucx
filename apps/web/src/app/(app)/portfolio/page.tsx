@@ -142,7 +142,7 @@ export default function PortfolioPage() {
                 <span className="w-5 text-center text-base">{item.icon}</span>
                 <span className="flex-1">{item.label}</span>
                 {item.badge && (
-                  <Badge variant="yellow">{item.badge}</Badge>
+                  <Badge variant="blue">{item.badge}</Badge>
                 )}
               </Link>
             ))}

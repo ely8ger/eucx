@@ -1,12 +1,12 @@
 import { type HTMLAttributes, forwardRef } from "react";
-import { clsx } from "clsx";
+import { cn } from "@/lib/utils";
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  header?:        React.ReactNode;
-  footer?:        React.ReactNode;
-  padding?:       "none" | "sm" | "md" | "lg";
-  bordered?:      boolean;
-  highlighted?:   boolean;  // Gelber linker Rand (Commerzbank-typisch)
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
+  padding?: "none" | "sm" | "md" | "lg";
+  bordered?: boolean;
+  highlighted?: boolean;  // Blauer linker Rand (Gov-Akzent)
 }
 
 const paddingMap = {
@@ -33,17 +33,17 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={clsx(
-          "bg-cb-white rounded",
+        className={cn(
+          "bg-gov-bg-card rounded-sm",
           "shadow-sm",
-          bordered && "border border-cb-gray-200",
-          highlighted && "border-l-4 border-l-cb-yellow",
+          bordered && "border border-gov-border-light",
+          highlighted && "border-l-4 border-l-gov-blue",
           className
         )}
         {...props}
       >
         {header && (
-          <div className="px-5 py-3 border-b border-cb-gray-200 flex items-center justify-between">
+          <div className="px-5 py-3 border-b border-gov-border-light flex items-center justify-between">
             {header}
           </div>
         )}
@@ -51,7 +51,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         <div className={paddingMap[padding]}>{children}</div>
 
         {footer && (
-          <div className="px-5 py-3 border-t border-cb-gray-200 bg-cb-gray-50 rounded-b">
+          <div className="px-5 py-3 border-t border-gov-border-light bg-gov-bg rounded-b">
             {footer}
           </div>
         )}
@@ -71,7 +71,7 @@ export function CardTitle({
   className?: string;
 }) {
   return (
-    <h3 className={clsx("text-base font-semibold text-cb-petrol", className)}>
+    <h3 className={cn("text-base font-semibold text-gov-text", className)}>
       {children}
     </h3>
   );

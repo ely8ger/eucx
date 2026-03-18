@@ -1,7 +1,7 @@
 "use client";
 
 import { type InputHTMLAttributes, forwardRef } from "react";
-import { clsx } from "clsx";
+import { cn } from "@/lib/utils";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?:   string;
@@ -20,18 +20,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-semibold text-cb-gray-700"
+            className="text-sm font-semibold text-gov-text"
           >
             {label}
             {props.required && (
-              <span className="ml-1 text-cb-error">*</span>
+              <span className="ml-1 text-gov-error">*</span>
             )}
           </label>
         )}
 
         <div className="relative flex items-center">
           {prefix && (
-            <span className="absolute left-3 text-sm text-cb-gray-500 select-none pointer-events-none">
+            <span className="absolute left-3 text-sm text-gov-text-muted select-none pointer-events-none">
               {prefix}
             </span>
           )}
@@ -39,26 +39,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             id={inputId}
-            className={clsx(
-              // Basis
-              "w-full h-10 rounded border bg-cb-white",
-              "text-sm text-cb-gray-900",
-              "transition-all duration-150",
-              "placeholder:text-cb-gray-400",
-
-              // Padding (angepasst für Prefix/Suffix)
+            className={cn(
+              "w-full h-10 rounded-sm border bg-gov-white",
+              "text-sm text-gov-text",
+              "transition-colors duration-150",
+              "placeholder:text-gov-text-muted",
               prefix ? "pl-8  pr-3" : "px-3",
               suffix ? "pr-8" : "",
-
-              // Border-States
               error
-                ? "border-cb-error focus:border-cb-error focus:ring-2 focus:ring-cb-error/20"
-                : "border-cb-gray-300 focus:border-cb-yellow focus:ring-2 focus:ring-cb-yellow/20",
-
+                ? "border-gov-error focus:border-gov-error focus:ring-2 focus:ring-gov-error/20"
+                : "border-gov-border focus:border-gov-blue focus:ring-2 focus:ring-gov-blue/20",
               "focus:outline-none",
-
-              // Disabled
-              "disabled:bg-cb-gray-100 disabled:text-cb-gray-400 disabled:cursor-not-allowed",
+              "disabled:bg-gov-bg disabled:text-gov-text-muted disabled:cursor-not-allowed",
 
               className
             )}
@@ -66,19 +58,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           />
 
           {suffix && (
-            <span className="absolute right-3 text-sm text-cb-gray-500 select-none pointer-events-none">
+            <span className="absolute right-3 text-sm text-gov-text-muted select-none pointer-events-none">
               {suffix}
             </span>
           )}
         </div>
 
         {error && (
-          <p className="text-xs text-cb-error flex items-center gap-1">
+          <p className="text-xs text-gov-error flex items-center gap-1">
             <span>⚠</span> {error}
           </p>
         )}
         {hint && !error && (
-          <p className="text-xs text-cb-gray-500">{hint}</p>
+          <p className="text-xs text-gov-text-muted">{hint}</p>
         )}
       </div>
     );

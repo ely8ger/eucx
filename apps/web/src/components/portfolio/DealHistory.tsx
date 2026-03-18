@@ -78,7 +78,7 @@ function DealRow({ order }: { order: PortfolioOrder }) {
 
       {/* Status */}
       <td className="px-4 py-3">
-        <Badge variant="petrol">Ausgeführt</Badge>
+        <Badge variant="info">Ausgeführt</Badge>
       </td>
     </tr>
   );

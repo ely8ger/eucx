@@ -1,50 +1,44 @@
 "use client";
 
 import { type ButtonHTMLAttributes, forwardRef } from "react";
-import { clsx } from "clsx";
+import { cn } from "@/lib/utils";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "outline";
-type ButtonSize    = "sm" | "md" | "lg";
+type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
-  size?:    ButtonSize;
+  size?: ButtonSize;
   loading?: boolean;
   fullWidth?: boolean;
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  // Commerzbank Primär: Gelb + Dunkeltext (Signature-Look)
   primary:
-    "bg-cb-yellow text-cb-gray-900 hover:bg-cb-yellow-hover active:bg-cb-yellow-dark " +
-    "font-semibold border border-cb-yellow hover:border-cb-yellow-hover " +
-    "shadow-sm",
+    "bg-gov-blue text-gov-white hover:bg-gov-blue-dark " +
+    "font-semibold border border-gov-blue hover:border-gov-blue-dark shadow-sm",
 
-  // Sekundär: Petrol-Blau (Commerzbank Dark)
   secondary:
-    "bg-cb-petrol text-cb-white hover:bg-cb-petrol-dark active:bg-cb-navy " +
-    "font-semibold border border-cb-petrol",
+    "bg-gov-white text-gov-blue hover:bg-gov-bg " +
+    "font-semibold border border-gov-blue",
 
-  // Outline: gelber Rand, transparenter Hintergrund
   outline:
-    "bg-transparent text-cb-petrol hover:bg-cb-gray-100 active:bg-cb-gray-200 " +
-    "font-semibold border-2 border-cb-petrol",
+    "bg-transparent text-gov-blue hover:bg-gov-blue-light " +
+    "font-semibold border border-gov-blue",
 
-  // Ghost: kein Rahmen, nur Hover-Effekt
   ghost:
-    "bg-transparent text-cb-petrol hover:bg-cb-yellow hover:text-cb-gray-900 " +
+    "bg-transparent text-gov-blue hover:bg-gov-blue-light " +
     "font-medium border border-transparent",
 
-  // Danger: Rot für kritische Aktionen
   danger:
-    "bg-cb-error text-cb-white hover:bg-red-700 active:bg-red-800 " +
-    "font-semibold border border-cb-error",
+    "bg-gov-error text-gov-white hover:bg-red-700 " +
+    "font-semibold border border-gov-error",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm:  "h-8  px-3 text-sm  gap-1.5",
-  md:  "h-10 px-4 text-sm  gap-2",
-  lg:  "h-12 px-6 text-base gap-2.5",
+  sm: "h-8  px-3 text-sm  gap-1.5",
+  md: "h-10 px-4 text-sm  gap-2",
+  lg: "h-12 px-6 text-base gap-2.5",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -67,26 +61,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={isDisabled}
-        className={clsx(
-          // Basis
+        className={cn(
           "inline-flex items-center justify-center",
-          "rounded transition-all duration-150",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cb-yellow focus-visible:ring-offset-1",
-          "select-none cursor-pointer",
-          "whitespace-nowrap",
-
-          // Variant
+          "rounded-sm transition-colors duration-150",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gov-blue focus-visible:ring-offset-1",
+          "select-none cursor-pointer whitespace-nowrap",
           variantStyles[variant],
-
-          // Size
           sizeStyles[size],
-
-          // Full-width
           fullWidth && "w-full",
-
-          // Disabled
           isDisabled && "opacity-50 cursor-not-allowed pointer-events-none",
-
           className
         )}
         {...props}
