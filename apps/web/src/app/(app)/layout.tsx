@@ -7,12 +7,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#F8FAFC" }}>
         <Navbar />
         <main className="flex-1 w-full">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+          <div className="max-w-6xl mx-auto px-6 lg:px-10 py-7">
             {children}
           </div>
         </main>
         <footer className="bg-white border-t border-slate-200 mt-auto">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="max-w-6xl mx-auto px-6 lg:px-10 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ backgroundColor: "#2563EB" }}>
                 <span className="text-white font-bold text-xs">E</span>

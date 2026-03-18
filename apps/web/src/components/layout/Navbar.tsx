@@ -26,7 +26,7 @@ export function Navbar() {
 
       {/* Topbar — BaFin-Hinweis */}
       <div className="bg-[#1E293B] border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 h-8 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 h-8 flex items-center justify-between">
           <span className="text-white/40 text-[11px] font-medium tracking-wide hidden sm:block">
             BaFin-reguliert · Institutionelle Handelsplattform · Frankfurt am Main
           </span>
@@ -49,7 +49,7 @@ export function Navbar() {
 
       {/* Main Header */}
       <div className="bg-white border-b border-slate-200" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-        <div className="max-w-7xl mx-auto px-6 h-13 flex items-center gap-5" style={{ height: "52px" }}>
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 h-13 flex items-center gap-5" style={{ height: "52px" }}>
 
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0 group">
