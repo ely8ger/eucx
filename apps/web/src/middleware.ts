@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 
 const PUBLIC_PATHS = [
+  "/",
   "/login",
   "/register",
   "/api/auth/login",
