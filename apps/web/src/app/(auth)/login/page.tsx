@@ -180,22 +180,29 @@ export default function LoginPage() {
   return (
     <div className="w-full max-w-[460px] mx-auto">
 
-      {/* ── Karten-Container ───────────────────────────────────────────────── */}
-      <div className="bg-gov-white border border-gov-border rounded-sm shadow-sm overflow-hidden">
+      {/* ── Portal-Bezeichnung über der Karte ──────────────────────────────── */}
+      <div className="mb-5 text-center">
+        <p className="text-xs uppercase tracking-widest text-gov-text-muted font-medium">
+          Gesicherter Zugang · Teilnehmerportal
+        </p>
+      </div>
 
-        {/* Blauer Kopfbereich */}
-        <div className="bg-gov-blue px-8 py-6">
-          <h1 className="text-xl font-bold text-white leading-tight">
+      {/* ── Karten-Container ───────────────────────────────────────────────── */}
+      <div className="bg-gov-white border border-gov-border rounded-sm shadow-sm overflow-hidden"
+           style={{ borderTop: "4px solid #154194" }}>
+
+        <div className="px-8 pt-7 pb-2">
+          <h1 className="text-xl font-bold text-gov-text">
             {step === "password" ? "Anmelden" : "Zwei-Faktor-Authentifizierung"}
           </h1>
-          <p className="text-white/70 text-sm mt-1">
+          <p className="text-sm text-gov-text-muted mt-1">
             {step === "password"
-              ? "Melden Sie sich mit Ihren Zugangsdaten an."
+              ? "Melden Sie sich mit Ihren EUCX-Zugangsdaten an."
               : "Geben Sie den Code aus Ihrer Authenticator-App ein."}
           </p>
         </div>
 
-        <div className="px-8 py-7">
+        <div className="px-8 py-6">
 
           {/* ── Step 1: Passwort ─────────────────────────────────────────── */}
           {step === "password" && (
@@ -329,7 +336,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => { setStep("password"); setCode(""); setErrors({}); }}
-                  className="w-full text-center text-sm text-gov-blue-mid hover:text-gov-blue-dark transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full text-center text-sm text-gov-blue hover:text-gov-blue-dark transition-colors flex items-center justify-center gap-1.5"
                 >
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                     <path d="M11 7H3M6 4L3 7l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -340,14 +347,31 @@ export default function LoginPage() {
             </form>
           )}
         </div>
+
+        {/* ── Vertrauenszeichen ──────────────────────────────────────────────── */}
+        <div className="border-t border-gov-border-light px-8 py-4 bg-gov-bg">
+          <div className="flex items-center justify-center gap-6 text-xs text-gov-text-muted">
+            <span className="flex items-center gap-1.5">
+              <svg width="12" height="13" viewBox="0 0 12 13" fill="none" aria-hidden="true">
+                <rect x="1" y="5.5" width="10" height="7" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+                <path d="M3.5 5.5V3.5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+              TLS 1.3 verschlüsselt
+            </span>
+            <span className="text-gov-border-light">|</span>
+            <span>DSGVO-konform</span>
+            <span className="text-gov-border-light">|</span>
+            <span>BaFin-regulierter Markt</span>
+          </div>
+        </div>
       </div>
 
       {/* ── Registrierungs-Link ────────────────────────────────────────────── */}
       {step === "password" && (
         <div className="mt-4 bg-gov-white border border-gov-border rounded-sm px-6 py-4 flex items-center justify-between">
-          <p className="text-sm text-gov-text-2">Noch kein Konto?</p>
+          <p className="text-sm text-gov-text-muted">Noch kein Konto?</p>
           <a href="/register"
-            className="text-sm font-semibold text-gov-blue-mid hover:text-gov-blue-dark transition-colors flex items-center gap-1.5">
+            className="text-sm font-semibold text-gov-blue hover:text-gov-blue-dark transition-colors flex items-center gap-1.5">
             Jetzt registrieren
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
               <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
