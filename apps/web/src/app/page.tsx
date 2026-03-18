@@ -331,17 +331,17 @@ export default function HomePage() {
               </p>
             </div>
             {[
-              { title: "Plattform",   links: ["Marktbereiche","Handelssitzungen","Orderbuch","API-Zugang"] },
-              { title: "Teilnehmer", links: ["Registrierung","Akkreditierung","Dokumentation","Support"] },
-              { title: "Rechtliches",links: ["Impressum","Datenschutz","Nutzungsbedingungen","Barrierefreiheit"] },
+              { title: "Plattform",   links: [["Marktbereiche","#marktbereiche"],["Handelssitzungen","#wie-es-funktioniert"],["Orderbuch","#wie-es-funktioniert"],["API-Zugang","#"]] },
+              { title: "Teilnehmer", links: [["Registrierung","/register"],["Akkreditierung","/register"],["Dokumentation","#"],["Support","#"]] },
+              { title: "Rechtliches",links: [["Impressum","/impressum"],["Datenschutz","/datenschutz"],["AGB","/agb"],["Barrierefreiheit","#"]] },
             ].map(({ title, links }) => (
               <div key={title}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: "#888", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 18 }}>{title}</div>
-                {links.map(link => (
-                  <a key={link} href="#" style={{ display: "block", fontSize: 13, color: "#555", textDecoration: "none", marginBottom: 10, transition: "color .15s" }}
+                {links.map(([label, href]) => (
+                  <a key={label} href={href} style={{ display: "block", fontSize: 13, color: "#555", textDecoration: "none", marginBottom: 10, transition: "color .15s" }}
                     onMouseEnter={e => (e.currentTarget.style.color="#fff")}
                     onMouseLeave={e => (e.currentTarget.style.color="#555")}>
-                    {link}
+                    {label}
                   </a>
                 ))}
               </div>
