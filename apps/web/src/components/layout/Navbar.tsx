@@ -6,6 +6,7 @@ import {
   LayoutDashboard, TrendingUp, FileText, Briefcase,
   CheckSquare, User, Shield, LogOut, Bell,
 } from "lucide-react";
+import { EucxLogo } from "@/components/logo/EucxLogo";
 
 const NAV_LINKS = [
   { href: "/dashboard", label: "Übersicht",       Icon: LayoutDashboard },
@@ -55,14 +56,8 @@ export function Navbar() {
         <div className="max-w-6xl mx-auto px-6 lg:px-10 flex items-center gap-6" style={{ height: 56 }}>
 
           {/* Logo */}
-          <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
-            <div style={{ width: 34, height: 34, backgroundColor: "#154194", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 0 }}>
-              <span className="text-white font-bold text-sm">E</span>
-            </div>
-            <div className="hidden sm:flex flex-col leading-none">
-              <span style={{ fontWeight: 700, fontSize: 15, color: "#1a1a1a", letterSpacing: "-0.01em" }}>EUCX</span>
-              <span style={{ fontSize: 9, color: "#929292", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase" }}>Exchange</span>
-            </div>
+          <Link href="/dashboard" style={{ textDecoration: "none", flexShrink: 0 }}>
+            <EucxLogo size="sm" />
           </Link>
 
           <div style={{ width: 1, height: 20, backgroundColor: "#e8e8e8", flexShrink: 0 }} />
