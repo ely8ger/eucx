@@ -40,7 +40,7 @@ export default function HomePage() {
             </div>
             <div>
               <div style={{ fontWeight: 700, fontSize: 16, color: "#0d1b2a", letterSpacing: "-0.01em" }}>EUCX</div>
-              <div style={{ fontSize: 9, color: "#aaa", letterSpacing: "0.15em", textTransform: "uppercase", marginTop: 1 }}>EU Commodity Exchange</div>
+              <div style={{ fontSize: 9, color: "#aaa", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 1 }}>European Union Commodity Exchange</div>
             </div>
           </div>
 
@@ -334,7 +334,10 @@ export default function HomePage() {
                 <div style={{ width: 32, height: 32, backgroundColor: "#154194", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <span style={{ color: "#fff", fontWeight: 700, fontSize: 13 }}>E</span>
                 </div>
-                <span style={{ color: "#fff", fontWeight: 600, fontSize: 15 }}>EUCX</span>
+                <div>
+                  <span style={{ color: "#fff", fontWeight: 600, fontSize: 15 }}>EUCX</span>
+                  <div style={{ fontSize: 9, color: "#555", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 2 }}>European Union Commodity Exchange</div>
+                </div>
               </div>
               <p style={{ fontSize: 13, color: "#555", lineHeight: 1.7 }}>
                 Digitale B2B-Warenbörse für institutionellen Rohstoffhandel in der Europäischen Union.
