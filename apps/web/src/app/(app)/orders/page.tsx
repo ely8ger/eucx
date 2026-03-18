@@ -112,7 +112,7 @@ export default function OrdersPage() {
                 padding: "10px 14px", fontSize: 13, fontWeight: tab === t.key ? 600 : 400,
                 color: tab === t.key ? "#154194" : "#505050",
                 borderBottom: tab === t.key ? "2px solid #154194" : "2px solid transparent",
-                backgroundColor: "transparent", border: "none", borderBottom: tab === t.key ? "2px solid #154194" : "2px solid transparent",
+                backgroundColor: "transparent", border: "none",
                 cursor: "pointer", marginRight: 4,
               }}>
               {t.label(ORDERS)}
