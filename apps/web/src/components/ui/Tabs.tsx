@@ -1,92 +1,55 @@
-"use client";
+"use client"
 
-import { createContext, useContext, useState, type HTMLAttributes } from "react";
-import { cn } from "@/lib/utils";
+import * as React from "react"
+import * as TabsPrimitive from "@radix-ui/react-tabs"
 
-// ─── Context ────────────────────────────────────────────────────────────────
-const TabsContext = createContext<{ active: string; setActive: (v: string) => void }>({
-  active: "",
-  setActive: () => {},
-});
+import { cn } from "@/lib/utils"
 
-// ─── Root ───────────────────────────────────────────────────────────────────
-interface TabsProps extends HTMLAttributes<HTMLDivElement> {
-  defaultValue: string;
-}
+const Tabs = TabsPrimitive.Root
 
-function Tabs({ defaultValue, children, className, ...props }: TabsProps) {
-  const [active, setActive] = useState(defaultValue);
-  return (
-    <TabsContext.Provider value={{ active, setActive }}>
-      <div className={cn("w-full", className)} {...props}>
-        {children}
-      </div>
-    </TabsContext.Provider>
-  );
-}
+const TabsList = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.List>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.List
+    ref={ref}
+    className={cn(
+      "inline-flex h-10 items-center justify-center rounded-md bg-slate-100 p-1 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
+      className
+    )}
+    {...props}
+  />
+))
+TabsList.displayName = TabsPrimitive.List.displayName
 
-// ─── Tab List (Nav-Leiste) ───────────────────────────────────────────────────
-function TabsList({ children, className }: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn(
-        "flex border-b border-gov-border-light bg-gov-white",
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-}
+const TabsTrigger = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-slate-950 data-[state=active]:shadow-sm dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 dark:data-[state=active]:bg-slate-950 dark:data-[state=active]:text-slate-50",
+      className
+    )}
+    {...props}
+  />
+))
+TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
-// ─── Tab Trigger ────────────────────────────────────────────────────────────
-interface TabTriggerProps extends HTMLAttributes<HTMLButtonElement> {
-  value: string;
-}
+const TabsContent = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Content
+    ref={ref}
+    className={cn(
+      "mt-2 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300",
+      className
+    )}
+    {...props}
+  />
+))
+TabsContent.displayName = TabsPrimitive.Content.displayName
 
-function TabTrigger({ value, children, className, ...props }: TabTriggerProps) {
-  const { active, setActive } = useContext(TabsContext);
-  const isActive = active === value;
-
-  return (
-    <button
-      role="tab"
-      aria-selected={isActive}
-      onClick={() => setActive(value)}
-      className={cn(
-        "px-4 py-2.5 text-sm font-medium transition-colors",
-        "border-b-2 -mb-px",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gov-blue focus-visible:ring-offset-1",
-        isActive
-          ? "border-gov-blue text-gov-blue"
-          : "border-transparent text-gov-text-muted hover:text-gov-text hover:border-gov-border",
-        className
-      )}
-      {...(props as HTMLAttributes<HTMLButtonElement>)}
-    >
-      {children}
-    </button>
-  );
-}
-
-// ─── Tab Content ────────────────────────────────────────────────────────────
-interface TabContentProps extends HTMLAttributes<HTMLDivElement> {
-  value: string;
-}
-
-function TabContent({ value, children, className, ...props }: TabContentProps) {
-  const { active } = useContext(TabsContext);
-  if (active !== value) return null;
-
-  return (
-    <div
-      role="tabpanel"
-      className={cn("pt-4", className)}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
-
-export { Tabs, TabsList, TabTrigger, TabContent };
+export { Tabs, TabsList, TabsTrigger, TabsContent }
