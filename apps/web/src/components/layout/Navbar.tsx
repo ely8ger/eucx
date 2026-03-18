@@ -11,12 +11,12 @@ import { usePathname } from "next/navigation";
 import { clsx }        from "clsx";
 
 const NAV_LINKS = [
-  { href: "/dashboard", label: "Übersicht"    },
-  { href: "/trading",   label: "Handelsraum"  },
-  { href: "/products",  label: "Warenkatalog" },
-  { href: "/portfolio", label: "Portfolio"    },
-  { href: "/deals",     label: "Abschlüsse"   },
-  { href: "/reports",   label: "Berichte"     },
+  { href: "/dashboard", label: "Übersicht"     },
+  { href: "/trading",   label: "Handelssitzung"},
+  { href: "/orders",    label: "Meine Aufträge"},
+  { href: "/portfolio", label: "Portfolio"     },
+  { href: "/deals",     label: "Abschlüsse"    },
+  { href: "/personal",  label: "Mein Bereich"  },
 ];
 
 export function Navbar() {
