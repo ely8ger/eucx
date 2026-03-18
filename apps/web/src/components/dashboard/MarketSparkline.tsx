@@ -30,7 +30,7 @@ export function MarketSparkline() {
           <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} tickFormatter={(v) => `€${v}M`} />
           <Tooltip
             contentStyle={{ fontSize: 12, borderRadius: 6, border: "1px solid #e5e7eb", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
-            formatter={(v: number) => [`€ ${v} Mio.`, "Umsatz"]}
+            formatter={(v) => [`€ ${v} Mio.`, "Umsatz"] as [string, string]}
           />
           <Area type="monotone" dataKey="umsatz" stroke="#2563eb" strokeWidth={2} fill="url(#grad)" dot={false} activeDot={{ r: 4, strokeWidth: 0, fill: "#2563eb" }} />
         </AreaChart>

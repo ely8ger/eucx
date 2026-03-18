@@ -146,6 +146,50 @@ const SelectSeparator = React.forwardRef<
 ))
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName
 
+// Native HTML select wrapper (for forms using react-hook-form register)
+interface NativeSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  label?:       string;
+  error?:       string;
+  hint?:        string;
+  placeholder?: string;
+}
+
+const NativeSelect = React.forwardRef<HTMLSelectElement, NativeSelectProps>(
+  ({ label, error, hint, placeholder, className, id, children, ...props }, ref) => {
+    const selectId = id ?? label?.toLowerCase().replace(/\s/g, "-");
+    return (
+      <div className="flex flex-col gap-1.5">
+        {label && (
+          <label htmlFor={selectId} className="text-sm font-semibold text-gov-text">
+            {label}
+            {props.required && <span className="ml-1 text-gov-error">*</span>}
+          </label>
+        )}
+        <select
+          ref={ref}
+          id={selectId}
+          className={cn(
+            "w-full h-10 rounded-sm border bg-gov-white px-3",
+            "text-sm text-gov-text transition-colors duration-150",
+            error
+              ? "border-gov-error focus:border-gov-error focus:ring-2 focus:ring-gov-error/20"
+              : "border-gov-border focus:border-gov-blue focus:ring-2 focus:ring-gov-blue/20",
+            "focus:outline-none disabled:bg-gov-bg disabled:cursor-not-allowed",
+            className
+          )}
+          {...props}
+        >
+          {placeholder && <option value="">{placeholder}</option>}
+          {children}
+        </select>
+        {error && <p className="text-xs text-gov-error flex items-center gap-1"><span>⚠</span> {error}</p>}
+        {hint && !error && <p className="text-xs text-gov-text-muted">{hint}</p>}
+      </div>
+    );
+  }
+);
+NativeSelect.displayName = "NativeSelect";
+
 export {
   Select,
   SelectGroup,
@@ -157,4 +201,5 @@ export {
   SelectSeparator,
   SelectScrollUpButton,
   SelectScrollDownButton,
+  NativeSelect,
 }

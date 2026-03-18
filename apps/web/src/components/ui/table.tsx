@@ -105,6 +105,11 @@ const TableCaption = React.forwardRef<
 ))
 TableCaption.displayName = "TableCaption"
 
+// Aliases for backwards compatibility with old custom table component
+const TableWrapper = Table;
+const TableTh = TableHead;
+const TableTd = TableCell;
+
 export {
   Table,
   TableHeader,
@@ -114,4 +119,8 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  // Legacy aliases
+  TableWrapper,
+  TableTh,
+  TableTd,
 }
