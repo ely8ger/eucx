@@ -19,6 +19,17 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
       </div>
 
+      {/* ── Systemstatus-Bar ─────────────────────────────────────────────── */}
+      <div style={{ backgroundColor: "#0d1a30", borderBottom: "1px solid rgba(255,255,255,.06)" }}>
+        <div style={{ maxWidth: 1180, margin: "0 auto", padding: "0 24px", height: 30, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(255,255,255,.4)" }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#22c55e", display: "inline-block", boxShadow: "0 0 6px rgba(34,197,94,.6)" }} />
+            Alle Systeme betriebsbereit
+          </div>
+          <span style={{ fontSize: 11, color: "rgba(255,255,255,.25)", letterSpacing: "0.02em" }}>Handelssitzungen Mo-Fr 09:00-17:30 MEZ · Sitzung: 15 Min.</span>
+        </div>
+      </div>
+
       {/* ── Zentrierter Inhalt mit Punktraster-Hintergrund ───────────────── */}
       <div
         className="flex-1 flex flex-col items-center justify-center px-4 py-12"

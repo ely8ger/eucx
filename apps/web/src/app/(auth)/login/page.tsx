@@ -83,6 +83,7 @@ export default function LoginPage() {
   const [code,     setCode    ] = useState("");
   const [errors,   setErrors  ] = useState<FieldErrors>({});
   const [loading,  setLoading ] = useState(false);
+  const [attempts, setAttempts] = useState(0);
   const codeRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -114,7 +115,12 @@ export default function LoginPage() {
 
       if (!res.ok) {
         if (res.status === 401) {
-          setErrors({ password: "E-Mail-Adresse oder Passwort ist nicht korrekt." });
+          const next = attempts + 1;
+          setAttempts(next);
+          const remaining = Math.max(0, 5 - next);
+          setErrors({ password: remaining > 0
+            ? `E-Mail-Adresse oder Passwort ist nicht korrekt. Noch ${remaining} Versuch${remaining === 1 ? "" : "e"} vor temporärer Sperrung.`
+            : "Zu viele Fehlversuche. Bitte warten Sie 15 Minuten oder kontaktieren Sie support@eucx.eu." });
         } else {
           setErrors({ email: data.message ?? "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut." });
         }
@@ -130,6 +136,7 @@ export default function LoginPage() {
         }`;
         if (data.data.user) setAuth(data.data.user, expiresAt);
         scheduleAutoLogout(expiresAt);
+        if (typeof window !== "undefined") localStorage.setItem("eucx_prev_login", new Date().toISOString());
         router.push("/dashboard");
       }
     } catch {
@@ -169,6 +176,7 @@ export default function LoginPage() {
         }`;
         if (data.data.user) setAuth(data.data.user, expiresAt);
         scheduleAutoLogout(expiresAt);
+        if (typeof window !== "undefined") localStorage.setItem("eucx_prev_login", new Date().toISOString());
         router.push("/dashboard");
       }
     } catch {
@@ -229,6 +237,14 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   required
                 />
+                <div style={{ textAlign: "right", marginTop: -8 }}>
+                  <a href="mailto:support@eucx.eu?subject=Passwort%20zur%C3%BCcksetzen"
+                    style={{ fontSize: 12, color: "#154194", textDecoration: "none", fontWeight: 500 }}
+                    onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
+                    onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
+                    Passwort vergessen?
+                  </a>
+                </div>
 
                 {/* 2FA-Hinweis */}
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "10px 12px", backgroundColor: "#eef2fb", borderLeft: "3px solid #154194" }}>
@@ -248,7 +264,7 @@ export default function LoginPage() {
 
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || attempts >= 5}
                   className={[
                     "w-full h-11 rounded-sm font-semibold text-sm",
                     "bg-gov-blue text-white",
@@ -418,6 +434,20 @@ export default function LoginPage() {
               <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
+        </div>
+      )}
+
+      {/* ── Support-Kontakt ───────────────────────────────────────────────── */}
+      {step === "password" && (
+        <div style={{ marginTop: 8, textAlign: "center" }}>
+          <p style={{ fontSize: 12, color: "#aaa", margin: 0 }}>
+            Probleme bei der Anmeldung?{" "}
+            <a href="mailto:support@eucx.eu" style={{ color: "#154194", textDecoration: "none", fontWeight: 500 }}
+              onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
+              onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
+              support@eucx.eu
+            </a>
+          </p>
         </div>
       )}
 

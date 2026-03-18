@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   TrendingUp, TrendingDown, Activity, Users, BarChart3,
@@ -46,6 +47,20 @@ export default function DashboardPage() {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
 
+  const [lastLogin, setLastLogin] = useState<string | null>(null);
+  useEffect(() => {
+    const raw = localStorage.getItem("eucx_prev_login");
+    if (raw) {
+      try {
+        const d = new Date(raw);
+        setLastLogin(
+          d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }) +
+          " um " + d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) + " Uhr"
+        );
+      } catch { /* ignore */ }
+    }
+  }, []);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24, fontFamily: F }}>
 
@@ -57,6 +72,15 @@ export default function DashboardPage() {
             <Clock size={12} />
             {now} · Frankfurt am Main
           </p>
+          {lastLogin && (
+            <p style={{ fontSize: 11, color: "#aaa", marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0, color: "#bbb" }}>
+                <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.2"/>
+                <path d="M6 3.5v3l2 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+              Letzter Login: {lastLogin}
+            </p>
+          )}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid #bbf7d0", backgroundColor: "#f0fdf4", padding: "6px 12px" }}>
           <span style={{ width: 7, height: 7, backgroundColor: "#22c55e", display: "inline-block" }} />

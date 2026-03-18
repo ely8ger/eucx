@@ -259,6 +259,51 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Trust-Zeichen ────────────────────────────────────────────────── */}
+      <div style={{ marginTop: 2, backgroundColor: "#fff", border: "1px solid #e0e0e0", padding: "14px 24px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4 }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, padding: "6px 4px" }}>
+            <svg width="18" height="20" viewBox="0 0 18 20" fill="none" style={{ color: "#154194" }}>
+              <rect x="1" y="9" width="16" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
+              <path d="M5.5 9V6a3.5 3.5 0 017 0v3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+              <circle cx="9" cy="13.5" r="1.5" fill="currentColor"/>
+              <line x1="9" y1="15" x2="9" y2="16.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+            </svg>
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#505050", textAlign: "center" }}>TLS 1.3 verschlüsselt</span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, padding: "6px 4px", borderLeft: "1px solid #eef0f4", borderRight: "1px solid #eef0f4" }}>
+            <svg width="18" height="20" viewBox="0 0 18 20" fill="none" style={{ color: "#154194" }}>
+              <path d="M9 1L17 4.5v7c0 4-3 7.5-8 8.5C4 19 1 15.5 1 11.5v-7L9 1Z" stroke="currentColor" strokeWidth="1.3"/>
+              <circle cx="9" cy="7" r="0.85" fill="currentColor"/>
+              <circle cx="12" cy="9" r="0.85" fill="currentColor"/>
+              <circle cx="11" cy="12.5" r="0.85" fill="currentColor"/>
+              <circle cx="7" cy="12.5" r="0.85" fill="currentColor"/>
+              <circle cx="6" cy="9" r="0.85" fill="currentColor"/>
+            </svg>
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#505050", textAlign: "center" }}>DSGVO-konform</span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, padding: "6px 4px" }}>
+            <svg width="18" height="20" viewBox="0 0 18 20" fill="none" style={{ color: "#154194" }}>
+              <rect x="1" y="16" width="16" height="2" rx="0.5" fill="currentColor" opacity="0.8"/>
+              <rect x="1" y="6" width="16" height="2" rx="0.5" fill="currentColor" opacity="0.8"/>
+              <rect x="3" y="8" width="2" height="8" fill="currentColor" opacity="0.6"/>
+              <rect x="8" y="8" width="2" height="8" fill="currentColor" opacity="0.6"/>
+              <rect x="13" y="8" width="2" height="8" fill="currentColor" opacity="0.6"/>
+              <path d="M1 6L9 1l8 5H1Z" fill="currentColor" opacity="0.5"/>
+            </svg>
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#505050", textAlign: "center" }}>BaFin-reguliert</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Support-Kontakt ───────────────────────────────────────────────── */}
+      <div style={{ marginTop: 8, textAlign: "center" }}>
+        <p style={{ fontSize: 12, color: "#aaa", margin: 0, fontFamily: "'IBM Plex Sans', Arial, sans-serif" }}>
+          Fragen zur Registrierung?{" "}
+          <a href="mailto:support@eucx.eu" style={{ color: "#154194", textDecoration: "none", fontWeight: 500 }}>support@eucx.eu</a>
+        </p>
+      </div>
     </div>
   );
 }
