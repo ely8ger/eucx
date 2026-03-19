@@ -90,7 +90,7 @@ export default async function ArticlePage({ params }: Props) {
 
         {/* ── Artikel-Header ────────────────────────────────────────────── */}
         <div style={{ backgroundColor: BLUE, paddingTop: 48, paddingBottom: 48 }}>
-          <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 32px" }}>
+          <div className="r-wissen-hero" style={{ maxWidth: 800, margin: "0 auto", padding: "0 32px" }}>
 
             {/* Breadcrumb */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
@@ -126,7 +126,7 @@ export default async function ArticlePage({ params }: Props) {
         </div>
 
         {/* ── Artikel-Body ──────────────────────────────────────────────── */}
-        <div style={{ maxWidth: 800, margin: "0 auto", padding: "48px 32px" }}>
+        <div className="r-wissen-body" style={{ maxWidth: 800, margin: "0 auto", padding: "48px 32px" }}>
 
           {/* Abstract */}
           <p style={{

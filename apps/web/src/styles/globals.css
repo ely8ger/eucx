@@ -306,3 +306,109 @@ tr:hover td { background-color: #F8FAFC; }
 
 /* ─── Number: Tabular Figures (Preise, Zahlen) ───────────────────────────── */
 .tabular { font-variant-numeric: tabular-nums; }
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/* ─── RESPONSIVE LAYOUT — Mobile & Tablet                                ─── */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Container ───────────────────────────────────────────────────────────── */
+.r-container { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+@media (max-width: 768px) { .r-container { padding: 0 16px; } }
+
+/* ── Section Padding ─────────────────────────────────────────────────────── */
+.r-section-lg  { padding: 80px 0; }
+.r-section-hero { padding: 96px 0 80px; }
+@media (max-width: 768px) {
+  .r-section-lg   { padding: 40px 0; }
+  .r-section-hero { padding: 48px 0 36px; }
+}
+
+/* ── Hero Typography ─────────────────────────────────────────────────────── */
+.r-hero-h1 {
+  font-size: 52px; font-weight: 300; color: #fff;
+  line-height: 1.12; max-width: 680px; margin: 0 0 24px;
+}
+@media (max-width: 900px)  { .r-hero-h1 { font-size: 38px; } }
+@media (max-width: 600px)  { .r-hero-h1 { font-size: 28px; max-width: 100%; } }
+@media (max-width: 380px)  { .r-hero-h1 { font-size: 24px; } }
+
+.r-hero-sub {
+  font-size: 17px; color: rgba(255,255,255,.5);
+  max-width: 520px; line-height: 1.7; margin: 0 0 44px;
+}
+@media (max-width: 600px)  { .r-hero-sub { font-size: 14px; margin-bottom: 28px; max-width: 100%; } }
+
+/* ── 4-Column Grids → 2-col tablet, 1-col mobile ─────────────────────────── */
+.r-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 900px) { .r-grid-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .r-grid-4 { grid-template-columns: 1fr; } }
+
+.r-grid-4-gap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; background-color: #ddd; }
+@media (max-width: 900px) { .r-grid-4-gap { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .r-grid-4-gap { grid-template-columns: 1fr; } }
+
+/* ── 3-Column Grid → 1-col mobile ───────────────────────────────────────── */
+.r-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background-color: #e8e8e8; }
+@media (max-width: 768px) { .r-grid-3 { grid-template-columns: 1fr; } }
+
+/* ── 2-Column Grid → 1-col mobile ───────────────────────────────────────── */
+.r-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+@media (max-width: 768px) { .r-grid-2 { grid-template-columns: 1fr; gap: 24px; } }
+
+/* ── Footer Grid → stack on mobile ──────────────────────────────────────── */
+.r-footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid #222; }
+@media (max-width: 900px) { .r-footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
+@media (max-width: 560px) { .r-footer-grid { grid-template-columns: 1fr; gap: 28px; } }
+
+/* ── Stat Item: remove left border on mobile ─────────────────────────────── */
+@media (max-width: 560px) {
+  .r-stat-item { border-left: none !important; padding-left: 0 !important; border-top: 1px solid #e8e8e8; padding-top: 20px; }
+  .r-stat-item:first-child { border-top: none; padding-top: 0; }
+}
+
+/* ── Process Item: border adjustments on mobile ──────────────────────────── */
+@media (max-width: 560px) {
+  .r-process-item { padding-left: 0 !important; border-left: none !important; border-top: 1px solid #e8e8e8; padding-top: 24px; margin-top: 4px; }
+  .r-process-item:first-child { border-top: none; padding-top: 0; }
+}
+
+/* ── Auth: card padding on mobile ────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .r-form-body   { padding: 20px 16px !important; }
+  .r-form-header { padding: 20px 16px !important; }
+  .r-form-hint   { padding: 8px 16px  !important; }
+}
+
+/* ── Status bar: hide right side on mobile ───────────────────────────────── */
+@media (max-width: 600px) { .r-status-right { display: none !important; } }
+
+/* ── Wissen: article body padding ────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .r-wissen-body { padding: 28px 16px !important; }
+  .r-wissen-hero { padding-left: 16px !important; padding-right: 16px !important; }
+}
+
+/* ── Mobile Nav Menu ─────────────────────────────────────────────────────── */
+.r-mobile-menu {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: #0b1e36; z-index: 200;
+  flex-direction: column; padding: 80px 32px 32px; gap: 4px;
+  overflow-y: auto;
+}
+.r-mobile-menu.open { display: flex; }
+
+.r-hamburger {
+  display: none; flex-direction: column;
+  gap: 5px; cursor: pointer; padding: 6px;
+  background: none; border: none;
+}
+@media (max-width: 768px) { .r-hamburger { display: flex; } }
+
+.r-hamburger span {
+  display: block; width: 22px; height: 2px;
+  background: #154194; transition: all 200ms;
+}
+
+/* ── Topbar: hide long text on mobile ────────────────────────────────────── */
+@media (max-width: 600px) { .r-topbar-text { display: none; } }

@@ -26,7 +26,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#22c55e", display: "inline-block", boxShadow: "0 0 6px rgba(34,197,94,.6)" }} />
             Alle Systeme betriebsbereit
           </div>
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,.25)", letterSpacing: "0.02em" }}>Handelssitzungen Mo-Fr 09:00-17:30 MEZ · Sitzung: 15 Min.</span>
+          <span className="r-status-right" style={{ fontSize: 11, color: "rgba(255,255,255,.25)", letterSpacing: "0.02em" }}>Handelssitzungen Mo-Fr 09:00-17:30 MEZ · Sitzung: 15 Min.</span>
         </div>
       </div>
 
