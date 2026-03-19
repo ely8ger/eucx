@@ -5,6 +5,7 @@ import { useRouter }                    from "next/navigation";
 import { useAuthStore, scheduleAutoLogout } from "@/store/authStore";
 import type { AuthUser }               from "@/store/authStore";
 import { EucxLogo }                    from "@/components/logo/EucxLogo";
+import { useI18n }                     from "@/lib/i18n/context";
 
 const F = "'IBM Plex Sans', Arial, sans-serif";
 const BLUE  = "#154194";
@@ -123,6 +124,7 @@ function PrimaryBtn({ label, loading, disabled, loadingLabel }: { label: string;
 export default function LoginPage() {
   const router  = useRouter();
   const setAuth = useAuthStore((s) => s.setAuth);
+  const { t }   = useI18n();
 
   const [step,     setStep    ] = useState<Step>("password");
   const [email,    setEmail   ] = useState("");
@@ -160,10 +162,10 @@ export default function LoginPage() {
           setAttempts(next);
           const remaining = Math.max(0, 5 - next);
           setErrors({ password: remaining > 0
-            ? `E-Mail-Adresse oder Passwort ist nicht korrekt. Noch ${remaining} Versuch${remaining === 1 ? "" : "e"} vor Sperrung.`
-            : "Zu viele Fehlversuche. Bitte warten Sie 15 Minuten oder kontaktieren Sie support@eucx.eu." });
+            ? t("login_attempts").replace("{n}", String(remaining))
+            : t("login_locked_desc") });
         } else {
-          setErrors({ email: data.message ?? "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut." });
+          setErrors({ email: data.message ?? t("login_err_conn") });
         }
         return;
       }
@@ -178,7 +180,7 @@ export default function LoginPage() {
         router.push("/dashboard");
       }
     } catch {
-      setErrors({ email: "Verbindungsfehler. Bitte prüfen Sie Ihre Internetverbindung." });
+      setErrors({ email: t("login_err_conn") });
     } finally { setLoading(false); }
   }
 
@@ -195,7 +197,7 @@ export default function LoginPage() {
       const data = await res.json() as {
         data?: { accessToken: string; expiresAt?: number; user?: AuthUser }; error?: string;
       };
-      if (!res.ok) { setErrors({ code: data.error ?? "Der Code ist ungültig oder abgelaufen." }); setCode(""); return; }
+      if (!res.ok) { setErrors({ code: data.error ?? t("login_err_invalid") }); setCode(""); return; }
       if (data.data?.accessToken) {
         const expiresAt = data.data.expiresAt ?? Date.now() + 15 * 60 * 1000;
         document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=900; samesite=lax${
@@ -205,7 +207,7 @@ export default function LoginPage() {
         if (typeof window !== "undefined") localStorage.setItem("eucx_prev_login", new Date().toISOString());
         router.push("/dashboard");
       }
-    } catch { setErrors({ code: "Verbindungsfehler." }); }
+    } catch { setErrors({ code: t("login_err_conn") }); }
     finally  { setLoading(false); }
   }
 
@@ -229,12 +231,12 @@ export default function LoginPage() {
           {/* Kopf */}
           <div style={{ padding: "24px 32px 0" }}>
             <h1 style={{ fontSize: 20, fontWeight: 600, color: TEXT, margin: 0, fontFamily: F }}>
-              {step === "password" ? "Anmelden" : "Zwei-Faktor-Authentifizierung"}
+              {step === "password" ? t("login_title") : t("login_2fa_title")}
             </h1>
             <p style={{ fontSize: 13, color: MUTED, marginTop: 6, marginBottom: 0, lineHeight: 1.5, fontFamily: F }}>
               {step === "password"
-                ? "Melden Sie sich mit Ihren EUCX-Zugangsdaten an."
-                : "Geben Sie den Code aus Ihrer Authenticator-App ein."}
+                ? t("login_sub")
+                : t("login_2fa_desc")}
             </p>
           </div>
 
@@ -246,13 +248,13 @@ export default function LoginPage() {
               <form onSubmit={(e) => { void handlePasswordSubmit(e); }} noValidate>
                 <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
 
-                  <Field id="email" label="E-Mail-Adresse" type="email" value={email}
+                  <Field id="email" label={t("login_email")} type="email" value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@unternehmen.de" error={errors.email}
                     autoComplete="email" autoFocus required />
 
                   <div>
-                    <Field id="password" label="Passwort" type="password" value={password}
+                    <Field id="password" label={t("login_password")} type="password" value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       error={errors.password} autoComplete="current-password" required />
                     <div style={{ textAlign: "right", marginTop: 6 }}>
@@ -260,7 +262,7 @@ export default function LoginPage() {
                         style={{ fontSize: 12, color: BLUE, textDecoration: "none", fontWeight: 500, fontFamily: F }}
                         onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
                         onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
-                        Passwort vergessen?
+                        {t("login_forgot")}
                       </a>
                     </div>
                   </div>
@@ -273,7 +275,7 @@ export default function LoginPage() {
                       <circle cx="7" cy="4.5" r="0.7" fill="currentColor"/>
                     </svg>
                     <p style={{ fontSize: 12, color: BLUE, margin: 0, lineHeight: 1.6, fontFamily: F }}>
-                      Nach der Anmeldung werden Sie zur <strong>Zwei-Faktor-Verifizierung</strong> weitergeleitet.
+                      {t("login_2fa_desc")}
                     </p>
                   </div>
 
@@ -286,17 +288,13 @@ export default function LoginPage() {
                         <circle cx="7" cy="10" r="0.7" fill="currentColor"/>
                       </svg>
                       <p style={{ fontSize: 12, color: RED, margin: 0, lineHeight: 1.6, fontFamily: F }}>
-                        Konto temporär gesperrt. Bitte warten Sie 15 Minuten oder kontaktieren Sie{" "}
+                        {t("login_locked_title")}{" "}
                         <a href="mailto:support@eucx.eu" style={{ color: RED, fontWeight: 600 }}>support@eucx.eu</a>.
                       </p>
                     </div>
                   )}
 
-                  <p style={{ fontSize: 11, color: "#aaa", margin: 0, fontFamily: F }}>
-                    Mit <span style={{ color: RED, fontWeight: 600 }}>*</span> markierte Felder sind Pflichtfelder.
-                  </p>
-
-                  <PrimaryBtn label="Anmelden" loading={loading} disabled={locked} loadingLabel="Anmelden..." />
+                  <PrimaryBtn label={t("login_btn")} loading={loading} disabled={locked} loadingLabel={t("login_loading")} />
 
                 </div>
               </form>
@@ -325,7 +323,7 @@ export default function LoginPage() {
                     autoComplete="one-time-code" required
                     inputMode="numeric" pattern="[0-9]{6}" maxLength={6} mono />
 
-                  <PrimaryBtn label="Bestätigen" loading={loading} disabled={loading || code.length !== 6} loadingLabel="Wird geprüft..." />
+                  <PrimaryBtn label={t("login_btn")} loading={loading} disabled={loading || code.length !== 6} loadingLabel={t("login_loading")} />
 
                   <button type="button"
                     onClick={() => { setStep("password"); setCode(""); setErrors({}); }}
@@ -335,7 +333,7 @@ export default function LoginPage() {
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                       <path d="M11 7H3M6 4L3 7l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                    Zurück zur Anmeldung
+                    {t("register_back")}
                   </button>
 
                 </div>
@@ -397,30 +395,17 @@ export default function LoginPage() {
         {/* ── Registrierungs-Link ── */}
         {step === "password" && (
           <div style={{ marginTop: 10, backgroundColor: "#fff", border: `1px solid ${BORDER}`, padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <p style={{ fontSize: 13, color: MUTED, margin: 0, fontFamily: F }}>Noch kein Konto?</p>
+            <p style={{ fontSize: 13, color: MUTED, margin: 0, fontFamily: F }}>{t("login_no_account")}</p>
             <a href="/register"
               style={{ fontSize: 13, fontWeight: 600, color: BLUE, textDecoration: "none", display: "flex", alignItems: "center", gap: 5, fontFamily: F }}
               onMouseEnter={e => (e.currentTarget.style.color = BLUE2)}
               onMouseLeave={e => (e.currentTarget.style.color = BLUE)}>
-              Jetzt registrieren
+              {t("login_register_link")}
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                 <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </a>
           </div>
-        )}
-
-        {/* ── Support ── */}
-        {step === "password" && (
-          <p style={{ marginTop: 10, textAlign: "center", fontSize: 12, color: "#bbb", fontFamily: F }}>
-            Probleme bei der Anmeldung?{" "}
-            <a href="mailto:support@eucx.eu"
-              style={{ color: BLUE, textDecoration: "none", fontWeight: 500 }}
-              onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
-              onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
-              support@eucx.eu
-            </a>
-          </p>
         )}
 
       </div>

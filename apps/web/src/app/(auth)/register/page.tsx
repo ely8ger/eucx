@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/lib/i18n/context";
 
 const F      = "'IBM Plex Sans', Arial, sans-serif";
 const BLUE   = "#154194";
@@ -158,10 +159,11 @@ function Field({
 // ── Country Select ────────────────────────────────────────────────────────────
 function CountrySelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [focused, setFocused] = useState(false);
+  const { t } = useI18n();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
       <label htmlFor="country" style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: F }}>
-        Land<span style={{ color: RED, marginLeft: 3 }} aria-hidden="true">*</span>
+        {t("register_country")}<span style={{ color: RED, marginLeft: 3 }} aria-hidden="true">*</span>
       </label>
       <select
         id="country" name="country" required value={value}
@@ -196,6 +198,7 @@ function VatField({
   const [value,    setValue]    = useState("");
   const [status,   setStatus]   = useState<VatStatus>("idle");
   const [verified, setVerified] = useState<string | null>(null);
+  const { t } = useI18n();
 
   async function validate() {
     const val = value.trim();
@@ -226,7 +229,7 @@ function VatField({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
       <label htmlFor="taxId" style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: F }}>
-        USt-IdNr. / VAT-ID<span style={{ color: RED, marginLeft: 3 }} aria-hidden="true">*</span>
+        {t("register_vat")}<span style={{ color: RED, marginLeft: 3 }} aria-hidden="true">*</span>
       </label>
       <div style={{ position: "relative" }}>
         <input
@@ -282,22 +285,22 @@ function VatField({
 
       {status === "valid" && verified && (
         <p style={{ fontSize: 11, color: GREEN, fontFamily: F, margin: 0 }}>
-          Gepruft via EU-VIES - {verified}
+          {t("register_vies_valid")} — {verified}
         </p>
       )}
       {status === "valid" && !verified && (
         <p style={{ fontSize: 11, color: GREEN, fontFamily: F, margin: 0 }}>
-          Gepruft via EU-VIES - gultig
+          {t("register_vies_valid")}
         </p>
       )}
       {status === "invalid" && (
         <p style={{ fontSize: 11, color: RED, fontFamily: F, margin: 0 }}>
-          Nicht gefunden im EU-VIES-Register. Bitte prufen Sie Land und Nummer.
+          {t("register_vies_invalid")}
         </p>
       )}
       {status === "idle" && (
         <p style={{ fontSize: 11, color: MUTED, fontFamily: F, margin: 0 }}>
-          Format: {country}123456789 - wird automatisch via EU-VIES geprueft
+          {country}123456789 — {t("register_vies_hint")}
         </p>
       )}
     </div>
@@ -331,6 +334,7 @@ function ConsentBox({
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function RegisterPage() {
   const router = useRouter();
+  const { t }  = useI18n();
 
   const [loading,  setLoading]  = useState(false);
   const [error,    setError]    = useState("");
@@ -357,7 +361,7 @@ export default function RegisterPage() {
   function validateEmail(v: string) {
     if (!v) { setEmailError(""); return; }
     if (isFreeEmail(v)) {
-      setEmailError("Bitte verwenden Sie eine geschaeftliche E-Mail-Adresse.");
+      setEmailError(t("register_email_err"));
     } else {
       setEmailError("");
     }
@@ -366,13 +370,13 @@ export default function RegisterPage() {
   function validatePassword(v: string) {
     if (!v) { setPwError(""); return; }
     const ok = v.length >= 10 && /[A-Z]/.test(v) && /[0-9]/.test(v) && /[^A-Za-z0-9]/.test(v);
-    setPwError(ok ? "" : "Mindestens 10 Zeichen, Grossbuchstabe, Zahl und Sonderzeichen erforderlich.");
+    setPwError(ok ? "" : t("register_pw_err"));
   }
 
   function validatePhone(v: string) {
     if (!v) { setPhoneError(""); return; }
     const digits = v.replace(/\D/g, "");
-    setPhoneError(digits.length >= 7 ? "" : "Bitte eine gultige Telefonnummer eingeben.");
+    setPhoneError(digits.length >= 7 ? "" : t("register_phone_err"));
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -381,8 +385,8 @@ export default function RegisterPage() {
 
     // Validate consents
     const ce: { dsgvo?: string; agb?: string } = {};
-    if (!consentDsgvo) ce.dsgvo = "Zustimmung erforderlich.";
-    if (!consentAgb)   ce.agb   = "Zustimmung erforderlich.";
+    if (!consentDsgvo) ce.dsgvo = t("register_consent_err");
+    if (!consentAgb)   ce.agb   = t("register_consent_err");
     if (Object.keys(ce).length > 0) { setConsentErrors(ce); return; }
     setConsentErrors({});
 
@@ -412,10 +416,10 @@ export default function RegisterPage() {
         }),
       });
       const data = await res.json() as { message?: string };
-      if (!res.ok) { setError(data.message ?? "Fehler bei der Registrierung."); return; }
+      if (!res.ok) { setError(data.message ?? t("register_err_conn")); return; }
       setSuccess(true);
     } catch {
-      setError("Verbindungsfehler. Bitte versuchen Sie es erneut.");
+      setError(t("register_err_conn"));
     } finally {
       setLoading(false);
     }
@@ -442,13 +446,12 @@ export default function RegisterPage() {
               </svg>
             </div>
             <h2 style={{ fontSize: 17, fontWeight: 700, color: TEXT, fontFamily: F, margin: 0 }}>
-              Registrierung eingereicht
+              {t("register_success_title")}
             </h2>
           </div>
           <div style={{ padding: "28px 32px" }}>
             <p style={{ fontSize: 14, color: "#444", fontFamily: F, lineHeight: 1.6, marginBottom: 24 }}>
-              Ihr Antrag auf Zugang zur EUCX-Handelsplattform wurde erfolgreich ubermittelt.
-              Sie erhalten eine Bestatiglings-E-Mail, sobald Ihr Konto durch unsere Compliance-Abteilung freigegeben wurde.
+              {t("register_success_desc")}
             </p>
             <button
               onClick={() => router.push("/login")}
@@ -458,7 +461,7 @@ export default function RegisterPage() {
                 fontSize: 13, fontWeight: 500, color: TEXT, fontFamily: F, cursor: "pointer",
               }}
             >
-              Zuruck zur Anmeldung
+              {t("register_back")}
             </button>
           </div>
         </div>
@@ -477,18 +480,17 @@ export default function RegisterPage() {
         {/* Kopfzeile */}
         <div style={{ backgroundColor: BLUE, padding: "24px 32px" }}>
           <h1 style={{ fontSize: 19, fontWeight: 700, color: "#fff", fontFamily: F, margin: 0 }}>
-            Zugang beantragen
+            {t("register_title")}
           </h1>
           <p style={{ fontSize: 13, color: "rgba(255,255,255,.7)", fontFamily: F, marginTop: 4, marginBottom: 0 }}>
-            Institutioneller Zugang zur EUCX-Handelsplattform
+            {t("register_sub")}
           </p>
         </div>
 
         {/* Info-Leiste */}
         <div style={{ backgroundColor: BG, borderBottom: `1px solid ${BORDER}`, padding: "10px 32px" }}>
           <p style={{ fontSize: 11, color: MUTED, fontFamily: F, margin: 0 }}>
-            Mit <span style={{ color: RED, fontWeight: 600 }}>*</span> markierte Felder sind Pflichtfelder.
-            {" "}Bitte verwenden Sie Ihre geschaeftliche E-Mail-Adresse.
+            <span style={{ color: RED, fontWeight: 600 }}>*</span> {t("register_required")}
           </p>
         </div>
 
@@ -499,10 +501,10 @@ export default function RegisterPage() {
 
               {/* ── 1. Zugangsdaten ─────────────────────────────────────── */}
               <div>
-                <SectionHead>Zugangsdaten</SectionHead>
+                <SectionHead>{t("register_section_access")}</SectionHead>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   <Field
-                    label="E-Mail-Adresse" name="email" type="email" required
+                    label={t("register_email")} name="email" type="email" required
                     placeholder="name@firma.de"
                     error={emailError}
                     onBlur={() => {
@@ -511,8 +513,8 @@ export default function RegisterPage() {
                     }}
                   />
                   <Field
-                    label="Passwort" name="password" type="password" required
-                    hint="Mindestens 10 Zeichen, Grossbuchstabe, Zahl und Sonderzeichen erforderlich."
+                    label={t("register_password")} name="password" type="password" required
+                    hint={t("register_pw_hint")}
                     error={pwError}
                     onBlur={() => {
                       const el = document.getElementById("password") as HTMLInputElement | null;
@@ -520,9 +522,9 @@ export default function RegisterPage() {
                     }}
                   />
                   <Field
-                    label="Telefonnummer (fur 2-Faktor-Authentifizierung)" name="phone"
+                    label={t("register_phone")} name="phone"
                     type="tel" required placeholder="+49 30 1234567"
-                    hint="Wird fur die Zwei-Faktor-Authentifizierung benotigt."
+                    hint={t("register_phone_hint")}
                     error={phoneError}
                     onBlur={() => {
                       const el = document.getElementById("phone") as HTMLInputElement | null;
@@ -534,7 +536,7 @@ export default function RegisterPage() {
 
               {/* ── 2. Unternehmensdaten ────────────────────────────────── */}
               <div>
-                <SectionHead>Unternehmensdaten</SectionHead>
+                <SectionHead>{t("register_section_company")}</SectionHead>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
                   {/* Land zuerst - beeinflusst VAT-Format */}
@@ -549,32 +551,32 @@ export default function RegisterPage() {
                   />
 
                   <Field
-                    label="Unternehmensname" name="organizationName" required
+                    label={t("register_org")} name="organizationName" required
                     placeholder="Muster Handels GmbH"
                     value={orgName}
                     onChange={setOrgName}
-                    hint="Wird automatisch aus VIES-Daten erganzt, sofern verfugbar."
+                    hint={t("register_org_hint")}
                   />
 
                   <Field
-                    label="Handelsregisternummer (HRB)" name="hrb"
+                    label={t("register_hrb")} name="hrb"
                     placeholder="HRB 123456 Frankfurt"
-                    hint="Optional - z.B. HRB 123456 Frankfurt am Main"
+                    hint={t("register_hrb_hint")}
                   />
 
                   {/* Anschrift */}
                   <Field
-                    label="Strasse und Hausnummer" name="street" required
-                    placeholder="Musterstrasse 42"
+                    label={t("register_street")} name="street" required
+                    placeholder="Musterstraße 42"
                   />
 
                   <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: 16 }}>
                     <Field
-                      label="PLZ" name="postalCode" required
+                      label={t("register_postal")} name="postalCode" required
                       placeholder="10115" maxLength={10}
                     />
                     <Field
-                      label="Stadt" name="city" required
+                      label={t("register_city")} name="city" required
                       placeholder="Berlin"
                     />
                   </div>
@@ -584,11 +586,11 @@ export default function RegisterPage() {
 
               {/* ── 3. Marktteilnehmer-Rolle ────────────────────────────── */}
               <div>
-                <SectionHead>Marktteilnehmer-Rolle</SectionHead>
+                <SectionHead>{t("register_section_role")}</SectionHead>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   {[
-                    { value: "SELLER", label: "Verkaufer", desc: "Waren anbieten und verkaufen" },
-                    { value: "BUYER",  label: "Kaufer",    desc: "Waren suchen und kaufen" },
+                    { value: "SELLER", label: t("register_seller"), desc: t("register_seller_desc") },
+                    { value: "BUYER",  label: t("register_buyer"),  desc: t("register_buyer_desc") },
                   ].map((r) => (
                     <label
                       key={r.value}
@@ -616,27 +618,27 @@ export default function RegisterPage() {
 
               {/* ── 4. Einwilligungen ───────────────────────────────────── */}
               <div>
-                <SectionHead>Einwilligungen und Zustimmungen</SectionHead>
+                <SectionHead>{t("register_section_consent")}</SectionHead>
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   <ConsentBox
                     name="consentDsgvo" checked={consentDsgvo}
                     onChange={setConsentDsgvo} error={consentErrors.dsgvo}
                   >
-                    Ich habe die{" "}
+                    {t("register_consent_dsgvo").split("Datenschutzerklärung")[0]}
                     <a href="/datenschutz" target="_blank" style={{ color: BLUE, fontWeight: 600, textDecoration: "none" }}>
-                      Datenschutzerklarung
-                    </a>{" "}
-                    gelesen und stimme der Verarbeitung meiner personenbezogenen Daten zu (DSGVO Art. 6 Abs. 1 lit. a).
+                      Datenschutzerklärung
+                    </a>
+                    {t("register_consent_dsgvo").split("Datenschutzerklärung")[1]}
                   </ConsentBox>
                   <ConsentBox
                     name="consentAgb" checked={consentAgb}
                     onChange={setConsentAgb} error={consentErrors.agb}
                   >
-                    Ich akzeptiere die{" "}
+                    {t("register_consent_agb").split("Allgemeinen Geschäftsbedingungen")[0]}
                     <a href="/agb" target="_blank" style={{ color: BLUE, fontWeight: 600, textDecoration: "none" }}>
-                      Allgemeinen Geschaftsbedingungen
-                    </a>{" "}
-                    der EUCX GmbH einschliesslich der Handels- und Margingregeln.
+                      Allgemeinen Geschäftsbedingungen
+                    </a>
+                    {t("register_consent_agb").split("Allgemeinen Geschäftsbedingungen")[1]}
                   </ConsentBox>
                 </div>
               </div>
@@ -679,9 +681,9 @@ export default function RegisterPage() {
                       <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,.3)" strokeWidth="4"/>
                       <path fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                     </svg>
-                    Antrag wird eingereicht...
+                    {t("register_loading")}
                   </>
-                ) : "Zugang beantragen"}
+                ) : t("register_btn")}
               </button>
 
             </div>
@@ -692,12 +694,12 @@ export default function RegisterPage() {
             marginTop: 24, paddingTop: 20, borderTop: `1px solid ${BORDER}`,
             display: "flex", alignItems: "center", justifyContent: "space-between",
           }}>
-            <p style={{ fontSize: 13, color: "#555", fontFamily: F, margin: 0 }}>Bereits registriert?</p>
+            <p style={{ fontSize: 13, color: "#555", fontFamily: F, margin: 0 }}>{t("register_have_account")}</p>
             <a href="/login" style={{
               fontSize: 13, fontWeight: 600, color: BLUE, fontFamily: F,
               textDecoration: "none", display: "flex", alignItems: "center", gap: 6,
             }}>
-              Zur Anmeldung
+              {t("register_login_link")}
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                 <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -746,7 +748,7 @@ export default function RegisterPage() {
       {/* ── Support ──────────────────────────────────────────────────────── */}
       <div style={{ marginTop: 8, textAlign: "center" }}>
         <p style={{ fontSize: 12, color: "#aaa", margin: 0, fontFamily: F }}>
-          Fragen zur Registrierung?{" "}
+          {t("register_support")}{" "}
           <a href="mailto:compliance@eucx.eu" style={{ color: BLUE, textDecoration: "none", fontWeight: 500 }}>
             compliance@eucx.eu
           </a>

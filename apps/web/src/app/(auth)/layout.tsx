@@ -1,7 +1,10 @@
 "use client";
 import { EucxLogo } from "@/components/logo/EucxLogo";
+import { useI18n } from "@/lib/i18n/context";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
+  const { t } = useI18n();
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#f0f4fb", fontFamily: "'IBM Plex Sans', Arial, sans-serif" }}>
 
@@ -9,12 +12,15 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div style={{ backgroundColor: "#0b1e36", borderBottom: "3px solid #154194" }}>
         <div className="max-w-screen-xl mx-auto px-6 h-14 flex items-center justify-between">
           <EucxLogo variant="white" size="sm" />
-          <div className="flex items-center gap-1.5">
-            <svg width="12" height="14" viewBox="0 0 12 14" fill="none" aria-hidden="true">
-              <rect x="1" y="6" width="10" height="7" rx="1" stroke="rgba(255,255,255,0.45)" strokeWidth="1.2"/>
-              <path d="M4 6V4a2 2 0 014 0v2" stroke="rgba(255,255,255,0.45)" strokeWidth="1.2" strokeLinecap="round"/>
-            </svg>
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,.45)", letterSpacing: "0.02em" }}>Gesicherter Bereich - TLS 1.3</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <svg width="12" height="14" viewBox="0 0 12 14" fill="none" aria-hidden="true">
+                <rect x="1" y="6" width="10" height="7" rx="1" stroke="rgba(255,255,255,0.45)" strokeWidth="1.2"/>
+                <path d="M4 6V4a2 2 0 014 0v2" stroke="rgba(255,255,255,0.45)" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+              <span style={{ fontSize: 11, color: "rgba(255,255,255,.45)", letterSpacing: "0.02em" }}>{t("auth_secure")}</span>
+            </div>
+            <LanguageSwitcher dark />
           </div>
         </div>
       </div>
@@ -24,9 +30,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div style={{ maxWidth: 1180, margin: "0 auto", padding: "0 24px", height: 30, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(255,255,255,.4)" }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#22c55e", display: "inline-block", boxShadow: "0 0 6px rgba(34,197,94,.6)" }} />
-            Alle Systeme betriebsbereit
+            {t("auth_systems_ok")}
           </div>
-          <span className="r-status-right" style={{ fontSize: 11, color: "rgba(255,255,255,.25)", letterSpacing: "0.02em" }}>Handelssitzungen Mo-Fr 09:00-17:30 MEZ · Sitzung: 15 Min.</span>
+          <span className="r-status-right" style={{ fontSize: 11, color: "rgba(255,255,255,.25)", letterSpacing: "0.02em" }}>{t("auth_hours")}</span>
         </div>
       </div>
 
@@ -44,9 +50,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* ── Portal-Footer ─────────────────────────────────────────────────── */}
       <div style={{ backgroundColor: "#fff", borderTop: "1px solid #e4e8ef" }}>
         <div className="max-w-screen-xl mx-auto px-6 py-4 flex items-center justify-between">
-          <p style={{ fontSize: 11, color: "#aaa", margin: 0 }}>© 2026 EUCX GmbH - Frankfurt am Main</p>
+          <p style={{ fontSize: 11, color: "#aaa", margin: 0 }}>{t("auth_footer_copy")}</p>
           <nav className="flex items-center gap-4">
-            {[["Impressum", "/impressum"], ["Datenschutz", "/datenschutz"], ["Barrierefreiheit", "#"]].map(([label, href]) => (
+            {[[t("auth_imprint"), "/impressum"], [t("auth_privacy"), "/datenschutz"], [t("auth_accessibility"), "#"]].map(([label, href]) => (
               <a key={label} href={href} style={{ fontSize: 11, color: "#aaa", textDecoration: "none" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "#154194")}
                 onMouseLeave={e => (e.currentTarget.style.color = "#aaa")}>
