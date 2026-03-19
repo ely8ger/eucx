@@ -81,19 +81,15 @@ export default function WissenPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 20 }}>
               {ARTICLES.filter((a) => a.category === cat).map((article) => (
                 <Link key={article.slug} href={`/wissen/${article.slug}`} style={{ textDecoration: "none" }}>
-                  <div style={{
+                  <div className="wissen-card" style={{
                     backgroundColor: "#fff",
                     border: `1px solid ${BORDER}`,
                     padding: "24px 24px 20px",
                     height: "100%",
-                    transition: "border-color 150ms",
                     display: "flex",
                     flexDirection: "column" as const,
                     cursor: "pointer",
-                  }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = BLUE; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = BORDER; }}
-                  >
+                  }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                       <span style={{
                         fontSize: 10, fontWeight: 600, letterSpacing: "0.08em",

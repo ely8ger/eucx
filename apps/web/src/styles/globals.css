@@ -307,6 +307,10 @@ tr:hover td { background-color: #F8FAFC; }
 /* ─── Number: Tabular Figures (Preise, Zahlen) ───────────────────────────── */
 .tabular { font-variant-numeric: tabular-nums; }
 
+/* ─── Wissen Card Hover ───────────────────────────────────────────────────── */
+.wissen-card { transition: border-color 150ms; }
+.wissen-card:hover { border-color: #154194 !important; }
+
 /* ═══════════════════════════════════════════════════════════════════════════ */
 /* ─── RESPONSIVE LAYOUT — Mobile & Tablet                                ─── */
 /* ═══════════════════════════════════════════════════════════════════════════ */
