@@ -1,11 +1,7 @@
+"use client";
+
 import Link from "next/link";
 import { EucxLogo } from "@/components/logo/EucxLogo";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Metallprodukte — Stahlkatalog | EUCX",
-  description: "14 Produktformen: Rund, Vierkant, Sechskant, Flach, Rohre, Träger, Bleche und mehr. Institutioneller Stahlhandel auf EUCX.",
-};
 
 const BLUE = "#154194";
 const F    = "'IBM Plex Sans', Arial, sans-serif";
