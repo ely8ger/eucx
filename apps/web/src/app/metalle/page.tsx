@@ -43,7 +43,7 @@ function IconTProfile()      {
     <polygon points="13,11 67,11 67,14 43,14 43,49 37,49 37,14 13,14" fill="#c5d0de"/>
   </svg>;
 }
-function IconTraeger()       { return <svg viewBox="0 0 80 60" width={80} height={60}><rect x={4} y={4} width={72} height={12} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/><rect x={34} y={16} width={12} height={28} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/><rect x={4} y={44} width={72} height={12} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/><rect x={12} y={8} width={56} height={4} fill="#c5d0de"/><rect x={38} y={20} width={4} height={20} fill="#c5d0de"/><rect x={12} y={48} width={56} height={4} fill="#c5d0de"/></svg>; }
+function IconTraeger()       { return <svg viewBox="0 0 80 60" width={80} height={60}><polygon points="5,5 75,5 75,18 46,18 46,42 75,42 75,55 5,55 5,42 34,42 34,18 5,18" fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/><polygon points="13,11 67,11 67,14 43,14 43,46 67,46 67,49 13,49 13,46 37,46 37,14 13,14" fill="#c5d0de"/></svg>; }
 function IconSonderprofile() {
   return <svg viewBox="0 0 80 60" width={80} height={60}>
     {/* C-profile cross section */}
