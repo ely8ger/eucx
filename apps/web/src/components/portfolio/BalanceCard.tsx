@@ -1,23 +1,13 @@
 "use client";
 
-/**
- * BalanceCard - Wallet-Kontostand-Anzeige
- *
- * Zeigt verfügbares Guthaben, reserviertes Guthaben und Gesamtkapital
- * für jede Währung (typischerweise EUR).
- *
- * Live-Update: Aufrufer kann queryClient.invalidateQueries nach
- * BalanceUpdatedEvent aufrufen - diese Komponente re-rendert automatisch.
- */
+import Decimal             from "decimal.js";
+import { Card, CardTitle } from "@/components/ui/card";
+import { EmptyState }      from "@/components/portfolio/EmptyState";
+import { useBalanceQuery } from "@/hooks/usePortfolio";
+import type { WalletBalance } from "@/hooks/usePortfolio";
 
-import Decimal                        from "decimal.js";
-import { Card, CardTitle }            from "@/components/ui/card";
-import { Badge }                      from "@/components/ui/badge";
-import { EmptyState }                 from "@/components/portfolio/EmptyState";
-import { useBalanceQuery }            from "@/hooks/usePortfolio";
-import type { WalletBalance }         from "@/hooks/usePortfolio";
-
-// ─── Einzelne Währungs-Zeile ──────────────────────────────────────────────────
+const BLUE = "#154194";
+const F    = "'IBM Plex Sans', Arial, sans-serif";
 
 function BalanceRow({ w }: { w: WalletBalance }) {
   const balance  = new Decimal(w.balance);
@@ -25,114 +15,86 @@ function BalanceRow({ w }: { w: WalletBalance }) {
   const total    = new Decimal(w.total);
 
   const fmt = (d: InstanceType<typeof Decimal>) =>
-    d.toNumber().toLocaleString("de-DE", {
-      minimumFractionDigits:  2,
-      maximumFractionDigits:  2,
-    });
+    d.toNumber().toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const reservedPct = total.isZero()
     ? 0
     : reserved.div(total).times(100).toDecimalPlaces(1).toNumber();
 
   return (
-    <div className="space-y-4">
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       {/* Hauptbetrag */}
-      <div className="flex items-end justify-between">
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
         <div>
-          <p className="text-xs text-cb-gray-500 font-medium uppercase tracking-wide mb-0.5">
-            Verfügbar
-          </p>
-          <p className="text-3xl font-bold text-cb-petrol font-mono tabular-nums">
+          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#888", margin: "0 0 4px" }}>Verfügbar</p>
+          <p style={{ fontSize: 32, fontWeight: 300, color: BLUE, fontFamily: "'IBM Plex Mono', monospace", margin: 0, lineHeight: 1 }}>
             {fmt(balance)}
           </p>
-          <p className="text-sm text-cb-gray-500 font-mono">{w.currency}</p>
+          <p style={{ fontSize: 12, color: "#888", fontFamily: "'IBM Plex Mono', monospace", marginTop: 4 }}>{w.currency}</p>
         </div>
-
         {w.lastUpdated && (
-          <p className="text-xs text-cb-gray-400 pb-1">
+          <p style={{ fontSize: 11, color: "#aaa", fontFamily: F }}>
             Stand {new Date(w.lastUpdated).toLocaleTimeString("de-DE")}
           </p>
         )}
       </div>
 
-      {/* Fortschrittsbalken: verfügbar vs. reserviert */}
+      {/* Fortschrittsbalken */}
       {!total.isZero() && (
         <div>
-          <div className="flex justify-between text-xs text-cb-gray-500 mb-1">
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#888", marginBottom: 6 }}>
             <span>Kapitalaufteilung</span>
             <span>{reservedPct}% reserviert</span>
           </div>
-          <div className="h-2 bg-cb-gray-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-cb-petrol rounded-full transition-all duration-500"
-              style={{ width: `${100 - reservedPct}%` }}
-            />
+          <div style={{ height: 4, backgroundColor: "#f0f0f0" }}>
+            <div style={{ height: "100%", backgroundColor: BLUE, width: `${100 - reservedPct}%`, transition: "width .5s" }} />
           </div>
         </div>
       )}
 
       {/* Kennzahlen-Grid */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-cb-gray-50 rounded p-3 border border-cb-gray-100">
-          <p className="text-xs text-cb-gray-500 uppercase tracking-wide mb-0.5">Gesamt</p>
-          <p className="text-base font-semibold text-cb-petrol font-mono tabular-nums">
-            {fmt(total)}
-          </p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, backgroundColor: "#e8e8e8" }}>
+        <div style={{ backgroundColor: "#f7f9fc", padding: "12px 14px" }}>
+          <p style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#888", margin: "0 0 4px" }}>Gesamt</p>
+          <p style={{ fontSize: 15, fontWeight: 600, color: BLUE, fontFamily: "'IBM Plex Mono', monospace", margin: 0 }}>{fmt(total)}</p>
         </div>
-        <div className="bg-orange-50 rounded p-3 border border-orange-100">
-          <p className="text-xs text-orange-600 uppercase tracking-wide mb-0.5">Reserviert</p>
-          <p className="text-base font-semibold text-orange-700 font-mono tabular-nums">
-            {fmt(reserved)}
-          </p>
-          <p className="text-[10px] text-orange-500 mt-0.5">offene Aufträge</p>
+        <div style={{ backgroundColor: "#fffbeb", padding: "12px 14px" }}>
+          <p style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#92400e", margin: "0 0 4px" }}>Reserviert</p>
+          <p style={{ fontSize: 15, fontWeight: 600, color: "#92400e", fontFamily: "'IBM Plex Mono', monospace", margin: 0 }}>{fmt(reserved)}</p>
+          <p style={{ fontSize: 10, color: "#b45309", marginTop: 3 }}>offene Aufträge</p>
         </div>
       </div>
     </div>
   );
 }
 
-// ─── Haupt-Komponente ─────────────────────────────────────────────────────────
-
 export function BalanceCard() {
   const { data, isLoading, isError, isFetching } = useBalanceQuery();
 
   const header = (
-    <div className="flex items-center justify-between w-full">
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
       <CardTitle>Kontostand</CardTitle>
-      <div className="flex items-center gap-2">
-        {isFetching && !isLoading && (
-          <span className="text-xs text-cb-gray-400 animate-pulse">↺</span>
-        )}
-        <Badge variant="info">EUR-Konto</Badge>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        {isFetching && !isLoading && <span style={{ fontSize: 12, color: "#aaa", animation: "spin .8s linear infinite", display: "inline-block" }}>↺</span>}
+        <span style={{ fontSize: 11, fontWeight: 600, color: BLUE, backgroundColor: "#eef2fb", padding: "2px 8px" }}>EUR-Konto</span>
       </div>
     </div>
   );
 
   return (
-    <Card header={header} padding="md" highlighted>
+    <Card header={header} highlighted>
       {isLoading && (
-        <div className="space-y-3 animate-pulse">
-          <div className="h-9 bg-cb-gray-100 rounded w-2/3" />
-          <div className="h-2 bg-cb-gray-100 rounded" />
-          <div className="grid grid-cols-2 gap-3">
-            <div className="h-16 bg-cb-gray-100 rounded" />
-            <div className="h-16 bg-cb-gray-100 rounded" />
-          </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {[120, "100%", 60].map((w, i) => (
+            <div key={i} style={{ height: i === 0 ? 40 : 8, backgroundColor: "#f0f0f0", width: w, animation: "pulse 1.5s infinite" }} />
+          ))}
         </div>
       )}
-
       {isError && (
-        <EmptyState
-          icon="⚠"
-          title="Kontostand nicht verfügbar"
-          description="Die Verbindung zur Datenbank konnte nicht hergestellt werden."
-          size="sm"
-        />
+        <EmptyState icon="⚠" title="Kontostand nicht verfügbar" description="Verbindung zur Datenbank fehlgeschlagen." size="sm" />
       )}
-
-      {data && data.wallets.map((w) => (
-        <BalanceRow key={w.currency} w={w} />
-      ))}
+      {data && data.wallets.map((w) => <BalanceRow key={w.currency} w={w} />)}
+      <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} } @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }`}</style>
     </Card>
   );
 }

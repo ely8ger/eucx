@@ -1,210 +1,121 @@
 "use client";
 
-/**
- * ActiveOrders - Tabelle der offenen Aufträge mit Stornierungsfunktion
- *
- * Features:
- *   - Live-Polling (30s) + sofortige Invalidierung nach Stornierung
- *   - Optimistic UI: Auftrag verschwindet sofort aus der Liste
- *   - Inline-Bestätigung: zweistufiger Stornierungsprozess (kein Modal)
- *   - Fortschrittsbalken für teilgefüllte Aufträge
- *   - Empty State mit CTA zum Handelsraum
- *   - Skeleton-Loader beim ersten Laden
- */
-
 import { useState, useCallback }      from "react";
 import Link                           from "next/link";
 import Decimal                        from "decimal.js";
-import { cn }                         from "@/lib/utils";
 import { Card, CardTitle }            from "@/components/ui/card";
 import { Button }                     from "@/components/ui/button";
-import { Badge }                      from "@/components/ui/badge";
 import { EmptyState }                 from "@/components/portfolio/EmptyState";
 import { useActiveOrdersQuery, useCancelOrder } from "@/hooks/usePortfolio";
 import { useToast }                   from "@/components/ui/toast";
 import type { PortfolioOrder }        from "@/hooks/usePortfolio";
 
-// ─── Status-Badge ─────────────────────────────────────────────────────────────
-
-function StatusBadge({ status }: { status: PortfolioOrder["status"] }) {
-  if (status === "PARTIALLY_FILLED") {
-    return <Badge variant="warning" dot>Teil</Badge>;
-  }
-  return <Badge variant="success" dot>Aktiv</Badge>;
-}
-
-// ─── Einzelne Tabellenzeile ───────────────────────────────────────────────────
+const BLUE = "#154194";
+const RED  = "#dc2626";
 
 function OrderRow({
-  order,
-  onCancelRequest,
-  confirmId,
-  onCancelConfirm,
-  onCancelAbort,
-  isCancelling,
+  order, onCancelRequest, confirmId, onCancelConfirm, onCancelAbort, isCancelling,
 }: {
-  order:           PortfolioOrder;
-  onCancelRequest: (id: string) => void;
-  confirmId:       string | null;
-  onCancelConfirm: (id: string) => void;
-  onCancelAbort:   ()           => void;
-  isCancelling:    boolean;
+  order: PortfolioOrder; onCancelRequest: (id: string) => void;
+  confirmId: string | null; onCancelConfirm: (id: string) => void;
+  onCancelAbort: () => void; isCancelling: boolean;
 }) {
-  const isBuy    = order.direction === "BUY";
+  const isBuy     = order.direction === "BUY";
   const isConfirm = confirmId === order.id;
+  const isPartial = order.status === "PARTIALLY_FILLED";
 
-  const price  = new Decimal(order.pricePerUnit);
-  const qty    = new Decimal(order.quantity);
-  const filled = new Decimal(order.filledQuantity);
-
-  const fmtPrice = price.toFixed(2);
-  const fmtQty   = qty.toFixed(0);
-  const fmtFilled= filled.toFixed(0);
-  const fmtTotal = new Decimal(order.totalValue).toNumber()
-    .toLocaleString("de-DE", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  const fmtTime  = new Date(order.createdAt).toLocaleString("de-DE", {
-    day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit",
-  });
+  const fmtPrice  = new Decimal(order.pricePerUnit).toFixed(2);
+  const fmtQty    = new Decimal(order.quantity).toFixed(0);
+  const fmtFilled = new Decimal(order.filledQuantity).toFixed(0);
+  const fmtTotal  = new Decimal(order.totalValue).toNumber().toLocaleString("de-DE", { maximumFractionDigits: 0 });
+  const fmtTime   = new Date(order.createdAt).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 
   return (
-    <tr className="border-b border-cb-gray-100 hover:bg-cb-gray-50 transition-colors group">
-      {/* Zeit */}
-      <td className="px-4 py-3 text-xs text-cb-gray-500 font-mono whitespace-nowrap">
-        {fmtTime}
-      </td>
-
-      {/* Richtung */}
-      <td className="px-4 py-3">
-        <span className={cn(
-          "inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded",
-          isBuy
-            ? "bg-green-50 text-cb-success border border-green-200"
-            : "bg-red-50 text-cb-error border border-red-200",
-        )}>
+    <tr style={{ borderBottom: "1px solid #f7f7f7" }}
+      onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#fafafa")}
+      onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
+      <td style={{ padding: "10px 16px", fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: "#888", whiteSpace: "nowrap" }}>{fmtTime}</td>
+      <td style={{ padding: "10px 16px" }}>
+        <span style={{ display: "inline-block", fontSize: 11, fontWeight: 700, color: isBuy ? "#166534" : RED, backgroundColor: isBuy ? "#f0fdf4" : "#fff1f1", padding: "2px 8px" }}>
           {isBuy ? "KAUF" : "VERK."}
         </span>
       </td>
-
-      {/* Preis */}
-      <td className="px-4 py-3 font-mono text-sm font-semibold text-cb-petrol tabular-nums">
-        {fmtPrice} <span className="text-cb-gray-400 font-normal text-xs">€/t</span>
+      <td style={{ padding: "10px 16px", fontFamily: "'IBM Plex Mono', monospace", fontSize: 13, fontWeight: 600, color: BLUE }}>
+        {fmtPrice} <span style={{ fontSize: 11, color: "#aaa", fontWeight: 400 }}>€/t</span>
       </td>
-
-      {/* Menge + Fortschritt */}
-      <td className="px-4 py-3">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-sm tabular-nums text-cb-gray-700">
-            {fmtFilled}/{fmtQty} t
-          </span>
+      <td style={{ padding: "10px 16px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: "#505050" }}>{fmtFilled}/{fmtQty} t</span>
           {order.filledPct > 0 && (
-            <div className="w-16 h-1.5 bg-cb-gray-100 rounded-full overflow-hidden shrink-0">
-              <div
-                className="h-full bg-cb-petrol rounded-full transition-all"
-                style={{ width: `${order.filledPct}%` }}
-              />
+            <div style={{ width: 56, height: 3, backgroundColor: "#f0f0f0", flexShrink: 0 }}>
+              <div style={{ height: "100%", backgroundColor: BLUE, width: `${order.filledPct}%` }} />
             </div>
           )}
+          {isPartial && <span style={{ fontSize: 10, fontWeight: 600, color: "#92400e", backgroundColor: "#fffbeb", padding: "1px 6px" }}>Teil</span>}
         </div>
       </td>
-
-      {/* Gesamtwert */}
-      <td className="px-4 py-3 font-mono text-sm text-cb-gray-600 tabular-nums">
-        {fmtTotal} €
+      <td style={{ padding: "10px 16px", fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: "#505050" }}>{fmtTotal} €</td>
+      <td style={{ padding: "10px 16px" }}>
+        <span style={{ fontSize: 11, fontWeight: 600, color: "#166534", backgroundColor: "#f0fdf4", padding: "2px 8px" }}>Aktiv</span>
       </td>
-
-      {/* Status */}
-      <td className="px-4 py-3">
-        <StatusBadge status={order.status} />
-      </td>
-
-      {/* Stornieren */}
-      <td className="px-4 py-3 text-right">
+      <td style={{ padding: "10px 16px", textAlign: "right" }}>
         {isConfirm ? (
-          <div className="flex items-center gap-1.5 justify-end">
-            <span className="text-xs text-cb-gray-500 mr-1">Sicher?</span>
-            <Button
-              variant="danger"
-              size="sm"
-              loading={isCancelling}
-              onClick={() => onCancelConfirm(order.id)}
-            >
-              Ja, stornieren
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onCancelAbort}
-              disabled={isCancelling}
-            >
-              Nein
-            </Button>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end" }}>
+            <span style={{ fontSize: 11, color: "#888" }}>Sicher?</span>
+            <Button variant="danger" size="sm" loading={isCancelling} onClick={() => onCancelConfirm(order.id)}>Ja, stornieren</Button>
+            <Button variant="ghost" size="sm" onClick={onCancelAbort} disabled={isCancelling}>Nein</Button>
           </div>
         ) : (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-cb-gray-500 hover:text-cb-error hover:bg-red-50"
-            onClick={() => onCancelRequest(order.id)}
-          >
+          <button onClick={() => onCancelRequest(order.id)}
+            style={{ fontSize: 12, color: "#aaa", background: "none", border: "none", cursor: "pointer" }}
+            onMouseEnter={e => (e.currentTarget.style.color = RED)}
+            onMouseLeave={e => (e.currentTarget.style.color = "#aaa")}>
             Stornieren
-          </Button>
+          </button>
         )}
       </td>
     </tr>
   );
 }
 
-// ─── Skeleton-Zeile ───────────────────────────────────────────────────────────
-
 function SkeletonRow() {
   return (
-    <tr className="border-b border-cb-gray-100">
-      {Array.from({ length: 7 }).map((_, i) => (
-        <td key={i} className="px-4 py-3">
-          <div className="h-4 bg-cb-gray-100 rounded animate-pulse" style={{ width: `${60 + i * 8}%` }} />
+    <tr style={{ borderBottom: "1px solid #f7f7f7" }}>
+      {[70, 50, 80, 100, 70, 60, 40].map((w, i) => (
+        <td key={i} style={{ padding: "10px 16px" }}>
+          <div style={{ height: 12, backgroundColor: "#f0f0f0", width: w, animation: "pulse 1.5s infinite" }} />
         </td>
       ))}
     </tr>
   );
 }
 
-// ─── Haupt-Komponente ─────────────────────────────────────────────────────────
-
 export function ActiveOrders() {
-  const toast                                    = useToast();
-  const { data: orders, isLoading, isFetching }  = useActiveOrdersQuery();
-  const cancelMutation                           = useCancelOrder();
-  const [confirmId, setConfirmId]                = useState<string | null>(null);
+  const toast                                   = useToast();
+  const { data: orders, isLoading, isFetching } = useActiveOrdersQuery();
+  const cancelMutation                          = useCancelOrder();
+  const [confirmId, setConfirmId]               = useState<string | null>(null);
 
-  const handleCancelRequest = useCallback((id: string) => {
-    setConfirmId(id);
-  }, []);
-
-  const handleCancelAbort = useCallback(() => {
-    setConfirmId(null);
-  }, []);
-
+  const handleCancelRequest = useCallback((id: string) => setConfirmId(id), []);
+  const handleCancelAbort   = useCallback(() => setConfirmId(null), []);
   const handleCancelConfirm = useCallback(async (id: string) => {
     try {
       await cancelMutation.mutateAsync(id);
       setConfirmId(null);
-      toast.success("Auftrag storniert", "Der Auftrag wurde erfolgreich zurückgezogen.");
+      toast.success("Auftrag storniert", "Erfolgreich zurückgezogen.");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Unbekannter Fehler";
-      toast.error("Stornierung fehlgeschlagen", msg);
+      toast.error("Stornierung fehlgeschlagen", err instanceof Error ? err.message : "Fehler");
       setConfirmId(null);
     }
   }, [cancelMutation, toast]);
 
   const header = (
-    <div className="flex items-center justify-between w-full">
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
       <CardTitle>Offene Aufträge</CardTitle>
-      <div className="flex items-center gap-2">
-        {isFetching && !isLoading && (
-          <span className="text-xs text-cb-gray-400 animate-pulse">↺</span>
-        )}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        {isFetching && !isLoading && <span style={{ fontSize: 12, color: "#aaa" }}>↺</span>}
         {orders && orders.length > 0 && (
-          <Badge variant="blue">{orders.length}</Badge>
+          <span style={{ fontSize: 11, fontWeight: 700, color: BLUE, backgroundColor: "#eef2fb", padding: "2px 8px" }}>{orders.length}</span>
         )}
       </div>
     </div>
@@ -212,59 +123,32 @@ export function ActiveOrders() {
 
   return (
     <Card header={header} padding="none">
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
-            <tr className="border-b border-cb-gray-200 bg-cb-gray-50">
-              {["Zeit", "Richt.", "Preis", "Menge / Ausgeführt", "Wert", "Status", ""].map((h) => (
-                <th
-                  key={h}
-                  className="px-4 py-2.5 text-left text-xs font-semibold text-cb-gray-500 uppercase tracking-wider"
-                >
-                  {h}
-                </th>
+            <tr style={{ backgroundColor: "#fafafa", borderBottom: "1px solid #f0f0f0" }}>
+              {["Zeit", "Richt.", "Preis", "Menge / Ausgeführt", "Wert", "Status", ""].map((h, i) => (
+                <th key={i} style={{ padding: "10px 16px", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "#888", textAlign: "left" }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {isLoading && Array.from({ length: 3 }).map((_, i) => (
-              <SkeletonRow key={i} />
-            ))}
-
+            {isLoading && Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={i} />)}
             {!isLoading && orders && orders.length === 0 && (
-              <tr>
-                <td colSpan={7}>
-                  <EmptyState
-                    icon="◷"
-                    title="Keine offenen Aufträge"
-                    description="Alle Ihre Aufträge wurden ausgeführt oder storniert."
-                    action={
-                      <Link href="/trading">
-                        <Button variant="outline" size="sm">
-                          Zum Handelsraum
-                        </Button>
-                      </Link>
-                    }
-                    size="md"
-                  />
-                </td>
-              </tr>
+              <tr><td colSpan={7}>
+                <EmptyState icon="◷" title="Keine offenen Aufträge" description="Alle Aufträge wurden ausgeführt oder storniert."
+                  action={<Link href="/trading"><Button variant="outline" size="sm">Zum Handelsraum</Button></Link>} size="md" />
+              </td></tr>
             )}
-
             {!isLoading && orders?.map((order) => (
-              <OrderRow
-                key={order.id}
-                order={order}
-                onCancelRequest={handleCancelRequest}
-                confirmId={confirmId}
-                onCancelConfirm={handleCancelConfirm}
-                onCancelAbort={handleCancelAbort}
-                isCancelling={cancelMutation.isPending}
-              />
+              <OrderRow key={order.id} order={order} onCancelRequest={handleCancelRequest}
+                confirmId={confirmId} onCancelConfirm={handleCancelConfirm}
+                onCancelAbort={handleCancelAbort} isCancelling={cancelMutation.isPending} />
             ))}
           </tbody>
         </table>
       </div>
+      <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }`}</style>
     </Card>
   );
 }
