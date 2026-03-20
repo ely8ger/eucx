@@ -127,10 +127,7 @@ function SessionCard({ session: s }: { session: Session }) {
               height: 34, padding: "0 16px",
               backgroundColor: "#154194", color: "#fff",
               fontSize: 13, fontWeight: 600, textDecoration: "none",
-            }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#0f3070")}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#154194")}
-            >
+            }}>
               Teilnehmen →
             </Link>
           )}
