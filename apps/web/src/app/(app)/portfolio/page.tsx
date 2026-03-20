@@ -9,6 +9,7 @@ import { PortfolioAllocationChart }      from "@/components/portfolio/PortfolioA
 import { usePrivateSocket }              from "@/hooks/usePrivateSocket";
 import { useToast }                      from "@/components/ui/toast";
 import { PORTFOLIO_KEYS, useBalanceQuery, useActiveOrdersQuery, useUserDealsQuery } from "@/hooks/usePortfolio";
+import { DEMO_WALLET, DEMO_ORDERS, DEMO_DEALS } from "@/components/portfolio/demoData";
 import Decimal                           from "decimal.js";
 import type {
   OrderFilledEvent,
@@ -76,11 +77,12 @@ export default function PortfolioPage() {
   });
 
   /* ── Aggregate KPIs ──────────────────────────────────────────────────── */
-  const wallet      = balance?.wallets[0];
-  const totalBalance = wallet ? new Decimal(wallet.total) : null;
-  const openOrders  = orders?.length ?? 0;
-  const totalDeals  = deals?.length ?? 0;
-  const totalVolume = deals?.reduce((s, d) => s.plus(d.totalValue), new Decimal(0));
+  const wallet       = balance?.wallets[0] ?? DEMO_WALLET;
+  const totalBalance = new Decimal(wallet.total);
+  const openOrders   = (orders ?? DEMO_ORDERS).length;
+  const allDeals     = deals ?? DEMO_DEALS;
+  const totalDeals   = allDeals.length;
+  const totalVolume  = allDeals.reduce((s, d) => s.plus(d.totalValue), new Decimal(0));
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 32, fontFamily: SANS }}>
@@ -116,7 +118,7 @@ export default function PortfolioPage() {
         {[
           {
             label: "Gesamtkapital",
-            value: totalBalance ? totalBalance.toNumber().toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €" : "—",
+            value: totalBalance.toNumber().toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €",
             sub: "EUR-Konto",
             accent: BLUE,
           },
@@ -134,9 +136,7 @@ export default function PortfolioPage() {
           },
           {
             label: "Gesamtumsatz",
-            value: totalVolume && !totalVolume.isZero()
-              ? totalVolume.toNumber().toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €"
-              : "—",
+            value: totalVolume.toNumber().toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €",
             sub: "alle Abschlüsse",
             accent: BLUE,
           },

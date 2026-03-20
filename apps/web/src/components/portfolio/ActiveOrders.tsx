@@ -7,6 +7,7 @@ import { Card, CardTitle }            from "@/components/ui/card";
 import { Button }                     from "@/components/ui/button";
 import { EmptyState }                 from "@/components/portfolio/EmptyState";
 import { useActiveOrdersQuery, useCancelOrder } from "@/hooks/usePortfolio";
+import { DEMO_ORDERS } from "@/components/portfolio/demoData";
 import { useToast }                   from "@/components/ui/toast";
 import type { PortfolioOrder }        from "@/hooks/usePortfolio";
 
@@ -92,7 +93,8 @@ function SkeletonRow() {
 
 export function ActiveOrders() {
   const toast                                   = useToast();
-  const { data: orders, isLoading, isFetching } = useActiveOrdersQuery();
+  const { data: rawOrders, isLoading, isFetching } = useActiveOrdersQuery();
+  const orders = rawOrders ?? DEMO_ORDERS;
   const cancelMutation                          = useCancelOrder();
   const [confirmId, setConfirmId]               = useState<string | null>(null);
 
@@ -114,7 +116,7 @@ export function ActiveOrders() {
       <CardTitle>Offene Aufträge</CardTitle>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         {isFetching && !isLoading && <span style={{ fontSize: 12, color: "#aaa" }}>↺</span>}
-        {orders && orders.length > 0 && (
+        {orders.length > 0 && (
           <span style={{ fontSize: 11, fontWeight: 700, color: BLUE, backgroundColor: "#eef2fb", padding: "2px 8px" }}>{orders.length}</span>
         )}
       </div>
@@ -134,13 +136,13 @@ export function ActiveOrders() {
           </thead>
           <tbody>
             {isLoading && Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={i} />)}
-            {!isLoading && orders && orders.length === 0 && (
+            {!isLoading && orders.length === 0 && (
               <tr><td colSpan={7}>
                 <EmptyState icon="◷" title="Keine offenen Aufträge" description="Alle Aufträge wurden ausgeführt oder storniert."
                   action={<Link href="/trading"><Button variant="outline" size="sm">Zum Handelsraum</Button></Link>} size="md" />
               </td></tr>
             )}
-            {!isLoading && orders?.map((order) => (
+            {!isLoading && orders.map((order) => (
               <OrderRow key={order.id} order={order} onCancelRequest={handleCancelRequest}
                 confirmId={confirmId} onCancelConfirm={handleCancelConfirm}
                 onCancelAbort={handleCancelAbort} isCancelling={cancelMutation.isPending} />

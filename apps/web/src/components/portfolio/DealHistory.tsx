@@ -6,6 +6,7 @@ import { Card, CardTitle }   from "@/components/ui/card";
 import { Button }            from "@/components/ui/button";
 import { EmptyState }        from "@/components/portfolio/EmptyState";
 import { useUserDealsQuery } from "@/hooks/usePortfolio";
+import { DEMO_DEALS } from "@/components/portfolio/demoData";
 import type { PortfolioOrder } from "@/hooks/usePortfolio";
 
 const BLUE = "#154194";
@@ -52,16 +53,17 @@ function SkeletonRow() {
 }
 
 export function DealHistory() {
-  const { data: deals, isLoading, isFetching } = useUserDealsQuery();
+  const { data: rawDeals, isLoading, isFetching } = useUserDealsQuery();
+  const deals = rawDeals ?? DEMO_DEALS;
 
-  const totalVolume = deals?.reduce((sum, d) => sum.plus(d.totalValue), new Decimal(0));
+  const totalVolume = deals.reduce((sum, d) => sum.plus(d.totalValue), new Decimal(0));
 
   const header = (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
       <CardTitle>Handelshistorie</CardTitle>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         {isFetching && !isLoading && <span style={{ fontSize: 12, color: "#aaa" }}>↺</span>}
-        {deals && deals.length > 0 && (
+        {deals.length > 0 && (
           <span style={{ fontSize: 11, fontWeight: 600, color: "#505050", backgroundColor: "#f5f5f5", padding: "2px 8px" }}>{deals.length} Abschl.</span>
         )}
       </div>
@@ -90,13 +92,13 @@ export function DealHistory() {
           </thead>
           <tbody>
             {isLoading && Array.from({ length: 4 }).map((_, i) => <SkeletonRow key={i} />)}
-            {!isLoading && deals && deals.length === 0 && (
+            {!isLoading && deals.length === 0 && (
               <tr><td colSpan={6}>
                 <EmptyState icon="◈" title="Noch keine Abschlüsse" description="Ausgeführte Aufträge erscheinen hier nach dem Handel."
                   action={<Link href="/trading"><Button variant="outline" size="sm">Jetzt handeln</Button></Link>} size="md" />
               </td></tr>
             )}
-            {!isLoading && deals?.map((deal) => <DealRow key={deal.id} order={deal} />)}
+            {!isLoading && deals.map((deal) => <DealRow key={deal.id} order={deal} />)}
           </tbody>
         </table>
       </div>

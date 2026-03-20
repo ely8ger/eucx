@@ -5,6 +5,7 @@ import { Card, CardTitle } from "@/components/ui/card";
 import { EmptyState }      from "@/components/portfolio/EmptyState";
 import { useBalanceQuery } from "@/hooks/usePortfolio";
 import type { WalletBalance } from "@/hooks/usePortfolio";
+import { DEMO_WALLET } from "@/components/portfolio/demoData";
 
 const BLUE = "#154194";
 const F    = "'IBM Plex Sans', Arial, sans-serif";
@@ -90,10 +91,7 @@ export function BalanceCard() {
           ))}
         </div>
       )}
-      {isError && (
-        <EmptyState icon="⚠" title="Kontostand nicht verfügbar" description="Verbindung zur Datenbank fehlgeschlagen." size="sm" />
-      )}
-      {data && data.wallets.map((w) => <BalanceRow key={w.currency} w={w} />)}
+      {!isLoading && (data?.wallets ?? [DEMO_WALLET]).map((w) => <BalanceRow key={w.currency} w={w} />)}
       <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} } @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }`}</style>
     </Card>
   );

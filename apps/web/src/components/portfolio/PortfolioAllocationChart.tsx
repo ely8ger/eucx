@@ -3,6 +3,7 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import Decimal from "decimal.js";
 import { useBalanceQuery } from "@/hooks/usePortfolio";
+import { DEMO_WALLET } from "@/components/portfolio/demoData";
 
 const BLUE   = "#154194";
 const AMBER  = "#d97706";
@@ -46,8 +47,7 @@ export function PortfolioAllocationChart() {
     );
   }
 
-  const wallet = data?.wallets[0];
-  if (!wallet) return null;
+  const wallet = data?.wallets[0] ?? DEMO_WALLET;
 
   const available = new Decimal(wallet.balance);
   const reserved  = new Decimal(wallet.reservedBalance);
