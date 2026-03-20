@@ -6,8 +6,8 @@ interface EucxLogoProps {
 
 export function EucxLogo({ variant = "default", size = "md", showTagline = false }: EucxLogoProps) {
   const primary  = variant === "white" ? "#ffffff" : "#154194";
-  const textMain = variant === "white" ? "#ffffff" : "#0d1b2a";
-  const textSub  = variant === "white" ? "rgba(255,255,255,.55)" : "#7a8aa0";
+  const textMain = (variant === "white" || variant === "dark") ? "#ffffff" : "#0d1b2a";
+  const textSub  = (variant === "white" || variant === "dark") ? "rgba(255,255,255,.55)" : "#7a8aa0";
 
   const scale = size === "sm" ? 0.75 : size === "lg" ? 1.35 : 1;
   const px    = (n: number) => Math.round(n * scale);

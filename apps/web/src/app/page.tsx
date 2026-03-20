@@ -346,7 +346,7 @@ export default function HomePage() {
             <div>
               <div style={{ marginBottom: 16 }}>
                 <Link href="/" style={{ textDecoration: "none", display: "inline-block" }}>
-                  <EucxLogo variant="white" size="md" showTagline />
+                  <EucxLogo variant="dark" size="md" showTagline />
                 </Link>
               </div>
               <p style={{ fontSize: 13, color: "#555", lineHeight: 1.7 }}>{t("footer_desc")}</p>
