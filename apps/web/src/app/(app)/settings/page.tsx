@@ -1,187 +1,167 @@
 "use client";
 
-/**
- * Einstellungen - /settings
- *
- * Tabs:
- *   - Profil: Anzeige der Kontodaten (read-only)
- *   - Sicherheit: 2FA-Status + Toggle (aktivieren/deaktivieren)
- */
-
-import { useState, useEffect }     from "react";
-import { useRouter }               from "next/navigation";
-import { useAuthStore }            from "@/store/authStore";
+import { useState, useEffect } from "react";
+import { useRouter }           from "next/navigation";
+import { useAuthStore }        from "@/store/authStore";
 
 export const dynamic = "force-dynamic";
 
 type Tab = "profile" | "security";
 
-interface TwoFaStatus {
-  totpEnabled: boolean;
-  email:       string;
-}
+interface TwoFaStatus { totpEnabled: boolean; email: string; }
+
+const F    = "'IBM Plex Sans', Arial, sans-serif";
+const BLUE = "#154194";
+const RED  = "#dc2626";
 
 export default function SettingsPage() {
   const router = useRouter();
   const user   = useAuthStore((s) => s.user);
 
-  const [tab,       setTab      ] = useState<Tab>("profile");
-  const [tfaStatus, setTfaStatus] = useState<TwoFaStatus | null>(null);
-  const [tfaLoading,setTfaLoad  ] = useState(true);
-  const [disabling, setDisabling] = useState(false);
-  const [disableConfirm, setDisableConfirm] = useState(false);
-  const [error,     setError    ] = useState("");
+  const [tab,           setTab          ] = useState<Tab>("profile");
+  const [tfaStatus,     setTfaStatus    ] = useState<TwoFaStatus | null>(null);
+  const [tfaLoading,    setTfaLoad      ] = useState(true);
+  const [disabling,     setDisabling    ] = useState(false);
+  const [disableConfirm,setDisableConfirm] = useState(false);
+  const [error,         setError        ] = useState("");
 
-  // 2FA-Status laden
   useEffect(() => {
     if (tab !== "security") return;
-
     const token = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
-    fetch("/api/auth/2fa/status", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch("/api/auth/2fa/status", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json() as Promise<TwoFaStatus & { error?: string }>)
-      .then((d) => {
-        if (!d.error) setTfaStatus(d);
-      })
-      .catch(() => {/* ignorieren - zeige Fallback */})
+      .then((d) => { if (!d.error) setTfaStatus(d); })
+      .catch(() => {})
       .finally(() => setTfaLoad(false));
   }, [tab]);
 
   async function handleDisable2FA() {
-    setDisabling(true);
-    setError("");
+    setDisabling(true); setError("");
     try {
       const token = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
       const res   = await fetch("/api/auth/2fa/disable", {
-        method:  "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        method: "POST", headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json() as { ok?: boolean; error?: string };
       if (!res.ok) { setError(data.error ?? "Fehler beim Deaktivieren"); return; }
       setTfaStatus((prev) => prev ? { ...prev, totpEnabled: false } : null);
       setDisableConfirm(false);
-    } catch {
-      setError("Verbindungsfehler.");
-    } finally {
-      setDisabling(false);
-    }
+    } catch { setError("Verbindungsfehler."); }
+    finally  { setDisabling(false); }
   }
 
   if (!user) return null;
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-cb-petrol mb-6">Einstellungen</h1>
+    <div style={{ maxWidth: 640, fontFamily: F }}>
 
-      {/* Tab-Navigation */}
-      <div className="flex gap-0 border-b border-cb-gray-200 mb-6">
+      {/* ── Seitenkopf ── */}
+      <h1 style={{ fontSize: 22, fontWeight: 300, color: "#0d1b2a", margin: "0 0 24px" }}>Einstellungen</h1>
+
+      {/* ── Tab-Navigation ── */}
+      <div style={{ display: "flex", borderBottom: "1px solid #e8e8e8", marginBottom: 24 }}>
         {(["profile", "security"] as Tab[]).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-5 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
-              tab === t
-                ? "border-cb-petrol text-cb-petrol"
-                : "border-transparent text-cb-gray-500 hover:text-cb-gray-700"
-            }`}
-          >
+          <button key={t} onClick={() => setTab(t)} style={{
+            padding: "10px 20px", fontSize: 13,
+            fontWeight: tab === t ? 600 : 400,
+            color: tab === t ? BLUE : "#505050",
+            borderBottom: tab === t ? `2px solid ${BLUE}` : "2px solid transparent",
+            background: "none", border: "none",
+            borderBottomStyle: "solid",
+            borderBottomWidth: 2,
+            borderBottomColor: tab === t ? BLUE : "transparent",
+            cursor: "pointer", fontFamily: F,
+            marginBottom: -1,
+          }}>
             {t === "profile" ? "Profil" : "Sicherheit"}
           </button>
         ))}
       </div>
 
-      {/* ── Profil ─────────────────────────────────────────────────────── */}
+      {/* ── Profil ── */}
       {tab === "profile" && (
-        <div className="bg-cb-white border border-cb-gray-200 rounded-lg divide-y divide-cb-gray-100">
-          <div className="p-5">
-            <h2 className="text-sm font-semibold text-cb-gray-700 mb-4">Kontoinformationen</h2>
-            <dl className="space-y-3">
-              <InfoRow label="E-Mail"        value={user.email}   />
-              <InfoRow label="Rolle"         value={user.role}    />
-              <InfoRow label="Organisation"  value={user.orgName} />
-              <InfoRow label="Nutzer-ID"     value={user.id} mono />
-            </dl>
+        <div style={{ backgroundColor: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,.08)" }}>
+          <div style={{ padding: "20px 24px", borderBottom: "1px solid #f0f0f0" }}>
+            <h2 style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 16px" }}>Kontoinformationen</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <InfoRow label="E-Mail"       value={user.email}   />
+              <InfoRow label="Rolle"        value={user.role}    />
+              <InfoRow label="Organisation" value={user.orgName} />
+              <InfoRow label="Nutzer-ID"    value={user.id} mono />
+            </div>
           </div>
-          <div className="p-5">
-            <h2 className="text-sm font-semibold text-cb-gray-700 mb-4">Verknüpfte API-Keys</h2>
-            <a
-              href="/settings/api"
-              className="inline-flex items-center gap-2 text-sm text-cb-petrol hover:text-cb-yellow-dark font-medium"
-            >
+          <div style={{ padding: "20px 24px" }}>
+            <h2 style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 12px" }}>Verknüpfte API-Keys</h2>
+            <a href="/settings/api" style={{ fontSize: 13, color: BLUE, fontWeight: 600, textDecoration: "none" }}
+              onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
+              onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
               API-Keys verwalten →
             </a>
           </div>
         </div>
       )}
 
-      {/* ── Sicherheit ─────────────────────────────────────────────────── */}
+      {/* ── Sicherheit ── */}
       {tab === "security" && (
-        <div className="space-y-4">
+        <div style={{ display: "flex", flexDirection: "column", gap: 2, backgroundColor: "#e8e8e8" }}>
+
           {/* 2FA-Karte */}
-          <div className="bg-cb-white border border-cb-gray-200 rounded-lg p-5">
-            <div className="flex items-start justify-between gap-4">
+          <div style={{ backgroundColor: "#fff", padding: "20px 24px" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
               <div>
-                <h2 className="text-sm font-semibold text-cb-gray-700">
+                <h2 style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>
                   Zwei-Faktor-Authentifizierung (2FA)
                 </h2>
-                <p className="text-xs text-cb-gray-500 mt-1">
+                <p style={{ fontSize: 12, color: "#888", marginTop: 4 }}>
                   Schützt Ihr Konto durch einen zweiten Faktor beim Login (TOTP).
                 </p>
               </div>
               {tfaLoading ? (
-                <div className="w-5 h-5 border-2 border-cb-yellow border-t-transparent rounded-full animate-spin flex-shrink-0 mt-0.5" />
+                <div style={{ width: 18, height: 18, border: `2px solid ${BLUE}`, borderTopColor: "transparent", borderRadius: "50%", animation: "spin .8s linear infinite", flexShrink: 0 }} />
               ) : (
-                <span className={`text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0 ${
-                  tfaStatus?.totpEnabled
-                    ? "bg-green-100 text-green-700"
-                    : "bg-cb-gray-100 text-cb-gray-500"
-                }`}>
+                <span style={{
+                  fontSize: 11, fontWeight: 600, padding: "3px 10px", flexShrink: 0,
+                  color:           tfaStatus?.totpEnabled ? "#166534" : "#505050",
+                  backgroundColor: tfaStatus?.totpEnabled ? "#f0fdf4" : "#f5f5f5",
+                }}>
                   {tfaStatus?.totpEnabled ? "Aktiviert" : "Deaktiviert"}
                 </span>
               )}
             </div>
 
             {!tfaLoading && (
-              <div className="mt-4 pt-4 border-t border-cb-gray-100">
+              <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0" }}>
                 {tfaStatus?.totpEnabled ? (
                   disableConfirm ? (
-                    <div className="space-y-3">
-                      <p className="text-sm text-cb-gray-600">
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      <p style={{ fontSize: 13, color: "#505050", margin: 0 }}>
                         Sind Sie sicher? Ihr Konto wird dadurch weniger geschützt.
                       </p>
-                      {error && (
-                        <p className="text-xs text-cb-error">{error}</p>
-                      )}
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => void handleDisable2FA()}
-                          disabled={disabling}
-                          className="px-4 py-2 text-sm bg-cb-error text-white rounded font-medium hover:bg-red-700 disabled:opacity-50 transition-colors"
-                        >
-                          {disabling ? "Wird deaktiviert..." : "Ja, 2FA deaktivieren"}
+                      {error && <p style={{ fontSize: 12, color: RED, margin: 0 }}>{error}</p>}
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button onClick={() => void handleDisable2FA()} disabled={disabling}
+                          style={{ height: 34, padding: "0 16px", backgroundColor: RED, color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: F, opacity: disabling ? 0.6 : 1 }}>
+                          {disabling ? "Wird deaktiviert…" : "Ja, 2FA deaktivieren"}
                         </button>
-                        <button
-                          onClick={() => { setDisableConfirm(false); setError(""); }}
-                          className="px-4 py-2 text-sm border border-cb-gray-300 rounded text-cb-gray-600 hover:bg-cb-gray-50 transition-colors"
-                        >
+                        <button onClick={() => { setDisableConfirm(false); setError(""); }}
+                          style={{ height: 34, padding: "0 16px", border: "1px solid #d0d0d0", backgroundColor: "#fff", fontSize: 13, color: "#505050", cursor: "pointer", fontFamily: F }}>
                           Abbrechen
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => setDisableConfirm(true)}
-                      className="text-sm text-cb-error hover:underline"
-                    >
+                    <button onClick={() => setDisableConfirm(true)}
+                      style={{ fontSize: 13, color: RED, background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: F }}
+                      onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
+                      onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
                       2FA deaktivieren
                     </button>
                   )
                 ) : (
-                  <button
-                    onClick={() => router.push("/2fa-setup")}
-                    className="px-4 py-2 text-sm bg-cb-petrol text-white rounded font-medium hover:bg-cb-petrol-dark transition-colors"
-                  >
+                  <button onClick={() => router.push("/2fa-setup")}
+                    style={{ height: 34, padding: "0 16px", backgroundColor: BLUE, color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: F }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#0f3070")}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = BLUE)}>
                     2FA einrichten
                   </button>
                 )}
@@ -189,41 +169,38 @@ export default function SettingsPage() {
             )}
           </div>
 
-          {/* Session-Hinweis */}
-          <div className="bg-cb-white border border-cb-gray-200 rounded-lg p-5">
-            <h2 className="text-sm font-semibold text-cb-gray-700 mb-3">Aktive Session</h2>
-            <p className="text-xs text-cb-gray-500">
+          {/* Session-Karte */}
+          <div style={{ backgroundColor: "#fff", padding: "20px 24px" }}>
+            <h2 style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 8px" }}>Aktive Session</h2>
+            <p style={{ fontSize: 12, color: "#888", margin: 0, lineHeight: 1.7 }}>
               Ihre Session läuft nach 15 Minuten Inaktivität ab und wird automatisch erneuert,
-              sofern Sie im Browser aktiv sind. Bei Verdacht auf unbefugten Zugriff klicken Sie
-              auf Abmelden.
+              sofern Sie im Browser aktiv sind. Bei Verdacht auf unbefugten Zugriff klicken Sie auf Abmelden.
             </p>
-            <button
-              onClick={() => {
-                const token = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
-                void fetch("/api/auth/logout", {
-                  method: "POST",
-                  headers: { Authorization: `Bearer ${token}` },
-                  credentials: "include",
-                }).finally(() => {
-                  useAuthStore.getState().logout();
-                });
-              }}
-              className="mt-3 text-sm text-cb-error hover:underline"
-            >
+            <button onClick={() => {
+              const token = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
+              void fetch("/api/auth/logout", { method: "POST", headers: { Authorization: `Bearer ${token}` }, credentials: "include" })
+                .finally(() => { useAuthStore.getState().logout(); });
+            }}
+              style={{ marginTop: 12, fontSize: 13, color: RED, background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: F }}
+              onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
+              onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
               Jetzt abmelden
             </button>
           </div>
+
         </div>
       )}
+
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
 
 function InfoRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div className="flex items-center gap-4">
-      <dt className="text-xs text-cb-gray-500 w-32 flex-shrink-0">{label}</dt>
-      <dd className={`text-sm text-cb-gray-800 ${mono ? "font-mono text-xs" : ""}`}>
+    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+      <dt style={{ fontSize: 12, color: "#888", width: 120, flexShrink: 0 }}>{label}</dt>
+      <dd style={{ fontSize: 13, color: "#0d1b2a", fontFamily: mono ? "'IBM Plex Mono', monospace" : undefined, margin: 0 }}>
         {value}
       </dd>
     </div>
