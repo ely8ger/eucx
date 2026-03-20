@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter }                    from "next/navigation";
 import { useAuthStore, scheduleAutoLogout } from "@/store/authStore";
 import type { AuthUser }               from "@/store/authStore";
-import { EucxLogo }                    from "@/components/logo/EucxLogo";
 import { useI18n }                     from "@/lib/i18n/context";
 
 const F = "'IBM Plex Sans', Arial, sans-serif";
@@ -219,11 +218,6 @@ export default function LoginPage() {
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
 
       <div style={{ width: "100%", maxWidth: 440, fontFamily: F }}>
-
-        {/* ── Logo ── */}
-        <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <a href="/" style={{ textDecoration: "none" }}><EucxLogo size="md" showTagline /></a>
-        </div>
 
         {/* ── Karte ── */}
         <div style={{ backgroundColor: "#fff", border: `1px solid ${BORDER}`, borderTop: `4px solid ${BLUE}`, boxShadow: "0 2px 12px rgba(0,0,0,.08)" }}>
