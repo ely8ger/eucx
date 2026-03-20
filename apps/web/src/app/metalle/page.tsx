@@ -44,16 +44,31 @@ function IconTProfile()      {
   </svg>;
 }
 function IconTraeger()       {
+  // Perspective 3D I-beam. dx=18, dy=-6 depth vector.
+  // Front face: x 4..38, top-flange y 8..18, web y 18..44, bot-flange y 44..52
+  const L="#e4ecf5", M="#c5d0de", D="#9aabbc", S="#8899aa";
   return <svg viewBox="0 0 80 60" width={80} height={60}>
-    {/* top flange */}
-    <rect x={5}  y={3}  width={70} height={12} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
-    {/* web */}
-    <rect x={34} y={15} width={12} height={30} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
-    {/* bottom flange */}
-    <rect x={5}  y={45} width={70} height={12} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
-    <rect x={13} y={7}  width={54} height={4}  fill="#c5d0de"/>
-    <rect x={38} y={19} width={4}  height={22} fill="#c5d0de"/>
-    <rect x={13} y={49} width={54} height={4}  fill="#c5d0de"/>
+    {/* ── Top surface of top flange (light) */}
+    <polygon points="4,8 38,8 56,2 22,2"       fill={L} stroke={S} strokeWidth={0.8}/>
+    {/* ── Front face – top flange */}
+    <rect x={4} y={8} width={34} height={10}   fill={M} stroke={S} strokeWidth={0.8}/>
+    {/* ── Right side – top flange */}
+    <polygon points="38,8 56,2 56,12 38,18"    fill={D} stroke={S} strokeWidth={0.8}/>
+
+    {/* ── Top surface of web (tiny sliver, light) */}
+    <polygon points="18,18 22,18 40,12 36,12"  fill={L} stroke={S} strokeWidth={0.5}/>
+    {/* ── Front face – web */}
+    <rect x={18} y={18} width={4} height={26}  fill={M} stroke={S} strokeWidth={0.8}/>
+    {/* ── Right side – web */}
+    <polygon points="22,18 40,12 40,38 22,44"  fill={D} stroke={S} strokeWidth={0.8}/>
+
+    {/* ── Top surface of bottom flange overhangs (light) */}
+    <polygon points="4,44 18,44 36,38 22,38"   fill={L} stroke={S} strokeWidth={0.5}/>
+    <polygon points="22,44 38,44 56,38 40,38"  fill={L} stroke={S} strokeWidth={0.5}/>
+    {/* ── Front face – bottom flange */}
+    <rect x={4} y={44} width={34} height={10}  fill={M} stroke={S} strokeWidth={0.8}/>
+    {/* ── Right side – bottom flange */}
+    <polygon points="38,44 56,38 56,48 38,54"  fill={D} stroke={S} strokeWidth={0.8}/>
   </svg>;
 }
 function IconSonderprofile() {
