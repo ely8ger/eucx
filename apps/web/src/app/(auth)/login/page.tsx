@@ -222,7 +222,7 @@ export default function LoginPage() {
 
         {/* ── Logo ── */}
         <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <EucxLogo size="md" showTagline />
+          <a href="/" style={{ textDecoration: "none" }}><EucxLogo size="md" showTagline /></a>
         </div>
 
         {/* ── Karte ── */}

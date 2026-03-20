@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BASE_URL }      from "@/lib/seo/metadata";
+import { EucxLogo }      from "@/components/logo/EucxLogo";
 
 export const metadata: Metadata = {
   title: "FAQ – Häufig gestellte Fragen | EUCX European Union Commodity Exchange",
@@ -358,12 +359,9 @@ export default function FaqPage() {
 
         {/* ── Topbar ── */}
         <div style={{ backgroundColor: "#0b1e36", borderBottom: "3px solid #154194", padding: "0 40px", height: 56, display: "flex", alignItems: "center" }}>
-          <a href="/" style={{ color: "#fff", textDecoration: "none", fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em" }}>
-            EUCX
+          <a href="/" style={{ textDecoration: "none" }}>
+            <EucxLogo variant="white" size="sm" />
           </a>
-          <span style={{ marginLeft: 8, fontSize: 11, color: "rgba(255,255,255,.4)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-            European Union Commodity Exchange
-          </span>
           <div style={{ marginLeft: "auto", display: "flex", gap: 24 }}>
             <a href="/wissen" style={{ fontSize: 13, color: "rgba(255,255,255,.6)", textDecoration: "none" }}>Wissen</a>
             <a href="/login"  style={{ fontSize: 13, color: "rgba(255,255,255,.6)", textDecoration: "none" }}>Anmelden</a>

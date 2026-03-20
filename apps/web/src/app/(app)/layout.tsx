@@ -1,5 +1,7 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { QueryProvider } from "@/providers/QueryProvider";
+import Link from "next/link";
+import { EucxLogo } from "@/components/logo/EucxLogo";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,15 +15,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </main>
         <footer className="bg-white border-t border-slate-200 mt-auto">
           <div className="max-w-6xl mx-auto px-6 lg:px-10 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ backgroundColor: "#2563EB" }}>
-                <span className="text-white font-bold text-xs">E</span>
-              </div>
-              <div>
-                <p className="text-slate-700 font-semibold text-sm leading-none">EUCX GmbH</p>
-                <p className="text-slate-400 text-xs mt-0.5">European Union Commodity Exchange · Frankfurt am Main</p>
-              </div>
-            </div>
+            <Link href="/" style={{ textDecoration: "none" }}>
+              <EucxLogo size="sm" />
+            </Link>
             <nav className="flex items-center gap-5 text-xs text-slate-400">
               <a href="#" className="hover:text-slate-600 transition-colors">Impressum</a>
               <a href="#" className="hover:text-slate-600 transition-colors">Datenschutz</a>

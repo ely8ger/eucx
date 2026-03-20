@@ -37,7 +37,7 @@ export default function HomePage() {
           style={{ position: "absolute", top: 20, right: 20, background: "none", border: "none", color: "#fff", cursor: "pointer" }}>
           <X size={24} />
         </button>
-        <div style={{ marginBottom: 28 }}><EucxLogo variant="white" size="sm" /></div>
+        <div style={{ marginBottom: 28 }}><Link href="/" onClick={() => setMenuOpen(false)} style={{ textDecoration: "none" }}><EucxLogo variant="white" size="sm" /></Link></div>
         {NAV_LINKS.map(({ label, href }) => (
           <a key={href} href={href} onClick={() => setMenuOpen(false)}
             style={{ fontSize: 18, color: "rgba(255,255,255,.85)", textDecoration: "none", padding: "14px 0", borderBottom: "1px solid rgba(255,255,255,.08)", display: "block" }}>
@@ -79,7 +79,7 @@ export default function HomePage() {
       {/* ── Header ── */}
       <header style={{ backgroundColor: "#fff", borderTop: "3px solid #154194", boxShadow: "0 1px 4px rgba(0,0,0,.15)", position: "sticky", top: 0, zIndex: 50 }}>
         <div className="r-container" style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <EucxLogo size="md" />
+          <Link href="/" style={{ textDecoration: "none" }}><EucxLogo size="md" /></Link>
 
           <nav className="hidden md:flex items-center">
             {NAV_LINKS.map(({ label, href }) => (
