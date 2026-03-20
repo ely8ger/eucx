@@ -4,7 +4,29 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { EucxLogo } from "@/components/logo/EucxLogo";
-import { STEEL_FORMS, getForm } from "@/lib/steel/data";
+import { STEEL_FORMS, getForm, type FormShape } from "@/lib/steel/data";
+
+function ProductThumb({ shape }: { shape: FormShape }) {
+  const bg = "#f4f6f9", stroke = "#9aabbc", fill = "#c5d0de", fill2 = "#dce3ed";
+  const s = { width: 72, height: 72 } as const;
+  switch (shape) {
+    case "round":      return <svg {...s} viewBox="0 0 72 72"><circle cx={36} cy={36} r={26} fill={fill2} stroke={stroke} strokeWidth={1.5}/><circle cx={36} cy={36} r={16} fill={fill}/></svg>;
+    case "square":     return <svg {...s} viewBox="0 0 72 72"><rect x={10} y={10} width={52} height={52} fill={fill2} stroke={stroke} strokeWidth={1.5}/><rect x={20} y={20} width={32} height={32} fill={fill}/></svg>;
+    case "hexagon":    return <svg {...s} viewBox="0 0 72 72"><polygon points="36,6 62,21 62,51 36,66 10,51 10,21" fill={fill2} stroke={stroke} strokeWidth={1.5}/><polygon points="36,16 52,26 52,46 36,56 20,46 20,26" fill={fill}/></svg>;
+    case "flat":       return <svg {...s} viewBox="0 0 72 72"><rect x={4} y={24} width={64} height={24} fill={fill2} stroke={stroke} strokeWidth={1.5}/><rect x={12} y={30} width={48} height={12} fill={fill}/></svg>;
+    case "tube-round": return <svg {...s} viewBox="0 0 72 72"><circle cx={36} cy={36} r={26} fill={fill2} stroke={stroke} strokeWidth={1.5}/><circle cx={36} cy={36} r={16} fill="#fff" stroke={stroke} strokeWidth={1}/></svg>;
+    case "tube-square":return <svg {...s} viewBox="0 0 72 72"><rect x={8} y={8} width={56} height={56} fill={fill2} stroke={stroke} strokeWidth={1.5}/><rect x={20} y={20} width={32} height={32} fill="#fff" stroke={stroke} strokeWidth={1}/></svg>;
+    case "fitting":    return <svg {...s} viewBox="0 0 72 72"><rect x={24} y={2} width={14} height={32} fill={fill2} stroke={stroke} strokeWidth={1.5}/><rect x={27} y={4} width={8} height={28} fill="#fff" stroke={stroke} strokeWidth={0.8}/><rect x={32} y={28} width={30} height={14} fill={fill2} stroke={stroke} strokeWidth={1.5}/><rect x={34} y={31} width={26} height={8} fill="#fff" stroke={stroke} strokeWidth={0.8}/><rect x={24} y={28} width={14} height={14} fill={fill2}/></svg>;
+    case "angle":      return <svg {...s} viewBox="0 0 72 72"><polygon points="8,64 8,8 22,8 22,50 64,50 64,64" fill={fill2} stroke={stroke} strokeWidth={1.5}/><polygon points="14,58 14,14 16,14 16,44 58,44 58,58" fill={fill}/></svg>;
+    case "u":          return <svg {...s} viewBox="0 0 72 72"><path d="M8,8 L8,64 L22,64 L22,24 L50,24 L50,64 L64,64 L64,8 Z" fill={fill2} stroke={stroke} strokeWidth={1.5}/><path d="M16,16 L16,56 L20,56 L20,30 L52,30 L52,56 L56,56 L56,16 Z" fill={fill}/></svg>;
+    case "t":          return <svg {...s} viewBox="0 0 72 72"><polygon points="4,4 68,4 68,18 42,18 42,68 30,68 30,18 4,18" fill={fill2} stroke={stroke} strokeWidth={1.5}/><polygon points="12,10 60,10 60,14 39,14 39,62 33,62 33,14 12,14" fill={fill}/></svg>;
+    case "beam":       return <svg {...s} viewBox="0 0 72 72"><rect x={4} y={4} width={64} height={12} fill={fill2} stroke={stroke} strokeWidth={1.5}/><rect x={30} y={16} width={12} height={26} fill={fill2} stroke={stroke} strokeWidth={1.5}/><rect x={4} y={56} width={64} height={12} fill={fill2} stroke={stroke} strokeWidth={1.5}/><rect x={12} y={8} width={48} height={4} fill={fill}/><rect x={34} y={20} width={4} height={18} fill={fill}/><rect x={12} y={60} width={48} height={4} fill={fill}/></svg>;
+    case "c-profile":  return <svg {...s} viewBox="0 0 72 72"><path d="M12,4 L52,4 L52,18 L26,18 L26,54 L52,54 L52,68 L12,68 Z" fill={fill2} stroke={stroke} strokeWidth={1.5}/><path d="M20,12 L46,12 L46,14 L32,14 L32,58 L46,58 L46,60 L20,60 Z" fill={fill}/></svg>;
+    case "plate":      return <svg {...s} viewBox="0 0 72 72"><polygon points="6,48 66,48 66,60 6,60" fill={fill2} stroke={stroke} strokeWidth={1.5}/><polygon points="6,48 18,22 78,22 66,48" fill={fill} stroke={stroke} strokeWidth={1}/><line x1="66" y1="48" x2="78" y2="22" stroke={stroke} strokeWidth={1}/><line x1="66" y1="60" x2="78" y2="34" stroke={stroke} strokeWidth={1}/><polygon points="78,22 78,34 66,60 66,48" fill="#b0bfcf" stroke={stroke} strokeWidth={1}/></svg>;
+    case "plate-holes":return <svg {...s} viewBox="0 0 72 72"><polygon points="6,48 66,48 66,60 6,60" fill={fill2} stroke={stroke} strokeWidth={1.5}/><polygon points="6,48 18,22 78,22 66,48" fill={fill} stroke={stroke} strokeWidth={1}/><line x1="66" y1="48" x2="78" y2="22" stroke={stroke} strokeWidth={1}/>{[26,40,54].map(x=>[29,37].map(y=><circle key={`${x}-${y}`} cx={x} cy={y} r={3} fill="#9aabbc" opacity={0.8}/>))}</svg>;
+    default:           return <svg {...s} viewBox="0 0 72 72"><rect x={10} y={20} width={52} height={32} fill={fill2} stroke={stroke} strokeWidth={1.5}/></svg>;
+  }
+}
 
 const BLUE = "#154194";
 const F    = "'IBM Plex Sans', Arial, sans-serif";
@@ -160,12 +182,9 @@ export default function FormPage() {
                 onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#f7f9fc"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "transparent"; }}
               >
-                {/* Produkt-Bild Placeholder */}
-                <div style={{ width: 72, height: 72, backgroundColor: "#f4f6f9", border: "1px solid #e8eaef", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg viewBox="0 0 48 48" width={48} height={48}>
-                    <rect x={4} y={16} width={40} height={16} rx={2} fill="#c5d0de"/>
-                    <rect x={8} y={20} width={32} height={8}  rx={1} fill="#9aabbc"/>
-                  </svg>
+                {/* Produkt-Bild */}
+                <div style={{ width: 80, height: 80, backgroundColor: "#f4f6f9", border: "1px solid #e8eaef", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <ProductThumb shape={form.shape} />
                 </div>
 
                 {/* Name + Beschreibung */}

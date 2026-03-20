@@ -14,10 +14,13 @@ export interface SteelProduct {
   beschreibung: string;
 }
 
+export type FormShape = "round" | "square" | "hexagon" | "flat" | "tube-round" | "tube-square" | "fitting" | "angle" | "u" | "t" | "beam" | "c-profile" | "plate" | "plate-holes";
+
 export interface SteelForm {
   id:          string;
   label:       string;
   description: string;
+  shape:       FormShape;
   products:    SteelProduct[];
   filters:     FormFilters;
 }
@@ -33,24 +36,30 @@ export interface FormFilters {
 
 export const STEEL_FORMS: SteelForm[] = [
   {
-    id: "rundprofile", label: "Rund", description: "Vollmaterial · Runder Querschnitt",
+    id: "rundprofile", label: "Rund", description: "Vollmaterial · Runder Querschnitt", shape: "round",
     filters: {
-      werkstoff:       ["S235JR","S355J2","E335","C45","11SMn30","42CrMo4","34CrNiMo6","1.4301 (304)","1.4404 (316L)","1.4305 (303)","1.2312","1.2316"],
-      herstellungsart: ["Gezogen","Warmgewalzt","Geschliffen","Geschält"],
-      oberflaeche:     ["Blank","Schwarz (warmgewalzt)","Gebeizt & passiviert"],
+      werkstoff:       ["S235JR","S355J2","E335","C45","11SMn30","42CrMo4","34CrNiMo6","1.4301 (304)","1.4404 (316L)","1.4305 (303)","1.2312","1.2316","EN AW-6060","EN AW-2017A","Ms58","SF-Cu"],
+      herstellungsart: ["Gezogen","Warmgewalzt","Geschliffen","Geschält","Stranggepreßt"],
+      oberflaeche:     ["Blank","Schwarz (warmgewalzt)","Gebeizt & passiviert","Eloxiert"],
       laenge:          ["1.000 mm","2.000 mm","3.000 mm","4.000 mm","6.000 mm","Zuschnitt"],
       staerke:         ["5 mm","6 mm","8 mm","10 mm","12 mm","15 mm","16 mm","20 mm","25 mm","30 mm","40 mm","50 mm","60 mm","80 mm","100 mm"],
       toleranz:        ["h9","h11","h13","k11","IT16"],
     },
     products: [
-      { id:"rund-01", name:"Blankstahl Rundstahl",     form:"rundprofile", werkstoffe:["S235JR","E335","C45","11SMn30"], herstellungsart:["Gezogen"],         oberflaechenList:["Blank"],                       laengenMm:[1000,2000,3000,4000,6000], staerkenMm:[5,6,8,10,12,15,16,20,25,30,40,50,60,80,100], toleranz:["h9","h11"], beschreibung:"Kaltgezogener Blankstahl nach EN 10277. Engste Toleranzen, glatte Oberfläche." },
-      { id:"rund-02", name:"Edelstahl Rund",            form:"rundprofile", werkstoffe:["1.4301 (304)","1.4404 (316L)","1.4305 (303)"], herstellungsart:["Gezogen","Geschliffen"], oberflaechenList:["Gebeizt & passiviert","Blank"], laengenMm:[1000,2000,3000,4000,6000], staerkenMm:[5,8,10,12,16,20,25,30,40,50,60,80,100], toleranz:["h9","h11","IT16"], beschreibung:"Nichtrostender Edelstahl-Rundstahl nach EN 10088-3. Hohe Korrosionsbeständigkeit." },
-      { id:"rund-03", name:"Legierter Rundstahl",       form:"rundprofile", werkstoffe:["42CrMo4","34CrNiMo6"], herstellungsart:["Warmgewalzt","Geschält"], oberflaechenList:["Schwarz (warmgewalzt)","Geschält"], laengenMm:[2000,3000,4000,6000], staerkenMm:[20,25,30,40,50,60,80,100], toleranz:["h13","IT16"], beschreibung:"Vergütungsstahl nach EN 10083-3. Für hochbelastete Maschinenbauteile." },
-      { id:"rund-04", name:"Werkzeugstahl Rund",        form:"rundprofile", werkstoffe:["1.2312","1.2316"],          herstellungsart:["Gezogen","Geschliffen"], oberflaechenList:["Blank","Gebeizt & passiviert"], laengenMm:[1000,2000,3000], staerkenMm:[10,12,16,20,25,30,40,50,60], toleranz:["h9","k11"], beschreibung:"Werkzeugstahl für Formen- und Werkzeugbau. Vorgerichtet und spannungsarm geglüht." },
+      { id:"rund-01", name:"Blankstahl Rundstahl",          form:"rundprofile", werkstoffe:["S235JR","E335","C45","11SMn30"],             herstellungsart:["Gezogen"],              oberflaechenList:["Blank"],                        laengenMm:[1000,2000,3000,4000,6000], staerkenMm:[5,6,8,10,12,15,16,20,25,30,40,50,60,80,100], toleranz:["h9","h11"],      beschreibung:"Kaltgezogener Blankstahl nach EN 10277. Engste Toleranzen, glatte Oberfläche." },
+      { id:"rund-02", name:"Edelstahl Rund",                 form:"rundprofile", werkstoffe:["1.4301 (304)","1.4404 (316L)","1.4305 (303)"],herstellungsart:["Gezogen","Geschliffen"],oberflaechenList:["Gebeizt & passiviert","Blank"], laengenMm:[1000,2000,3000,4000,6000], staerkenMm:[5,8,10,12,16,20,25,30,40,50,60,80,100],    toleranz:["h9","h11","IT16"], beschreibung:"Nichtrostender Edelstahl-Rundstahl nach EN 10088-3. Hohe Korrosionsbeständigkeit." },
+      { id:"rund-03", name:"Legierter Rundstahl",            form:"rundprofile", werkstoffe:["42CrMo4","34CrNiMo6"],                       herstellungsart:["Warmgewalzt","Geschält"],oberflaechenList:["Schwarz (warmgewalzt)"],        laengenMm:[2000,3000,4000,6000],      staerkenMm:[20,25,30,40,50,60,80,100],                 toleranz:["h13","IT16"],     beschreibung:"Vergütungsstahl nach EN 10083-3. Für hochbelastete Maschinenbauteile." },
+      { id:"rund-04", name:"Werkzeugstahl Rund",             form:"rundprofile", werkstoffe:["1.2312","1.2316"],                           herstellungsart:["Gezogen","Geschliffen"],oberflaechenList:["Blank","Gebeizt & passiviert"],  laengenMm:[1000,2000,3000],           staerkenMm:[10,12,16,20,25,30,40,50,60],               toleranz:["h9","k11"],       beschreibung:"Werkzeugstahl für Formen- und Werkzeugbau. Vorgerichtet und spannungsarm geglüht." },
+      { id:"rund-05", name:"Automatenstahl Rund",            form:"rundprofile", werkstoffe:["11SMn30"],                                   herstellungsart:["Gezogen"],              oberflaechenList:["Blank"],                        laengenMm:[1000,2000,3000,4000,6000], staerkenMm:[5,6,8,10,12,15,16,20,25,30,40,50],         toleranz:["h9","h11"],       beschreibung:"Automatenstahl nach EN 10087. Optimale Zerspanbarkeit für Drehteile." },
+      { id:"rund-06", name:"Edelstahl Rund geschliffen",     form:"rundprofile", werkstoffe:["1.4301 (304)","1.4404 (316L)"],              herstellungsart:["Geschliffen"],          oberflaechenList:["Blank"],                        laengenMm:[1000,2000,3000],           staerkenMm:[6,8,10,12,16,20,25,30,40,50],              toleranz:["h6","h7","h8"],   beschreibung:"Geschliffener Edelstahl-Rundstahl. Engste Maßtoleranzen h6/h7 für Passungen." },
+      { id:"rund-07", name:"Aluminium Rund EN AW-6060",      form:"rundprofile", werkstoffe:["EN AW-6060"],                               herstellungsart:["Stranggepreßt"],        oberflaechenList:["Blank","Eloxiert"],             laengenMm:[1000,2000,3000,4000,6000], staerkenMm:[10,12,16,20,25,30,40,50,60,80,100],        toleranz:["h9","IT16"],      beschreibung:"Aluminiumrundstab EN AW-6060 T6 nach EN 573-3. Leicht, korrosionsbeständig." },
+      { id:"rund-08", name:"Aluminium Rund EN AW-2017A",     form:"rundprofile", werkstoffe:["EN AW-2017A"],                              herstellungsart:["Stranggepreßt"],        oberflaechenList:["Blank"],                        laengenMm:[1000,2000,3000,4000],      staerkenMm:[10,12,16,20,25,30,40,50,60,80],            toleranz:["h9","IT16"],      beschreibung:"Hochfester Aluminiumrundstab 2017A T4. Für Luftfahrt- und Maschinenbauteile." },
+      { id:"rund-09", name:"Messing Rund Ms58",               form:"rundprofile", werkstoffe:["Ms58"],                                    herstellungsart:["Gezogen"],              oberflaechenList:["Blank"],                        laengenMm:[1000,2000,3000],           staerkenMm:[5,6,8,10,12,14,16,18,20,25,30,40,50],     toleranz:["h9","h11"],       beschreibung:"Messingstab Ms58 nach EN 12164. Für Armaturen, Buchsen und Automatenteile." },
+      { id:"rund-10", name:"Kupfer Rund SF-Cu",               form:"rundprofile", werkstoffe:["SF-Cu"],                                   herstellungsart:["Gezogen"],              oberflaechenList:["Blank"],                        laengenMm:[1000,2000,3000],           staerkenMm:[5,6,8,10,12,16,20,25,30,40,50],           toleranz:["h9","h11"],       beschreibung:"Kupferstab SF-Cu nach EN 12163. Hohe elektrische Leitfähigkeit, gut lötbar." },
     ],
   },
   {
-    id: "vierkantprofile", label: "Vierkant", description: "Vollmaterial · Quadratischer Querschnitt",
+    id: "vierkantprofile", label: "Vierkant", description: "Vollmaterial · Quadratischer Querschnitt", shape: "square",
     filters: {
       werkstoff:       ["S235JR","E335","C45","11SMn30","1.4301 (304)","1.4404 (316L)","1.2312"],
       herstellungsart: ["Gezogen","Warmgewalzt"],
@@ -66,7 +75,7 @@ export const STEEL_FORMS: SteelForm[] = [
     ],
   },
   {
-    id: "sechskantprofile", label: "Sechskant", description: "Vollmaterial · Sechseckiger Querschnitt",
+    id: "sechskantprofile", label: "Sechskant", description: "Vollmaterial · Sechseckiger Querschnitt", shape: "hexagon",
     filters: {
       werkstoff:       ["S235JR","E335","C45","11SMn30","1.4301 (304)","1.4305 (303)"],
       herstellungsart: ["Gezogen","Warmgewalzt"],
@@ -82,7 +91,7 @@ export const STEEL_FORMS: SteelForm[] = [
     ],
   },
   {
-    id: "flachprofile", label: "Flach", description: "Vollmaterial · Flacher Rechteckquerschnitt",
+    id: "flachprofile", label: "Flach", description: "Vollmaterial · Flacher Rechteckquerschnitt", shape: "flat",
     filters: {
       werkstoff:       ["S235JR","S355J2","E335","C45","1.4301 (304)","1.4404 (316L)","42CrMo4"],
       herstellungsart: ["Warmgewalzt","Kaltgewalzt","Gezogen"],
@@ -99,7 +108,7 @@ export const STEEL_FORMS: SteelForm[] = [
     ],
   },
   {
-    id: "rundrohre", label: "Rundrohre", description: "Hohlprofil · Runder Querschnitt",
+    id: "rundrohre", label: "Rundrohre", description: "Hohlprofil · Runder Querschnitt", shape: "tube-round",
     filters: {
       werkstoff:       ["S235JRH","S355J2H","P235GH","P265GH","1.4301 (304)","1.4404 (316L)","St37.4"],
       herstellungsart: ["Nahtlos","Geschweißt (ERW)","Präzisionsrohr"],
@@ -116,7 +125,7 @@ export const STEEL_FORMS: SteelForm[] = [
     ],
   },
   {
-    id: "vierkantrohre", label: "Vierkantrohre", description: "Hohlprofil · Quadratischer / rechteckiger Querschnitt",
+    id: "vierkantrohre", label: "Vierkantrohre", description: "Hohlprofil · Quadratischer / rechteckiger Querschnitt", shape: "tube-square",
     filters: {
       werkstoff:       ["S235JRH","S355J2H","1.4301 (304)","1.4404 (316L)"],
       herstellungsart: ["Geschweißt (ERW)","Nahtlos"],
@@ -132,7 +141,7 @@ export const STEEL_FORMS: SteelForm[] = [
     ],
   },
   {
-    id: "rohrzubehoer", label: "Rohrzubehör", description: "Fittings · Flansche · Bögen",
+    id: "rohrzubehoer", label: "Rohrzubehör", description: "Fittings · Flansche · Bögen", shape: "fitting",
     filters: {
       werkstoff:       ["S235JR","P235GH","1.4301 (304)","1.4404 (316L)"],
       herstellungsart: ["Geschmiedet","Geschweißt","Gegossen"],
@@ -148,7 +157,7 @@ export const STEEL_FORMS: SteelForm[] = [
     ],
   },
   {
-    id: "winkelprofile", label: "Winkel", description: "Gleichschenklig · Ungleichschenklig",
+    id: "winkelprofile", label: "Winkel", description: "Gleichschenklig · Ungleichschenklig", shape: "angle",
     filters: {
       werkstoff:       ["S235JR","S355J2","1.4301 (304)","1.4404 (316L)"],
       herstellungsart: ["Warmgewalzt"],
@@ -164,7 +173,7 @@ export const STEEL_FORMS: SteelForm[] = [
     ],
   },
   {
-    id: "u-profile", label: "U-Profile", description: "U-Stahl · UNP · UPE",
+    id: "u-profile", label: "U-Profile", description: "U-Stahl · UNP · UPE", shape: "u",
     filters: {
       werkstoff:       ["S235JR","S355J2","1.4301 (304)"],
       herstellungsart: ["Warmgewalzt"],
@@ -179,7 +188,7 @@ export const STEEL_FORMS: SteelForm[] = [
     ],
   },
   {
-    id: "t-profile", label: "T-Profile", description: "T-Stahl · Gleichschenklig",
+    id: "t-profile", label: "T-Profile", description: "T-Stahl · Gleichschenklig", shape: "t",
     filters: {
       werkstoff:       ["S235JR","S355J2","1.4301 (304)"],
       herstellungsart: ["Warmgewalzt"],
@@ -194,7 +203,7 @@ export const STEEL_FORMS: SteelForm[] = [
     ],
   },
   {
-    id: "traeger", label: "Träger", description: "I-Träger · IPE · HEA · HEB · IPN",
+    id: "traeger", label: "Träger", description: "I-Träger · IPE · HEA · HEB · IPN", shape: "beam",
     filters: {
       werkstoff:       ["S235JR","S355J2","S460M"],
       herstellungsart: ["Warmgewalzt"],
@@ -212,7 +221,7 @@ export const STEEL_FORMS: SteelForm[] = [
     ],
   },
   {
-    id: "sonderprofile", label: "Sonderprofile", description: "Z · C · Omega · Kaltprofile",
+    id: "sonderprofile", label: "Sonderprofile", description: "Z · C · Omega · Kaltprofile", shape: "c-profile",
     filters: {
       werkstoff:       ["S235JR","S350GD","DX51D"],
       herstellungsart: ["Kaltgeformt","Warmgewalzt"],
@@ -228,7 +237,7 @@ export const STEEL_FORMS: SteelForm[] = [
     ],
   },
   {
-    id: "bleche", label: "Bleche", description: "Kaltgewalzt · Warmgewalzt · Edelstahl · Aluminium",
+    id: "bleche", label: "Bleche", description: "Kaltgewalzt · Warmgewalzt · Edelstahl · Aluminium", shape: "plate",
     filters: {
       werkstoff:       ["S235JR","S355J2","DC01","DC04","1.4301 (304)","1.4404 (316L)","EN AW-1050","EN AW-5083","DX51D"],
       herstellungsart: ["Warmgewalzt","Kaltgewalzt","Verzinkt (Feuerverzinkung)"],
@@ -246,7 +255,7 @@ export const STEEL_FORMS: SteelForm[] = [
     ],
   },
   {
-    id: "lochbleche", label: "Lochbleche", description: "Rundloch · Vierkantloch · Streckmetall",
+    id: "lochbleche", label: "Lochbleche", description: "Rundloch · Vierkantloch · Streckmetall", shape: "plate-holes",
     filters: {
       werkstoff:       ["S235JR","1.4301 (304)","EN AW-1050","DX51D"],
       herstellungsart: ["Gestanzt","Gewalzt"],
