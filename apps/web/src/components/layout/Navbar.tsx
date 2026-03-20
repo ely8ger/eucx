@@ -7,6 +7,7 @@ import {
   CheckSquare, User, Shield, LogOut, Bell,
 } from "lucide-react";
 import { EucxLogo } from "@/components/logo/EucxLogo";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const NAV_LINKS = [
   { href: "/dashboard", label: "Übersicht",       Icon: LayoutDashboard },
@@ -25,7 +26,7 @@ export function Navbar() {
 
       {/* Topbar - HSBC-Stil: dünne dunkle Info-Leiste */}
       <div style={{ backgroundColor: "#1a1a1a" }}>
-        <div className="max-w-6xl mx-auto px-6 lg:px-10 flex items-center justify-between" style={{ height: 36 }}>
+        <div style={{ maxWidth: 1280, marginLeft: "auto", marginRight: "auto", padding: "0 40px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 36 }}>
           <span className="hidden sm:block text-white/40 text-xs tracking-wide">
             BaFin-reguliert · Institutionelle Handelsplattform · Frankfurt am Main
           </span>
@@ -34,6 +35,8 @@ export function Navbar() {
               <span className="w-1.5 h-1.5 bg-emerald-400" style={{ borderRadius: 0 }} />
               <span className="text-white/50 text-xs">Börse geöffnet</span>
             </div>
+            <div style={{ width: 1, height: 12, backgroundColor: "rgba(255,255,255,.1)" }} />
+            <LanguageSwitcher dark />
             <div style={{ width: 1, height: 12, backgroundColor: "rgba(255,255,255,.1)" }} />
             <a href="/login"
               className="flex items-center gap-1.5 text-xs transition-colors"
@@ -53,7 +56,7 @@ export function Navbar() {
         borderTop: "3px solid #154194",
         boxShadow: "0 1px 4px 0 rgba(0,0,0,.2)",
       }}>
-        <div className="max-w-6xl mx-auto px-6 lg:px-10 flex items-center gap-6" style={{ height: 56 }}>
+        <div style={{ maxWidth: 1280, marginLeft: "auto", marginRight: "auto", padding: "0 40px", display: "flex", alignItems: "center", gap: 24, height: 56 }}>
 
           {/* Logo */}
           <Link href="/dashboard" style={{ textDecoration: "none", flexShrink: 0 }}>

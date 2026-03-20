@@ -6,23 +6,23 @@ import { EucxLogo } from "@/components/logo/EucxLogo";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <QueryProvider>
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#F8FAFC" }}>
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "#f5f7fa", fontFamily: "'IBM Plex Sans', Arial, sans-serif" }}>
         <Navbar />
-        <main className="flex-1 w-full">
-          <div className="max-w-6xl mx-auto px-6 lg:px-10 py-7">
+        <main style={{ flex: 1, width: "100%" }}>
+          <div style={{ maxWidth: 1280, margin: "0 auto", padding: "32px 40px" }}>
             {children}
           </div>
         </main>
-        <footer className="bg-white border-t border-slate-200 mt-auto">
-          <div className="max-w-6xl mx-auto px-6 lg:px-10 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <footer style={{ backgroundColor: "#ffffff", borderTop: "1px solid #e8e8e8" }}>
+          <div style={{ maxWidth: 1280, margin: "0 auto", padding: "16px 40px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
             <Link href="/" style={{ textDecoration: "none" }}>
               <EucxLogo size="sm" />
             </Link>
-            <nav className="flex items-center gap-5 text-xs text-slate-400">
-              <a href="#" className="hover:text-slate-600 transition-colors">Impressum</a>
-              <a href="#" className="hover:text-slate-600 transition-colors">Datenschutz</a>
-              <a href="#" className="hover:text-slate-600 transition-colors">Nutzungsbedingungen</a>
-              <span>© 2026</span>
+            <nav style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 11, color: "#aaa" }}>
+              <a href="/impressum" style={{ color: "#aaa", textDecoration: "none" }}>Impressum</a>
+              <a href="/datenschutz" style={{ color: "#aaa", textDecoration: "none" }}>Datenschutz</a>
+              <a href="/agb" style={{ color: "#aaa", textDecoration: "none" }}>AGB</a>
+              <span>© 2026 EUCX</span>
             </nav>
           </div>
         </footer>
