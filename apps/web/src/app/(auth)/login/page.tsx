@@ -128,6 +128,7 @@ export default function LoginPage() {
   const [step,     setStep    ] = useState<Step>("password");
   const [email,    setEmail   ] = useState("");
   const [password, setPassword] = useState("");
+  const [showPw,   setShowPw  ] = useState(false);
   const [code,     setCode    ] = useState("");
   const [errors,   setErrors  ] = useState<FieldErrors>({});
   const [loading,  setLoading ] = useState(false);
@@ -248,9 +249,34 @@ export default function LoginPage() {
                     autoComplete="email" autoFocus required />
 
                   <div>
-                    <Field id="password" label={t("login_password")} type="password" value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      error={errors.password} autoComplete="current-password" required />
+                    <div style={{ position: "relative" }}>
+                      <Field id="password" label={t("login_password")} type={showPw ? "text" : "password"} value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        error={errors.password} autoComplete="current-password" required />
+                      <button
+                        type="button"
+                        onClick={() => setShowPw(v => !v)}
+                        aria-label={showPw ? "Passwort verbergen" : "Passwort anzeigen"}
+                        style={{
+                          position: "absolute", top: 30, right: 12,
+                          background: "none", border: "none", cursor: "pointer",
+                          padding: 0, color: MUTED, display: "flex", alignItems: "center",
+                        }}
+                      >
+                        {showPw ? (
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M17.94 17.94A10.94 10.94 0 0112 19c-7 0-11-7-11-7a18.45 18.45 0 015.06-5.94"/>
+                            <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 7 11 7a18.5 18.5 0 01-2.16 3.19"/>
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                          </svg>
+                        ) : (
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                          </svg>
+                        )}
+                      </button>
+                    </div>
                     <div style={{ textAlign: "right", marginTop: 6 }}>
                       <a href="mailto:support@eucx.eu?subject=Passwort%20zur%C3%BCcksetzen"
                         style={{ fontSize: 12, color: BLUE, textDecoration: "none", fontWeight: 500, fontFamily: F }}
