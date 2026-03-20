@@ -344,7 +344,11 @@ export default function HomePage() {
         <div className="r-container" style={{ paddingTop: 56, paddingBottom: 0 }}>
           <div className="r-footer-grid">
             <div>
-              <div style={{ marginBottom: 16 }}><EucxLogo variant="white" size="sm" showTagline /></div>
+              <div style={{ marginBottom: 16 }}>
+                <Link href="/" style={{ textDecoration: "none", display: "inline-block" }}>
+                  <EucxLogo variant="white" size="md" showTagline />
+                </Link>
+              </div>
               <p style={{ fontSize: 13, color: "#555", lineHeight: 1.7 }}>{t("footer_desc")}</p>
             </div>
             {[

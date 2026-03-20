@@ -393,7 +393,7 @@ export default function DatenschutzPage() {
         <div style={{ ...S.container, padding: "48px 40px 0" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", paddingBottom: 32, borderBottom: "1px solid #222", flexWrap: "wrap", gap: 24 }}>
             <div>
-              <div style={{ marginBottom: 12 }}><EucxLogo variant="white" size="sm" showTagline /></div>
+              <div style={{ marginBottom: 12 }}><Link href="/" style={{ textDecoration: "none", display: "inline-block" }}><EucxLogo variant="white" size="md" showTagline /></Link></div>
               <p style={{ fontSize: 13, color: "#555", lineHeight: 1.7, maxWidth: 320, margin: 0 }}>
                 Digitale B2B-Warenbörse für institutionellen Rohstoffhandel in der Europäischen Union.
               </p>
