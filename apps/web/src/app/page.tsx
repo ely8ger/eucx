@@ -206,25 +206,30 @@ export default function HomePage() {
             </Link>
 
             {/* ── DÜNGER ── */}
-            <div style={{ backgroundColor: "#fff", padding: "32px 28px" }}>
+            <Link href="/duenger" style={{ textDecoration: "none" }}>
+            <div style={{ backgroundColor: "#fff", padding: "32px 28px", cursor: "pointer", transition: "background .15s" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#f0f4fb"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#fff"; }}
+            >
               <div style={{ borderLeft: "3px solid #154194", paddingLeft: 12, marginBottom: 20, display: "inline-block" }}>
                 <FlaskConical size={20} style={{ color: "#154194", display: "block" }} />
               </div>
               <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#154194", marginBottom: 8 }}>DÜNGER</div>
               <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>Dünger & Agrarchemie</div>
-              <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>Produktkatalog · In Kürze verfügbar</div>
+              <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>4 Kategorien · 10 Produkte · Katalog 2026</div>
               <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                {["Stickstoffdünger (NPK)","Harnstoff & Ammoniak","Phosphat & Kali","Pflanzenschutzmittel"].map(item => (
+                {["Kaliumdünger","NPK-Dünger","Stickstoffdünger","Phosphordünger"].map(item => (
                   <li key={item} style={{ fontSize: 13, color: "#444", padding: "7px 0", borderBottom: "1px solid #f0f0f0", display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ width: 4, height: 4, backgroundColor: "#154194", display: "inline-block", flexShrink: 0 }} />
                     {item}
                   </li>
                 ))}
               </ul>
-              <div style={{ marginTop: 20 }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: "#888", backgroundColor: "#f0f0f0", padding: "3px 10px" }}>DEMNÄCHST</span>
+              <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#154194", fontWeight: 600 }}>
+                Katalog öffnen <ArrowRight size={14} />
               </div>
             </div>
+            </Link>
           </div>
         </div>
       </section>
