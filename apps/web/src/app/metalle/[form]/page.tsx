@@ -20,30 +20,7 @@ function ProductThumb({ shape }: { shape: FormShape }) {
     case "angle":      return <svg {...s} viewBox="0 0 72 72"><polygon points="8,64 8,8 22,8 22,50 64,50 64,64" fill={fill2} stroke={stroke} strokeWidth={1.5}/><polygon points="14,58 14,14 16,14 16,44 58,44 58,58" fill={fill}/></svg>;
     case "u":          return <svg {...s} viewBox="0 0 72 72"><path d="M8,8 L8,64 L22,64 L22,24 L50,24 L50,64 L64,64 L64,8 Z" fill={fill2} stroke={stroke} strokeWidth={1.5}/><path d="M16,16 L16,56 L20,56 L20,30 L52,30 L52,56 L56,56 L56,16 Z" fill={fill}/></svg>;
     case "t":          return <svg {...s} viewBox="0 0 72 72"><polygon points="4,4 68,4 68,18 42,18 42,68 30,68 30,18 4,18" fill={fill2} stroke={stroke} strokeWidth={1.5}/><polygon points="12,10 60,10 60,14 39,14 39,62 33,62 33,14 12,14" fill={fill}/></svg>;
-    case "beam": {
-      const L="#e4ecf5", M="#c5d0de", D="#9aabbc", S="#8899aa";
-      return <svg {...s} viewBox="0 0 72 72">
-        {/* Top surface of top flange */}
-        <polygon points="4,10 40,10 56,4 20,4"       fill={L} stroke={S} strokeWidth={0.8}/>
-        {/* Front face – top flange */}
-        <rect x={4} y={10} width={36} height={10}    fill={M} stroke={S} strokeWidth={0.8}/>
-        {/* Right side – top flange */}
-        <polygon points="40,10 56,4 56,14 40,20"     fill={D} stroke={S} strokeWidth={0.8}/>
-        {/* Top surface of web */}
-        <polygon points="18,20 22,20 38,14 34,14"    fill={L} stroke={S} strokeWidth={0.5}/>
-        {/* Front face – web */}
-        <rect x={18} y={20} width={4} height={30}    fill={M} stroke={S} strokeWidth={0.8}/>
-        {/* Right side – web */}
-        <polygon points="22,20 38,14 38,44 22,50"    fill={D} stroke={S} strokeWidth={0.8}/>
-        {/* Top surface of bottom flange overhangs */}
-        <polygon points="4,50 18,50 34,44 20,44"     fill={L} stroke={S} strokeWidth={0.5}/>
-        <polygon points="22,50 40,50 56,44 38,44"    fill={L} stroke={S} strokeWidth={0.5}/>
-        {/* Front face – bottom flange */}
-        <rect x={4} y={50} width={36} height={10}    fill={M} stroke={S} strokeWidth={0.8}/>
-        {/* Right side – bottom flange */}
-        <polygon points="40,50 56,44 56,54 40,60"    fill={D} stroke={S} strokeWidth={0.8}/>
-      </svg>;
-    }
+    case "beam":       return <svg {...s} viewBox="0 0 72 72"><rect x={4} y={4} width={64} height={12} fill={fill2} stroke={stroke} strokeWidth={1.5}/><rect x={30} y={16} width={12} height={40} fill={fill2} stroke={stroke} strokeWidth={1.5}/><rect x={4} y={56} width={64} height={12} fill={fill2} stroke={stroke} strokeWidth={1.5}/><rect x={12} y={8} width={48} height={4} fill={fill}/><rect x={34} y={20} width={4} height={32} fill={fill}/><rect x={12} y={60} width={48} height={4} fill={fill}/></svg>;
     case "c-profile":  return <svg {...s} viewBox="0 0 72 72"><path d="M12,4 L52,4 L52,18 L26,18 L26,54 L52,54 L52,68 L12,68 Z" fill={fill2} stroke={stroke} strokeWidth={1.5}/><path d="M20,12 L46,12 L46,14 L32,14 L32,58 L46,58 L46,60 L20,60 Z" fill={fill}/></svg>;
     case "plate":      return <svg {...s} viewBox="0 0 72 72"><polygon points="6,48 66,48 66,60 6,60" fill={fill2} stroke={stroke} strokeWidth={1.5}/><polygon points="6,48 18,22 78,22 66,48" fill={fill} stroke={stroke} strokeWidth={1}/><line x1="66" y1="48" x2="78" y2="22" stroke={stroke} strokeWidth={1}/><line x1="66" y1="60" x2="78" y2="34" stroke={stroke} strokeWidth={1}/><polygon points="78,22 78,34 66,60 66,48" fill="#b0bfcf" stroke={stroke} strokeWidth={1}/></svg>;
     case "plate-holes":return <svg {...s} viewBox="0 0 72 72"><polygon points="6,48 66,48 66,60 6,60" fill={fill2} stroke={stroke} strokeWidth={1.5}/><polygon points="6,48 18,22 78,22 66,48" fill={fill} stroke={stroke} strokeWidth={1}/><line x1="66" y1="48" x2="78" y2="22" stroke={stroke} strokeWidth={1}/>{[26,40,54].map(x=>[29,37].map(y=><circle key={`${x}-${y}`} cx={x} cy={y} r={3} fill="#9aabbc" opacity={0.8}/>))}</svg>;

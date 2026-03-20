@@ -43,34 +43,7 @@ function IconTProfile()      {
     <polygon points="13,11 67,11 67,14 43,14 43,49 37,49 37,14 13,14" fill="#c5d0de"/>
   </svg>;
 }
-function IconTraeger()       {
-  // Perspective 3D I-beam. dx=18, dy=-6 depth vector.
-  // Front face: x 4..38, top-flange y 8..18, web y 18..44, bot-flange y 44..52
-  const L="#e4ecf5", M="#c5d0de", D="#9aabbc", S="#8899aa";
-  return <svg viewBox="0 0 80 60" width={80} height={60}>
-    {/* ── Top surface of top flange (light) */}
-    <polygon points="4,8 38,8 56,2 22,2"       fill={L} stroke={S} strokeWidth={0.8}/>
-    {/* ── Front face – top flange */}
-    <rect x={4} y={8} width={34} height={10}   fill={M} stroke={S} strokeWidth={0.8}/>
-    {/* ── Right side – top flange */}
-    <polygon points="38,8 56,2 56,12 38,18"    fill={D} stroke={S} strokeWidth={0.8}/>
-
-    {/* ── Top surface of web (tiny sliver, light) */}
-    <polygon points="18,18 22,18 40,12 36,12"  fill={L} stroke={S} strokeWidth={0.5}/>
-    {/* ── Front face – web */}
-    <rect x={18} y={18} width={4} height={26}  fill={M} stroke={S} strokeWidth={0.8}/>
-    {/* ── Right side – web */}
-    <polygon points="22,18 40,12 40,38 22,44"  fill={D} stroke={S} strokeWidth={0.8}/>
-
-    {/* ── Top surface of bottom flange overhangs (light) */}
-    <polygon points="4,44 18,44 36,38 22,38"   fill={L} stroke={S} strokeWidth={0.5}/>
-    <polygon points="22,44 38,44 56,38 40,38"  fill={L} stroke={S} strokeWidth={0.5}/>
-    {/* ── Front face – bottom flange */}
-    <rect x={4} y={44} width={34} height={10}  fill={M} stroke={S} strokeWidth={0.8}/>
-    {/* ── Right side – bottom flange */}
-    <polygon points="38,44 56,38 56,48 38,54"  fill={D} stroke={S} strokeWidth={0.8}/>
-  </svg>;
-}
+function IconTraeger()       { return <svg viewBox="0 0 80 60" width={80} height={60}><rect x={4} y={4} width={72} height={12} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/><rect x={34} y={16} width={12} height={28} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/><rect x={4} y={44} width={72} height={12} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/><rect x={12} y={8} width={56} height={4} fill="#c5d0de"/><rect x={38} y={20} width={4} height={20} fill="#c5d0de"/><rect x={12} y={48} width={56} height={4} fill="#c5d0de"/></svg>; }
 function IconSonderprofile() {
   return <svg viewBox="0 0 80 60" width={80} height={60}>
     {/* C-profile cross section */}
