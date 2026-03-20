@@ -179,29 +179,52 @@ export default function HomePage() {
             <h2 style={S.h2}>{t("section_markets_h2")}</h2>
             <p style={{ ...S.body, maxWidth: 420, margin: 0 }}>{t("section_markets_sub")}</p>
           </div>
-          <div className="r-grid-4-gap">
-            {[
-              { Icon: TrendingUp, code: "METALLE", title: "Metallprodukte",    items: ["Bewehrungsstahl & Profile","Blech & Coils","Kupfer / Aluminium / Zink","Metallschrott"] },
-              { Icon: Trees,      code: "HOLZ",    title: "Holz & Forst",      items: ["Rundholz & Stammholz","Schnittholz","Sperrholz / MDF","Forstwirtschaft"] },
-              { Icon: FlaskConical, code: "DÜNGER", title: "Dünger & Agrarchemie", items: ["Stickstoffdünger (NPK)","Harnstoff & Ammoniak","Phosphat & Kali","Pflanzenschutzmittel"] },
-              { Icon: Package,    code: "PPT",     title: "Papier & Baustoffe",items: ["Papier & Karton","Verpackungsmaterial","Zement & Beton","Industriechemie"] },
-            ].map(({ Icon, code, title, items }) => (
-              <div key={code} style={{ backgroundColor: "#fff", padding: "32px 28px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 1, backgroundColor: "#e0e0e0" }}>
+            {/* ── METALLE — klickbar ── */}
+            <Link href="/metalle" style={{ textDecoration: "none" }}>
+              <div style={{ backgroundColor: "#fff", padding: "32px 28px", cursor: "pointer", height: "100%" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#f0f4fb"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#fff"; }}>
                 <div style={{ borderLeft: "3px solid #154194", paddingLeft: 12, marginBottom: 20, display: "inline-block" }}>
-                  <Icon size={20} style={{ color: "#154194", display: "block" }} />
+                  <TrendingUp size={20} style={{ color: "#154194", display: "block" }} />
                 </div>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#154194", marginBottom: 8 }}>{code}</div>
-                <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 16 }}>{title}</div>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#154194", marginBottom: 8 }}>METALLE</div>
+                <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>Metallprodukte</div>
+                <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>14 Produktformen · Stahl, Edelstahl, Aluminium</div>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                  {items.map(item => (
+                  {["Rundprofile & Vierkantstahl","Träger · IPE · HEA · HEB","Bleche & Hohlprofile","Winkel · U- & T-Profile"].map(item => (
                     <li key={item} style={{ fontSize: 13, color: "#444", padding: "7px 0", borderBottom: "1px solid #f0f0f0", display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ width: 4, height: 4, backgroundColor: "#154194", display: "inline-block", flexShrink: 0 }} />
                       {item}
                     </li>
                   ))}
                 </ul>
+                <div style={{ marginTop: 20, fontSize: 13, color: "#154194", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                  Katalog öffnen <ArrowRight size={14} />
+                </div>
               </div>
-            ))}
+            </Link>
+
+            {/* ── DÜNGER ── */}
+            <div style={{ backgroundColor: "#fff", padding: "32px 28px" }}>
+              <div style={{ borderLeft: "3px solid #154194", paddingLeft: 12, marginBottom: 20, display: "inline-block" }}>
+                <FlaskConical size={20} style={{ color: "#154194", display: "block" }} />
+              </div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#154194", marginBottom: 8 }}>DÜNGER</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>Dünger & Agrarchemie</div>
+              <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>Produktkatalog · In Kürze verfügbar</div>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                {["Stickstoffdünger (NPK)","Harnstoff & Ammoniak","Phosphat & Kali","Pflanzenschutzmittel"].map(item => (
+                  <li key={item} style={{ fontSize: 13, color: "#444", padding: "7px 0", borderBottom: "1px solid #f0f0f0", display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ width: 4, height: 4, backgroundColor: "#154194", display: "inline-block", flexShrink: 0 }} />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <div style={{ marginTop: 20 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: "#888", backgroundColor: "#f0f0f0", padding: "3px 10px" }}>DEMNÄCHST</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
