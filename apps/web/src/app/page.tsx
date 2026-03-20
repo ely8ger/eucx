@@ -37,7 +37,7 @@ export default function HomePage() {
           style={{ position: "absolute", top: 20, right: 20, background: "none", border: "none", color: "#fff", cursor: "pointer" }}>
           <X size={24} />
         </button>
-        <div style={{ marginBottom: 28 }}><Link href="/" onClick={() => setMenuOpen(false)} style={{ textDecoration: "none" }}><EucxLogo variant="white" size="sm" /></Link></div>
+        <div style={{ marginBottom: 28 }}><Link href="/" onClick={() => setMenuOpen(false)} style={{ textDecoration: "none" }}><EucxLogo variant="dark" size="sm" /></Link></div>
         {NAV_LINKS.map(({ label, href }) => (
           <a key={href} href={href} onClick={() => setMenuOpen(false)}
             style={{ fontSize: 18, color: "rgba(255,255,255,.85)", textDecoration: "none", padding: "14px 0", borderBottom: "1px solid rgba(255,255,255,.08)", display: "block" }}>

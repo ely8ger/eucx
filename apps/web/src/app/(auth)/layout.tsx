@@ -11,7 +11,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* ── Institutioneller Portal-Header ───────────────────────────────── */}
       <div style={{ backgroundColor: "#0b1e36", borderBottom: "3px solid #154194" }}>
         <div className="max-w-screen-xl mx-auto px-6 h-14 flex items-center justify-between">
-          <a href="/" style={{ textDecoration: "none" }}><EucxLogo variant="white" size="sm" /></a>
+          <a href="/" style={{ textDecoration: "none" }}><EucxLogo variant="dark" size="sm" /></a>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5">
               <svg width="12" height="14" viewBox="0 0 12 14" fill="none" aria-hidden="true">

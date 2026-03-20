@@ -360,7 +360,7 @@ export default function FaqPage() {
         {/* ── Topbar ── */}
         <div style={{ backgroundColor: "#0b1e36", borderBottom: "3px solid #154194", padding: "0 40px", height: 56, display: "flex", alignItems: "center" }}>
           <a href="/" style={{ textDecoration: "none" }}>
-            <EucxLogo variant="white" size="sm" />
+            <EucxLogo variant="dark" size="sm" />
           </a>
           <div style={{ marginLeft: "auto", display: "flex", gap: 24 }}>
             <a href="/wissen" style={{ fontSize: 13, color: "rgba(255,255,255,.6)", textDecoration: "none" }}>Wissen</a>
