@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   ShieldCheck, TrendingUp, FileText, Users,
   ArrowRight, BarChart3, Layers, Lock,
-  Globe, Building2, Wheat, Trees, Package, X,
+  Globe, Building2, FlaskConical, Trees, Package, X,
 } from "lucide-react";
 import { EucxLogo } from "@/components/logo/EucxLogo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -183,7 +183,7 @@ export default function HomePage() {
             {[
               { Icon: TrendingUp, code: "METALLE", title: "Metallprodukte",    items: ["Bewehrungsstahl & Profile","Blech & Coils","Kupfer / Aluminium / Zink","Metallschrott"] },
               { Icon: Trees,      code: "HOLZ",    title: "Holz & Forst",      items: ["Rundholz & Stammholz","Schnittholz","Sperrholz / MDF","Forstwirtschaft"] },
-              { Icon: Wheat,      code: "AGRAR",   title: "Agrarprodukte",     items: ["Weizen / Gerste / Mais","Raps & Olsaaten","Milchprodukte","Fleisch & Geflugel"] },
+              { Icon: FlaskConical, code: "DÜNGER", title: "Dünger & Agrarchemie", items: ["Stickstoffdünger (NPK)","Harnstoff & Ammoniak","Phosphat & Kali","Pflanzenschutzmittel"] },
               { Icon: Package,    code: "PPT",     title: "Papier & Baustoffe",items: ["Papier & Karton","Verpackungsmaterial","Zement & Beton","Industriechemie"] },
             ].map(({ Icon, code, title, items }) => (
               <div key={code} style={{ backgroundColor: "#fff", padding: "32px 28px" }}>
