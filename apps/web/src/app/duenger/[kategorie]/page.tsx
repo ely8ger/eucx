@@ -96,10 +96,11 @@ function ThumbNPK() {
 
 // Wählt Thumbnail anhand physischer Form
 function FertThumb({ physForm, id }: { physForm: string[]; id: string }) {
-  if (id.startsWith("npk-"))                    return <ThumbNPK />;
-  if (physForm.includes("Kristalle"))            return <ThumbKristalle />;
+  if (id.startsWith("npk-"))                                          return <ThumbNPK />;
+  if (id === "dap-18-46" || id === "harnstoff-46" || id === "ammoniumnitrat") return <ThumbPrills />;
+  if (physForm.includes("Kristalle"))                                 return <ThumbKristalle />;
   if (physForm.includes("Pulver") && !physForm.includes("Granulat")) return <ThumbPulver />;
-  if (physForm.includes("Prills"))               return <ThumbPrills />;
+  if (physForm.includes("Prills"))                                    return <ThumbPrills />;
   return <ThumbGranulat />;
 }
 
