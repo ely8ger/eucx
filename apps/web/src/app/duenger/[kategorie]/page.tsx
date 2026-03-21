@@ -292,12 +292,13 @@ export default function KategoriePage() {
                   )}
                 </div>
 
-                {/* Handeln-Button */}
-                <div style={{ flexShrink: 0 }}>
+                {/* Buttons */}
+                <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", gap: 8 }}>
                   <Link
                     href="/trading"
                     style={{
-                      display: "inline-flex", alignItems: "center", height: 36, padding: "0 18px",
+                      display: "inline-flex", alignItems: "center", justifyContent: "center",
+                      height: 36, padding: "0 18px",
                       backgroundColor: BLUE, color: "#fff", textDecoration: "none",
                       fontSize: 13, fontWeight: 600, fontFamily: F, whiteSpace: "nowrap",
                     }}
@@ -305,6 +306,20 @@ export default function KategoriePage() {
                     onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = BLUE; }}
                   >
                     Handeln →
+                  </Link>
+                  <Link
+                    href={`/duenger/${katId}/${product.id}`}
+                    style={{
+                      display: "inline-flex", alignItems: "center", justifyContent: "center",
+                      height: 36, padding: "0 18px",
+                      backgroundColor: "#fff", color: BLUE, textDecoration: "none",
+                      fontSize: 13, fontWeight: 600, fontFamily: F, whiteSpace: "nowrap",
+                      border: `1px solid ${BLUE}`,
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#eef2fb"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#fff"; }}
+                  >
+                    Mehr Informationen
                   </Link>
                 </div>
               </div>
