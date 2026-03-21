@@ -8,6 +8,100 @@ import { FERTILIZER_CATEGORIES, getFertiCategory } from "@/lib/fertilizer/data";
 
 const BLUE = "#154194";
 const F    = "'IBM Plex Sans', Arial, sans-serif";
+const fill2  = "#dce3ed";
+const fill   = "#c5d0de";
+const stroke = "#9aabbc";
+
+// ─── Produkt-Thumbnails ───────────────────────────────────────────────────────
+
+function ThumbGranulat() {
+  return <svg width={72} height={72} viewBox="0 0 72 72">
+    <circle cx={22} cy={24} r={13} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={22} cy={24} r={7}  fill={fill}/>
+    <circle cx={48} cy={20} r={13} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={48} cy={20} r={7}  fill={fill}/>
+    <circle cx={34} cy={46} r={13} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={34} cy={46} r={7}  fill={fill}/>
+    <circle cx={58} cy={48} r={10} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={58} cy={48} r={5}  fill={fill}/>
+    <circle cx={14} cy={52} r={10} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={14} cy={52} r={5}  fill={fill}/>
+  </svg>;
+}
+
+function ThumbPulver() {
+  return <svg width={72} height={72} viewBox="0 0 72 72">
+    {/* Pulverhaufen */}
+    <ellipse cx={36} cy={54} rx={30} ry={8} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <path d="M6,54 Q10,28 36,20 Q62,28 66,54 Z" fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <path d="M14,54 Q18,33 36,26 Q54,33 58,54 Z" fill={fill}/>
+    {/* Staubpartikel */}
+    <circle cx={20} cy={18} r={2} fill={fill2} stroke={stroke} strokeWidth={1}/>
+    <circle cx={52} cy={14} r={1.5} fill={fill2} stroke={stroke} strokeWidth={1}/>
+    <circle cx={62} cy={24} r={1.5} fill={fill2} stroke={stroke} strokeWidth={1}/>
+  </svg>;
+}
+
+function ThumbPrills() {
+  return <svg width={72} height={72} viewBox="0 0 72 72">
+    {/* Gleichmäßige runde Prills */}
+    <circle cx={18} cy={20} r={10} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={18} cy={20} r={5}  fill={fill}/>
+    <circle cx={38} cy={16} r={10} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={38} cy={16} r={5}  fill={fill}/>
+    <circle cx={57} cy={22} r={10} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={57} cy={22} r={5}  fill={fill}/>
+    <circle cx={28} cy={38} r={10} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={28} cy={38} r={5}  fill={fill}/>
+    <circle cx={50} cy={42} r={10} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={50} cy={42} r={5}  fill={fill}/>
+    <circle cx={16} cy={54} r={8}  fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={16} cy={54} r={4}  fill={fill}/>
+    <circle cx={36} cy={58} r={8}  fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={36} cy={58} r={4}  fill={fill}/>
+    <circle cx={58} cy={58} r={8}  fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={58} cy={58} r={4}  fill={fill}/>
+  </svg>;
+}
+
+function ThumbKristalle() {
+  return <svg width={72} height={72} viewBox="0 0 72 72">
+    {/* Kubische Kristallformen */}
+    <polygon points="10,14 26,10 34,22 18,26" fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <polygon points="18,26 34,22 34,38 18,42" fill={fill}  stroke={stroke} strokeWidth={1}/>
+    <polygon points="10,14 18,26 18,42 10,30" fill={fill2} stroke={stroke} strokeWidth={1}/>
+    <polygon points="36,8 54,4 62,18 44,22"  fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <polygon points="44,22 62,18 62,34 44,38" fill={fill}  stroke={stroke} strokeWidth={1}/>
+    <polygon points="36,8 44,22 44,38 36,24"  fill={fill2} stroke={stroke} strokeWidth={1}/>
+    <polygon points="14,42 30,38 38,52 22,56" fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <polygon points="22,56 38,52 38,66 22,70" fill={fill}  stroke={stroke} strokeWidth={1}/>
+    <polygon points="14,42 22,56 22,70 14,56"  fill={fill2} stroke={stroke} strokeWidth={1}/>
+    <polygon points="42,34 58,30 64,44 48,48" fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <polygon points="48,48 64,44 64,58 48,62" fill={fill}  stroke={stroke} strokeWidth={1}/>
+    <polygon points="42,34 48,48 48,62 42,48"  fill={fill2} stroke={stroke} strokeWidth={1}/>
+  </svg>;
+}
+
+function ThumbNPK() {
+  return <svg width={72} height={72} viewBox="0 0 72 72">
+    {/* Drei unterschiedlich große Granulatkörner für N-P-K */}
+    <circle cx={20} cy={30} r={16} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={20} cy={30} r={9}  fill={fill}/>
+    <circle cx={52} cy={22} r={14} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={52} cy={22} r={8}  fill={fill}/>
+    <circle cx={46} cy={50} r={14} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
+    <circle cx={46} cy={50} r={8}  fill={fill}/>
+  </svg>;
+}
+
+// Wählt Thumbnail anhand physischer Form
+function FertThumb({ physForm, id }: { physForm: string[]; id: string }) {
+  if (id.startsWith("npk-"))                    return <ThumbNPK />;
+  if (physForm.includes("Kristalle"))            return <ThumbKristalle />;
+  if (physForm.includes("Pulver") && !physForm.includes("Granulat")) return <ThumbPulver />;
+  if (physForm.includes("Prills"))               return <ThumbPrills />;
+  return <ThumbGranulat />;
+}
 
 function FilterDropdown({ label, options, value, onChange }: {
   label: string; options: string[]; value: string; onChange: (v: string) => void;
@@ -161,15 +255,13 @@ export default function KategoriePage() {
                 onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#f7f9fc"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "transparent"; }}
               >
-                {/* Nährstoff-Badge */}
+                {/* Produkt-Thumbnail */}
                 <div style={{
-                  flexShrink: 0, width: 80, minHeight: 80,
-                  backgroundColor: "#f0f4fb", border: "1px solid #dde2ea",
-                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                  padding: "8px 4px", gap: 4,
+                  flexShrink: 0, width: 80, height: 80,
+                  backgroundColor: "#f4f6f9", border: "1px solid #e8eaef",
+                  display: "flex", alignItems: "center", justifyContent: "center",
                 }}>
-                  <span style={{ fontSize: 9, fontWeight: 600, color: BLUE, letterSpacing: "0.08em", textTransform: "uppercase", textAlign: "center" }}>Nährstoffe</span>
-                  <span style={{ fontSize: 10, color: "#0d1b2a", fontWeight: 600, textAlign: "center", lineHeight: 1.4 }}>{product.naehrstoffe}</span>
+                  <FertThumb physForm={product.physForm} id={product.id} />
                 </div>
 
                 {/* Name + Details */}
