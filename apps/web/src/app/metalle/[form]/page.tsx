@@ -69,16 +69,21 @@ export default function FormPage() {
   const [filterStaerke,   setFilterStaerke]      = useState("");
   const [filterTolerance, setFilterTolerance]    = useState("");
 
+  // "1.000 mm" → 1000, "5 mm" → 5
+  const parseMm = (s: string) => parseInt(s.replace(/\./g, "").replace(" mm", "").replace("Zuschnitt", "0"), 10);
+
   const filtered = useMemo(() => {
     if (!form) return [];
     return form.products.filter(p => {
-      if (filterWerkstoff && !p.werkstoffe.includes(filterWerkstoff))          return false;
-      if (filterHerst     && !p.herstellungsart.includes(filterHerst))         return false;
-      if (filterOberf     && !p.oberflaechenList.includes(filterOberf))        return false;
-      if (filterTolerance && !p.toleranz.includes(filterTolerance))            return false;
+      if (filterWerkstoff && !p.werkstoffe.includes(filterWerkstoff))                  return false;
+      if (filterHerst     && !p.herstellungsart.includes(filterHerst))                 return false;
+      if (filterOberf     && !p.oberflaechenList.includes(filterOberf))                return false;
+      if (filterTolerance && !p.toleranz.includes(filterTolerance))                    return false;
+      if (filterLaenge    && !p.laengenMm.includes(parseMm(filterLaenge)))             return false;
+      if (filterStaerke   && !p.staerkenMm.includes(parseMm(filterStaerke)))           return false;
       return true;
     });
-  }, [form, filterWerkstoff, filterHerst, filterOberf, filterTolerance]);
+  }, [form, filterWerkstoff, filterHerst, filterOberf, filterTolerance, filterLaenge, filterStaerke]);
 
   const hasFilters = filterWerkstoff || filterHerst || filterOberf || filterLaenge || filterStaerke || filterTolerance;
 
@@ -126,10 +131,27 @@ export default function FormPage() {
       <div style={{ maxWidth: 1200, margin: "16px auto 0", padding: "0 32px" }}>
         <div style={{ backgroundColor: "#fff", border: "1px solid #dde2ea", padding: "16px 20px" }}>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+            {/* Form-Navigation — wie bei Kloeckner erste Dropdown */}
+            <div style={{ flex: "1 1 160px" }}>
+              <select
+                value={formId}
+                onChange={e => { window.location.href = `/metalle/${e.target.value}`; }}
+                style={{
+                  height: 40, padding: "0 12px", border: "1px solid #d0d7e3", borderRadius: 0,
+                  fontSize: 13, color: "#0d1b2a", backgroundColor: "#fff", cursor: "pointer",
+                  fontFamily: F, appearance: "none",
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' strokeWidth='1.5' fill='none'/%3E%3C/svg%3E")`,
+                  backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center", paddingRight: 32,
+                  fontWeight: 600,
+                }}
+              >
+                {STEEL_FORMS.map(f => <option key={f.id} value={f.id}>{f.label}</option>)}
+              </select>
+            </div>
             <FilterDropdown label="Werkstoff"       options={form.filters.werkstoff}       value={filterWerkstoff} onChange={setFilterWerkstoff} />
             <FilterDropdown label="Herstellungsart" options={form.filters.herstellungsart} value={filterHerst}     onChange={setFilterHerst} />
-            <FilterDropdown label="Oberfläche"      options={form.filters.oberflaeche}     value={filterOberf}     onChange={setFilterOberf} />
             <FilterDropdown label="Toleranz"        options={form.filters.toleranz}        value={filterTolerance} onChange={setFilterTolerance} />
+            <FilterDropdown label="Oberfläche"      options={form.filters.oberflaeche}     value={filterOberf}     onChange={setFilterOberf} />
             <FilterDropdown label="Länge (mm)"      options={form.filters.laenge}          value={filterLaenge}    onChange={setFilterLaenge} />
             <FilterDropdown label="Stärke (mm)"     options={form.filters.staerke}         value={filterStaerke}   onChange={setFilterStaerke} />
           </div>
