@@ -6,26 +6,30 @@ import { Plus, Filter, Download, TrendingUp, TrendingDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 
 type OrderStatus = "OFFEN" | "ANGENOMMEN" | "ABGELAUFEN" | "STORNIERT" | "ABGESCHLOSSEN";
+type OrderDir = "KAUF" | "VERKAUF";
 interface Order {
   id: string; sessionDate: string; sessionNo: string;
-  direction: "KAUF" | "VERKAUF"; category: string; commodity: string;
+  direction: OrderDir; dirKey: string; category: string;
+  commodity: string; commodityKey: string;
   spec: string; qty: number; unit: string; pricePerUnit: number;
   currency: string; total: number; delivery: string;
   status: OrderStatus; submittedAt: string;
 }
 
 const ORDERS: Order[] = [
-  { id: "A-2026-0041", sessionDate: "18.03.2026", sessionNo: "M-2026-041", direction: "VERKAUF", category: "Metalle", commodity: "Walzdraht",   spec: "5,5 mm · SAE 1006",  qty: 120, unit: "t",  pricePerUnit: 680,  currency: "EUR", total: 81600,  delivery: "Franko Lager, Hamburg", status: "OFFEN",         submittedAt: "18.03.2026 08:14" },
-  { id: "A-2026-0038", sessionDate: "17.03.2026", sessionNo: "M-2026-038", direction: "KAUF",    category: "Metalle", commodity: "Betonstahl",  spec: "Ø 16 mm · B500B",    qty: 80,  unit: "t",  pricePerUnit: 710,  currency: "EUR", total: 56800,  delivery: "Franko Lager, Berlin",  status: "ANGENOMMEN",    submittedAt: "17.03.2026 09:02" },
-  { id: "A-2026-0035", sessionDate: "15.03.2026", sessionNo: "M-2026-035", direction: "VERKAUF", category: "Metalle", commodity: "Träger HEA",  spec: "HEA 160 · S235JR",   qty: 45,  unit: "t",  pricePerUnit: 740,  currency: "EUR", total: 33300,  delivery: "DAP München",           status: "ABGESCHLOSSEN", submittedAt: "15.03.2026 07:55" },
-  { id: "A-2026-0031", sessionDate: "12.03.2026", sessionNo: "M-2026-031", direction: "KAUF",    category: "Schrott", commodity: "Shredder",    spec: "ISRI 210",            qty: 200, unit: "t",  pricePerUnit: 320,  currency: "EUR", total: 64000,  delivery: "Franko Lager, Duisburg",status: "ABGELAUFEN",    submittedAt: "12.03.2026 10:30" },
-  { id: "A-2026-0027", sessionDate: "10.03.2026", sessionNo: "M-2026-027", direction: "VERKAUF", category: "Holz",    commodity: "Fichte rund", spec: "2b-Qualität",         qty: 300, unit: "m³", pricePerUnit: 110,  currency: "EUR", total: 33000,  delivery: "Franko Forst",          status: "STORNIERT",     submittedAt: "10.03.2026 11:15" },
+  { id: "A-2026-0041", sessionDate: "18.03.2026", sessionNo: "M-2026-041", direction: "VERKAUF", dirKey: "orders_dir_sell", category: "Metalle", commodity: "Walzdraht",   commodityKey: "orders_comm_walzdraht",    spec: "5,5 mm · SAE 1006",  qty: 120, unit: "t",  pricePerUnit: 680,  currency: "EUR", total: 81600,  delivery: "Franko Lager, Hamburg",  status: "OFFEN",         submittedAt: "18.03.2026 08:14" },
+  { id: "A-2026-0038", sessionDate: "17.03.2026", sessionNo: "M-2026-038", direction: "KAUF",    dirKey: "orders_dir_buy",  category: "Metalle", commodity: "Betonstahl",  commodityKey: "orders_comm_betonstahl",   spec: "Ø 16 mm · B500B",    qty: 80,  unit: "t",  pricePerUnit: 710,  currency: "EUR", total: 56800,  delivery: "Franko Lager, Berlin",   status: "ANGENOMMEN",    submittedAt: "17.03.2026 09:02" },
+  { id: "A-2026-0035", sessionDate: "15.03.2026", sessionNo: "M-2026-035", direction: "VERKAUF", dirKey: "orders_dir_sell", category: "Metalle", commodity: "Träger HEA",  commodityKey: "orders_comm_traeger_hea",  spec: "HEA 160 · S235JR",   qty: 45,  unit: "t",  pricePerUnit: 740,  currency: "EUR", total: 33300,  delivery: "DAP München",            status: "ABGESCHLOSSEN", submittedAt: "15.03.2026 07:55" },
+  { id: "A-2026-0031", sessionDate: "12.03.2026", sessionNo: "M-2026-031", direction: "KAUF",    dirKey: "orders_dir_buy",  category: "Schrott", commodity: "Shredder",    commodityKey: "orders_comm_shredder",     spec: "ISRI 210",            qty: 200, unit: "t",  pricePerUnit: 320,  currency: "EUR", total: 64000,  delivery: "Franko Lager, Duisburg", status: "ABGELAUFEN",    submittedAt: "12.03.2026 10:30" },
+  { id: "A-2026-0027", sessionDate: "10.03.2026", sessionNo: "M-2026-027", direction: "VERKAUF", dirKey: "orders_dir_sell", category: "Holz",    commodity: "Fichte rund", commodityKey: "orders_comm_fichte_rund",  spec: "2b-Qualität",         qty: 300, unit: "m³", pricePerUnit: 110,  currency: "EUR", total: 33000,  delivery: "Franko Forst",           status: "STORNIERT",     submittedAt: "10.03.2026 11:15" },
 ];
 
 const F = "'IBM Plex Sans', Arial, sans-serif";
 
 export default function OrdersPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const LOCALE_BCP: Record<string, string> = { de: "de-DE", en: "en-GB", fr: "fr-FR", es: "es-ES", pl: "pl-PL", ru: "ru-RU" };
+  const bcp = LOCALE_BCP[locale] ?? "de-DE";
   const [tab, setTab] = useState("alle");
 
   const STATUS_MAP: Record<OrderStatus, { label: string; color: string; bg: string }> = {
@@ -158,18 +162,18 @@ export default function OrdersPage() {
                     <td style={{ padding: "12px 16px" }}>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600, color: o.direction === "KAUF" ? "#166534" : "#dc2626" }}>
                         {o.direction === "KAUF" ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
-                        {o.direction}
+                        {t(o.dirKey as any)}
                       </span>
                     </td>
                     <td style={{ padding: "12px 16px" }}>
-                      <p style={{ fontSize: 13, fontWeight: 500, color: "#0d1b2a", margin: 0 }}>{o.commodity}</p>
+                      <p style={{ fontSize: 13, fontWeight: 500, color: "#0d1b2a", margin: 0 }}>{t(o.commodityKey as any)}</p>
                       <p style={{ fontSize: 11, color: "#aaa", marginTop: 2 }}>{o.spec}</p>
                     </td>
                     <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 13, fontFamily: "monospace", color: "#505050" }}>
-                      {o.qty.toLocaleString("de-DE")} {o.unit}
+                      {o.qty.toLocaleString(bcp)} {o.unit}
                     </td>
                     <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 13, fontFamily: "monospace", fontWeight: 600, color: "#0d1b2a" }}>
-                      {o.total.toLocaleString("de-DE")} €
+                      {o.total.toLocaleString(bcp)} €
                     </td>
                     <td style={{ padding: "12px 16px" }}>
                       <p style={{ fontSize: 12, color: "#505050", margin: 0 }}>{o.sessionDate}</p>
