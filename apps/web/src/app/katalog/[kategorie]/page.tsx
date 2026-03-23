@@ -100,14 +100,16 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
     border: `1px solid ${BORDER}`, fontFamily: F,
     color: "#333", backgroundColor: "#fff", outline: "none",
     appearance: "none" as const,
+    WebkitAppearance: "none" as const,
+    MozAppearance: "none" as const,
   };
 
   return (
     <div style={{ backgroundColor: "#fff", border: `1px solid ${BORDER}`, padding: "12px 14px", marginBottom: 12 }}>
       <div style={{ display: "flex", gap: 8, alignItems: "flex-end", flexWrap: "wrap" }}>
 
-        {/* Freitext — breiter */}
-        <div style={{ flex: "2 1 180px", minWidth: 0 }}>
+        {/* Freitext */}
+        <div style={{ flex: "1 1 160px", minWidth: 0 }}>
           <label style={LBL}>Suche</label>
           <div style={{ position: "relative" }}>
             <svg style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}
@@ -121,7 +123,7 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
         </div>
 
         {/* Ø / Maß */}
-        <div style={{ flex: "1 1 90px", minWidth: 80 }}>
+        <div style={{ flex: "1 1 110px", minWidth: 0 }}>
           <label style={LBL}>Ø / Maß mm</label>
           <input value={s.dim} onChange={onChange("dim")}
             type="text" inputMode="numeric" placeholder="z.B. 60"
@@ -129,7 +131,7 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
         </div>
 
         {/* Breite */}
-        <div style={{ flex: "1 1 90px", minWidth: 80 }}>
+        <div style={{ flex: "1 1 110px", minWidth: 0 }}>
           <label style={LBL}>Breite mm</label>
           <input value={s.breite} onChange={onChange("breite")}
             type="text" inputMode="numeric" placeholder="z.B. 40"
@@ -137,10 +139,10 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
         </div>
 
         {/* Länge */}
-        <div style={{ flex: "1 1 110px", minWidth: 90 }}>
+        <div style={{ flex: "1 1 110px", minWidth: 0 }}>
           <label style={LBL}>Länge</label>
           <div style={{ position: "relative" }}>
-            <select value={s.laenge} onChange={onChange("laenge")} style={fieldStyle}>
+            <select value={s.laenge} onChange={onChange("laenge")} style={{ ...fieldStyle, paddingRight: 28 }}>
               <option value="">Alle</option>
               {ALLE_LAENGEN.map(l => <option key={l} value={l}>{formatLaenge(l)}</option>)}
             </select>
@@ -149,10 +151,10 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
         </div>
 
         {/* Werkstoff */}
-        <div style={{ flex: "1 1 130px", minWidth: 110 }}>
+        <div style={{ flex: "1 1 110px", minWidth: 0 }}>
           <label style={LBL}>Werkstoff</label>
           <div style={{ position: "relative" }}>
-            <select value={s.werkstoff} onChange={onChange("werkstoff")} style={fieldStyle}>
+            <select value={s.werkstoff} onChange={onChange("werkstoff")} style={{ ...fieldStyle, paddingRight: 28 }}>
               <option value="">Alle</option>
               {ALLE_WERKSTOFFE.map(w => <option key={w} value={w}>{w}</option>)}
             </select>
@@ -161,10 +163,10 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
         </div>
 
         {/* Oberfläche */}
-        <div style={{ flex: "1 1 110px", minWidth: 90 }}>
+        <div style={{ flex: "1 1 110px", minWidth: 0 }}>
           <label style={LBL}>Oberfläche</label>
           <div style={{ position: "relative" }}>
-            <select value={s.oberflaeche} onChange={onChange("oberflaeche")} style={fieldStyle}>
+            <select value={s.oberflaeche} onChange={onChange("oberflaeche")} style={{ ...fieldStyle, paddingRight: 28 }}>
               <option value="">Alle</option>
               {ALLE_OBERFL.map(o => <option key={o} value={o}>{o}</option>)}
             </select>
