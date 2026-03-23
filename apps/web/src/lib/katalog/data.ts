@@ -23,92 +23,93 @@ export interface KatalogKategorie {
 
 export interface SidebarSektion {
   label:      string;
-  kategorien: { id: string; label: string }[];
+  key:        string;
+  kategorien: { id: string; label: string; key: string }[];
 }
 
 // ─── Sidebar Struktur (alle 42 Kategorien) ────────────────────────────────────
 
 export const SIDEBAR: SidebarSektion[] = [
   {
-    label: "Stabstahl",
+    label: "Stabstahl", key: "sidebar_stabstahl",
     kategorien: [
-      { id: "betonstahl",   label: "Betonstahl" },
-      { id: "rundstahl",    label: "Rundstahl" },
-      { id: "vierkant",     label: "Vierkant" },
-      { id: "sechskant",    label: "Sechskant" },
-      { id: "flachstahl",   label: "Flachstahl" },
-      { id: "walzdraht",    label: "Walzdraht" },
+      { id: "betonstahl",   label: "Betonstahl",          key: "kat_betonstahl" },
+      { id: "rundstahl",    label: "Rundstahl",            key: "kat_rundstahl" },
+      { id: "vierkant",     label: "Vierkant",             key: "kat_vierkant" },
+      { id: "sechskant",    label: "Sechskant",            key: "kat_sechskant" },
+      { id: "flachstahl",   label: "Flachstahl",           key: "kat_flachstahl" },
+      { id: "walzdraht",    label: "Walzdraht",            key: "kat_walzdraht" },
     ],
   },
   {
-    label: "Träger & Profile",
+    label: "Träger & Profile", key: "sidebar_traeger_profile",
     kategorien: [
-      { id: "traeger",             label: "Träger (IPE/HEA/HEB)" },
-      { id: "t-traeger",           label: "T-Träger" },
-      { id: "winkelstahl",         label: "Winkelstahl" },
-      { id: "u-profile",           label: "U-Profile" },
-      { id: "leichtstahlprofile",  label: "Leichtstahlprofile" },
-      { id: "trockenbauprofile",   label: "Trockenbauprofile" },
+      { id: "traeger",             label: "Träger (IPE/HEA/HEB)", key: "kat_traeger" },
+      { id: "t-traeger",           label: "T-Träger",             key: "kat_t_traeger" },
+      { id: "winkelstahl",         label: "Winkelstahl",          key: "kat_winkelstahl" },
+      { id: "u-profile",           label: "U-Profile",            key: "kat_u_profile" },
+      { id: "leichtstahlprofile",  label: "Leichtstahlprofile",   key: "kat_leichtstahlprofile" },
+      { id: "trockenbauprofile",   label: "Trockenbauprofile",    key: "kat_trockenbauprofile" },
     ],
   },
   {
-    label: "Rohre",
+    label: "Rohre", key: "sidebar_rohre",
     kategorien: [
-      { id: "nahtlosrohr",        label: "Nahtlosrohr" },
-      { id: "geschweisstes-rohr", label: "Geschweißtes Rohr" },
-      { id: "quadratrohr",        label: "Quadratrohr" },
-      { id: "rechteckrohr",       label: "Rechteckrohr" },
-      { id: "ovalrohr",           label: "Ovalrohr" },
-      { id: "sonderrohre",        label: "Sonderrohre" },
+      { id: "nahtlosrohr",        label: "Nahtlosrohr",       key: "kat_nahtlosrohr" },
+      { id: "geschweisstes-rohr", label: "Geschweißtes Rohr", key: "kat_geschweisstes_rohr" },
+      { id: "quadratrohr",        label: "Quadratrohr",       key: "kat_quadratrohr" },
+      { id: "rechteckrohr",       label: "Rechteckrohr",      key: "kat_rechteckrohr" },
+      { id: "ovalrohr",           label: "Ovalrohr",          key: "kat_ovalrohr" },
+      { id: "sonderrohre",        label: "Sonderrohre",       key: "kat_sonderrohre" },
     ],
   },
   {
-    label: "Bleche & Band",
+    label: "Bleche & Band", key: "sidebar_bleche_band",
     kategorien: [
-      { id: "blech-warmgewalzt", label: "Blech warmgewalzt" },
-      { id: "blech-kaltgewalzt", label: "Blech kaltgewalzt" },
-      { id: "blech-verzinkt",    label: "Blech verzinkt" },
-      { id: "blech-lackiert",    label: "Blech lackiert" },
-      { id: "lochblech",         label: "Lochblech" },
-      { id: "riffelblech",       label: "Riffelblech" },
-      { id: "band-streifen",     label: "Band / Streifen" },
+      { id: "blech-warmgewalzt", label: "Blech warmgewalzt", key: "kat_blech_warmgewalzt" },
+      { id: "blech-kaltgewalzt", label: "Blech kaltgewalzt", key: "kat_blech_kaltgewalzt" },
+      { id: "blech-verzinkt",    label: "Blech verzinkt",    key: "kat_blech_verzinkt" },
+      { id: "blech-lackiert",    label: "Blech lackiert",    key: "kat_blech_lackiert" },
+      { id: "lochblech",         label: "Lochblech",         key: "kat_lochblech" },
+      { id: "riffelblech",       label: "Riffelblech",       key: "kat_riffelblech" },
+      { id: "band-streifen",     label: "Band / Streifen",   key: "kat_band_streifen" },
     ],
   },
   {
-    label: "Dach & Fassade",
+    label: "Dach & Fassade", key: "sidebar_dach_fassade",
     kategorien: [
-      { id: "trapezblech",     label: "Trapezblech" },
-      { id: "metallziegel",    label: "Metallziegel" },
-      { id: "sandwichpaneele", label: "Sandwichpaneele" },
+      { id: "trapezblech",     label: "Trapezblech",     key: "kat_trapezblech" },
+      { id: "metallziegel",    label: "Metallziegel",    key: "kat_metallziegel" },
+      { id: "sandwichpaneele", label: "Sandwichpaneele", key: "kat_sandwichpaneele" },
     ],
   },
   {
-    label: "Draht & Seil",
+    label: "Draht & Seil", key: "sidebar_draht_seil",
     kategorien: [
-      { id: "stahldraht",    label: "Stahldraht" },
-      { id: "schweissdraht", label: "Schweißdraht" },
-      { id: "stahlseil",     label: "Stahlseil" },
+      { id: "stahldraht",    label: "Stahldraht",    key: "kat_stahldraht" },
+      { id: "schweissdraht", label: "Schweißdraht",  key: "kat_schweissdraht" },
+      { id: "stahlseil",     label: "Stahlseil",     key: "kat_stahlseil" },
     ],
   },
   {
-    label: "Befestigungstechnik",
+    label: "Befestigungstechnik", key: "sidebar_befestigung",
     kategorien: [
-      { id: "schrauben-muttern", label: "Schrauben & Muttern" },
-      { id: "anker",             label: "Anker" },
-      { id: "naegel-duebel",     label: "Nägel & Dübel" },
-      { id: "sonder-verbinder",  label: "Sonder-Verbinder" },
+      { id: "schrauben-muttern", label: "Schrauben & Muttern", key: "kat_schrauben_muttern" },
+      { id: "anker",             label: "Anker",               key: "kat_anker" },
+      { id: "naegel-duebel",     label: "Nägel & Dübel",       key: "kat_naegel_duebel" },
+      { id: "sonder-verbinder",  label: "Sonder-Verbinder",    key: "kat_sonder_verbinder" },
     ],
   },
   {
-    label: "Spezial",
+    label: "Spezial", key: "sidebar_spezial",
     kategorien: [
-      { id: "schienen",           label: "Schienen & Zubehör" },
-      { id: "stahlnetze",         label: "Stahlnetze & Zäune" },
-      { id: "schmiedeteile",      label: "Schmiedeteile" },
-      { id: "spundwand",          label: "Spundwand & Pfähle" },
-      { id: "knueppel",           label: "Knüppel / Rohling" },
-      { id: "verbrauchsmaterial", label: "Verbrauchsmaterial" },
-      { id: "schrott",            label: "Schrott" },
+      { id: "schienen",           label: "Schienen & Zubehör",  key: "kat_schienen" },
+      { id: "stahlnetze",         label: "Stahlnetze & Zäune",  key: "kat_stahlnetze" },
+      { id: "schmiedeteile",      label: "Schmiedeteile",        key: "kat_schmiedeteile" },
+      { id: "spundwand",          label: "Spundwand & Pfähle",   key: "kat_spundwand" },
+      { id: "knueppel",           label: "Knüppel / Rohling",    key: "kat_knueppel" },
+      { id: "verbrauchsmaterial", label: "Verbrauchsmaterial",   key: "kat_verbrauchsmaterial" },
+      { id: "schrott",            label: "Schrott",              key: "kat_schrott" },
     ],
   },
 ];

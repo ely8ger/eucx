@@ -21,6 +21,11 @@ const F      = "'IBM Plex Sans', Arial, sans-serif";
 const DARK   = "#0b1e36";
 const BORDER = "#dde2ea";
 
+// ─── Kategorie-ID → Übersetzungsschlüssel ─────────────────────────────────────
+
+const KAT_KEY_MAP: Record<string, string> = {};
+SIDEBAR.forEach(s => s.kategorien.forEach(k => { KAT_KEY_MAP[k.id] = k.key; }));
+
 // ─── Alle Produkte aus dem gesamten Katalog ───────────────────────────────────
 
 type ErweitertesProd = KatalogProdukt & { katId: string; katLabel: string };
@@ -36,6 +41,7 @@ const ALLE_LAENGEN    = [...new Set(ALLE_PRODUKTE.map(p => p.laenge))].sort((a, 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
 function Sidebar({ aktiv }: { aktiv: string }) {
+  const { t } = useI18n();
   return (
     <nav style={{
       width: 226, flexShrink: 0, backgroundColor: "#fff",
@@ -43,14 +49,14 @@ function Sidebar({ aktiv }: { aktiv: string }) {
       position: "sticky", top: 16,
     }}>
       {SIDEBAR.map(sektion => (
-        <div key={sektion.label}>
+        <div key={sektion.key}>
           <div style={{
             padding: "9px 14px",
             fontSize: 10, fontWeight: 700, letterSpacing: "0.12em",
             textTransform: "uppercase", color: "#888",
             backgroundColor: "#f8f9fb", borderBottom: `1px solid ${BORDER}`,
           }}>
-            {sektion.label}
+            {t(sektion.key as any)}
           </div>
           {sektion.kategorien.map(k => {
             const isAktiv = k.id === aktiv;
@@ -63,7 +69,7 @@ function Sidebar({ aktiv }: { aktiv: string }) {
                 borderBottom: `1px solid ${isAktiv ? BLUE : BORDER}`,
                 fontWeight: isAktiv ? 600 : 400,
               }}>
-                {k.label}
+                {t(k.key as any)}
               </Link>
             );
           })}
@@ -386,7 +392,7 @@ export default function KatalogPage() {
                       <td style={TD}>
                         <Link href={`/katalog/${"katId" in p ? (p as ErweitertesProd).katId : katId}`}
                           style={{ fontSize: 11, color: BLUE, textDecoration: "none", fontWeight: 500 }}>
-                          {"katLabel" in p ? (p as ErweitertesProd).katLabel : ""}
+                          {"katId" in p ? t(KAT_KEY_MAP[(p as ErweitertesProd).katId] as any) : ""}
                         </Link>
                       </td>
                     )}
