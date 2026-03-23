@@ -718,7 +718,7 @@ export default function RegisterPage() {
               <circle cx="9" cy="13.5" r="1.5" fill="currentColor"/>
               <line x1="9" y1="15" x2="9" y2="16.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
             </svg>
-            <span style={{ fontSize: 10, fontWeight: 600, color: "#505050", fontFamily: F, textAlign: "center" }}>TLS 1.3 verschlusselt</span>
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#505050", fontFamily: F, textAlign: "center" }}>{t("auth_badge_tls")}</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, padding: "6px 4px", borderLeft: "1px solid #eef0f4", borderRight: "1px solid #eef0f4" }}>
             <svg width="18" height="20" viewBox="0 0 18 20" fill="none" style={{ color: BLUE }}>
@@ -729,7 +729,7 @@ export default function RegisterPage() {
               <circle cx="7" cy="12.5" r="0.85" fill="currentColor"/>
               <circle cx="6" cy="9" r="0.85" fill="currentColor"/>
             </svg>
-            <span style={{ fontSize: 10, fontWeight: 600, color: "#505050", fontFamily: F, textAlign: "center" }}>DSGVO-konform</span>
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#505050", fontFamily: F, textAlign: "center" }}>{t("topbar_dsgvo")}</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, padding: "6px 4px" }}>
             <svg width="18" height="20" viewBox="0 0 18 20" fill="none" style={{ color: BLUE }}>
@@ -740,7 +740,7 @@ export default function RegisterPage() {
               <rect x="13" y="8" width="2" height="8" fill="currentColor" opacity="0.6"/>
               <path d="M1 6L9 1l8 5H1Z" fill="currentColor" opacity="0.5"/>
             </svg>
-            <span style={{ fontSize: 10, fontWeight: 600, color: "#505050", fontFamily: F, textAlign: "center" }}>BaFin-reguliert</span>
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#505050", fontFamily: F, textAlign: "center" }}>{t("auth_badge_bafin")}</span>
           </div>
         </div>
       </div>
