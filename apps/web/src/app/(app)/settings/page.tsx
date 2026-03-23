@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter }           from "next/navigation";
 import { useAuthStore }        from "@/store/authStore";
+import { useI18n }             from "@/lib/i18n/context";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ const BLUE = "#154194";
 const RED  = "#dc2626";
 
 export default function SettingsPage() {
+  const { t }  = useI18n();
   const router = useRouter();
   const user   = useAuthStore((s) => s.user);
 
@@ -43,10 +45,10 @@ export default function SettingsPage() {
         method: "POST", headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json() as { ok?: boolean; error?: string };
-      if (!res.ok) { setError(data.error ?? "Fehler beim Deaktivieren"); return; }
+      if (!res.ok) { setError(data.error ?? t("settings_2fa_err_disable")); return; }
       setTfaStatus((prev) => prev ? { ...prev, totpEnabled: false } : null);
       setDisableConfirm(false);
-    } catch { setError("Verbindungsfehler."); }
+    } catch { setError(t("settings_2fa_err_conn")); }
     finally  { setDisabling(false); }
   }
 
@@ -56,24 +58,24 @@ export default function SettingsPage() {
     <div style={{ maxWidth: 640, fontFamily: F }}>
 
       {/* ── Seitenkopf ── */}
-      <h1 style={{ fontSize: 22, fontWeight: 300, color: "#0d1b2a", margin: "0 0 24px" }}>Einstellungen</h1>
+      <h1 style={{ fontSize: 22, fontWeight: 300, color: "#0d1b2a", margin: "0 0 24px" }}>{t("settings_title")}</h1>
 
       {/* ── Tab-Navigation ── */}
       <div style={{ display: "flex", borderBottom: "1px solid #e8e8e8", marginBottom: 24 }}>
-        {(["profile", "security"] as Tab[]).map((t) => (
-          <button key={t} onClick={() => setTab(t)} style={{
+        {(["profile", "security"] as Tab[]).map((tabKey) => (
+          <button key={tabKey} onClick={() => setTab(tabKey)} style={{
             padding: "10px 20px", fontSize: 13,
-            fontWeight: tab === t ? 600 : 400,
-            color: tab === t ? BLUE : "#505050",
-            borderBottom: tab === t ? `2px solid ${BLUE}` : "2px solid transparent",
+            fontWeight: tab === tabKey ? 600 : 400,
+            color: tab === tabKey ? BLUE : "#505050",
+            borderBottom: tab === tabKey ? `2px solid ${BLUE}` : "2px solid transparent",
             background: "none", border: "none",
             borderBottomStyle: "solid",
             borderBottomWidth: 2,
-            borderBottomColor: tab === t ? BLUE : "transparent",
+            borderBottomColor: tab === tabKey ? BLUE : "transparent",
             cursor: "pointer", fontFamily: F,
             marginBottom: -1,
           }}>
-            {t === "profile" ? "Profil" : "Sicherheit"}
+            {tabKey === "profile" ? t("settings_tab_profile") : t("settings_tab_security")}
           </button>
         ))}
       </div>
@@ -82,20 +84,20 @@ export default function SettingsPage() {
       {tab === "profile" && (
         <div style={{ backgroundColor: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,.08)" }}>
           <div style={{ padding: "20px 24px", borderBottom: "1px solid #f0f0f0" }}>
-            <h2 style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 16px" }}>Kontoinformationen</h2>
+            <h2 style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 16px" }}>{t("settings_section_account")}</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <InfoRow label="E-Mail"       value={user.email}   />
-              <InfoRow label="Rolle"        value={user.role}    />
-              <InfoRow label="Organisation" value={user.orgName} />
-              <InfoRow label="Nutzer-ID"    value={user.id} mono />
+              <InfoRow label={t("settings_lbl_email")}  value={user.email}   />
+              <InfoRow label={t("settings_lbl_role")}   value={user.role}    />
+              <InfoRow label={t("settings_lbl_org")}    value={user.orgName} />
+              <InfoRow label={t("settings_lbl_user_id")} value={user.id} mono />
             </div>
           </div>
           <div style={{ padding: "20px 24px" }}>
-            <h2 style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 12px" }}>Verknüpfte API-Keys</h2>
+            <h2 style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 12px" }}>{t("settings_section_api")}</h2>
             <a href="/settings/api" style={{ fontSize: 13, color: BLUE, fontWeight: 600, textDecoration: "none" }}
               onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
               onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
-              API-Keys verwalten →
+              {t("settings_btn_api")}
             </a>
           </div>
         </div>
@@ -110,10 +112,10 @@ export default function SettingsPage() {
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
               <div>
                 <h2 style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>
-                  Zwei-Faktor-Authentifizierung (2FA)
+                  {t("settings_2fa_title")}
                 </h2>
                 <p style={{ fontSize: 12, color: "#888", marginTop: 4 }}>
-                  Schützt Ihr Konto durch einen zweiten Faktor beim Login (TOTP).
+                  {t("settings_2fa_desc")}
                 </p>
               </div>
               {tfaLoading ? (
@@ -124,7 +126,7 @@ export default function SettingsPage() {
                   color:           tfaStatus?.totpEnabled ? "#166534" : "#505050",
                   backgroundColor: tfaStatus?.totpEnabled ? "#f0fdf4" : "#f5f5f5",
                 }}>
-                  {tfaStatus?.totpEnabled ? "Aktiviert" : "Deaktiviert"}
+                  {tfaStatus?.totpEnabled ? t("settings_2fa_enabled") : t("settings_2fa_disabled")}
                 </span>
               )}
             </div>
@@ -135,17 +137,17 @@ export default function SettingsPage() {
                   disableConfirm ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                       <p style={{ fontSize: 13, color: "#505050", margin: 0 }}>
-                        Sind Sie sicher? Ihr Konto wird dadurch weniger geschützt.
+                        {t("settings_2fa_confirm_text")}
                       </p>
                       {error && <p style={{ fontSize: 12, color: RED, margin: 0 }}>{error}</p>}
                       <div style={{ display: "flex", gap: 8 }}>
                         <button onClick={() => void handleDisable2FA()} disabled={disabling}
                           style={{ height: 34, padding: "0 16px", backgroundColor: RED, color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: F, opacity: disabling ? 0.6 : 1 }}>
-                          {disabling ? "Wird deaktiviert…" : "Ja, 2FA deaktivieren"}
+                          {disabling ? t("settings_2fa_disabling") : t("settings_2fa_btn_disable_now")}
                         </button>
                         <button onClick={() => { setDisableConfirm(false); setError(""); }}
                           style={{ height: 34, padding: "0 16px", border: "1px solid #d0d0d0", backgroundColor: "#fff", fontSize: 13, color: "#505050", cursor: "pointer", fontFamily: F }}>
-                          Abbrechen
+                          {t("settings_2fa_btn_cancel")}
                         </button>
                       </div>
                     </div>
@@ -154,7 +156,7 @@ export default function SettingsPage() {
                       style={{ fontSize: 13, color: RED, background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: F }}
                       onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
                       onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
-                      2FA deaktivieren
+                      {t("settings_2fa_btn_disable")}
                     </button>
                   )
                 ) : (
@@ -162,7 +164,7 @@ export default function SettingsPage() {
                     style={{ height: 34, padding: "0 16px", backgroundColor: BLUE, color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: F }}
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#0f3070")}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = BLUE)}>
-                    2FA einrichten
+                    {t("settings_2fa_btn_setup")}
                   </button>
                 )}
               </div>
@@ -171,10 +173,9 @@ export default function SettingsPage() {
 
           {/* Session-Karte */}
           <div style={{ backgroundColor: "#fff", padding: "20px 24px" }}>
-            <h2 style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 8px" }}>Aktive Session</h2>
+            <h2 style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 8px" }}>{t("settings_session_title")}</h2>
             <p style={{ fontSize: 12, color: "#888", margin: 0, lineHeight: 1.7 }}>
-              Ihre Session läuft nach 15 Minuten Inaktivität ab und wird automatisch erneuert,
-              sofern Sie im Browser aktiv sind. Bei Verdacht auf unbefugten Zugriff klicken Sie auf Abmelden.
+              {t("settings_session_desc")}
             </p>
             <button onClick={() => {
               const token = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
@@ -184,7 +185,7 @@ export default function SettingsPage() {
               style={{ marginTop: 12, fontSize: 13, color: RED, background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: F }}
               onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
               onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
-              Jetzt abmelden
+              {t("settings_btn_logout")}
             </button>
           </div>
 

@@ -9,32 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect as Select } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-
-// ─── Validierungsschema (BUTB-Felder) ─────────────────────────────────────
-const schema = z.object({
-  direction:      z.enum(["VERKAUF", "KAUF"]),
-  category:       z.string().min(1, "Pflichtfeld"),
-  subcategory:    z.string().min(1, "Pflichtfeld"),
-  commodity:      z.string().min(2, "Min. 2 Zeichen"),
-  specification:  z.string().min(1, "Pflichtfeld"),
-  standard:       z.string().optional(),
-  hsCode:         z.string().optional(),
-  originCountry:  z.string().min(1, "Pflichtfeld"),
-  manufacturer:   z.string().optional(),
-  quantity:       z.preprocess((v) => Number(v), z.number().positive("Muss > 0 sein")),
-  unit:           z.enum(["t", "kg", "m³", "m", "Stk", "l"]),
-  currency:       z.enum(["EUR", "USD", "CHF", "GBP"]),
-  priceNet:       z.preprocess((v) => Number(v), z.number().positive("Muss > 0 sein")),
-  vatRate:        z.enum(["0", "7", "19"]),
-  locationStatus: z.enum(["AUF_LAGER", "IN_TRANSIT", "ZUKUENFTIG"]),
-  deliveryTerms:  z.string().min(1, "Pflichtfeld"),
-  deliveryPlace:  z.string().min(1, "Pflichtfeld"),
-  paymentTerms:   z.string().min(1, "Pflichtfeld"),
-  deliveryDays:   z.preprocess((v) => Number(v), z.number().min(1, "Pflichtfeld")),
-  additionalInfo: z.string().optional(),
-});
-
-type FormData = z.infer<typeof schema>;
+import { useI18n } from "@/lib/i18n/context";
 
 const CATEGORIES = ["Metalle", "Schrott & Sekundär", "Holz & Forst", "Agrar & Lebensmittel", "Chemie & Petrochemie", "Energie & Brennstoffe", "Baustoffe", "Industriegüter"];
 const SUBCATEGORIES: Record<string, string[]> = {
@@ -50,8 +25,35 @@ const SUBCATEGORIES: Record<string, string[]> = {
 const DELIVERY_TERMS = ["Franko Lager Verkäufer", "Franko Lager Käufer", "Franko Station Bestimmung", "DAP", "DDP", "FCA", "FOB", "CIF", "CPT"];
 
 export default function NewOrderPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
+
+  // ─── Validierungsschema (BUTB-Felder) ─────────────────────────────────────
+  const schema = z.object({
+    direction:      z.enum(["VERKAUF", "KAUF"]),
+    category:       z.string().min(1, t("new_order_err_required")),
+    subcategory:    z.string().min(1, t("new_order_err_required")),
+    commodity:      z.string().min(2, t("new_order_err_min2")),
+    specification:  z.string().min(1, t("new_order_err_required")),
+    standard:       z.string().optional(),
+    hsCode:         z.string().optional(),
+    originCountry:  z.string().min(1, t("new_order_err_required")),
+    manufacturer:   z.string().optional(),
+    quantity:       z.preprocess((v) => Number(v), z.number().positive(t("new_order_err_positive"))),
+    unit:           z.enum(["t", "kg", "m³", "m", "Stk", "l"]),
+    currency:       z.enum(["EUR", "USD", "CHF", "GBP"]),
+    priceNet:       z.preprocess((v) => Number(v), z.number().positive(t("new_order_err_positive"))),
+    vatRate:        z.enum(["0", "7", "19"]),
+    locationStatus: z.enum(["AUF_LAGER", "IN_TRANSIT", "ZUKUENFTIG"]),
+    deliveryTerms:  z.string().min(1, t("new_order_err_required")),
+    deliveryPlace:  z.string().min(1, t("new_order_err_required")),
+    paymentTerms:   z.string().min(1, t("new_order_err_required")),
+    deliveryDays:   z.preprocess((v) => Number(v), z.number().min(1, t("new_order_err_required"))),
+    additionalInfo: z.string().optional(),
+  });
+
+  type FormData = z.infer<typeof schema>;
 
   const {
     register,
@@ -73,7 +75,7 @@ export default function NewOrderPage() {
   const priceGross = priceNet + vatAmount;
   const total      = priceGross * quantity;
 
-  async function onSubmit(data: FormData) {
+  async function onSubmit(_data: FormData) {
     await new Promise((r) => setTimeout(r, 800)); // API-Call-Placeholder
     router.push("/orders");
   }
@@ -84,19 +86,19 @@ export default function NewOrderPage() {
       {/* ── Seiten-Header ─────────────────────────────────────────────────── */}
       <div>
         <nav className="text-xs text-gov-text-muted mb-2">
-          <a href="/orders" className="hover:text-gov-blue">Meine Aufträge</a>
+          <a href="/orders" className="hover:text-gov-blue">{t("new_order_breadcrumb_orders")}</a>
           <span className="mx-2">›</span>
-          <span>Neuer Auftrag</span>
+          <span>{t("new_order_breadcrumb_new")}</span>
         </nav>
-        <h1 className="text-2xl font-bold text-gov-text">Auftrag einreichen</h1>
+        <h1 className="text-2xl font-bold text-gov-text">{t("new_order_title")}</h1>
         <p className="text-sm text-gov-text-muted mt-1">
-          Kauf- oder Verkaufsauftrag für eine Handelssitzung
+          {t("new_order_subtitle")}
         </p>
       </div>
 
       {/* ── Schritt-Indikator ─────────────────────────────────────────────── */}
       <div className="flex items-center gap-0">
-        {[{ n: 1, label: "Ware & Richtung" }, { n: 2, label: "Konditionen & Übersicht" }].map((s, i) => (
+        {[{ n: 1, label: t("new_order_step1") }, { n: 2, label: t("new_order_step2") }].map((s, i) => (
           <div key={s.n} className="flex items-center">
             <div className={"flex items-center gap-2 px-4 py-2 rounded-sm text-sm font-medium " +
               (step === s.n ? "bg-gov-blue text-white" : step > s.n ? "bg-gov-blue-light text-gov-blue" : "bg-gov-bg text-gov-text-muted")}>
@@ -117,7 +119,7 @@ export default function NewOrderPage() {
           <div className="flex flex-col gap-5">
 
             {/* Richtung */}
-            <Card header={<span className="text-sm font-semibold text-gov-text">Auftragsrichtung</span>}>
+            <Card header={<span className="text-sm font-semibold text-gov-text">{t("new_order_card_direction")}</span>}>
               <div className="flex gap-4 pt-1">
                 {(["VERKAUF", "KAUF"] as const).map((d) => (
                   <label key={d} className="flex items-center gap-2 cursor-pointer">
@@ -132,28 +134,28 @@ export default function NewOrderPage() {
             </Card>
 
             {/* Warenidentifikation */}
-            <Card header={<span className="text-sm font-semibold text-gov-text">Warenidentifikation</span>}>
+            <Card header={<span className="text-sm font-semibold text-gov-text">{t("new_order_card_commodity")}</span>}>
               <div className="grid grid-cols-2 gap-4 pt-1">
-                <Select label="Warengruppe" required placeholder="- auswählen -" {...register("category")} error={errors.category?.message}>
+                <Select label={t("new_order_lbl_category")} required placeholder={t("new_order_placeholder_select")} {...register("category")} error={errors.category?.message}>
                   {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                 </Select>
-                <Select label="Untergruppe" required placeholder="- auswählen -" {...register("subcategory")} error={errors.subcategory?.message}>
+                <Select label={t("new_order_lbl_subcategory")} required placeholder={t("new_order_placeholder_select")} {...register("subcategory")} error={errors.subcategory?.message}>
                   {(SUBCATEGORIES[category] ?? []).map((s) => <option key={s} value={s}>{s}</option>)}
                 </Select>
-                <Input label="Warenbezeichnung" required placeholder="z. B. Walzdraht" {...register("commodity")} error={errors.commodity?.message} />
-                <Input label="Spezifikation / Abmessung" required placeholder="z. B. 5,5 mm" {...register("specification")} error={errors.specification?.message} />
-                <Input label="Norm / Standard (GOST, EN, DIN …)" placeholder="z. B. EN 10025" {...register("standard")} />
-                <Input label="HS-Code / Zolltarifnummer" placeholder="z. B. 7213.91" {...register("hsCode")} />
-                <Input label="Ursprungsland" required placeholder="z. B. Deutschland" {...register("originCountry")} error={errors.originCountry?.message} />
-                <Input label="Hersteller / Werk" placeholder="z. B. Thyssenkrupp AG" {...register("manufacturer")} />
+                <Input label={t("new_order_lbl_commodity")} required placeholder={t("new_order_placeholder_commodity")} {...register("commodity")} error={errors.commodity?.message} />
+                <Input label={t("new_order_lbl_spec")} required placeholder={t("new_order_placeholder_spec")} {...register("specification")} error={errors.specification?.message} />
+                <Input label={t("new_order_lbl_standard")} placeholder={t("new_order_placeholder_standard")} {...register("standard")} />
+                <Input label={t("new_order_lbl_hscode")} placeholder={t("new_order_placeholder_hscode")} {...register("hsCode")} />
+                <Input label={t("new_order_lbl_origin")} required placeholder={t("new_order_placeholder_origin")} {...register("originCountry")} error={errors.originCountry?.message} />
+                <Input label={t("new_order_lbl_manufacturer")} placeholder={t("new_order_placeholder_mfr")} {...register("manufacturer")} />
               </div>
             </Card>
 
             {/* Menge */}
-            <Card header={<span className="text-sm font-semibold text-gov-text">Menge</span>}>
+            <Card header={<span className="text-sm font-semibold text-gov-text">{t("new_order_card_qty")}</span>}>
               <div className="grid grid-cols-2 gap-4 pt-1">
-                <Input label="Menge" required type="number" step="0.01" placeholder="0" suffix={unit} {...register("quantity")} error={errors.quantity?.message} />
-                <Select label="Einheit" required {...register("unit")}>
+                <Input label={t("new_order_lbl_qty")} required type="number" step="0.01" placeholder={t("new_order_placeholder_qty")} suffix={unit} {...register("quantity")} error={errors.quantity?.message} />
+                <Select label={t("new_order_lbl_unit")} required {...register("unit")}>
                   <option value="t">Tonnen (t)</option>
                   <option value="kg">Kilogramm (kg)</option>
                   <option value="m³">Kubikmeter (m³)</option>
@@ -165,7 +167,7 @@ export default function NewOrderPage() {
             </Card>
 
             <div className="flex justify-end">
-              <Button type="button" onClick={() => setStep(2)}>Weiter →</Button>
+              <Button type="button" onClick={() => setStep(2)}>{t("new_order_btn_next")}</Button>
             </div>
           </div>
         )}
@@ -174,16 +176,16 @@ export default function NewOrderPage() {
           <div className="flex flex-col gap-5">
 
             {/* Preis */}
-            <Card header={<span className="text-sm font-semibold text-gov-text">Preisangabe</span>}>
+            <Card header={<span className="text-sm font-semibold text-gov-text">{t("new_order_card_price")}</span>}>
               <div className="grid grid-cols-3 gap-4 pt-1">
-                <Select label="Währung" required {...register("currency")}>
+                <Select label={t("new_order_lbl_currency")} required {...register("currency")}>
                   <option value="EUR">EUR - Euro</option>
                   <option value="USD">USD - US-Dollar</option>
                   <option value="CHF">CHF - Schweizer Franken</option>
                   <option value="GBP">GBP - Britisches Pfund</option>
                 </Select>
-                <Input label="Preis netto (je Einheit)" required type="number" step="0.01" placeholder="0,00" {...register("priceNet")} error={errors.priceNet?.message} />
-                <Select label="MwSt.-Satz" required {...register("vatRate")}>
+                <Input label={t("new_order_lbl_price_net")} required type="number" step="0.01" placeholder={t("new_order_placeholder_price")} {...register("priceNet")} error={errors.priceNet?.message} />
+                <Select label={t("new_order_lbl_vat")} required {...register("vatRate")}>
                   <option value="0">0 %</option>
                   <option value="7">7 %</option>
                   <option value="19">19 %</option>
@@ -193,18 +195,22 @@ export default function NewOrderPage() {
               {/* Preisvorschau */}
               {priceNet > 0 && quantity > 0 && (
                 <div className="mt-4 p-3 bg-gov-bg rounded-sm border border-gov-border-light grid grid-cols-3 gap-3 text-sm">
-                  <div><span className="text-gov-text-muted block text-xs">Preis brutto / Einheit</span><span className="font-semibold">{priceGross.toFixed(2)} {watch("currency")}</span></div>
-                  <div><span className="text-gov-text-muted block text-xs">MwSt. ({vatRate} %)</span><span className="font-semibold">{vatAmount.toFixed(2)} {watch("currency")}</span></div>
-                  <div><span className="text-gov-text-muted block text-xs">Gesamtwert des Loses</span><span className="font-bold text-gov-blue text-base">{total.toLocaleString("de-DE", { minimumFractionDigits: 2 })} {watch("currency")}</span></div>
+                  <div><span className="text-gov-text-muted block text-xs">{t("new_order_lbl_price_gross")}</span><span className="font-semibold">{priceGross.toFixed(2)} {watch("currency")}</span></div>
+                  <div><span className="text-gov-text-muted block text-xs">{t("new_order_lbl_vat_amount")} ({vatRate} %)</span><span className="font-semibold">{vatAmount.toFixed(2)} {watch("currency")}</span></div>
+                  <div><span className="text-gov-text-muted block text-xs">{t("new_order_lbl_lot_total")}</span><span className="font-bold text-gov-blue text-base">{total.toLocaleString("de-DE", { minimumFractionDigits: 2 })} {watch("currency")}</span></div>
                 </div>
               )}
             </Card>
 
             {/* Warenstandort */}
-            <Card header={<span className="text-sm font-semibold text-gov-text">Warenstandort</span>}>
+            <Card header={<span className="text-sm font-semibold text-gov-text">{t("new_order_card_location")}</span>}>
               <div className="flex gap-6 pt-1">
                 {(["AUF_LAGER", "IN_TRANSIT", "ZUKUENFTIG"] as const).map((v) => {
-                  const labels = { AUF_LAGER: "Auf Lager", IN_TRANSIT: "Ware in Zustellung", ZUKUENFTIG: "Zukünftig verfügbar" };
+                  const labels: Record<typeof v, string> = {
+                    AUF_LAGER:   t("new_order_loc_stock"),
+                    IN_TRANSIT:  t("new_order_loc_transit"),
+                    ZUKUENFTIG:  t("new_order_loc_future"),
+                  };
                   return (
                     <label key={v} className="flex items-center gap-2 cursor-pointer">
                       <input type="radio" value={v} {...register("locationStatus")} className="w-4 h-4 accent-gov-blue" />
@@ -216,19 +222,19 @@ export default function NewOrderPage() {
             </Card>
 
             {/* Lieferung & Zahlung */}
-            <Card header={<span className="text-sm font-semibold text-gov-text">Lieferung & Zahlung</span>}>
+            <Card header={<span className="text-sm font-semibold text-gov-text">{t("new_order_card_delivery")}</span>}>
               <div className="grid grid-cols-2 gap-4 pt-1">
-                <Select label="Lieferbedingungen (Incoterms)" required placeholder="- auswählen -" {...register("deliveryTerms")} error={errors.deliveryTerms?.message}>
-                  {DELIVERY_TERMS.map((t) => <option key={t} value={t}>{t}</option>)}
+                <Select label={t("new_order_lbl_delivery_terms")} required placeholder={t("new_order_placeholder_select")} {...register("deliveryTerms")} error={errors.deliveryTerms?.message}>
+                  {DELIVERY_TERMS.map((term) => <option key={term} value={term}>{term}</option>)}
                 </Select>
-                <Input label="Lieferort / Lagerort" required placeholder="z. B. Hamburg, Lager Nord" {...register("deliveryPlace")} error={errors.deliveryPlace?.message} />
-                <Input label="Zahlungsbedingungen" required placeholder="z. B. 30 % VZ, Rest nach Lieferung" {...register("paymentTerms")} error={errors.paymentTerms?.message} />
-                <Input label="Lieferfrist (Werktage ab Auftragserteilung)" required type="number" suffix="WT" {...register("deliveryDays")} error={errors.deliveryDays?.message} />
+                <Input label={t("new_order_lbl_delivery_place")} required placeholder={t("new_order_placeholder_delivery_place")} {...register("deliveryPlace")} error={errors.deliveryPlace?.message} />
+                <Input label={t("new_order_lbl_payment_terms")} required placeholder={t("new_order_placeholder_payment")} {...register("paymentTerms")} error={errors.paymentTerms?.message} />
+                <Input label={t("new_order_lbl_delivery_days")} required type="number" suffix="WT" {...register("deliveryDays")} error={errors.deliveryDays?.message} />
               </div>
             </Card>
 
             {/* Zusatzinfo */}
-            <Card header={<span className="text-sm font-semibold text-gov-text">Zusätzliche Angaben (optional)</span>}>
+            <Card header={<span className="text-sm font-semibold text-gov-text">{t("new_order_card_extra")}</span>}>
               <textarea
                 {...register("additionalInfo")}
                 rows={3}
@@ -238,8 +244,8 @@ export default function NewOrderPage() {
             </Card>
 
             <div className="flex items-center justify-between">
-              <Button type="button" variant="outline" onClick={() => setStep(1)}>← Zurück</Button>
-              <Button type="submit" loading={isSubmitting} size="lg">Auftrag einreichen</Button>
+              <Button type="button" variant="outline" onClick={() => setStep(1)}>{t("new_order_btn_back")}</Button>
+              <Button type="submit" loading={isSubmitting} size="lg">{t("new_order_btn_submit")}</Button>
             </div>
           </div>
         )}

@@ -11,6 +11,7 @@ import { useToast }                      from "@/components/ui/toast";
 import { PORTFOLIO_KEYS, useBalanceQuery, useActiveOrdersQuery, useUserDealsQuery } from "@/hooks/usePortfolio";
 import { DEMO_WALLET, DEMO_ORDERS, DEMO_DEALS } from "@/components/portfolio/demoData";
 import Decimal                           from "decimal.js";
+import { useI18n }                       from "@/lib/i18n/context";
 import type {
   OrderFilledEvent,
   OrderPartiallyFilledEvent,
@@ -38,6 +39,7 @@ function SectionHeader({ title, right }: { title: string; right?: React.ReactNod
 }
 
 export default function PortfolioPage() {
+  const { t }       = useI18n();
   const queryClient = useQueryClient();
   const toast       = useToast();
 
@@ -52,18 +54,18 @@ export default function PortfolioPage() {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.balance() });
       const qty   = parseFloat(e.filledQuantity).toLocaleString("de-DE");
       const price = parseFloat(e.pricePerUnit).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      toast.success("Auftrag vollständig ausgeführt", `${qty} t × ${price} €/t · ${e.currency}`);
+      toast.success(t("portfolio_toast_filled"), `${qty} t × ${price} €/t · ${e.currency}`);
     },
     onOrderPartiallyFilled: (e: OrderPartiallyFilledEvent) => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("active") });
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.balance() });
       const qty = parseFloat(e.filledQuantity).toLocaleString("de-DE");
-      toast.info("Teilausführung", `${qty} t ausgeführt · ${parseFloat(e.remainingQuantity).toLocaleString("de-DE")} t verbleiben`);
+      toast.info(t("portfolio_toast_partial"), `${qty} ${t("portfolio_toast_partial_msg")} ${parseFloat(e.remainingQuantity).toLocaleString("de-DE")} ${t("portfolio_toast_partial_remain")}`);
     },
     onOrderCancelled: (e: OrderCancelledEvent) => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("active") });
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.balance() });
-      if (e.reason !== "USER_REQUEST") toast.warning("Auftrag storniert", `Grund: ${e.reason}`);
+      if (e.reason !== "USER_REQUEST") toast.warning(t("portfolio_toast_cancelled"), `${t("portfolio_toast_cancelled_reason")} ${e.reason}`);
     },
     onBalanceUpdated: (_e: BalanceUpdatedEvent) => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.balance() });
@@ -72,7 +74,7 @@ export default function PortfolioPage() {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("filled") });
       const qty   = parseFloat(e.quantity).toLocaleString("de-DE");
       const price = parseFloat(e.pricePerUnit).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      toast.success("Handel abgeschlossen", `${qty} t × ${price} €/t`);
+      toast.success(t("portfolio_toast_deal"), `${qty} t × ${price} €/t`);
     },
   });
 
@@ -90,9 +92,9 @@ export default function PortfolioPage() {
       {/* ── Page Header ────────────────────────────────────────────── */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", paddingBottom: 20, borderBottom: "1px solid #e8e8e8" }}>
         <div style={{ borderLeft: `4px solid ${BLUE}`, paddingLeft: 16 }}>
-          <h1 style={{ fontSize: 24, fontWeight: 300, color: "#0d1b2a", margin: 0 }}>Portfolio</h1>
+          <h1 style={{ fontSize: 24, fontWeight: 300, color: "#0d1b2a", margin: 0 }}>{t("portfolio_title")}</h1>
           <p style={{ fontSize: 12, color: "#999", marginTop: 6, fontFamily: MONO }}>
-            Kontostand · Aufträge · Handelshistorie
+            {t("portfolio_subtitle")}
           </p>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -101,14 +103,14 @@ export default function PortfolioPage() {
             border: `1px solid ${BLUE}`, color: BLUE, fontSize: 12, fontWeight: 600,
             textDecoration: "none", backgroundColor: "#fff", letterSpacing: "0.02em",
           }}>
-            Alle Abschlüsse
+            {t("portfolio_btn_deals")}
           </Link>
           <Link href="/trading" style={{
             display: "inline-flex", alignItems: "center", height: 34, padding: "0 14px",
             backgroundColor: BLUE, color: "#fff", fontSize: 12, fontWeight: 600,
             textDecoration: "none", letterSpacing: "0.02em",
           }}>
-            Handelsraum →
+            {t("portfolio_btn_trading")}
           </Link>
         </div>
       </div>
@@ -117,27 +119,27 @@ export default function PortfolioPage() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1, backgroundColor: "#dde1e8" }}>
         {[
           {
-            label: "Gesamtkapital",
+            label: t("portfolio_kpi_capital"),
             value: totalBalance.toNumber().toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €",
-            sub: "EUR-Konto",
+            sub: t("portfolio_kpi_capital_sub"),
             accent: BLUE,
           },
           {
-            label: "Offene Aufträge",
+            label: t("portfolio_kpi_orders"),
             value: openOrders.toString(),
-            sub: "aktiv & teilausgeführt",
+            sub: t("portfolio_kpi_orders_sub"),
             accent: openOrders > 0 ? "#d97706" : BLUE,
           },
           {
-            label: "Abschlüsse gesamt",
+            label: t("portfolio_kpi_deals"),
             value: totalDeals.toString(),
-            sub: "ausgeführte Trades",
+            sub: t("portfolio_kpi_deals_sub"),
             accent: BLUE,
           },
           {
-            label: "Gesamtumsatz",
+            label: t("portfolio_kpi_volume"),
             value: totalVolume.toNumber().toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €",
-            sub: "alle Abschlüsse",
+            sub: t("portfolio_kpi_volume_sub"),
             accent: BLUE,
           },
         ].map(({ label, value, sub, accent }) => (
@@ -162,7 +164,7 @@ export default function PortfolioPage() {
           {/* Kapitalverteilung (Donut) */}
           <div style={{ backgroundColor: "#fff", border: "1px solid #e8e8e8" }}>
             <div style={{ padding: "16px 20px", borderBottom: "1px solid #f0f0f0" }}>
-              <SectionHeader title="Kapitalverteilung" />
+              <SectionHeader title={t("portfolio_section_allocation")} />
             </div>
             <div style={{ padding: "16px 20px" }}>
               <PortfolioAllocationChart />
@@ -175,13 +177,13 @@ export default function PortfolioPage() {
           {/* Schnellzugriff */}
           <div style={{ backgroundColor: "#fff", border: "1px solid #e8e8e8" }}>
             <div style={{ padding: "14px 20px", borderBottom: "1px solid #f0f0f0" }}>
-              <SectionHeader title="Schnellzugriff" />
+              <SectionHeader title={t("portfolio_section_quicklinks")} />
             </div>
             {[
-              { href: "/trading",          label: "Handelsraum",      desc: "Aktive Sitzungen"         },
-              { href: "/trading/terminal", label: "Pro Terminal",      desc: "Orderbuch & Charts", badge: "NEU" },
-              { href: "/deals",            label: "Alle Abschlüsse",   desc: "Handelshistorie"          },
-              { href: "/reports",          label: "Handelsberichte",   desc: "Export & Analyse"         },
+              { href: "/trading",          label: t("portfolio_link_trading"),  desc: t("portfolio_link_trading_desc")  },
+              { href: "/trading/terminal", label: t("portfolio_link_terminal"), desc: t("portfolio_link_terminal_desc"), badge: "NEU" },
+              { href: "/deals",            label: t("portfolio_link_deals"),    desc: t("portfolio_link_deals_desc")    },
+              { href: "/reports",          label: t("portfolio_link_reports"),  desc: t("portfolio_link_reports_desc")  },
             ].map((item) => (
               <Link key={item.href} href={item.href} style={{ textDecoration: "none" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 20px", borderBottom: "1px solid #f7f7f7" }}

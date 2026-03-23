@@ -1,5 +1,7 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n/context";
+
 export const dynamic = "force-dynamic";
 
 const DEALS = [
@@ -11,33 +13,35 @@ const DEALS = [
   { id: "D-2026-0070", date: "10.03.2026 09:00", session: "M-2026-025", buyer: "Aluminiumwerk Norf",      seller: "Hydro Aluminium",        commodity: "Al-Walzbarren 1050A",      qty: "40 t",  price: "2.210 EUR/t", total: "88.400 EUR",  status: "ABGESCHLOSSEN" as const },
 ];
 
-const STATUS_MAP = {
-  BESTÄTIGT:      { label: "Bestätigt",      color: "#154194", bg: "#eef2fb" },
-  IN_ABWICKLUNG:  { label: "In Abwicklung",  color: "#92400e", bg: "#fffbeb" },
-  ABGESCHLOSSEN:  { label: "Abgeschlossen",  color: "#166534", bg: "#f0fdf4" },
-};
-
 const F = "'IBM Plex Sans', Arial, sans-serif";
 
 export default function DealsPage() {
+  const { t } = useI18n();
+
+  const STATUS_MAP = {
+    BESTÄTIGT:      { label: t("deals_status_confirmed"),  color: "#154194", bg: "#eef2fb" },
+    IN_ABWICKLUNG:  { label: t("deals_status_processing"), color: "#92400e", bg: "#fffbeb" },
+    ABGESCHLOSSEN:  { label: t("deals_status_done"),       color: "#166534", bg: "#f0fdf4" },
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24, fontFamily: F }}>
 
       {/* ── Seitenkopf ──────────────────────────────────────────────────────── */}
       <div>
-        <h1 style={{ fontSize: 22, fontWeight: 300, color: "#0d1b2a", margin: 0 }}>Abschlüsse</h1>
+        <h1 style={{ fontSize: 22, fontWeight: 300, color: "#0d1b2a", margin: 0 }}>{t("deals_title")}</h1>
         <p style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
-          Alle bestätigten Handelstransaktionen - Ausführungsstatus &amp; Gegenpartei
+          {t("deals_subtitle")}
         </p>
       </div>
 
       {/* ── KPI-Zeile ───────────────────────────────────────────────────────── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 2, backgroundColor: "#e0e0e0" }}>
         {[
-          { label: "Gesamt heute",  value: "€ 352.970", sub: "6 Abschlüsse"           },
-          { label: "In Abwicklung", value: "2",          sub: "warten auf Bestätigung" },
-          { label: "Abgeschlossen", value: "4",          sub: "vollständig erfüllt"    },
-          { label: "Ø Losgröße",    value: "38,8 t",     sub: "Metalle"                },
+          { label: t("deals_kpi_today"),   value: "€ 352.970", sub: t("deals_kpi_today_sub")   },
+          { label: t("deals_kpi_pending"), value: "2",          sub: t("deals_kpi_pending_sub") },
+          { label: t("deals_kpi_done"),    value: "4",          sub: t("deals_kpi_done_sub")    },
+          { label: t("deals_kpi_avg"),     value: "38,8 t",     sub: t("deals_kpi_avg_sub")     },
         ].map((k) => (
           <div key={k.label} style={{ backgroundColor: "#fff", padding: "18px 24px" }}>
             <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "#888", margin: 0, fontWeight: 500 }}>{k.label}</p>
@@ -50,13 +54,24 @@ export default function DealsPage() {
       {/* ── Tabelle ─────────────────────────────────────────────────────────── */}
       <div style={{ backgroundColor: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,.08)" }}>
         <div style={{ padding: "14px 20px", borderBottom: "1px solid #f0f0f0" }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>Transaktionsübersicht</p>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>{t("deals_table_title")}</p>
         </div>
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ backgroundColor: "#fafafa", borderBottom: "1px solid #f0f0f0" }}>
-                {["Abschluss-Nr.", "Datum / Zeit", "Sitzung", "Käufer", "Verkäufer", "Ware", "Menge", "Preis", "Gesamtwert", "Status"].map((h, i) => (
+                {[
+                  t("deals_col_id"),
+                  t("deals_col_date"),
+                  t("deals_col_session"),
+                  t("deals_col_buyer"),
+                  t("deals_col_seller"),
+                  t("deals_col_commodity"),
+                  t("deals_col_qty"),
+                  t("deals_col_price"),
+                  t("deals_col_total"),
+                  t("deals_col_status"),
+                ].map((h, i) => (
                   <th key={i} style={{
                     padding: "10px 16px", fontSize: 11, fontWeight: 600,
                     textTransform: "uppercase", letterSpacing: "0.08em", color: "#888",

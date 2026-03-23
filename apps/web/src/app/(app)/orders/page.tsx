@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Plus, Filter, Download, TrendingUp, TrendingDown } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 
 type OrderStatus = "OFFEN" | "ANGENOMMEN" | "ABGELAUFEN" | "STORNIERT" | "ABGESCHLOSSEN";
 interface Order {
@@ -21,25 +22,26 @@ const ORDERS: Order[] = [
   { id: "A-2026-0027", sessionDate: "10.03.2026", sessionNo: "M-2026-027", direction: "VERKAUF", category: "Holz",    commodity: "Fichte rund", spec: "2b-Qualität",         qty: 300, unit: "m³", pricePerUnit: 110,  currency: "EUR", total: 33000,  delivery: "Franko Forst",          status: "STORNIERT",     submittedAt: "10.03.2026 11:15" },
 ];
 
-const STATUS_MAP: Record<OrderStatus, { label: string; color: string; bg: string }> = {
-  OFFEN:         { label: "Offen",         color: "#154194", bg: "#eef2fb" },
-  ANGENOMMEN:    { label: "Angenommen",    color: "#166534", bg: "#f0fdf4" },
-  ABGESCHLOSSEN: { label: "Abgeschlossen", color: "#166534", bg: "#f0fdf4" },
-  ABGELAUFEN:    { label: "Abgelaufen",    color: "#92400e", bg: "#fffbeb" },
-  STORNIERT:     { label: "Storniert",     color: "#991b1b", bg: "#fff1f1" },
-};
-
-const TABS = [
-  { key: "alle",   label: (o: Order[]) => `Alle (${o.length})` },
-  { key: "offen",  label: (o: Order[]) => `Offen (${o.filter(x => x.status === "OFFEN").length})` },
-  { key: "aktiv",  label: (o: Order[]) => `Angenommen (${o.filter(x => x.status === "ANGENOMMEN").length})` },
-  { key: "archiv", label: () => "Archiv" },
-];
-
 const F = "'IBM Plex Sans', Arial, sans-serif";
 
 export default function OrdersPage() {
+  const { t } = useI18n();
   const [tab, setTab] = useState("alle");
+
+  const STATUS_MAP: Record<OrderStatus, { label: string; color: string; bg: string }> = {
+    OFFEN:         { label: t("orders_status_open"),      color: "#154194", bg: "#eef2fb" },
+    ANGENOMMEN:    { label: t("orders_status_accepted"),  color: "#166534", bg: "#f0fdf4" },
+    ABGESCHLOSSEN: { label: t("orders_status_done"),      color: "#166534", bg: "#f0fdf4" },
+    ABGELAUFEN:    { label: t("orders_status_expired"),   color: "#92400e", bg: "#fffbeb" },
+    STORNIERT:     { label: t("orders_status_cancelled"), color: "#991b1b", bg: "#fff1f1" },
+  };
+
+  const TABS = [
+    { key: "alle",   label: (o: Order[]) => `${t("orders_tab_all")} (${o.length})` },
+    { key: "offen",  label: (o: Order[]) => `${t("orders_tab_open")} (${o.filter(x => x.status === "OFFEN").length})` },
+    { key: "aktiv",  label: (o: Order[]) => `${t("orders_tab_active")} (${o.filter(x => x.status === "ANGENOMMEN").length})` },
+    { key: "archiv", label: () => t("orders_tab_archive") },
+  ];
 
   const filtered = ORDERS.filter((o) => {
     if (tab === "offen")  return o.status === "OFFEN";
@@ -58,8 +60,8 @@ export default function OrdersPage() {
       {/* ── Seitenkopf ──────────────────────────────────────────────────────── */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 300, color: "#0d1b2a", margin: 0 }}>Meine Aufträge</h1>
-          <p style={{ fontSize: 13, color: "#888", marginTop: 4 }}>Alle eingereichten Kauf- und Verkaufsaufträge</p>
+          <h1 style={{ fontSize: 22, fontWeight: 300, color: "#0d1b2a", margin: 0 }}>{t("orders_title")}</h1>
+          <p style={{ fontSize: 13, color: "#888", marginTop: 4 }}>{t("orders_subtitle")}</p>
         </div>
         <Link href="/orders/new" style={{
           display: "inline-flex", alignItems: "center", gap: 6,
@@ -69,16 +71,16 @@ export default function OrdersPage() {
           onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#0f3070")}
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#154194")}>
           <Plus size={14} />
-          Neuer Auftrag
+          {t("orders_btn_new")}
         </Link>
       </div>
 
       {/* ── KPI-Zeile ───────────────────────────────────────────────────────── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2, backgroundColor: "#e0e0e0" }}>
         {[
-          { label: "Offene Aufträge",  value: String(openCount),                        color: "#0d1b2a" },
-          { label: "Angenommen",       value: String(acceptedCount),                    color: "#166534" },
-          { label: "Offenes Volumen",  value: `€ ${(totalValue / 1000).toFixed(0)}k`,  color: "#0d1b2a" },
+          { label: t("orders_kpi_open"),     value: String(openCount),                        color: "#0d1b2a" },
+          { label: t("orders_kpi_accepted"), value: String(acceptedCount),                    color: "#166534" },
+          { label: t("orders_kpi_volume"),   value: `€ ${(totalValue / 1000).toFixed(0)}k`,  color: "#0d1b2a" },
         ].map(k => (
           <div key={k.label} style={{ backgroundColor: "#fff", padding: "18px 24px" }}>
             <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "#888", margin: 0, fontWeight: 500 }}>{k.label}</p>
@@ -92,9 +94,9 @@ export default function OrdersPage() {
 
         {/* Header + Toolbar */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px", borderBottom: "1px solid #f0f0f0" }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>Auftragsübersicht</p>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>{t("orders_table_title")}</p>
           <div style={{ display: "flex", gap: 8 }}>
-            {[{ Icon: Filter, label: "Filter" }, { Icon: Download, label: "Export" }].map(({ Icon, label }) => (
+            {[{ Icon: Filter, label: t("orders_btn_filter") }, { Icon: Download, label: t("orders_btn_export") }].map(({ Icon, label }) => (
               <button key={label} style={{ display: "inline-flex", alignItems: "center", gap: 5, height: 30, padding: "0 12px", border: "1px solid #e0e0e0", backgroundColor: "#fff", fontSize: 12, color: "#505050", cursor: "pointer" }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f7f7f7")}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#fff")}>
@@ -106,16 +108,16 @@ export default function OrdersPage() {
 
         {/* Tabs */}
         <div style={{ display: "flex", borderBottom: "1px solid #f0f0f0", padding: "0 20px" }}>
-          {TABS.map(t => (
-            <button key={t.key} onClick={() => setTab(t.key)}
+          {TABS.map(tabItem => (
+            <button key={tabItem.key} onClick={() => setTab(tabItem.key)}
               style={{
-                padding: "10px 14px", fontSize: 13, fontWeight: tab === t.key ? 600 : 400,
-                color: tab === t.key ? "#154194" : "#505050",
-                borderBottom: tab === t.key ? "2px solid #154194" : "2px solid transparent",
+                padding: "10px 14px", fontSize: 13, fontWeight: tab === tabItem.key ? 600 : 400,
+                color: tab === tabItem.key ? "#154194" : "#505050",
+                borderBottom: tab === tabItem.key ? "2px solid #154194" : "2px solid transparent",
                 backgroundColor: "transparent", border: "none",
                 cursor: "pointer", marginRight: 4,
               }}>
-              {t.label(ORDERS)}
+              {tabItem.label(ORDERS)}
             </button>
           ))}
         </div>
@@ -125,7 +127,16 @@ export default function OrdersPage() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ backgroundColor: "#fafafa", borderBottom: "1px solid #f0f0f0" }}>
-                {["Auftrags-Nr.", "Richtung", "Ware", "Menge", "Gesamtwert", "Sitzung", "Status", ""].map((h, i) => (
+                {[
+                  t("orders_col_id"),
+                  t("orders_col_direction"),
+                  t("orders_col_commodity"),
+                  t("orders_col_qty"),
+                  t("orders_col_total"),
+                  t("orders_col_session"),
+                  t("orders_col_status"),
+                  "",
+                ].map((h, i) => (
                   <th key={i} style={{
                     padding: "10px 16px", fontSize: 11, fontWeight: 600, textTransform: "uppercase",
                     letterSpacing: "0.08em", color: "#888",
@@ -170,7 +181,7 @@ export default function OrdersPage() {
                     <td style={{ padding: "12px 16px", textAlign: "right" }}>
                       <button style={{ fontSize: 12, fontWeight: 600, color: "#154194", background: "none", border: "none", cursor: "pointer" }}
                         onMouseEnter={e => (e.currentTarget.style.color = "#0f3070")}
-                        onMouseLeave={e => (e.currentTarget.style.color = "#154194")}>Details</button>
+                        onMouseLeave={e => (e.currentTarget.style.color = "#154194")}>{t("orders_btn_details")}</button>
                     </td>
                   </tr>
                 );
@@ -178,7 +189,7 @@ export default function OrdersPage() {
             </tbody>
           </table>
           {filtered.length === 0 && (
-            <div style={{ textAlign: "center", padding: "48px 0", fontSize: 13, color: "#aaa" }}>Keine Aufträge in dieser Kategorie.</div>
+            <div style={{ textAlign: "center", padding: "48px 0", fontSize: 13, color: "#aaa" }}>{t("orders_empty")}</div>
           )}
         </div>
       </div>
