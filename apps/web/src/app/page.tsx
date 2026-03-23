@@ -113,9 +113,23 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <section className="r-section-hero" style={{ backgroundColor: "#0b1e36" }}>
         <div className="r-container">
-          <div className="inline-flex items-center gap-2" style={{ border: "1px solid rgba(255,255,255,.15)", padding: "5px 14px", marginBottom: 28 }}>
-            <span style={{ width: 7, height: 7, backgroundColor: "#34d399", display: "inline-block", borderRadius: "50%" }} />
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,.6)", letterSpacing: "0.04em" }}>{t("hero_trading_hours")}</span>
+          <div className="inline-flex items-center gap-3" style={{
+            border: "1px solid rgba(52,211,153,.35)",
+            backgroundColor: "rgba(52,211,153,.07)",
+            padding: "8px 18px",
+            marginBottom: 32,
+          }}>
+            <span style={{
+              width: 9, height: 9, backgroundColor: "#34d399", display: "inline-block", borderRadius: "50%",
+              boxShadow: "0 0 0 3px rgba(52,211,153,.25)", flexShrink: 0,
+            }} />
+            <span style={{ fontSize: 14, fontWeight: 600, color: "#34d399", letterSpacing: "0.02em" }}>
+              {t("hero_trading_hours")}
+            </span>
+            <span style={{ width: 1, height: 14, backgroundColor: "rgba(255,255,255,.15)", flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: "rgba(255,255,255,.45)", letterSpacing: "0.02em" }}>
+              Handel nur in diesem Zeitfenster möglich
+            </span>
           </div>
 
           <h1 className="r-hero-h1">{t("hero_h1")}</h1>
