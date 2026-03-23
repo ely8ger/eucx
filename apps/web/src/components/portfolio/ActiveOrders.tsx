@@ -9,10 +9,12 @@ import { EmptyState }                 from "@/components/portfolio/EmptyState";
 import { useActiveOrdersQuery, useCancelOrder } from "@/hooks/usePortfolio";
 import { DEMO_ORDERS } from "@/components/portfolio/demoData";
 import { useToast }                   from "@/components/ui/toast";
+import { useI18n }                    from "@/lib/i18n/context";
 import type { PortfolioOrder }        from "@/hooks/usePortfolio";
 
 const BLUE = "#154194";
 const RED  = "#dc2626";
+const LOCALE_BCP: Record<string, string> = { de: "de-DE", en: "en-GB", fr: "fr-FR", es: "es-ES", pl: "pl-PL", ru: "ru-RU" };
 
 function OrderRow({
   order, onCancelRequest, confirmId, onCancelConfirm, onCancelAbort, isCancelling,
@@ -21,6 +23,9 @@ function OrderRow({
   confirmId: string | null; onCancelConfirm: (id: string) => void;
   onCancelAbort: () => void; isCancelling: boolean;
 }) {
+  const { t, locale } = useI18n();
+  const bcp = LOCALE_BCP[locale] ?? "de-DE";
+
   const isBuy     = order.direction === "BUY";
   const isConfirm = confirmId === order.id;
   const isPartial = order.status === "PARTIALLY_FILLED";
@@ -28,8 +33,8 @@ function OrderRow({
   const fmtPrice  = new Decimal(order.pricePerUnit).toFixed(2);
   const fmtQty    = new Decimal(order.quantity).toFixed(0);
   const fmtFilled = new Decimal(order.filledQuantity).toFixed(0);
-  const fmtTotal  = new Decimal(order.totalValue).toNumber().toLocaleString("de-DE", { maximumFractionDigits: 0 });
-  const fmtTime   = new Date(order.createdAt).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  const fmtTotal  = new Decimal(order.totalValue).toNumber().toLocaleString(bcp, { maximumFractionDigits: 0 });
+  const fmtTime   = new Date(order.createdAt).toLocaleString(bcp, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 
   return (
     <tr style={{ borderBottom: "1px solid #f7f7f7" }}
@@ -38,7 +43,7 @@ function OrderRow({
       <td style={{ padding: "10px 16px", fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: "#888", whiteSpace: "nowrap" }}>{fmtTime}</td>
       <td style={{ padding: "10px 16px" }}>
         <span style={{ display: "inline-block", fontSize: 11, fontWeight: 700, color: isBuy ? "#166534" : RED, backgroundColor: isBuy ? "#f0fdf4" : "#fff1f1", padding: "2px 8px" }}>
-          {isBuy ? "KAUF" : "VERK."}
+          {isBuy ? t("portfolio_dir_buy") : t("portfolio_dir_sell_short")}
         </span>
       </td>
       <td style={{ padding: "10px 16px", fontFamily: "'IBM Plex Mono', monospace", fontSize: 13, fontWeight: 600, color: BLUE }}>
@@ -52,26 +57,26 @@ function OrderRow({
               <div style={{ height: "100%", backgroundColor: BLUE, width: `${order.filledPct}%` }} />
             </div>
           )}
-          {isPartial && <span style={{ fontSize: 10, fontWeight: 600, color: "#92400e", backgroundColor: "#fffbeb", padding: "1px 6px" }}>Teil</span>}
+          {isPartial && <span style={{ fontSize: 10, fontWeight: 600, color: "#92400e", backgroundColor: "#fffbeb", padding: "1px 6px" }}>{t("portfolio_status_partial")}</span>}
         </div>
       </td>
       <td style={{ padding: "10px 16px", fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: "#505050" }}>{fmtTotal} €</td>
       <td style={{ padding: "10px 16px" }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: "#166534", backgroundColor: "#f0fdf4", padding: "2px 8px" }}>Aktiv</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: "#166534", backgroundColor: "#f0fdf4", padding: "2px 8px" }}>{t("portfolio_status_active")}</span>
       </td>
       <td style={{ padding: "10px 16px", textAlign: "right" }}>
         {isConfirm ? (
           <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end" }}>
-            <span style={{ fontSize: 11, color: "#888" }}>Sicher?</span>
-            <Button variant="danger" size="sm" loading={isCancelling} onClick={() => onCancelConfirm(order.id)}>Ja, stornieren</Button>
-            <Button variant="ghost" size="sm" onClick={onCancelAbort} disabled={isCancelling}>Nein</Button>
+            <span style={{ fontSize: 11, color: "#888" }}>{t("portfolio_cancel_confirm")}</span>
+            <Button variant="danger" size="sm" loading={isCancelling} onClick={() => onCancelConfirm(order.id)}>{t("portfolio_cancel_yes")}</Button>
+            <Button variant="ghost" size="sm" onClick={onCancelAbort} disabled={isCancelling}>{t("portfolio_cancel_no")}</Button>
           </div>
         ) : (
           <button onClick={() => onCancelRequest(order.id)}
             style={{ fontSize: 12, color: "#aaa", background: "none", border: "none", cursor: "pointer" }}
             onMouseEnter={e => (e.currentTarget.style.color = RED)}
             onMouseLeave={e => (e.currentTarget.style.color = "#aaa")}>
-            Stornieren
+            {t("portfolio_cancel_btn")}
           </button>
         )}
       </td>
@@ -92,6 +97,7 @@ function SkeletonRow() {
 }
 
 export function ActiveOrders() {
+  const { t }                                   = useI18n();
   const toast                                   = useToast();
   const { data: rawOrders, isLoading, isFetching } = useActiveOrdersQuery();
   const orders = rawOrders ?? DEMO_ORDERS;
@@ -104,16 +110,16 @@ export function ActiveOrders() {
     try {
       await cancelMutation.mutateAsync(id);
       setConfirmId(null);
-      toast.success("Auftrag storniert", "Erfolgreich zurückgezogen.");
+      toast.success(t("portfolio_cancelled_success"), t("portfolio_cancelled_success_desc"));
     } catch (err) {
-      toast.error("Stornierung fehlgeschlagen", err instanceof Error ? err.message : "Fehler");
+      toast.error(t("portfolio_cancel_failed"), err instanceof Error ? err.message : "Fehler");
       setConfirmId(null);
     }
-  }, [cancelMutation, toast]);
+  }, [cancelMutation, toast, t]);
 
   const header = (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-      <CardTitle>Offene Aufträge</CardTitle>
+      <CardTitle>{t("portfolio_orders_title")}</CardTitle>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         {isFetching && !isLoading && <span style={{ fontSize: 12, color: "#aaa" }}>↺</span>}
         {orders.length > 0 && (
@@ -129,7 +135,7 @@ export function ActiveOrders() {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ backgroundColor: "#fafafa", borderBottom: "1px solid #f0f0f0" }}>
-              {["Zeit", "Richt.", "Preis", "Menge / Ausgeführt", "Wert", "Status", ""].map((h, i) => (
+              {[t("portfolio_col_time"), t("portfolio_col_direction_short"), t("portfolio_col_price"), t("portfolio_col_filled"), t("portfolio_col_value"), "Status", ""].map((h, i) => (
                 <th key={i} style={{ padding: "10px 16px", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "#888", textAlign: "left" }}>{h}</th>
               ))}
             </tr>
@@ -138,8 +144,8 @@ export function ActiveOrders() {
             {isLoading && Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={i} />)}
             {!isLoading && orders.length === 0 && (
               <tr><td colSpan={7}>
-                <EmptyState icon="◷" title="Keine offenen Aufträge" description="Alle Aufträge wurden ausgeführt oder storniert."
-                  action={<Link href="/trading"><Button variant="outline" size="sm">Zum Handelsraum</Button></Link>} size="md" />
+                <EmptyState icon="◷" title={t("portfolio_orders_empty_title")} description={t("portfolio_orders_empty_desc")}
+                  action={<Link href="/trading"><Button variant="outline" size="sm">{t("portfolio_goto_trading")}</Button></Link>} size="md" />
               </td></tr>
             )}
             {!isLoading && orders.map((order) => (

@@ -3,17 +3,14 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import Decimal from "decimal.js";
 import { useBalanceQuery } from "@/hooks/usePortfolio";
+import { useI18n }         from "@/lib/i18n/context";
 import { DEMO_WALLET } from "@/components/portfolio/demoData";
 
 const BLUE   = "#154194";
 const AMBER  = "#d97706";
-const SLATE  = "#e2e8f0";
 const MONO   = "'IBM Plex Mono', monospace";
 const SANS   = "'IBM Plex Sans', Arial, sans-serif";
-
-function fmt(d: InstanceType<typeof Decimal>) {
-  return d.toNumber().toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
+const LOCALE_BCP: Record<string, string> = { de: "de-DE", en: "en-GB", fr: "fr-FR", es: "es-ES", pl: "pl-PL", ru: "ru-RU" };
 
 interface TooltipProps {
   active?: boolean;
@@ -21,6 +18,9 @@ interface TooltipProps {
 }
 
 function CustomTooltip({ active, payload }: TooltipProps) {
+  const { locale } = useI18n();
+  const bcp = LOCALE_BCP[locale] ?? "de-DE";
+
   if (!active || !payload?.length) return null;
   const p = payload[0];
   if (!p) return null;
@@ -28,7 +28,7 @@ function CustomTooltip({ active, payload }: TooltipProps) {
     <div style={{ backgroundColor: "#fff", border: "1px solid #e8e8e8", padding: "8px 12px", fontFamily: SANS, boxShadow: "0 4px 12px rgba(0,0,0,.1)" }}>
       <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: "#888", textTransform: "uppercase", letterSpacing: "0.08em" }}>{p.name}</p>
       <p style={{ margin: "4px 0 0", fontSize: 14, fontWeight: 600, color: "#0d1b2a", fontFamily: MONO }}>
-        {p.value.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
+        {p.value.toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
       </p>
       <p style={{ margin: "2px 0 0", fontSize: 11, color: "#aaa", fontFamily: MONO }}>{p.payload.pct} %</p>
     </div>
@@ -36,6 +36,8 @@ function CustomTooltip({ active, payload }: TooltipProps) {
 }
 
 export function PortfolioAllocationChart() {
+  const { t, locale } = useI18n();
+  const bcp = LOCALE_BCP[locale] ?? "de-DE";
   const { data, isLoading } = useBalanceQuery();
 
   if (isLoading) {
@@ -55,12 +57,15 @@ export function PortfolioAllocationChart() {
 
   if (total.isZero()) return null;
 
+  const fmt = (d: InstanceType<typeof Decimal>) =>
+    d.toNumber().toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
   const availPct   = available.div(total).times(100).toDecimalPlaces(1).toNumber();
   const reservePct = reserved.div(total).times(100).toDecimalPlaces(1).toNumber();
 
   const chartData = [
-    { name: "Verfügbar",   value: available.toNumber(),  pct: availPct,   color: BLUE  },
-    { name: "Reserviert",  value: reserved.toNumber(),   pct: reservePct, color: AMBER },
+    { name: t("portfolio_available"), value: available.toNumber(), pct: availPct,   color: BLUE  },
+    { name: t("portfolio_reserved"),  value: reserved.toNumber(),  pct: reservePct, color: AMBER },
   ];
 
   return (
@@ -93,7 +98,7 @@ export function PortfolioAllocationChart() {
           transform: "translate(-50%, -50%)",
           textAlign: "center", pointerEvents: "none",
         }}>
-          <p style={{ fontSize: 10, color: "#aaa", margin: 0, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>Gesamt</p>
+          <p style={{ fontSize: 10, color: "#aaa", margin: 0, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>{t("portfolio_total")}</p>
           <p style={{ fontSize: 16, fontWeight: 600, color: "#0d1b2a", margin: "4px 0 0", fontFamily: MONO, lineHeight: 1 }}>
             {fmt(total)}
           </p>
@@ -111,7 +116,7 @@ export function PortfolioAllocationChart() {
             </div>
             <div style={{ textAlign: "right" }}>
               <span style={{ fontSize: 12, fontWeight: 600, color: "#0d1b2a", fontFamily: MONO }}>
-                {d.value.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
+                {d.value.toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
               </span>
               <span style={{ fontSize: 11, color: "#aaa", marginLeft: 6, fontFamily: MONO }}>{d.pct} %</span>
             </div>
@@ -120,7 +125,7 @@ export function PortfolioAllocationChart() {
         {/* Divider */}
         <div style={{ height: 1, backgroundColor: "#f0f0f0", margin: "4px 0" }} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 11, color: "#aaa", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>Gesamt</span>
+          <span style={{ fontSize: 11, color: "#aaa", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("portfolio_total")}</span>
           <span style={{ fontSize: 13, fontWeight: 700, color: BLUE, fontFamily: MONO }}>
             {fmt(total)} €
           </span>
