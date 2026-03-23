@@ -30,11 +30,11 @@ const CATEGORIES = [
 ] as const;
 
 const ACTIVE_SESSIONS = [
-  { id: "247", name: "Bewehrungsstahl A1 Ø12mm", catKey: "cat_badge_metalle", time: "14:00–16:30", orders: 34, volume: "420 t",   status: "OFFEN"       },
-  { id: "248", name: "Kupfer Cu-ETP Walzdraht",  catKey: "cat_badge_metalle", time: "14:00–16:30", orders: 18, volume: "85 t",    status: "OFFEN"       },
-  { id: "249", name: "Weizenmehl Type 550",       catKey: "cat_badge_agrar",   time: "10:00–12:00", orders: 22, volume: "1.200 t", status: "NUR_VERKAUF" },
-  { id: "250", name: "Fichtenstammholz I/II",     catKey: "cat_badge_holz",    time: "09:00–11:00", orders: 11, volume: "340 m³",  status: "OFFEN"       },
-  { id: "251", name: "Aluminiumschrott 6061",     catKey: "cat_badge_schrott", time: "13:00–15:00", orders:  9, volume: "60 t",    status: "OFFEN"       },
+  { id: "247", nameKey: "session_bewehrungsstahl", catKey: "cat_badge_metalle", time: "14:00–16:30", orders: 34, volume: "420 t",   status: "OFFEN"       },
+  { id: "248", nameKey: "session_kupfer_walzdraht",catKey: "cat_badge_metalle", time: "14:00–16:30", orders: 18, volume: "85 t",    status: "OFFEN"       },
+  { id: "249", nameKey: "session_weizenmehl",      catKey: "cat_badge_agrar",   time: "10:00–12:00", orders: 22, volume: "1.200 t", status: "NUR_VERKAUF" },
+  { id: "250", nameKey: "session_fichtenstammholz",catKey: "cat_badge_holz",    time: "09:00–11:00", orders: 11, volume: "340 m³",  status: "OFFEN"       },
+  { id: "251", nameKey: "session_aluminiumschrott",catKey: "cat_badge_schrott", time: "13:00–15:00", orders:  9, volume: "60 t",    status: "OFFEN"       },
 ];
 
 /* ─── Sub-components ─────────────────────────────────────────────────── */
@@ -284,7 +284,7 @@ export default function DashboardPage() {
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
 
                     <td style={{ padding: "12px 16px" }}>
-                      <p style={{ fontSize: 13, fontWeight: 500, color: "#0d1b2a", margin: 0 }}>{s.name}</p>
+                      <p style={{ fontSize: 13, fontWeight: 500, color: "#0d1b2a", margin: 0 }}>{t(s.nameKey as any)}</p>
                       <p style={{ fontSize: 10, color: "#bbb", marginTop: 2, fontFamily: MONO }}>SIT-{s.id}</p>
                     </td>
 
