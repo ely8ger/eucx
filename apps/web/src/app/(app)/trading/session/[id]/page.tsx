@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { useI18n } from "@/lib/i18n/context";
 
 interface OrderEntry {
   id: string; price: number; qty: number; unit: string;
@@ -48,6 +49,7 @@ const MSGS = [
 
 export default function TradingSessionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const { t } = useI18n();
   const [msg, setMsg] = useState("");
 
   const bestSell = Math.min(...SELL.map((o) => o.price));
@@ -61,10 +63,10 @@ export default function TradingSessionPage({ params }: { params: Promise<{ id: s
       <div className="flex items-center gap-2 text-sm text-gray-500">
         <Link href="/trading" className="flex items-center gap-1.5 hover:text-gray-900 transition-colors">
           <ArrowLeft size={14} />
-          Handelssitzungen
+          {t("trading_title")}
         </Link>
         <span>/</span>
-        <span className="text-gray-900 font-medium">Sitzung #{id}</span>
+        <span className="text-gray-900 font-medium">{t("trading_session_nr")} #{id}</span>
       </div>
 
       {/* Session Header Card */}
@@ -84,7 +86,7 @@ export default function TradingSessionPage({ params }: { params: Promise<{ id: s
               <div className="flex items-center gap-1.5 text-sm text-gray-500 bg-gray-50 border border-gray-200 px-3 py-1.5">
                 <Clock size={14} />
                 <span className="font-mono font-medium text-gray-900">02:28:14</span>
-                <span>verbleibend</span>
+                <span>{t("trading_remaining")}</span>
               </div>
               <Link href="/orders/new" style={{
                 display: "inline-flex", alignItems: "center", gap: 6,
@@ -92,7 +94,7 @@ export default function TradingSessionPage({ params }: { params: Promise<{ id: s
                 backgroundColor: "#154194", color: "#fff", fontSize: 13, fontWeight: 700,
                 textDecoration: "none", letterSpacing: "0.02em", whiteSpace: "nowrap",
               }}>
-                + Auftrag einreichen
+                {t("btn_submit_order")}
               </Link>
             </div>
           </div>
@@ -102,11 +104,11 @@ export default function TradingSessionPage({ params }: { params: Promise<{ id: s
           {/* KPI Bar */}
           <div className="grid grid-cols-5 gap-4">
             {[
-              { label: "Bestes Angebot",   value: `${bestSell.toLocaleString("de-DE")} €/t`,          cls: "text-red-500"     },
-              { label: "Bestes Gebot",     value: `${bestBuy.toLocaleString("de-DE")} €/t`,            cls: "text-emerald-600" },
-              { label: "Spread",           value: `${spread.toFixed(0)} €/t`,                          cls: "text-gray-700"    },
-              { label: "Abschlüsse",       value: `${DEALS.length}`,                                   cls: "text-gray-700"    },
-              { label: "Umsatz",           value: `€ ${(totalVol / 1000).toFixed(0)}k`,                cls: "text-gray-700"    },
+              { label: t("trading_best_offer"), value: `${bestSell.toLocaleString("de-DE")} €/t`, cls: "text-red-500"     },
+              { label: t("trading_best_bid"),   value: `${bestBuy.toLocaleString("de-DE")} €/t`,  cls: "text-emerald-600" },
+              { label: t("trading_spread"),     value: `${spread.toFixed(0)} €/t`,                cls: "text-gray-700"    },
+              { label: t("trading_deals"),      value: `${DEALS.length}`,                         cls: "text-gray-700"    },
+              { label: t("trading_volume"),     value: `€ ${(totalVol / 1000).toFixed(0)}k`,      cls: "text-gray-700"    },
             ].map((k) => (
               <div key={k.label}>
                 <p className="text-xs text-gray-400 uppercase tracking-wider mb-0.5">{k.label}</p>
@@ -122,11 +124,11 @@ export default function TradingSessionPage({ params }: { params: Promise<{ id: s
         <TabsList className="h-10 bg-gray-100/70">
           <TabsTrigger value="trading" className="gap-1.5 text-sm">
             <Activity size={14} />
-            Handelssitzung
+            {t("trading_order_book")}
           </TabsTrigger>
           <TabsTrigger value="deals" className="gap-1.5 text-sm">
             <CheckCircle2 size={14} />
-            Abschlüsse ({DEALS.length})
+            {t("trading_deals_tab")} ({DEALS.length})
           </TabsTrigger>
           <TabsTrigger value="deposit" className="gap-1.5 text-sm">
             <Banknote size={14} />
@@ -134,7 +136,7 @@ export default function TradingSessionPage({ params }: { params: Promise<{ id: s
           </TabsTrigger>
           <TabsTrigger value="messages" className="gap-1.5 text-sm">
             <MessageSquare size={14} />
-            Nachrichten ({MSGS.length})
+            {t("trading_messages")} ({MSGS.length})
           </TabsTrigger>
         </TabsList>
 
@@ -146,7 +148,7 @@ export default function TradingSessionPage({ params }: { params: Promise<{ id: s
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold text-red-500">
                   <TrendingDown size={15} />
-                  Verkaufsaufträge ({SELL.length})
+                  {t("trading_sell_orders")} ({SELL.length})
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-0">

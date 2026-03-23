@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { EucxLogo } from "@/components/logo/EucxLogo";
+import { useI18n } from "@/lib/i18n/context";
 
 const BLUE = "#154194";
 const F    = "'IBM Plex Sans', Arial, sans-serif";
@@ -75,24 +76,28 @@ function IconLochbleche()    {
   </svg>;
 }
 
-const FORMS = [
-  { id:"rundprofile",     label:"Rund",          Icon: IconRund },
-  { id:"vierkantprofile", label:"Vierkant",       Icon: IconVierkant },
-  { id:"sechskantprofile",label:"Sechskant",      Icon: IconSechskant },
-  { id:"flachprofile",    label:"Flach",          Icon: IconFlach },
-  { id:"rundrohre",       label:"Rundrohre",      Icon: IconRundrohre },
-  { id:"vierkantrohre",   label:"Vierkantrohre",  Icon: IconVierkantrohre },
-  { id:"rohrzubehoer",    label:"Rohrzubehör",    Icon: IconRohrzubehoer },
-  { id:"winkelprofile",   label:"Winkel",         Icon: IconWinkel },
-  { id:"u-profile",       label:"U-Profile",      Icon: IconUProfile },
-  { id:"t-profile",       label:"T-Profile",      Icon: IconTProfile },
-  { id:"traeger",         label:"Träger",         Icon: IconTraeger },
-  { id:"sonderprofile",   label:"Sonderprofile",  Icon: IconSonderprofile },
-  { id:"bleche",          label:"Bleche",         Icon: IconBleche },
-  { id:"lochbleche",      label:"Lochbleche",     Icon: IconLochbleche },
+const FORM_DEFS = [
+  { id:"rundprofile",     labelKey:"form_rund",         Icon: IconRund },
+  { id:"vierkantprofile", labelKey:"form_vierkant",      Icon: IconVierkant },
+  { id:"sechskantprofile",labelKey:"form_sechskant",     Icon: IconSechskant },
+  { id:"flachprofile",    labelKey:"form_flach",         Icon: IconFlach },
+  { id:"rundrohre",       labelKey:"form_rundrohre",     Icon: IconRundrohre },
+  { id:"vierkantrohre",   labelKey:"form_vierkantrohre", Icon: IconVierkantrohre },
+  { id:"rohrzubehoer",    labelKey:"form_rohrzubehoer",  Icon: IconRohrzubehoer },
+  { id:"winkelprofile",   labelKey:"form_winkel",        Icon: IconWinkel },
+  { id:"u-profile",       labelKey:"form_u_profile",     Icon: IconUProfile },
+  { id:"t-profile",       labelKey:"form_t_profile",     Icon: IconTProfile },
+  { id:"traeger",         labelKey:"form_traeger",       Icon: IconTraeger },
+  { id:"sonderprofile",   labelKey:"form_sonderprofile", Icon: IconSonderprofile },
+  { id:"bleche",          labelKey:"form_bleche",        Icon: IconBleche },
+  { id:"lochbleche",      labelKey:"form_lochbleche",    Icon: IconLochbleche },
 ];
 
 export default function MetallePage() {
+  const { t } = useI18n();
+
+  const FORMS = FORM_DEFS.map(f => ({ ...f, label: t(f.labelKey as any) }));
+
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#f4f6f9", fontFamily: F }}>
 
@@ -103,7 +108,7 @@ export default function MetallePage() {
             <EucxLogo variant="dark" size="md" />
           </Link>
           <Link href="/trading" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>
-            Zum Handelsraum →
+            {t("btn_trading_room")}
           </Link>
         </div>
       </header>
@@ -111,9 +116,9 @@ export default function MetallePage() {
       {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 32px 0" }}>
         <div style={{ display: "flex", gap: 6, fontSize: 12, color: "#888" }}>
-          <Link href="/"        style={{ color: "#888", textDecoration: "none" }}>Startseite</Link>
+          <Link href="/"        style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_home")}</Link>
           <span>›</span>
-          <span style={{ color: "#333" }}>Metallprodukte</span>
+          <span style={{ color: "#333" }}>{t("metalle_title")}</span>
         </div>
       </div>
 
@@ -121,14 +126,14 @@ export default function MetallePage() {
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 32px 0" }}>
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 16, paddingBottom: 24, borderBottom: "1px solid #dde2ea" }}>
           <div>
-            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: BLUE, display: "block", marginBottom: 8 }}>METALLE · STAHL</span>
-            <h1 style={{ fontSize: 28, fontWeight: 300, color: "#0d1b2a", margin: 0, lineHeight: 1.2 }}>Formauswahl</h1>
-            <p style={{ fontSize: 14, color: "#666", marginTop: 8 }}>14 Produktkategorien · Professioneller Stahlhandel auf EUCX</p>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: BLUE, display: "block", marginBottom: 8 }}>{t("metalle_badge")}</span>
+            <h1 style={{ fontSize: 28, fontWeight: 300, color: "#0d1b2a", margin: 0, lineHeight: 1.2 }}>{t("metalle_heading")}</h1>
+            <p style={{ fontSize: 14, color: "#666", marginTop: 8 }}>{t("metalle_subtitle")}</p>
           </div>
           <div style={{ display: "flex", gap: 24, fontSize: 13, color: "#666" }}>
-            <span>✓ BaFin-reguliert</span>
-            <span>✓ EN-Normen</span>
-            <span>✓ Sofortige Abwicklung</span>
+            <span>{t("badge_bafin")}</span>
+            <span>{t("badge_en_normen")}</span>
+            <span>{t("badge_sofort")}</span>
           </div>
         </div>
       </div>

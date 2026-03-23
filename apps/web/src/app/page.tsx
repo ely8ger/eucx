@@ -128,7 +128,7 @@ export default function HomePage() {
             </span>
             <span style={{ width: 1, height: 14, backgroundColor: "rgba(255,255,255,.15)", flexShrink: 0 }} />
             <span style={{ fontSize: 12, color: "rgba(255,255,255,.45)", letterSpacing: "0.02em" }}>
-              Handel nur in diesem Zeitfenster möglich
+              {t("hero_trading_hours_hint")}
             </span>
           </div>
 
@@ -215,7 +215,7 @@ export default function HomePage() {
                   ))}
                 </ul>
                 <div style={{ marginTop: 20, fontSize: 13, color: "#154194", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
-                  Katalog öffnen <ArrowRight size={14} />
+                  {t("btn_catalog_open")}
                 </div>
               </div>
             </Link>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { EucxLogo } from "@/components/logo/EucxLogo";
 import { FERTILIZER_CATEGORIES, getFertiProduct, getFertiCategory } from "@/lib/fertilizer/data";
+import { useI18n } from "@/lib/i18n/context";
 
 const BLUE = "#154194";
 const F    = "'IBM Plex Sans', Arial, sans-serif";
@@ -101,6 +102,7 @@ function ProductThumbLg({ physForm, id }: { physForm: string[]; id: string }) {
 // ─── Seite ────────────────────────────────────────────────────────────────────
 
 export default function ProduktPage() {
+  const { t } = useI18n();
   const params    = useParams();
   const katId     = typeof params.kategorie === "string" ? params.kategorie : "";
   const produktId = typeof params.produkt   === "string" ? params.produkt   : "";
@@ -110,7 +112,7 @@ export default function ProduktPage() {
   if (!produkt || !kategorie) {
     return (
       <div style={{ fontFamily: F, padding: 64, textAlign: "center", color: "#666" }}>
-        Produkt nicht gefunden. <Link href="/duenger" style={{ color: BLUE }}>Zurück zur Übersicht</Link>
+        {t("lbl_no_products")} <Link href="/duenger" style={{ color: BLUE }}>Zurück zur Übersicht</Link>
       </div>
     );
   }
@@ -125,7 +127,7 @@ export default function ProduktPage() {
             <EucxLogo variant="dark" size="md" />
           </Link>
           <Link href="/trading" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>
-            Zum Handelsraum →
+            {t("btn_trading_room")}
           </Link>
         </div>
       </header>
@@ -133,9 +135,9 @@ export default function ProduktPage() {
       {/* ── Breadcrumb ──────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 32px 0" }}>
         <div style={{ display: "flex", gap: 6, fontSize: 12, color: "#888", flexWrap: "wrap" }}>
-          <Link href="/"                          style={{ color: "#888", textDecoration: "none" }}>Startseite</Link>
+          <Link href="/"                          style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_home")}</Link>
           <span>›</span>
-          <Link href="/duenger"                   style={{ color: "#888", textDecoration: "none" }}>Dünger & Agrarchemie</Link>
+          <Link href="/duenger"                   style={{ color: "#888", textDecoration: "none" }}>{t("duenger_title")}</Link>
           <span>›</span>
           <Link href={`/duenger/${katId}`}        style={{ color: "#888", textDecoration: "none" }}>{kategorie.label}</Link>
           <span>›</span>
@@ -167,7 +169,7 @@ export default function ProduktPage() {
             onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#0f3070"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = BLUE; }}
             >
-              Jetzt handeln →
+              {t("btn_trade_now")}
             </Link>
           </div>
 
@@ -175,7 +177,7 @@ export default function ProduktPage() {
           <div style={{ backgroundColor: "#fff", border: "1px solid #dde2ea" }}>
             <div style={{ padding: "16px 24px", borderBottom: "1px solid #dde2ea", backgroundColor: "#f8f9fb" }}>
               <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#555" }}>
-                Technisches Datenblatt
+                {t("duenger_tech_datenblatt")}
               </span>
             </div>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -206,7 +208,7 @@ export default function ProduktPage() {
         <div style={{ backgroundColor: "#fff", border: "1px solid #dde2ea", marginBottom: 24 }}>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #dde2ea", backgroundColor: "#f8f9fb" }}>
             <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#555" }}>
-              Produktbeschreibung
+              {t("duenger_beschreibung")}
             </span>
           </div>
           <div style={{ padding: "24px" }}>
@@ -225,7 +227,7 @@ export default function ProduktPage() {
         <div style={{ backgroundColor: "#fff", border: "1px solid #dde2ea", marginBottom: 24 }}>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #dde2ea", backgroundColor: "#f8f9fb" }}>
             <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#555" }}>
-              Verpackung
+              {t("duenger_verpackung_h")}
             </span>
           </div>
           <div style={{ padding: "20px 24px", display: "flex", gap: 16, flexWrap: "wrap" }}>
@@ -249,7 +251,7 @@ export default function ProduktPage() {
         <div style={{ backgroundColor: "#fff", border: "1px solid #dde2ea", marginBottom: 40 }}>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #dde2ea", backgroundColor: "#f8f9fb" }}>
             <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#555" }}>
-              Normen & Zertifizierungen
+              {t("duenger_normen_h")}
             </span>
           </div>
           <div style={{ padding: "20px 24px", display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -267,7 +269,7 @@ export default function ProduktPage() {
           fontSize: 13, color: BLUE, textDecoration: "none", fontWeight: 500,
           display: "inline-flex", alignItems: "center", gap: 6,
         }}>
-          ← Zurück zu {kategorie.label}
+          {t("duenger_zurueck")} {kategorie.label}
         </Link>
       </div>
     </div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useMemo } from "react";
 import { EucxLogo } from "@/components/logo/EucxLogo";
+import { useI18n } from "@/lib/i18n/context";
 import {
   SIDEBAR,
   KATALOG,
@@ -90,6 +91,7 @@ const EMPTY_SEARCH: SearchState = {
 const H = 36; // einheitliche Höhe aller Felder
 
 function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void }) {
+  const { t } = useI18n();
   const onChange = (key: keyof SearchState) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       set({ ...s, [key]: e.target.value });
@@ -110,21 +112,21 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
 
         {/* Freitext */}
         <div style={{ flex: "1 1 160px", minWidth: 0 }}>
-          <label style={LBL}>Suche</label>
+          <label style={LBL}>{t("katalog_search_label")}</label>
           <div style={{ position: "relative" }}>
             <svg style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}
               width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth={2.2}>
               <circle cx={11} cy={11} r={8}/><line x1={21} y1={21} x2={16.65} y2={16.65}/>
             </svg>
             <input value={s.text} onChange={onChange("text")}
-              placeholder="z.B. Rohr, IPE 200, Blech, S355..."
+              placeholder={t("katalog_search_ph")}
               style={{ ...fieldStyle, paddingLeft: 32 }} />
           </div>
         </div>
 
         {/* Ø / Maß */}
         <div style={{ flex: "1 1 110px", minWidth: 0 }}>
-          <label style={LBL}>Ø / Maß mm</label>
+          <label style={LBL}>{t("katalog_mass_label")}</label>
           <input value={s.dim} onChange={onChange("dim")}
             type="text" inputMode="numeric" placeholder="z.B. 60"
             style={fieldStyle} />
@@ -132,7 +134,7 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
 
         {/* Breite */}
         <div style={{ flex: "1 1 110px", minWidth: 0 }}>
-          <label style={LBL}>Breite mm</label>
+          <label style={LBL}>{t("katalog_breite_label")}</label>
           <input value={s.breite} onChange={onChange("breite")}
             type="text" inputMode="numeric" placeholder="z.B. 40"
             style={fieldStyle} />
@@ -140,10 +142,10 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
 
         {/* Länge */}
         <div style={{ flex: "1 1 110px", minWidth: 0 }}>
-          <label style={LBL}>Länge</label>
+          <label style={LBL}>{t("katalog_laenge_label")}</label>
           <div style={{ position: "relative" }}>
             <select value={s.laenge} onChange={onChange("laenge")} style={{ ...fieldStyle, paddingRight: 28 }}>
-              <option value="">Alle</option>
+              <option value="">{t("lbl_all")}</option>
               {ALLE_LAENGEN.map(l => <option key={l} value={l}>{formatLaenge(l)}</option>)}
             </select>
             <Chevron />
@@ -152,10 +154,10 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
 
         {/* Werkstoff */}
         <div style={{ flex: "1 1 110px", minWidth: 0 }}>
-          <label style={LBL}>Werkstoff</label>
+          <label style={LBL}>{t("filter_werkstoff")}</label>
           <div style={{ position: "relative" }}>
             <select value={s.werkstoff} onChange={onChange("werkstoff")} style={{ ...fieldStyle, paddingRight: 28 }}>
-              <option value="">Alle</option>
+              <option value="">{t("lbl_all")}</option>
               {ALLE_WERKSTOFFE.map(w => <option key={w} value={w}>{w}</option>)}
             </select>
             <Chevron />
@@ -164,10 +166,10 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
 
         {/* Oberfläche */}
         <div style={{ flex: "1 1 110px", minWidth: 0 }}>
-          <label style={LBL}>Oberfläche</label>
+          <label style={LBL}>{t("filter_oberflaeche")}</label>
           <div style={{ position: "relative" }}>
             <select value={s.oberflaeche} onChange={onChange("oberflaeche")} style={{ ...fieldStyle, paddingRight: 28 }}>
-              <option value="">Alle</option>
+              <option value="">{t("lbl_all")}</option>
               {ALLE_OBERFL.map(o => <option key={o} value={o}>{o}</option>)}
             </select>
             <Chevron />
@@ -183,7 +185,7 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
             border: `1px solid ${BORDER}`, whiteSpace: "nowrap", display: "flex",
             alignItems: "center", gap: 6,
           }}>
-            <span style={{ fontSize: 14, lineHeight: 1 }}>×</span> Zurücksetzen
+            <span style={{ fontSize: 14, lineHeight: 1 }}>×</span> {t("btn_reset_filters")}
           </button>
         </div>
       </div>
@@ -206,6 +208,8 @@ export default function KatalogPage() {
   const params = useParams();
   const katId  = typeof params.kategorie === "string" ? params.kategorie : "";
   const kat    = getKategorie(katId);
+
+  const { t } = useI18n();
 
   const [search,      setSearch]      = useState<SearchState>(EMPTY_SEARCH);
   const [filterDim,   setFilterDim]   = useState<number | null>(null);
@@ -270,10 +274,10 @@ export default function KatalogPage() {
             <EucxLogo variant="dark" size="md" />
           </Link>
           <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
-            <Link href="/metalle" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>Metallkatalog</Link>
+            <Link href="/metalle" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>{t("katalog_title")}</Link>
             <Link href="/duenger" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>Dünger & Agrarchemie</Link>
             <Link href="/trading" style={{ fontSize: 13, color: "#fff", textDecoration: "none", backgroundColor: BLUE, padding: "8px 16px", fontWeight: 600 }}>
-              Handelsraum →
+              {t("btn_trading_room")}
             </Link>
           </div>
         </div>
@@ -282,11 +286,11 @@ export default function KatalogPage() {
       {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "12px 24px 0" }}>
         <div style={{ display: "flex", gap: 6, fontSize: 12, color: "#888" }}>
-          <Link href="/"        style={{ color: "#888", textDecoration: "none" }}>Startseite</Link>
+          <Link href="/"        style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_home")}</Link>
           <span>›</span>
-          <Link href="/katalog" style={{ color: "#888", textDecoration: "none" }}>Katalog</Link>
+          <Link href="/katalog" style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_catalog")}</Link>
           {!searchAktiv && kat && <><span>›</span><span style={{ color: "#333" }}>{kat.label}</span></>}
-          {searchAktiv && <><span>›</span><span style={{ color: "#333" }}>Suchergebnisse</span></>}
+          {searchAktiv && <><span>›</span><span style={{ color: "#333" }}>{t("katalog_suchergebnisse")}</span></>}
         </div>
       </div>
 
@@ -314,10 +318,10 @@ export default function KatalogPage() {
           {searchAktiv && (
             <div style={{ backgroundColor: "#fff", border: `1px solid ${BORDER}`, padding: "14px 18px", marginBottom: 10 }}>
               <div style={{ fontSize: 17, fontWeight: 300, color: "#0d1b2a", marginBottom: 3 }}>
-                Suchergebnisse
+                {t("katalog_suchergebnisse")}
               </div>
               <div style={{ fontSize: 12, color: "#666" }}>
-                {globalErgebnisse.length} Artikel in allen Kategorien gefunden
+                {globalErgebnisse.length} {t("katalog_artikel_count")} {t("katalog_in_all")}
               </div>
             </div>
           )}
@@ -328,7 +332,7 @@ export default function KatalogPage() {
               <span style={{ fontSize: 10, fontWeight: 700, color: "#888", marginRight: 4, textTransform: "uppercase", letterSpacing: "0.08em" }}>
                 {dimLabel}
               </span>
-              <Tab aktiv={filterDim === null} onClick={() => setFilterDim(null)}>Alle</Tab>
+              <Tab aktiv={filterDim === null} onClick={() => setFilterDim(null)}>{t("lbl_all")}</Tab>
               {alleDims.map(d => (
                 <Tab key={d} aktiv={filterDim === d} onClick={() => setFilterDim(filterDim === d ? null : d)}>
                   {formatDim(d, dimUnit)}
@@ -343,18 +347,18 @@ export default function KatalogPage() {
               {alleW.length > 1 && (
                 <select value={filterW} onChange={e => setFilterW(e.target.value)}
                   style={{ fontSize: 12, padding: "5px 10px", border: `1px solid ${BORDER}`, fontFamily: F, color: "#333", backgroundColor: "#fafbfc" }}>
-                  <option value="">Alle Werkstoffe</option>
+                  <option value="">{t("lbl_all")}</option>
                   {alleW.map(w => <option key={w} value={w}>{w}</option>)}
                 </select>
               )}
               {alleO.length > 1 && (
                 <select value={filterO} onChange={e => setFilterO(e.target.value)}
                   style={{ fontSize: 12, padding: "5px 10px", border: `1px solid ${BORDER}`, fontFamily: F, color: "#333", backgroundColor: "#fafbfc" }}>
-                  <option value="">Alle Oberflächen</option>
+                  <option value="">{t("lbl_all")}</option>
                   {alleO.map(o => <option key={o} value={o}>{o}</option>)}
                 </select>
               )}
-              <span style={{ fontSize: 12, color: "#888", marginLeft: "auto" }}>{katGefiltert.length} Artikel</span>
+              <span style={{ fontSize: 12, color: "#888", marginLeft: "auto" }}>{katGefiltert.length} {t("katalog_artikel_count")}</span>
             </div>
           )}
 
@@ -363,13 +367,13 @@ export default function KatalogPage() {
             <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
               <thead>
                 <tr style={{ backgroundColor: "#f0f3f8", borderBottom: `2px solid ${BORDER}` }}>
-                  {showKatCol && <th style={TH}>Kategorie</th>}
-                  <th style={TH}>Bezeichnung</th>
-                  <th style={TH}>Werkstoff</th>
-                  <th style={TH}>Norm</th>
-                  <th style={{ ...TH, textAlign: "center" }}>Ø / Maß</th>
-                  {showBreite && <th style={{ ...TH, textAlign: "center" }}>Breite</th>}
-                  <th style={{ ...TH, textAlign: "center" }}>Länge</th>
+                  {showKatCol && <th style={TH}>{t("katalog_col_kat")}</th>}
+                  <th style={TH}>{t("katalog_col_bez")}</th>
+                  <th style={TH}>{t("filter_werkstoff")}</th>
+                  <th style={TH}>{t("katalog_col_norm")}</th>
+                  <th style={{ ...TH, textAlign: "center" }}>{t("katalog_col_mass")}</th>
+                  {showBreite && <th style={{ ...TH, textAlign: "center" }}>{t("katalog_breite_label")}</th>}
+                  <th style={{ ...TH, textAlign: "center" }}>{t("katalog_col_laenge")}</th>
                   <th style={{ ...TH, textAlign: "right" }}>€/kg</th>
                   <th style={{ ...TH, textAlign: "right" }}>€/t</th>
                   <th style={{ ...TH, width: 90 }}></th>
@@ -404,7 +408,7 @@ export default function KatalogPage() {
                       <Link href="/orders/new" style={{ display: "inline-block", fontSize: 12, fontWeight: 600, color: "#fff", backgroundColor: BLUE, padding: "5px 12px", textDecoration: "none" }}
                         onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#0f3070"; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = BLUE; }}>
-                        Handeln →
+                        {t("btn_trade")}
                       </Link>
                     </td>
                   </tr>
@@ -413,7 +417,7 @@ export default function KatalogPage() {
                   <tr>
                     <td colSpan={showKatCol ? (showBreite ? 10 : 9) : (showBreite ? 9 : 8)}
                       style={{ ...TD, textAlign: "center", color: "#888", padding: 40 }}>
-                      Keine Artikel für diese Suche / Filter gefunden.
+                      {t("lbl_no_items")}
                     </td>
                   </tr>
                 )}
@@ -422,7 +426,7 @@ export default function KatalogPage() {
           </div>
 
           <div style={{ fontSize: 11, color: "#999", marginTop: 8 }}>
-            * Richtpreise in EUR ohne MwSt. · Mindestmenge und Lieferbedingungen nach Anfrage · Preisstand {new Date().toLocaleDateString("de-DE")}
+            {t("katalog_preisstand")} {new Date().toLocaleDateString("de-DE")}
           </div>
         </div>
       </div>

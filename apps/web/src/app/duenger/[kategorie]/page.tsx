@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { EucxLogo } from "@/components/logo/EucxLogo";
 import { FERTILIZER_CATEGORIES, getFertiCategory } from "@/lib/fertilizer/data";
+import { useI18n } from "@/lib/i18n/context";
 
 const BLUE = "#154194";
 const F    = "'IBM Plex Sans', Arial, sans-serif";
@@ -131,6 +132,7 @@ function FilterDropdown({ label, options, value, onChange }: {
 }
 
 export default function KategoriePage() {
+  const { t } = useI18n();
   const params     = useParams();
   const katId      = typeof params.kategorie === "string" ? params.kategorie : "";
   const kategorie  = getFertiCategory(katId);
@@ -163,7 +165,7 @@ export default function KategoriePage() {
   if (!kategorie) {
     return (
       <div style={{ fontFamily: F, padding: 64, textAlign: "center", color: "#666" }}>
-        Kategorie nicht gefunden. <Link href="/duenger" style={{ color: BLUE }}>Zurück zur Übersicht</Link>
+        {t("lbl_no_products")} <Link href="/duenger" style={{ color: BLUE }}>Zurück zur Übersicht</Link>
       </div>
     );
   }
@@ -178,7 +180,7 @@ export default function KategoriePage() {
             <EucxLogo variant="dark" size="md" />
           </Link>
           <Link href="/trading" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>
-            Zum Handelsraum →
+            {t("btn_trading_room")}
           </Link>
         </div>
       </header>
@@ -186,9 +188,9 @@ export default function KategoriePage() {
       {/* ── Breadcrumb ──────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 32px 0" }}>
         <div style={{ display: "flex", gap: 6, fontSize: 12, color: "#888" }}>
-          <Link href="/"        style={{ color: "#888", textDecoration: "none" }}>Startseite</Link>
+          <Link href="/"        style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_home")}</Link>
           <span>›</span>
-          <Link href="/duenger" style={{ color: "#888", textDecoration: "none" }}>Dünger & Agrarchemie</Link>
+          <Link href="/duenger" style={{ color: "#888", textDecoration: "none" }}>{t("duenger_title")}</Link>
           <span>›</span>
           <span style={{ color: "#333" }}>{kategorie.label}</span>
         </div>
@@ -196,7 +198,7 @@ export default function KategoriePage() {
 
       {/* ── Seitentitel ─────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "28px 32px 0" }}>
-        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: BLUE, display: "block", marginBottom: 8 }}>DÜNGER · AGRARCHEMIE</span>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: BLUE, display: "block", marginBottom: 8 }}>{t("duenger_badge")}</span>
         <h1 style={{ fontSize: 26, fontWeight: 300, color: "#0d1b2a", margin: "0 0 4px" }}>{kategorie.label}</h1>
         <p style={{ fontSize: 13, color: "#666", margin: 0, maxWidth: 720 }}>{kategorie.description}</p>
       </div>
@@ -205,18 +207,18 @@ export default function KategoriePage() {
       <div style={{ maxWidth: 1200, margin: "16px auto 0", padding: "0 32px" }}>
         <div style={{ backgroundColor: "#fff", border: "1px solid #dde2ea", padding: "16px 20px" }}>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: hasFilters ? 8 : 0 }}>
-            <FilterDropdown label="Anwendung"      options={kategorie.filters.anwendung}      value={filterAnwendung}  onChange={setFilterAnwendung} />
-            <FilterDropdown label="Kulturpflanze"  options={kategorie.filters.kulturpflanze}  value={filterKultur}     onChange={setFilterKultur} />
-            <FilterDropdown label="Physische Form" options={kategorie.filters.physForm}       value={filterPhysForm}   onChange={setFilterPhysForm} />
-            <FilterDropdown label="Verpackung"     options={kategorie.filters.verpackung}     value={filterVerpackung} onChange={setFilterVerpackung} />
-            <FilterDropdown label="Zertifizierung" options={kategorie.filters.zertifizierung} value={filterZert}       onChange={setFilterZert} />
+            <FilterDropdown label={t("filter_anwendung")}      options={kategorie.filters.anwendung}      value={filterAnwendung}  onChange={setFilterAnwendung} />
+            <FilterDropdown label={t("filter_kulturpflanze")}  options={kategorie.filters.kulturpflanze}  value={filterKultur}     onChange={setFilterKultur} />
+            <FilterDropdown label={t("filter_phys_form")}      options={kategorie.filters.physForm}       value={filterPhysForm}   onChange={setFilterPhysForm} />
+            <FilterDropdown label={t("filter_verpackung")}     options={kategorie.filters.verpackung}     value={filterVerpackung} onChange={setFilterVerpackung} />
+            <FilterDropdown label={t("filter_zertifizierung")} options={kategorie.filters.zertifizierung} value={filterZert}       onChange={setFilterZert} />
           </div>
           {hasFilters && (
             <button
               onClick={resetFilters}
               style={{ fontSize: 12, color: BLUE, background: "none", border: "none", cursor: "pointer", fontFamily: F, padding: 0 }}
             >
-              × Alle Filter zurücksetzen
+              {t("btn_reset_filters")}
             </button>
           )}
         </div>
@@ -225,10 +227,10 @@ export default function KategoriePage() {
       {/* ── Ergebnisse ──────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 32px 0" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <span style={{ fontSize: 13, color: "#666" }}>{filtered.length} Produkt{filtered.length !== 1 ? "e" : ""}</span>
+          <span style={{ fontSize: 13, color: "#666" }}>{filtered.length} {filtered.length !== 1 ? "Produkte" : "Produkt"}</span>
           <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#666", cursor: "pointer" }}>
             <input type="checkbox" style={{ accentColor: BLUE }} />
-            Nur ab Lager verfügbare Produkte anzeigen
+            {t("lbl_ab_lager")}
           </label>
         </div>
       </div>
@@ -238,9 +240,9 @@ export default function KategoriePage() {
         <div style={{ backgroundColor: "#fff", border: "1px solid #dde2ea" }}>
           {filtered.length === 0 ? (
             <div style={{ padding: "48px 32px", textAlign: "center", color: "#888" }}>
-              <p style={{ fontSize: 14, marginBottom: 12 }}>Keine Produkte für die gewählten Filter gefunden.</p>
+              <p style={{ fontSize: 14, marginBottom: 12 }}>{t("lbl_no_products")}</p>
               <button onClick={resetFilters} style={{ fontSize: 13, color: BLUE, background: "none", border: "none", cursor: "pointer", fontFamily: F }}>
-                Filter zurücksetzen
+                {t("btn_reset")}
               </button>
             </div>
           ) : (
@@ -305,7 +307,7 @@ export default function KategoriePage() {
                     onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#0f3070"; }}
                     onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = BLUE; }}
                   >
-                    Handeln →
+                    {t("btn_trade")}
                   </Link>
                   <Link
                     href={`/duenger/${katId}/${product.id}`}
@@ -319,7 +321,7 @@ export default function KategoriePage() {
                     onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#eef2fb"; }}
                     onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#fff"; }}
                   >
-                    Mehr Informationen
+                    {t("btn_more_info")}
                   </Link>
                 </div>
               </div>
@@ -329,7 +331,7 @@ export default function KategoriePage() {
 
         {/* ── Andere Kategorien ─────────────────────────────────────────── */}
         <div style={{ marginTop: 40 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "#888", marginBottom: 16 }}>Weitere Kategorien</p>
+          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "#888", marginBottom: 16 }}>{t("duenger_weitere_kat")}</p>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             {FERTILIZER_CATEGORIES.filter(c => c.id !== katId).map(c => (
               <Link key={c.id} href={`/duenger/${c.id}`} style={{

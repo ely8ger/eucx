@@ -8,18 +8,20 @@ import {
 } from "lucide-react";
 import { EucxLogo } from "@/components/logo/EucxLogo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-
-const NAV_LINKS = [
-  { href: "/dashboard", label: "Übersicht",       Icon: LayoutDashboard },
-  { href: "/trading",   label: "Handelssitzung",  Icon: TrendingUp      },
-  { href: "/orders",    label: "Aufträge",         Icon: FileText        },
-  { href: "/portfolio", label: "Portfolio",         Icon: Briefcase       },
-  { href: "/deals",     label: "Abschlüsse",       Icon: CheckSquare     },
-  { href: "/personal",  label: "Mein Bereich",     Icon: User            },
-];
+import { useI18n } from "@/lib/i18n/context";
 
 export function Navbar() {
   const pathname = usePathname();
+  const { t } = useI18n();
+
+  const NAV_LINKS = [
+    { href: "/dashboard", label: t("app_nav_overview"),   Icon: LayoutDashboard },
+    { href: "/trading",   label: t("app_nav_sessions"),   Icon: TrendingUp      },
+    { href: "/orders",    label: t("app_nav_orders"),     Icon: FileText        },
+    { href: "/portfolio", label: t("app_nav_portfolio"),  Icon: Briefcase       },
+    { href: "/deals",     label: t("app_nav_deals"),      Icon: CheckSquare     },
+    { href: "/personal",  label: t("app_nav_personal"),   Icon: User            },
+  ];
 
   return (
     <header className="sticky top-0 z-50" style={{ fontFamily: "'IBM Plex Sans', Arial, sans-serif" }}>
@@ -28,12 +30,12 @@ export function Navbar() {
       <div style={{ backgroundColor: "#1a1a1a" }}>
         <div style={{ maxWidth: 1280, marginLeft: "auto", marginRight: "auto", padding: "0 40px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 36 }}>
           <span className="hidden sm:block text-white/40 text-xs tracking-wide">
-            BaFin-reguliert · Institutionelle Handelsplattform · Frankfurt am Main
+            {t("topbar")}
           </span>
           <div className="flex items-center gap-4 ml-auto">
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-emerald-400" style={{ borderRadius: 0 }} />
-              <span className="text-white/50 text-xs">Börse geöffnet</span>
+              <span className="text-white/50 text-xs">{t("app_exchange_open")}</span>
             </div>
             <div style={{ width: 1, height: 12, backgroundColor: "rgba(255,255,255,.1)" }} />
             <LanguageSwitcher dark />
@@ -44,7 +46,7 @@ export function Navbar() {
               onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,.7)")}
               onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,.4)")}>
               <LogOut size={11} />
-              Abmelden
+              {t("app_logout")}
             </a>
           </div>
         </div>

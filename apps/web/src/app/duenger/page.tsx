@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { EucxLogo } from "@/components/logo/EucxLogo";
 import { FERTILIZER_CATEGORIES } from "@/lib/fertilizer/data";
+import { useI18n } from "@/lib/i18n/context";
 
 const BLUE = "#154194";
 const F    = "'IBM Plex Sans', Arial, sans-serif";
@@ -72,6 +73,7 @@ const ICONS: Record<string, () => React.ReactElement> = {
 };
 
 export default function DuengerPage() {
+  const { t } = useI18n();
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#f4f6f9", fontFamily: F }}>
 
@@ -82,7 +84,7 @@ export default function DuengerPage() {
             <EucxLogo variant="dark" size="md" />
           </Link>
           <Link href="/trading" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>
-            Zum Handelsraum →
+            {t("btn_trading_room")}
           </Link>
         </div>
       </header>
@@ -90,9 +92,9 @@ export default function DuengerPage() {
       {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 32px 0" }}>
         <div style={{ display: "flex", gap: 6, fontSize: 12, color: "#888" }}>
-          <Link href="/"       style={{ color: "#888", textDecoration: "none" }}>Startseite</Link>
+          <Link href="/"       style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_home")}</Link>
           <span>›</span>
-          <span style={{ color: "#333" }}>Dünger & Agrarchemie</span>
+          <span style={{ color: "#333" }}>{t("duenger_title")}</span>
         </div>
       </div>
 
@@ -100,14 +102,14 @@ export default function DuengerPage() {
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 32px 0" }}>
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 16, paddingBottom: 24, borderBottom: "1px solid #dde2ea" }}>
           <div>
-            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: BLUE, display: "block", marginBottom: 8 }}>DÜNGER · AGRARCHEMIE</span>
-            <h1 style={{ fontSize: 28, fontWeight: 300, color: "#0d1b2a", margin: 0, lineHeight: 1.2 }}>Katalog 2026</h1>
-            <p style={{ fontSize: 14, color: "#666", marginTop: 8 }}>4 Produktkategorien · 10 Produkte · Institutioneller Agrarhandel auf EUCX</p>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: BLUE, display: "block", marginBottom: 8 }}>{t("duenger_badge")}</span>
+            <h1 style={{ fontSize: 28, fontWeight: 300, color: "#0d1b2a", margin: 0, lineHeight: 1.2 }}>{t("duenger_katalog")}</h1>
+            <p style={{ fontSize: 14, color: "#666", marginTop: 8 }}>{t("duenger_subtitle")}</p>
           </div>
           <div style={{ display: "flex", gap: 24, fontSize: 13, color: "#666" }}>
-            <span>✓ BaFin-reguliert</span>
-            <span>✓ EU-Verordnung 2019/1009</span>
-            <span>✓ Sofortige Abwicklung</span>
+            <span>{t("badge_bafin")}</span>
+            <span>{t("badge_eu_reg")}</span>
+            <span>{t("badge_sofort")}</span>
           </div>
         </div>
       </div>
@@ -138,7 +140,7 @@ export default function DuengerPage() {
                   <Icon />
                   <div style={{ textAlign: "center" }}>
                     <span style={{ fontSize: 14, fontWeight: 500, color: "#0d1b2a", display: "block", marginBottom: 6 }}>{cat.label}</span>
-                    <span style={{ fontSize: 11, color: "#888" }}>{count} Produkt{count !== 1 ? "e" : ""}</span>
+                    <span style={{ fontSize: 11, color: "#888" }}>{count} {count !== 1 ? "Produkte" : "Produkt"}</span>
                   </div>
                 </div>
               </Link>

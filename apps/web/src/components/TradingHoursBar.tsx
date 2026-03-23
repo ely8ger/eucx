@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getTradingStatus, fmtCountdown } from "@/lib/tradingHours";
+import { useI18n } from "@/lib/i18n/context";
 
 const SANS = "'IBM Plex Sans', Arial, sans-serif";
 const MONO = "'IBM Plex Mono', monospace";
@@ -10,6 +11,7 @@ const BLUE = "#154194";
 
 export default function TradingHoursBar() {
   const [status, setStatus] = useState(() => getTradingStatus());
+  const { t, locale } = useI18n();
 
   useEffect(() => {
     const id = setInterval(() => setStatus(getTradingStatus()), 1000);
@@ -25,9 +27,9 @@ export default function TradingHoursBar() {
     const now = new Date();
     const diff = opensAt.getTime() - now.getTime();
     const daysDiff = Math.floor(diff / (1000 * 3600 * 24));
-    if (daysDiff === 0) return "heute";
-    if (daysDiff === 1) return "morgen";
-    return opensAt.toLocaleDateString("de-DE", { weekday: "long", timeZone: "Europe/Berlin" });
+    if (daysDiff === 0) return t("hours_heute");
+    if (daysDiff === 1) return t("hours_morgen");
+    return opensAt.toLocaleDateString(locale, { weekday: "long", timeZone: "Europe/Berlin" });
   })();
 
   return (
@@ -64,19 +66,19 @@ export default function TradingHoursBar() {
               textTransform: "uppercase",
               color: isOpen ? "#15803d" : "#6b7280",
             }}>
-              {isOpen ? "Börse geöffnet" : "Börse geschlossen"}
+              {isOpen ? t("hours_open") : t("hours_closed")}
             </span>
           </div>
 
           {/* Handelszeit */}
           <span style={{ fontSize: 11, color: "#6b7280", fontFamily: MONO }}>
-            Mo–Fr &nbsp;{openStr}–{closeStr} {tzLabel}
+            {t("hours_mo_fr")} &nbsp;{openStr}–{closeStr} {tzLabel}
           </span>
 
           {/* Countdown */}
           {isOpen ? (
             <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <span style={{ fontSize: 11, color: "#6b7280" }}>Schließt in</span>
+              <span style={{ fontSize: 11, color: "#6b7280" }}>{t("hours_closes_in")}</span>
               <span style={{
                 fontSize: 12, fontWeight: 700, fontFamily: MONO,
                 color: secondsLeft < 1800 ? "#dc2626" : "#15803d",
@@ -91,7 +93,7 @@ export default function TradingHoursBar() {
           ) : (
             <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
               <span style={{ fontSize: 11, color: "#6b7280" }}>
-                Öffnet {nextOpenLabel} um {openStr} {tzLabel} ·
+                {t("hours_opens")} {nextOpenLabel} {t("hours_um")} {openStr} {tzLabel} ·
               </span>
               <span style={{
                 fontSize: 12, fontWeight: 700, fontFamily: MONO,
@@ -116,7 +118,7 @@ export default function TradingHoursBar() {
             fontSize: 11, fontWeight: 700, textDecoration: "none",
             letterSpacing: "0.04em",
           }}>
-            + Auftrag erstellen
+            {t("btn_create_order")}
           </Link>
         )}
       </div>

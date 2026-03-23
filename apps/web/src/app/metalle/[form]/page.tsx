@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { EucxLogo } from "@/components/logo/EucxLogo";
 import { STEEL_FORMS, getForm, type FormShape } from "@/lib/steel/data";
+import { useI18n } from "@/lib/i18n/context";
 
 function ProductThumb({ shape }: { shape: FormShape }) {
   const bg = "#f4f6f9", stroke = "#9aabbc", fill = "#c5d0de", fill2 = "#dce3ed";
@@ -58,6 +59,7 @@ function FilterDropdown({ label, options, value, onChange }: {
 }
 
 export default function FormPage() {
+  const { t } = useI18n();
   const params = useParams();
   const formId = typeof params.form === "string" ? params.form : "";
   const form   = getForm(formId);
@@ -90,7 +92,7 @@ export default function FormPage() {
   if (!form) {
     return (
       <div style={{ fontFamily: F, padding: 64, textAlign: "center", color: "#666" }}>
-        Produktgruppe nicht gefunden. <Link href="/metalle" style={{ color: BLUE }}>Zurück zur Übersicht</Link>
+        {t("lbl_no_products")} <Link href="/metalle" style={{ color: BLUE }}>Zurück zur Übersicht</Link>
       </div>
     );
   }
@@ -105,7 +107,7 @@ export default function FormPage() {
             <EucxLogo variant="dark" size="md" />
           </Link>
           <Link href="/trading" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>
-            Zum Handelsraum →
+            {t("btn_trading_room")}
           </Link>
         </div>
       </header>
@@ -113,9 +115,9 @@ export default function FormPage() {
       {/* ── Breadcrumb ──────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 32px 0" }}>
         <div style={{ display: "flex", gap: 6, fontSize: 12, color: "#888" }}>
-          <Link href="/"        style={{ color: "#888", textDecoration: "none" }}>Startseite</Link>
+          <Link href="/"        style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_home")}</Link>
           <span>›</span>
-          <Link href="/metalle" style={{ color: "#888", textDecoration: "none" }}>Metallprodukte</Link>
+          <Link href="/metalle" style={{ color: "#888", textDecoration: "none" }}>{t("metalle_title")}</Link>
           <span>›</span>
           <span style={{ color: "#333" }}>{form.label}profile</span>
         </div>
@@ -148,19 +150,19 @@ export default function FormPage() {
                 {STEEL_FORMS.map(f => <option key={f.id} value={f.id}>{f.label}</option>)}
               </select>
             </div>
-            <FilterDropdown label="Werkstoff"       options={form.filters.werkstoff}       value={filterWerkstoff} onChange={setFilterWerkstoff} />
-            <FilterDropdown label="Herstellungsart" options={form.filters.herstellungsart} value={filterHerst}     onChange={setFilterHerst} />
-            <FilterDropdown label="Toleranz"        options={form.filters.toleranz}        value={filterTolerance} onChange={setFilterTolerance} />
-            <FilterDropdown label="Oberfläche"      options={form.filters.oberflaeche}     value={filterOberf}     onChange={setFilterOberf} />
-            <FilterDropdown label="Länge (mm)"      options={form.filters.laenge}          value={filterLaenge}    onChange={setFilterLaenge} />
-            <FilterDropdown label="Stärke (mm)"     options={form.filters.staerke}         value={filterStaerke}   onChange={setFilterStaerke} />
+            <FilterDropdown label={t("filter_werkstoff")}       options={form.filters.werkstoff}       value={filterWerkstoff} onChange={setFilterWerkstoff} />
+            <FilterDropdown label={t("filter_herstellungsart")} options={form.filters.herstellungsart} value={filterHerst}     onChange={setFilterHerst} />
+            <FilterDropdown label={t("filter_toleranz")}        options={form.filters.toleranz}        value={filterTolerance} onChange={setFilterTolerance} />
+            <FilterDropdown label={t("filter_oberflaeche")}     options={form.filters.oberflaeche}     value={filterOberf}     onChange={setFilterOberf} />
+            <FilterDropdown label={t("filter_laenge")}          options={form.filters.laenge}          value={filterLaenge}    onChange={setFilterLaenge} />
+            <FilterDropdown label={t("filter_staerke")}         options={form.filters.staerke}         value={filterStaerke}   onChange={setFilterStaerke} />
           </div>
           {hasFilters && (
             <button
               onClick={() => { setFilterWerkstoff(""); setFilterHerst(""); setFilterOberf(""); setFilterLaenge(""); setFilterStaerke(""); setFilterTolerance(""); }}
               style={{ fontSize: 12, color: BLUE, background: "none", border: "none", cursor: "pointer", fontFamily: F, padding: 0 }}
             >
-              × Alle Filter zurücksetzen
+              {t("btn_reset_filters")}
             </button>
           )}
         </div>
@@ -172,7 +174,7 @@ export default function FormPage() {
           <span style={{ fontSize: 13, color: "#666" }}>{filtered.length} Produkt{filtered.length !== 1 ? "e" : ""}</span>
           <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#666", cursor: "pointer" }}>
             <input type="checkbox" style={{ accentColor: BLUE }} />
-            Nur ab Lager verfügbare Produkte anzeigen
+            {t("lbl_ab_lager")}
           </label>
         </div>
       </div>
@@ -182,12 +184,12 @@ export default function FormPage() {
         <div style={{ backgroundColor: "#fff", border: "1px solid #dde2ea" }}>
           {filtered.length === 0 ? (
             <div style={{ padding: "48px 32px", textAlign: "center", color: "#888" }}>
-              <p style={{ fontSize: 14, marginBottom: 12 }}>Keine Produkte für die gewählten Filter gefunden.</p>
+              <p style={{ fontSize: 14, marginBottom: 12 }}>{t("lbl_no_products")}</p>
               <button
                 onClick={() => { setFilterWerkstoff(""); setFilterHerst(""); setFilterOberf(""); setFilterLaenge(""); setFilterStaerke(""); setFilterTolerance(""); }}
                 style={{ fontSize: 13, color: BLUE, background: "none", border: "none", cursor: "pointer", fontFamily: F }}
               >
-                Filter zurücksetzen
+                {t("btn_reset")}
               </button>
             </div>
           ) : (
@@ -242,7 +244,7 @@ export default function FormPage() {
                     onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#0f3070"; }}
                     onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = BLUE; }}
                   >
-                    Handeln →
+                    {t("btn_trade")}
                   </Link>
                 </div>
               </div>
@@ -252,7 +254,7 @@ export default function FormPage() {
 
         {/* ── Andere Formen ─────────────────────────────────────────────── */}
         <div style={{ marginTop: 40 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "#888", marginBottom: 16 }}>Weitere Produktformen</p>
+          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "#888", marginBottom: 16 }}>{t("metalle_weitere_formen")}</p>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             {STEEL_FORMS.filter(f => f.id !== formId).map(f => (
               <Link key={f.id} href={`/metalle/${f.id}`} style={{
