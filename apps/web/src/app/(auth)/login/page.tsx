@@ -146,8 +146,8 @@ export default function LoginPage() {
   async function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault();
     const fe: FieldErrors = {};
-    if (!email)    fe.email    = "Bitte geben Sie Ihre E-Mail-Adresse ein.";
-    if (!password) fe.password = "Bitte geben Sie Ihr Passwort ein.";
+    if (!email)    fe.email    = t("login_email_req");
+    if (!password) fe.password = t("login_pw_req");
     if (Object.keys(fe).length) { setErrors(fe); return; }
     setErrors({});
     setLoading(true);
@@ -190,7 +190,7 @@ export default function LoginPage() {
 
   async function handleTotpSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (code.length !== 6) { setErrors({ code: "Bitte geben Sie einen 6-stelligen Code ein." }); return; }
+    if (code.length !== 6) { setErrors({ code: t("login_code_req") }); return; }
     setErrors({});
     setLoading(true);
     try {
@@ -260,7 +260,7 @@ export default function LoginPage() {
                       <button
                         type="button"
                         onClick={() => setShowPw(v => !v)}
-                        aria-label={showPw ? "Passwort verbergen" : "Passwort anzeigen"}
+                        aria-label={showPw ? t("login_pw_hide") : t("login_pw_show")}
                         style={{
                           position: "absolute", top: 30, right: 12,
                           background: "none", border: "none", cursor: "pointer",
@@ -336,11 +336,11 @@ export default function LoginPage() {
                       <path d="M6 10.5l2 2 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                     <p style={{ fontSize: 13, color: TEXT, margin: 0, lineHeight: 1.6, fontFamily: F }}>
-                      Öffnen Sie Ihre Authenticator-App und geben Sie den 6-stelligen Code für <strong>{email}</strong> ein.
+                      {t("login_totp_app_hint_pre")} <strong>{email}</strong> {t("login_totp_app_hint_post")}
                     </p>
                   </div>
 
-                  <Field id="totp-code" label="Einmal-Code" type="text" value={code}
+                  <Field id="totp-code" label={t("login_otp_label")} type="text" value={code}
                     inputRef={codeRef}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
                     placeholder="000 000" error={errors.code}
@@ -376,7 +376,7 @@ export default function LoginPage() {
                     <circle cx="9" cy="13.5" r="1.5" fill="currentColor"/>
                     <line x1="9" y1="15" x2="9" y2="16.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
                   </svg>,
-                  label: "TLS 1.3\nverschlüsselt",
+                  label: t("auth_badge_tls"),
                 },
                 {
                   icon: <svg width="18" height="20" viewBox="0 0 18 20" fill="none" style={{ color: BLUE }}>
@@ -387,7 +387,7 @@ export default function LoginPage() {
                     <circle cx="7" cy="13" r="0.85" fill="currentColor"/>
                     <circle cx="6" cy="9.5" r="0.85" fill="currentColor"/>
                   </svg>,
-                  label: "DSGVO-konform",
+                  label: t("topbar_dsgvo"),
                 },
                 {
                   icon: <svg width="18" height="20" viewBox="0 0 18 20" fill="none" style={{ color: BLUE }}>
@@ -398,7 +398,7 @@ export default function LoginPage() {
                     <rect x="13" y="8" width="2"  height="8" fill="currentColor" opacity="0.65"/>
                     <path d="M1 6L9 1.5l8 4.5H1Z" fill="currentColor" opacity="0.45"/>
                   </svg>,
-                  label: "BaFin-regulierter\nMarkt",
+                  label: t("auth_badge_bafin"),
                 },
               ].map(({ icon, label }, i) => (
                 <div key={i} style={{

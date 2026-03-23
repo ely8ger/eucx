@@ -203,11 +203,11 @@ export default function HomePage() {
                 <div style={{ borderLeft: "3px solid #154194", paddingLeft: 12, marginBottom: 20, display: "inline-block" }}>
                   <TrendingUp size={20} style={{ color: "#154194", display: "block" }} />
                 </div>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#154194", marginBottom: 8 }}>METALLE</div>
-                <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>Metallprodukte</div>
-                <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>14 Produktformen · Stahl, Edelstahl, Aluminium</div>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#154194", marginBottom: 8 }}>{t("sector_metalle")}</div>
+                <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>{t("metalle_title")}</div>
+                <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>{t("metalle_home_sub")}</div>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                  {["Rundprofile & Vierkantstahl","Träger · IPE · HEA · HEB","Bleche & Hohlprofile","Winkel · U- & T-Profile"].map(item => (
+                  {[t("metalle_li_1"), t("metalle_li_2"), t("metalle_li_3"), t("metalle_li_4")].map(item => (
                     <li key={item} style={{ fontSize: 13, color: "#444", padding: "7px 0", borderBottom: "1px solid #f0f0f0", display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ width: 4, height: 4, backgroundColor: "#154194", display: "inline-block", flexShrink: 0 }} />
                       {item}
@@ -229,19 +229,19 @@ export default function HomePage() {
               <div style={{ borderLeft: "3px solid #154194", paddingLeft: 12, marginBottom: 20, display: "inline-block" }}>
                 <FlaskConical size={20} style={{ color: "#154194", display: "block" }} />
               </div>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#154194", marginBottom: 8 }}>DÜNGER</div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>Dünger & Agrarchemie</div>
-              <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>4 Kategorien · 10 Produkte · Katalog 2026</div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#154194", marginBottom: 8 }}>{t("sector_duenger")}</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>{t("duenger_title")}</div>
+              <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>{t("duenger_home_sub")}</div>
               <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                {["Kaliumdünger","NPK-Dünger","Stickstoffdünger","Phosphordünger"].map(item => (
+                {[t("duenger_li_1"), t("duenger_li_2"), t("duenger_li_3"), t("duenger_li_4")].map(item => (
                   <li key={item} style={{ fontSize: 13, color: "#444", padding: "7px 0", borderBottom: "1px solid #f0f0f0", display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ width: 4, height: 4, backgroundColor: "#154194", display: "inline-block", flexShrink: 0 }} />
                     {item}
                   </li>
                 ))}
               </ul>
-              <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#154194", fontWeight: 600 }}>
-                Katalog öffnen <ArrowRight size={14} />
+              <div style={{ marginTop: 20, fontSize: 13, color: "#154194", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                {t("btn_catalog_open")}
               </div>
             </div>
             </Link>
@@ -266,7 +266,7 @@ export default function HomePage() {
                 <div style={{ width: 44, height: 44, backgroundColor: "#154194", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
                   <Icon size={18} color="#fff" />
                 </div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: "#154194", letterSpacing: "0.14em", marginBottom: 10 }}>SCHRITT {step}</div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: "#154194", letterSpacing: "0.14em", marginBottom: 10 }}>{t("step_prefix")} {step}</div>
                 <div style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a", marginBottom: 10 }}>{t(`${tk}_title` as any)}</div>
                 <div style={{ fontSize: 13, color: "#505050", lineHeight: 1.7 }}>{t(`${tk}_desc` as any)}</div>
               </div>
@@ -302,7 +302,7 @@ export default function HomePage() {
             {/* Orderbuch-Mockup */}
             <div style={{ backgroundColor: "#fff", boxShadow: "0 2px 16px rgba(0,0,0,.1)" }}>
               <div style={{ backgroundColor: "#154194", padding: "12px 20px" }}>
-                <span style={{ fontSize: 12, color: "rgba(255,255,255,.6)" }}>Handelssitzung - Metalle #247 · Live</span>
+                <span style={{ fontSize: 12, color: "rgba(255,255,255,.6)" }}>{t("demo_session")}</span>
               </div>
               <div style={{ padding: 24 }}>
                 <div className="flex items-start justify-between" style={{ marginBottom: 20, paddingBottom: 16, borderBottom: "1px solid #f0f0f0" }}>
@@ -310,12 +310,12 @@ export default function HomePage() {
                     <div style={{ fontSize: 11, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.1em" }}>Bewehrungsstahl A1 · 12mm</div>
                     <div style={{ fontSize: 28, fontWeight: 300, color: "#0b1e36", marginTop: 4 }}>587,00 EUR <span style={{ fontSize: 13, color: "#aaa" }}>/ t</span></div>
                   </div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: "#1a7a3c", backgroundColor: "#f0faf4", padding: "4px 12px", border: "1px solid #c3e6cb" }}>OFFEN</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#1a7a3c", backgroundColor: "#f0faf4", padding: "4px 12px", border: "1px solid #c3e6cb" }}>{t("trading_stage_open")}</div>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, fontSize: 12 }}>
                   {[
-                    { label: "Verkauf", color: "#b91c1c", rows: [["592,00","30 t"],["590,50","15 t"],["589,00","50 t"]] },
-                    { label: "Kauf",    color: "#15803d", rows: [["587,00","25 t"],["586,50","40 t"],["585,00","60 t"]] },
+                    { label: t("trading_sell_pct"), color: "#b91c1c", rows: [["592,00","30 t"],["590,50","15 t"],["589,00","50 t"]] },
+                    { label: t("trading_buy_pct"),  color: "#15803d", rows: [["587,00","25 t"],["586,50","40 t"],["585,00","60 t"]] },
                   ].map(({ label, color, rows }) => (
                     <div key={label}>
                       <div style={{ fontWeight: 600, color, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10, fontSize: 11 }}>{label}</div>
