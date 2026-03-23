@@ -1,68 +1,238 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { LEXIKON } from "../data";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
+import { LEXIKON } from "@/app/insights/data";
 
-export const metadata: Metadata = {
-  title: "Rohstoff-Lexikon — Definitionen, Normen, Preise | EUCX",
-  description: "Das Rohstoff-Lexikon der EUCX: Definitionen, Normen und Preishintergründe für Stahl, Schrott, Düngemittel, Holz und EU-Regulatorik.",
-  robots: { index: true, follow: true },
-  alternates: { canonical: "https://eucx.eu/insights/lexikon" },
+export const metadata = {
+  title: "Rohstoff-Lexikon A–Z | EUCX",
+  description:
+    "Das umfassende Rohstoff-Lexikon der EUCX: LME-Notierung, Incoterms 2020, CBAM, MiFID II OTF, Abwicklungsgarantie, Betonstahl und mehr. Definitionen für den institutionellen EU-Rohstoffhandel.",
 };
 
 const BLUE = "#154194";
 const SANS = "'IBM Plex Sans', Arial, sans-serif";
-const MONO = "'IBM Plex Mono', monospace";
+
+function getCategoryColor(cat: string): string {
+  const map: Record<string, string> = {
+    Märkte: "#154194",
+    Handel: "#166534",
+    Regulierung: "#7c3aed",
+    Rohstoffe: "#92400e",
+    Logistik: "#0891b2",
+    Metalle: "#154194",
+    Agrar: "#166534",
+    Energie: "#b45309",
+    Recht: "#7c3aed",
+  };
+  return map[cat] || "#44403c";
+}
+
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 export default function LexikonPage() {
-  const byCategory = LEXIKON.reduce<Record<string, typeof LEXIKON>>((acc, e) => {
-    acc[e.category] = [...(acc[e.category] || []), e];
-    return acc;
-  }, {});
+  const byLetter = LEXIKON.reduce(
+    (acc, entry) => {
+      const letter = (entry.term || "").charAt(0).toUpperCase();
+      if (!acc[letter]) acc[letter] = [];
+      acc[letter].push(entry);
+      return acc;
+    },
+    {} as Record<string, typeof LEXIKON>
+  );
+
+  const categories = [...new Set(LEXIKON.map((e) => e.category))];
 
   return (
     <div style={{ fontFamily: SANS, backgroundColor: "#fafafa", color: "#0d1b2a", minHeight: "100vh" }}>
       <SiteNav activeHref="/insights" />
-      <div style={{ backgroundColor: "#0d1b2a", padding: "48px 24px 44px" }}>
+
+      {/* Hero */}
+      <div style={{ backgroundColor: "#0d1b2a", padding: "56px 24px 48px" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <p style={{ fontSize: 11, color: "#4a6fa1", marginBottom: 14, letterSpacing: "0.06em" }}>
-            <Link href="/" style={{ color: "#4a6fa1", textDecoration: "none" }}>EUCX</Link>{" / "}
-            <Link href="/insights" style={{ color: "#4a6fa1", textDecoration: "none" }}>Insights</Link>{" / "}
+            <Link href="/" style={{ color: "#4a6fa1", textDecoration: "none" }}>EUCX</Link>
+            {" / "}
+            <Link href="/insights" style={{ color: "#4a6fa1", textDecoration: "none" }}>Insights</Link>
+            {" / "}
             <span style={{ color: "#7aa4d4" }}>Rohstoff-Lexikon</span>
           </p>
-          <h1 style={{ fontSize: 36, fontWeight: 300, color: "#fff", margin: "0 0 10px" }}>
+          <h1 style={{ fontSize: 40, fontWeight: 300, color: "#fff", margin: "0 0 12px" }}>
             Rohstoff-<strong style={{ fontWeight: 700 }}>Lexikon</strong>
           </h1>
-          <p style={{ fontSize: 14, color: "#8aa8cc", maxWidth: 500, lineHeight: 1.7, margin: 0 }}>
-            {LEXIKON.length} Einträge · Definitionen, Normen und Preishintergründe.
+          <p style={{ fontSize: 15, color: "#8aa8cc", margin: "0 0 28px", lineHeight: 1.6 }}>
+            A–Z Definitionen für den institutionellen Rohstoffhandel in der EU
           </p>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" as const }}>
+            <span style={{ backgroundColor: "rgba(21,65,148,0.35)", color: "#a8c4f0", fontSize: 12, fontWeight: 700, padding: "6px 14px", letterSpacing: "0.06em" }}>
+              {LEXIKON.length} Einträge
+            </span>
+            <span style={{ backgroundColor: "rgba(255,255,255,0.08)", color: "#8aa8cc", fontSize: 12, padding: "6px 14px" }}>
+              Laufend erweitert
+            </span>
+            <span style={{ backgroundColor: "rgba(255,255,255,0.08)", color: "#8aa8cc", fontSize: 12, padding: "6px 14px" }}>
+              Fachlich geprüft
+            </span>
+          </div>
         </div>
       </div>
-      <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 24px" }}>
-        {Object.entries(byCategory).map(([cat, entries]) => (
-          <section key={cat} style={{ marginBottom: 48 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-              <div style={{ width: 3, height: 14, backgroundColor: BLUE }} />
-              <h2 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "#888", margin: 0 }}>{cat}</h2>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 2, backgroundColor: "#e0e4ec" }}>
-              {entries.map(entry => (
-                <Link key={entry.slug} href={`/insights/lexikon/${entry.slug}`} style={{ textDecoration: "none", display: "block" }}>
-                  <article style={{ backgroundColor: "#fff", padding: "20px 24px" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                      <h3 style={{ fontSize: 14, fontWeight: 700, color: "#0d1b2a", margin: 0 }}>{entry.term}</h3>
-                      <span style={{ fontSize: 11, color: "#bbb" }}>{entry.readMin} min</span>
-                    </div>
-                    <p style={{ fontSize: 12, color: "#666", lineHeight: 1.65, margin: 0 }}>{entry.shortDef}</p>
-                    {entry.norm && <p style={{ fontSize: 10, fontFamily: MONO, color: BLUE, margin: "8px 0 0", fontWeight: 600 }}>{entry.norm}</p>}
-                  </article>
-                </Link>
-              ))}
-            </div>
+
+      {/* Suchhinweis-Banner */}
+      <div style={{ backgroundColor: "#eef2fb", borderBottom: "1px solid #d0daf5", padding: "14px 24px" }}>
+        <div style={{ maxWidth: 1240, margin: "0 auto", fontSize: 13, color: "#2d4a8a", lineHeight: 1.5 }}>
+          Nutzen Sie <strong>Strg+F</strong> / <strong>⌘+F</strong> um nach Begriffen zu suchen. Oder navigieren Sie direkt über den Alphabet-Index.
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 1240, margin: "0 auto", padding: "32px 24px 64px" }}>
+
+        {/* Alphabet-Schnellnavigation */}
+        <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 4, marginBottom: 32 }}>
+          {ALPHABET.map((letter) => {
+            const hasEntries = !!byLetter[letter];
+            return hasEntries ? (
+              <a
+                key={letter}
+                href={`#buchstabe-${letter}`}
+                style={{
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  width: 36, height: 36, fontSize: 14, fontWeight: 700,
+                  color: "#fff", backgroundColor: BLUE, textDecoration: "none",
+                  fontFamily: "'IBM Plex Mono', monospace",
+                }}
+              >
+                {letter}
+              </a>
+            ) : (
+              <span
+                key={letter}
+                style={{
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  width: 36, height: 36, fontSize: 14, fontWeight: 700,
+                  color: "#999", backgroundColor: "#f0f0f0", opacity: 0.3,
+                  fontFamily: "'IBM Plex Mono', monospace",
+                }}
+              >
+                {letter}
+              </span>
+            );
+          })}
+        </div>
+
+        {/* Kategorien-Filter-Leiste */}
+        <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 8, marginBottom: 40 }}>
+          <span style={{ fontSize: 11, color: "#888", fontWeight: 700, letterSpacing: "0.08em", alignSelf: "center", marginRight: 4 }}>
+            KATEGORIEN:
+          </span>
+          {categories.map((cat) => (
+            <span
+              key={cat}
+              style={{
+                border: `1px solid ${getCategoryColor(cat)}`,
+                color: getCategoryColor(cat),
+                padding: "4px 14px",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: "default",
+                letterSpacing: "0.04em",
+              }}
+            >
+              {cat}
+            </span>
+          ))}
+        </div>
+
+        {/* Hover-CSS */}
+        <style>{`
+          .lex-card { transition: background-color 200ms ease, box-shadow 200ms ease; }
+          .lex-card:hover { background-color: rgba(21,65,148,0.04) !important; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+          .lex-card:hover h3 { color: #154194 !important; }
+        `}</style>
+
+        {/* Einträge nach Alphabet */}
+        {ALPHABET.filter((l) => byLetter[l]).map((letter) => (
+          <section key={letter} id={`buchstabe-${letter}`} style={{ marginBottom: 48 }}>
+            <h2
+              style={{
+                fontSize: 32,
+                fontWeight: 700,
+                color: BLUE,
+                borderBottom: "2px solid #e8e8e8",
+                paddingBottom: 8,
+                margin: "0 0 24px",
+                fontFamily: "'IBM Plex Mono', monospace",
+              }}
+            >
+              {letter}
+            </h2>
+
+            {(byLetter[letter] ?? []).map((entry) => (
+              <Link
+                key={entry.slug}
+                href={`/insights/lexikon/${entry.slug}`}
+                className="lex-card"
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 20,
+                  padding: "20px 24px",
+                  border: "1px solid #e8e8e8",
+                  textDecoration: "none",
+                  marginBottom: 12,
+                  borderLeft: `4px solid ${getCategoryColor(entry.category)}`,
+                  backgroundColor: "#fff",
+                }}
+              >
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                    <h3 style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", margin: 0 }}>
+                      {entry.term}
+                    </h3>
+                    <span
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 700,
+                        letterSpacing: "0.08em",
+                        color: getCategoryColor(entry.category),
+                        backgroundColor: `${getCategoryColor(entry.category)}15`,
+                        padding: "2px 8px",
+                      }}
+                    >
+                      {entry.category}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: 13, color: "#666", lineHeight: 1.6, margin: 0 }}>
+                    {entry.shortDef}
+                  </p>
+                </div>
+                <div style={{ fontSize: 11, color: "#aaa", flexShrink: 0, paddingTop: 4 }}>
+                  {entry.readMin} Min →
+                </div>
+              </Link>
+            ))}
           </section>
         ))}
+
+        {/* CTA */}
+        <div
+          style={{
+            borderTop: "1px solid #e8e8e8",
+            paddingTop: 32,
+            marginTop: 16,
+            textAlign: "center" as const,
+          }}
+        >
+          <p style={{ fontSize: 14, color: "#666", margin: "0 0 6px" }}>
+            Vermissen Sie einen Begriff?
+          </p>
+          <a
+            href="mailto:lexikon@eucx.eu"
+            style={{ fontSize: 14, color: BLUE, fontWeight: 600, textDecoration: "none" }}
+          >
+            lexikon@eucx.eu
+          </a>
+        </div>
       </div>
+
       <SiteFooter />
     </div>
   );
