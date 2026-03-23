@@ -4,6 +4,7 @@ import Decimal             from "decimal.js";
 import { Card, CardTitle } from "@/components/ui/card";
 import { useBalanceQuery } from "@/hooks/usePortfolio";
 import { useI18n }         from "@/lib/i18n/context";
+import { fmtEUR }          from "@/lib/fmt";
 import type { WalletBalance } from "@/hooks/usePortfolio";
 import { DEMO_WALLET } from "@/components/portfolio/demoData";
 
@@ -19,8 +20,7 @@ function BalanceRow({ w }: { w: WalletBalance }) {
   const reserved = new Decimal(w.reservedBalance);
   const total    = new Decimal(w.total);
 
-  const fmt = (d: InstanceType<typeof Decimal>) =>
-    d.toNumber().toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmt = (d: InstanceType<typeof Decimal>) => fmtEUR(d.toNumber());
 
   const reservedPct = total.isZero()
     ? 0

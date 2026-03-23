@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Plus, Filter, Download, TrendingUp, TrendingDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
+import { fmtEUR, fmtQty } from "@/lib/fmt";
 
 type OrderStatus = "OFFEN" | "ANGENOMMEN" | "ABGELAUFEN" | "STORNIERT" | "ABGESCHLOSSEN";
 type OrderDir = "KAUF" | "VERKAUF";
@@ -27,9 +28,7 @@ const ORDERS: Order[] = [
 const F = "'IBM Plex Sans', Arial, sans-serif";
 
 export default function OrdersPage() {
-  const { t, locale } = useI18n();
-  const LOCALE_BCP: Record<string, string> = { de: "de-DE", en: "en-GB", fr: "fr-FR", es: "es-ES", pl: "pl-PL", ru: "ru-RU" };
-  const bcp = LOCALE_BCP[locale] ?? "de-DE";
+  const { t } = useI18n();
   const [tab, setTab] = useState("alle");
 
   const STATUS_MAP: Record<OrderStatus, { label: string; color: string; bg: string }> = {
@@ -84,7 +83,7 @@ export default function OrdersPage() {
         {[
           { label: t("orders_kpi_open"),     value: String(openCount),                        color: "#0d1b2a" },
           { label: t("orders_kpi_accepted"), value: String(acceptedCount),                    color: "#166534" },
-          { label: t("orders_kpi_volume"),   value: totalValue.toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €",  color: "#0d1b2a" },
+          { label: t("orders_kpi_volume"),   value: fmtEUR(totalValue) + " €",  color: "#0d1b2a" },
         ].map(k => (
           <div key={k.label} style={{ backgroundColor: "#fff", padding: "18px 24px" }}>
             <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "#888", margin: 0, fontWeight: 500 }}>{k.label}</p>
@@ -170,10 +169,10 @@ export default function OrdersPage() {
                       <p style={{ fontSize: 11, color: "#aaa", marginTop: 2 }}>{o.spec}</p>
                     </td>
                     <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 13, fontFamily: "monospace", color: "#505050" }}>
-                      {o.qty.toLocaleString(bcp)} {o.unit}
+                      {fmtQty(o.qty)} {o.unit}
                     </td>
                     <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 13, fontFamily: "monospace", fontWeight: 600, color: "#0d1b2a" }}>
-                      {o.total.toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
+                      {fmtEUR(o.total)} €
                     </td>
                     <td style={{ padding: "12px 16px" }}>
                       <p style={{ fontSize: 12, color: "#505050", margin: 0 }}>{o.sessionDate}</p>

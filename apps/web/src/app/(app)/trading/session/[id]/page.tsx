@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { useI18n } from "@/lib/i18n/context";
+import { fmtEUR } from "@/lib/fmt";
 
 interface OrderEntry {
   id: string; price: number; qty: number; unit: string;
@@ -49,9 +50,7 @@ const MSGS = [
 
 export default function TradingSessionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { t, locale } = useI18n();
-  const LOCALE_BCP: Record<string, string> = { de: "de-DE", en: "en-GB", fr: "fr-FR", es: "es-ES", pl: "pl-PL", ru: "ru-RU" };
-  const bcp = LOCALE_BCP[locale] ?? "de-DE";
+  const { t } = useI18n();
   const [msg, setMsg] = useState("");
 
   const bestSell = Math.min(...SELL.map((o) => o.price));
@@ -106,11 +105,11 @@ export default function TradingSessionPage({ params }: { params: Promise<{ id: s
           {/* KPI Bar */}
           <div className="grid grid-cols-5 gap-4">
             {[
-              { label: t("trading_best_offer"), value: `${bestSell.toLocaleString(bcp)} €/t`, cls: "text-red-500"     },
-              { label: t("trading_best_bid"),   value: `${bestBuy.toLocaleString(bcp)} €/t`,  cls: "text-emerald-600" },
+              { label: t("trading_best_offer"), value: `${fmtEUR(bestSell)} €/t`, cls: "text-red-500"     },
+              { label: t("trading_best_bid"),   value: `${fmtEUR(bestBuy)} €/t`,  cls: "text-emerald-600" },
               { label: t("trading_spread"),     value: `${spread.toFixed(0)} €/t`,                cls: "text-gray-700"    },
               { label: t("trading_deals"),      value: `${DEALS.length}`,                         cls: "text-gray-700"    },
-              { label: t("trading_volume"),     value: `${totalVol.toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`, cls: "text-gray-700"    },
+              { label: t("trading_volume"),     value: `${fmtEUR(totalVol)} €`, cls: "text-gray-700"    },
             ].map((k) => (
               <div key={k.label}>
                 <p className="text-xs text-gray-400 uppercase tracking-wider mb-0.5">{k.label}</p>
@@ -175,7 +174,7 @@ export default function TradingSessionPage({ params }: { params: Promise<{ id: s
                           {o.mine && <span className="ml-1.5 text-[10px] font-bold text-[#154194] bg-blue-100 px-1.5 py-0.5 rounded">{t("session_mine")}</span>}
                         </TableCell>
                         <TableCell className="text-right">
-                          <span className="text-sm font-bold font-mono text-red-500">{o.price.toLocaleString(bcp)}</span>
+                          <span className="text-sm font-bold font-mono text-red-500">{fmtEUR(o.price)}</span>
                         </TableCell>
                         <TableCell className="text-right">
                           <span className="text-sm font-mono text-gray-700">{o.qty} {o.unit}</span>
@@ -225,7 +224,7 @@ export default function TradingSessionPage({ params }: { params: Promise<{ id: s
                           {o.mine && <span className="ml-1.5 text-[10px] font-bold text-[#154194] bg-blue-100 px-1.5 py-0.5 rounded">{t("session_mine")}</span>}
                         </TableCell>
                         <TableCell className="text-right">
-                          <span className="text-sm font-bold font-mono text-emerald-600">{o.price.toLocaleString(bcp)}</span>
+                          <span className="text-sm font-bold font-mono text-emerald-600">{fmtEUR(o.price)}</span>
                         </TableCell>
                         <TableCell className="text-right">
                           <span className="text-sm font-mono text-gray-700">{o.qty} {o.unit}</span>
@@ -264,7 +263,7 @@ export default function TradingSessionPage({ params }: { params: Promise<{ id: s
                     <TableRow key={d.id} className="border-gray-100 hover:bg-gray-50/50">
                       <TableCell className="pl-0 font-mono text-xs font-semibold text-[#154194]">{d.id}</TableCell>
                       <TableCell className="font-mono text-xs text-gray-500">{d.time}</TableCell>
-                      <TableCell className="text-right font-mono font-bold text-gray-900">{d.price.toLocaleString(bcp)}</TableCell>
+                      <TableCell className="text-right font-mono font-bold text-gray-900">{fmtEUR(d.price)}</TableCell>
                       <TableCell className="text-right font-mono text-gray-700">{d.qty} {d.unit}</TableCell>
                       <TableCell className="text-sm text-gray-700">{d.buyer}</TableCell>
                       <TableCell className="text-sm text-gray-700">{d.seller}</TableCell>

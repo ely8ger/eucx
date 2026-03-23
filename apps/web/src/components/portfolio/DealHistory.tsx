@@ -8,6 +8,7 @@ import { EmptyState }        from "@/components/portfolio/EmptyState";
 import { useUserDealsQuery } from "@/hooks/usePortfolio";
 import { DEMO_DEALS } from "@/components/portfolio/demoData";
 import { useI18n }           from "@/lib/i18n/context";
+import { fmtEUR }            from "@/lib/fmt";
 import type { PortfolioOrder } from "@/hooks/usePortfolio";
 
 const BLUE = "#154194";
@@ -20,7 +21,7 @@ function DealRow({ order }: { order: PortfolioOrder }) {
   const isBuy = order.direction === "BUY";
   const fmtPrice  = new Decimal(order.pricePerUnit).toFixed(2);
   const fmtQty    = new Decimal(order.filledQuantity).toFixed(0);
-  const fmtTotal  = new Decimal(order.totalValue).toNumber().toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtTotal  = fmtEUR(new Decimal(order.totalValue).toNumber());
   const fmtTime   = new Date(order.createdAt).toLocaleString(bcp, { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 
   return (
@@ -82,7 +83,7 @@ export function DealHistory() {
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 13, width: "100%" }}>
       <span style={{ color: "#888" }}>{t("portfolio_total_volume")}</span>
       <span style={{ fontWeight: 600, fontFamily: "'IBM Plex Mono', monospace", color: BLUE }}>
-        {totalVolume.toNumber().toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
+        {fmtEUR(totalVolume.toNumber())} €
       </span>
     </div>
   ) : undefined;

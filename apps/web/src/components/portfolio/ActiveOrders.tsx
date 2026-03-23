@@ -10,6 +10,7 @@ import { useActiveOrdersQuery, useCancelOrder } from "@/hooks/usePortfolio";
 import { DEMO_ORDERS } from "@/components/portfolio/demoData";
 import { useToast }                   from "@/components/ui/toast";
 import { useI18n }                    from "@/lib/i18n/context";
+import { fmtEUR }                     from "@/lib/fmt";
 import type { PortfolioOrder }        from "@/hooks/usePortfolio";
 
 const BLUE = "#154194";
@@ -33,7 +34,7 @@ function OrderRow({
   const fmtPrice  = new Decimal(order.pricePerUnit).toFixed(2);
   const fmtQty    = new Decimal(order.quantity).toFixed(0);
   const fmtFilled = new Decimal(order.filledQuantity).toFixed(0);
-  const fmtTotal  = new Decimal(order.totalValue).toNumber().toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtTotal  = fmtEUR(new Decimal(order.totalValue).toNumber());
   const fmtTime   = new Date(order.createdAt).toLocaleString(bcp, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 
   return (

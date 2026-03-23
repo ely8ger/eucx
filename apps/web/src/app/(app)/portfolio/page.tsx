@@ -12,6 +12,7 @@ import { PORTFOLIO_KEYS, useBalanceQuery, useActiveOrdersQuery, useUserDealsQuer
 import { DEMO_WALLET, DEMO_ORDERS, DEMO_DEALS } from "@/components/portfolio/demoData";
 import Decimal                           from "decimal.js";
 import { useI18n }                       from "@/lib/i18n/context";
+import { fmtEUR, fmtQty }               from "@/lib/fmt";
 import type {
   OrderFilledEvent,
   OrderPartiallyFilledEvent,
@@ -38,11 +39,8 @@ function SectionHeader({ title, right }: { title: string; right?: React.ReactNod
   );
 }
 
-const LOCALE_BCP: Record<string, string> = { de: "de-DE", en: "en-GB", fr: "fr-FR", es: "es-ES", pl: "pl-PL", ru: "ru-RU" };
-
 export default function PortfolioPage() {
-  const { t, locale } = useI18n();
-  const bcp = LOCALE_BCP[locale] ?? "de-DE";
+  const { t }       = useI18n();
   const queryClient = useQueryClient();
   const toast       = useToast();
 
@@ -55,15 +53,15 @@ export default function PortfolioPage() {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("active") });
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("filled") });
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.balance() });
-      const qty   = parseFloat(e.filledQuantity).toLocaleString(bcp);
-      const price = parseFloat(e.pricePerUnit).toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const qty   = fmtQty(parseFloat(e.filledQuantity));
+      const price = fmtEUR(parseFloat(e.pricePerUnit));
       toast.success(t("portfolio_toast_filled"), `${qty} t × ${price} €/t · ${e.currency}`);
     },
     onOrderPartiallyFilled: (e: OrderPartiallyFilledEvent) => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("active") });
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.balance() });
-      const qty = parseFloat(e.filledQuantity).toLocaleString(bcp);
-      toast.info(t("portfolio_toast_partial"), `${qty} ${t("portfolio_toast_partial_msg")} ${parseFloat(e.remainingQuantity).toLocaleString(bcp)} ${t("portfolio_toast_partial_remain")}`);
+      const qty = fmtQty(parseFloat(e.filledQuantity));
+      toast.info(t("portfolio_toast_partial"), `${qty} ${t("portfolio_toast_partial_msg")} ${fmtQty(parseFloat(e.remainingQuantity))} ${t("portfolio_toast_partial_remain")}`);
     },
     onOrderCancelled: (e: OrderCancelledEvent) => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("active") });
@@ -75,8 +73,8 @@ export default function PortfolioPage() {
     },
     onDealMatchedUser: (e: DealMatchedUserEvent) => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("filled") });
-      const qty   = parseFloat(e.quantity).toLocaleString(bcp);
-      const price = parseFloat(e.pricePerUnit).toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const qty   = fmtQty(parseFloat(e.quantity));
+      const price = fmtEUR(parseFloat(e.pricePerUnit));
       toast.success(t("portfolio_toast_deal"), `${qty} t × ${price} €/t`);
     },
   });
@@ -123,7 +121,7 @@ export default function PortfolioPage() {
         {[
           {
             label: t("portfolio_kpi_capital"),
-            value: totalBalance.toNumber().toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €",
+            value: fmtEUR(totalBalance.toNumber()) + " €",
             sub: t("portfolio_kpi_capital_sub"),
             accent: BLUE,
           },
@@ -141,7 +139,7 @@ export default function PortfolioPage() {
           },
           {
             label: t("portfolio_kpi_volume"),
-            value: totalVolume.toNumber().toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €",
+            value: fmtEUR(totalVolume.toNumber()) + " €",
             sub: t("portfolio_kpi_volume_sub"),
             accent: BLUE,
           },
