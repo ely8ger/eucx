@@ -5,6 +5,7 @@ export interface LexikonSection {
   heading: string;
   body: string;
   sub?: { id: string; heading: string; body: string }[];
+  faq?: { q: string; a: string }[];
 }
 
 export interface LexikonEntry {
@@ -209,6 +210,222 @@ export const LEXIKON: LexikonEntry[] = [
       { q: "Betrifft CBAM auch Stahlschrott?", a: "Nein. CBAM gilt für verarbeitete Erzeugnisse (Betonstahl, Bleche), nicht für Schrott als Rohmaterial." },
     ],
   },
+  // --- Neue Einträge ---
+  {
+    slug: "lme-notierung",
+    term: "LME-Notierung",
+    shortDef: "Die London Metal Exchange (LME) ist die weltweit wichtigste Terminbörse für Nichteisenmetalle. Ihre täglichen Official Prices gelten als globale Referenzkurse.",
+    description: "LME Official Price, Settlement Price, Ring Trading und Relevanz für EUCX-Händler erklärt.",
+    category: "Märkte",
+    readMin: 6,
+    published: "2026-03-23",
+    updated: "2026-03-23",
+    sections: [
+      {
+        id: "was-ist-lme",
+        heading: "Was ist die LME?",
+        body: "Die London Metal Exchange (LME) wurde 1877 gegründet und ist heute Teil der Hong Kong Exchanges and Clearing (HKEX). Sie betreibt Terminmärkte für Aluminium, Kupfer, Zink, Blei, Nickel, Zinn und weitere Metalle. Der tägliche LME Official Price entsteht durch das sogenannte Ring Trading – ein physisches Auktionsverfahren, das auch im digitalen Zeitalter beibehalten wurde.",
+      },
+      {
+        id: "official-price",
+        heading: "Official Price vs. Settlement Price",
+        body: "Der LME Official Price wird zweimal täglich im Ring festgestellt (Vormittag/Nachmittag). Der Cash Settlement Price gilt für Kassageschäfte (Lieferung in 2 Werktagen). Für Terminkontrakte existieren standardisierte Laufzeiten: 3 Monate, 15 Monate und bis zu 63 Monate (abhängig vom Metall).",
+      },
+      {
+        id: "relevanz-eucx",
+        heading: "Relevanz für EUCX-Handelspreise",
+        body: "Auf der EUCX-Plattform werden Stahlprodukte wie Betonstahl (Rebar) und Walzdraht (Wire Rod) nicht direkt über die LME gehandelt. Dennoch dienen LME-Kupfer- und Aluminiumpreise als wichtige Korrekturfaktoren für Legierungszuschläge bei Stahlprodukten. Händler nutzen LME-Kurse zur Absicherung (Hedging) ihrer Rohstoffpositionen.",
+      },
+      {
+        id: "faq",
+        heading: "Häufige Fragen",
+        body: "",
+        faq: [
+          { q: "Wie oft werden LME-Preise veröffentlicht?", a: "Zweimal täglich: um 12:30 Uhr (Kerb-Notierung) und 16:00 Uhr GMT (Official Price und Settlement Price)." },
+          { q: "Sind LME-Preise in Euro oder USD?", a: "LME-Notierungen erfolgen primär in USD/t. Die EUCX zeigt Äquivalente in EUR/t basierend auf dem EZB-Referenzkurs." },
+          { q: "Kann ich über EUCX direkt LME-Kontrakte handeln?", a: "Nein. EUCX ist ein OTF für physische Rohstoffe in der EU. Für LME-Futures benötigen Sie einen LME-zugelassenen Broker." },
+        ],
+      },
+    ],
+    related: ["otf-eucx", "betonstahl"],
+  },
+  {
+    slug: "incoterms-2020",
+    term: "Incoterms 2020",
+    shortDef: "Die Incoterms 2020 der ICC regeln Lieferbedingungen im internationalen Warenhandel. Sie definieren, wer Kosten, Risiko und Transportverantwortung trägt.",
+    description: "Incoterms 2020 kompakt: alle 11 Klauseln, Praxisrelevanz im Stahlhandel und Bedeutung auf der EUCX-Plattform.",
+    category: "Handel",
+    readMin: 8,
+    published: "2026-03-23",
+    updated: "2026-03-23",
+    sections: [
+      {
+        id: "einfuehrung",
+        heading: "Was sind Incoterms?",
+        body: "International Commercial Terms (Incoterms) sind standardisierte Lieferklauseln der Internationalen Handelskammer (ICC, Paris). Die aktuelle Version Incoterms 2020 (in Kraft seit 1. Januar 2020) umfasst 11 Klauseln, die in zwei Gruppen unterteilt sind: Klauseln für alle Verkehrsmittel und Klauseln ausschließlich für See- und Binnenschifffahrt.",
+      },
+      {
+        id: "klauseln-alle",
+        heading: "Klauseln für alle Transportmittel",
+        body: "EXW (Ex Works): Verkäufer stellt Ware bereit, Käufer trägt alle Kosten und Risiken ab Werk. FCA (Free Carrier): Verkäufer liefert an benannten Ort/Spediteur. CPT (Carriage Paid To): Verkäufer zahlt Fracht bis Bestimmungsort. CIP (Carriage and Insurance Paid To): Wie CPT, aber mit erhöhter Versicherungspflicht (ICC-A). DAP (Delivered At Place): Verkäufer trägt alle Risiken bis Bestimmungsort. DPU (Delivered at Place Unloaded): Neu in 2020, Verkäufer trägt auch Entladekosten. DDP (Delivered Duty Paid): Maximale Verpflichtung des Verkäufers inkl. Zoll.",
+      },
+      {
+        id: "klauseln-see",
+        heading: "Klauseln für See/Binnenschiff",
+        body: "FAS (Free Alongside Ship): Ware neben Schiff am Verladehafen. FOB (Free on Board): Gefahrübergang mit Überschreiten der Schiffsreling – der Klassiker im Rohstoffhandel. CFR (Cost and Freight): Verkäufer zahlt Fracht, Gefahr geht mit FOB über. CIF (Cost, Insurance and Freight): Wie CFR, aber mit Mindestversicherung (ICC-C).",
+      },
+      {
+        id: "eucx-praxis",
+        heading: "Praxisrelevanz auf EUCX",
+        body: "Auf der EUCX-Plattform werden Angebote standardmäßig mit DAP Empfängeranschrift (Deutschland/EU) quotiert. Verkäufer können alternativ EXW Werksabgabe oder FCA Bahnhof/Hafen wählen. Die Klausel beeinflusst direkt den Vergleichspreis: Ein DAP-Angebot zu 710 €/t ist bei gleicher Qualität teurer als EXW 695 €/t, wenn die Transportkosten 10 €/t betragen.",
+      },
+      {
+        id: "faq",
+        heading: "Häufige Fragen",
+        body: "",
+        faq: [
+          { q: "Welche Incoterm-Klausel ist im Stahlhandel am gebräuchlichsten?", a: "DAP (Delivered At Place) und EXW (Ex Works) dominieren den innereuropäischen Stahlhandel. FOB wird hauptsächlich für Überseetransporte verwendet." },
+          { q: "Sind Incoterms rechtlich verbindlich?", a: "Nur wenn sie ausdrücklich im Vertrag vereinbart werden. Die ICC empfiehlt den Zusatz 'Incoterms 2020' zur Klarstellung der Regelversion." },
+          { q: "Was hat sich in Incoterms 2020 geändert?", a: "Hauptänderungen: DPU ersetzt DAT; FCA erlaubt nun Bordkonnossement; CIP wurde auf ICC-A-Versicherungsstandard angehoben." },
+        ],
+      },
+    ],
+    related: ["betonstahl", "otf-eucx"],
+  },
+  {
+    slug: "abwicklungsgarantie",
+    term: "Abwicklungsgarantie",
+    shortDef: "Die Abwicklungsgarantie (Settlement Guarantee) sichert Handelstransaktionen ab und schützt beide Vertragsparteien vor Gegenparteiausfällen.",
+    description: "Wie funktioniert die Abwicklungsgarantie auf EUCX? Margin-Typen, Ausfallfonds und rechtliche Grundlagen erklärt.",
+    category: "Regulierung",
+    readMin: 5,
+    published: "2026-03-23",
+    updated: "2026-03-23",
+    norm: "§ 72 WpHG · Art. 20 MiFID II",
+    sections: [
+      {
+        id: "definition",
+        heading: "Definition und rechtliche Grundlage",
+        body: "Die Abwicklungsgarantie (engl. Settlement Guarantee) ist eine rechtsverbindliche Zusage, dass eine Transaktion auf einem organisierten Handelssystem (OTF) vollständig abgewickelt wird – unabhängig davon, ob eine der Vertragsparteien ihren Verpflichtungen nachkommt. Rechtsgrundlage: § 72 WpHG i.V.m. Art. 20 MiFID II. Die EUCX GmbH als OTF-Betreiberin ist verpflichtet, geeignete Mechanismen zur Sicherung der Handelsabwicklung vorzuhalten.",
+      },
+      {
+        id: "mechanismus",
+        heading: "Funktionsweise auf EUCX",
+        body: "Vor Handelszulassung: Jeder Marktteilnehmer hinterlegt eine Sicherheitsleistung (Initial Margin) in Höhe von min. 5 % des zugelassenen Handelsvolumens. Bei Ordereingabe: Das System prüft automatisch die verfügbare Margin. Kontrakte ohne ausreichende Deckung werden abgewiesen. Bei Vertragsabschluss: Eine Abwicklungsbestätigung wird bilateral versendet. Die Lieferverpflichtung wird im EUCX-Settlement-System hinterlegt. Bei Ausfall einer Partei: Der Ausfallfonds der EUCX deckt Schäden bis 2 Mio. EUR je Einzelfall. Darüber hinaus greift die Berufshaftpflichtversicherung (Allianz, 5 Mio. EUR je Fall).",
+      },
+      {
+        id: "margin-typen",
+        heading: "Initial Margin vs. Variation Margin",
+        body: "Initial Margin: Einmalige Sicherheitsleistung bei Kontoeröffnung. Variation Margin: Tägliche Mark-to-Market-Anpassung bei offenen Positionen (nur für Terminkontrakte). Maintenance Margin: Unterschreitung löst automatischen Margin Call aus.",
+      },
+      {
+        id: "faq",
+        heading: "Häufige Fragen",
+        body: "",
+        faq: [
+          { q: "Was passiert, wenn ein Käufer nicht zahlt?", a: "EUCX aktiviert das Ausfallverfahren: Margin wird eingezogen, offene Position wird über den Markt geschlossen, Differenz wird aus dem Ausfallfonds gedeckt." },
+          { q: "Wie hoch ist die Initial Margin bei EUCX?", a: "Standardmäßig 5 % des genehmigten Handelsvolumens, mindestens jedoch 10.000 EUR. Für volatile Rohstoffe kann die Margin auf bis zu 15 % angehoben werden." },
+          { q: "Ist meine Margin-Einlage verzinst?", a: "Ja. EUCX verzinst Margin-Einlagen zum aktuellen EZB-Einlagezinssatz abzüglich 0,25 %." },
+        ],
+      },
+    ],
+    related: ["otf-eucx", "cbam"],
+  },
+  {
+    slug: "cbam-detail",
+    term: "CBAM – Carbon Border Adjustment Mechanism (vertieft)",
+    shortDef: "Der CO₂-Grenzausgleichsmechanismus (CBAM) der EU ab 2026 macht Kohlenstoffemissionen bei importierten Waren bepreisbar.",
+    description: "CBAM vertieft: Betroffene Warengruppen, Berechnung, Zeitplan und Bedeutung für den EUCX-Handel.",
+    category: "Regulierung",
+    readMin: 10,
+    published: "2026-03-23",
+    updated: "2026-03-23",
+    norm: "VO (EU) 2023/956",
+    sections: [
+      {
+        id: "ueberblick",
+        heading: "Was ist CBAM?",
+        body: "Der Carbon Border Adjustment Mechanism (CBAM) ist ein EU-Instrument, das ab dem 1. Januar 2026 (Übergangsphase seit Oktober 2023) CO₂-Preise auf importierte Waren erhebt, die in der EU keinem vergleichbaren CO₂-Preis unterliegen. Ziel: Verhinderung von 'Carbon Leakage' – also der Verlagerung emissionsintensiver Produktion in Länder mit geringeren Klimaschutzauflagen. Rechtsgrundlage: Verordnung (EU) 2023/956.",
+      },
+      {
+        id: "betroffene-waren",
+        heading: "Betroffene Warengruppen",
+        body: "Sektor 1 – Stahl und Eisen: CN-Codes 7206–7229, inkl. Betonstahl, Walzdraht, Stahlbrammen. Sektor 2 – Aluminium: Primär- und Sekundäraluminium, Aluminiumprodukte. Sektor 3 – Zement: Alle Portlandzementvarianten. Sektor 4 – Düngemittel: Stickstoffdünger, Ammoniumnitrat, Harnstoff. Sektor 5 – Strom: Importierter Strom aus Nicht-EU-Ländern. Sektor 6 – Wasserstoff: Grauer und blauer Wasserstoff. Erweiterung bis 2030: Kommission prüft Ausweitung auf weitere energieintensive Sektoren.",
+      },
+      {
+        id: "berechnung",
+        heading: "Berechnung des CBAM-Preises",
+        body: "CBAM-Preis = Eingebettete Emissionen (tCO₂e/t Ware) × EUA-Wochenpreis (€/tCO₂e). Beispiel Betonstahl (Import aus der Türkei): Durchschnittliche Emissionen Türkei: ca. 1,8 tCO₂/t Stahl. EU-ETS-Preis (EUA): ca. 65 €/tCO₂ (Stand Q1 2026). CBAM-Aufschlag: 1,8 × 65 = 117 €/t. Bei einem Importpreis von 620 €/t entspricht das einem Aufschlag von ca. +18,9 %. Dies verschiebt die Wettbewerbssituation deutlich zugunsten EU-produzierter Ware.",
+      },
+      {
+        id: "zeitplan",
+        heading: "Implementierungszeitplan",
+        body: "Oktober 2023 – Dezember 2025: Übergangsphase (nur Berichtspflicht, keine Zahlungen). Ab 1. Januar 2026: CBAM-Zertifikate werden kostenpflichtig. 2026–2034: Parallele Phase – EU-ETS-Freiallokationen werden schrittweise abgebaut. Ab 2034: Vollständige CBAM-Implementierung, Ende der Freiallokationen für betroffene Sektoren.",
+      },
+      {
+        id: "eucx-relevanz",
+        heading: "Bedeutung für den EUCX-Handel",
+        body: "Auf EUCX werden ausschließlich Waren gehandelt, die bereits in der EU produziert oder ordnungsgemäß importiert (inkl. CBAM-Zertifikat) wurden. CBAM-Pflichten liegen beim Importeur, nicht bei EUCX. Händler, die Nicht-EU-Stahl auf EUCX anbieten, müssen beim Angebotseintrag den CBAM-Compliance-Status dokumentieren. Das System markiert CBAM-pflichtige Angebote automatisch und zeigt den geschätzten CO₂-Aufschlag im Preisvergleich.",
+      },
+      {
+        id: "faq",
+        heading: "Häufige Fragen",
+        body: "",
+        faq: [
+          { q: "Gilt CBAM auch für EU-interne Transporte?", a: "Nein. CBAM betrifft ausschließlich Waren, die aus Drittstaaten in die EU importiert werden. Intra-EU-Handel unterliegt dem EU-ETS, nicht CBAM." },
+          { q: "Wie erhalte ich CBAM-Zertifikate?", a: "CBAM-Zertifikate werden über das EU-CBAM-Register (cbam.ec.europa.eu) erworben. Der Preis richtet sich nach dem wöchentlichen EUA-Durchschnittspreis." },
+          { q: "Was droht bei Verstößen gegen CBAM-Berichtspflichten?", a: "Während der Übergangsphase: Verwarnungen. Ab 2026: Sanktionen von 10–50 EUR je nicht gemeldeter tCO₂e (Verordnung (EU) 2023/956, Art. 26)." },
+          { q: "Betrifft CBAM auch Recycling-Stahl (EAF)?", a: "Ja, aber mit reduziertem CO₂-Faktor. Elektrostahlwerke (EAF) haben typischerweise 0,3–0,6 tCO₂/t gegenüber 1,6–2,2 tCO₂/t bei Hochofenroute." },
+        ],
+      },
+    ],
+    related: ["otf-eucx", "abwicklungsgarantie", "betonstahl"],
+  },
+  {
+    slug: "mifid-ii-otf",
+    term: "MiFID II & OTF – Regulierung organisierter Handelssysteme",
+    shortDef: "MiFID II definiert OTF als dritte Kategorie organisierter Handelsplätze neben Regulated Markets und MTFs. EUCX operiert als BaFin-lizenzierter OTF.",
+    description: "MiFID II, OTF-Definition, Pflichten des OTF-Betreibers und Unterschiede zu RM und MTF kompakt erklärt.",
+    category: "Regulierung",
+    readMin: 9,
+    published: "2026-03-23",
+    updated: "2026-03-23",
+    norm: "RL 2014/65/EU · MiFIR (EU) 600/2014",
+    sections: [
+      {
+        id: "mifid-ueberblick",
+        heading: "MiFID II im Überblick",
+        body: "Die Richtlinie 2014/65/EU (MiFID II, Markets in Financial Instruments Directive II) ist seit 3. Januar 2018 in Kraft und gilt als umfassendstes Regelwerk für Finanzmärkte in der EU. Kernziele: Marktintegrität, Anlegerschutz, Transparenz und Effizienz. Ergänzt durch MiFIR (Verordnung (EU) 600/2014) für Transparenzpflichten und Transaktionsmeldungen.",
+      },
+      {
+        id: "otf-definition",
+        heading: "Was ist ein OTF?",
+        body: "Organised Trading Facility (OTF) ist eine durch MiFID II neu geschaffene, dritte Kategorie organisierter Handelsplätze (Art. 4 Abs. 1 Nr. 23 MiFID II). Kernmerkmal: Ermessensspielraum des Betreibers bei der Auftragsausführung (im Gegensatz zu Regulated Markets und MTFs). Zulässige Instrumente: Anleihen, strukturierte Finanzprodukte, Emissionszertifikate und Derivate – sowie physische Rohstoffe (Commodity OTF nach § 72 WpHG). EUCX operiert als Commodity OTF mit BaFin-Erlaubnis Nr. 10155.IV.7.0001/2025.",
+      },
+      {
+        id: "pflichten-betreiber",
+        heading: "Pflichten des OTF-Betreibers",
+        body: "Transparenzpflichten: Pre-Trade (Veröffentlichung von Quotes/Order-Buch) und Post-Trade (Meldung aller Transaktionen). Transaktionsmeldung: Alle Geschäfte müssen gemäß Art. 26 MiFIR an die BaFin gemeldet werden. Best Execution: Pflicht zur bestmöglichen Ausführung von Kundenaufträgen. Interessenkonflikt-Management: OTF-Betreiber darf nicht eigenes Kapital einsetzen. Organisationspflichten: Compliance-Funktion, Risikomanagement, IT-Sicherheit nach DORA.",
+      },
+      {
+        id: "unterschiede",
+        heading: "OTF vs. RM vs. MTF",
+        body: "Regulated Market (RM): Vollständig automatisiertes Matching, kein Ermessen, z.B. XETRA. Multilateral Trading Facility (MTF): Ähnlich RM, aber flexibler, z.B. Tradegate. Organised Trading Facility (OTF): Ermessen bei Ausführung erlaubt, ideal für weniger liquide oder komplexe Rohstoffmärkte. EUCX nutzt den OTF-Rahmen, weil physische Rohstoffmengen oft individuell ausgehandelt werden und keine vollautomatisierte Ausführung ermöglichen.",
+      },
+      {
+        id: "faq",
+        heading: "Häufige Fragen",
+        body: "",
+        faq: [
+          { q: "Benötige ich als Händler eine eigene MiFID-II-Lizenz?", a: "Nein, wenn Sie ausschließlich als Kunde/Marktteilnehmer auf EUCX handeln und nicht systematisch Eigenhandel betreiben. Die MiFID-II-Lizenz liegt beim OTF-Betreiber (EUCX GmbH)." },
+          { q: "Was ist der Unterschied zwischen MiFID II und MiFIR?", a: "MiFID II ist eine Richtlinie (muss in nationales Recht umgesetzt werden), MiFIR ist eine Verordnung (gilt unmittelbar in der EU). Beide Rechtsakte ergänzen sich." },
+          { q: "Welche Pflichten habe ich als Marktteilnehmer auf EUCX?", a: "Sie müssen sich registrieren, KYC/AML-Prüfung absolvieren, Handelsvolumengrenzen einhalten und auf Anfrage Transaktionsnachweise bereitstellen." },
+          { q: "Gilt auf EUCX Best Execution?", a: "Ja. EUCX ist verpflichtet, für jeden Auftrag die bestmögliche Ausführung sicherzustellen und die Ausführungsqualität regelmäßig zu überwachen (Art. 27 MiFID II)." },
+        ],
+      },
+    ],
+    related: ["otf-eucx", "abwicklungsgarantie", "cbam"],
+  },
 ];
 
 export const AKADEMIE_ARTIKEL: AkademieArtikel[] = [
@@ -305,6 +522,50 @@ export const AKADEMIE_ARTIKEL: AkademieArtikel[] = [
       { q: "Welche Kosten entstehen beim Handel?", a: "Keine Mitgliedsbeiträge. Transaktionsgebühr: 0,15 % des Kontraktwerts. Kaution je nach Volumen-Tier." },
       { q: "Ist ein Handel auch per API möglich?", a: "Ja. REST- und WebSocket-API für automatisierte Order-Platzierung." },
       { q: "Was ist ein Lot an der EUCX?", a: "1 Lot = 25 t für Stahlprodukte und Schrott. Düngemittel: 20 t. Holz: 50 m³." },
+    ],
+  },
+  {
+    slug: "erste-schritte-eucx",
+    title: "Erste Schritte auf EUCX: Registrierung und erste Gebotsabgabe",
+    description: "Von der Registrierung bis zum ersten abgeschlossenen Handel – dieser Schritt-für-Schritt-Guide führt Sie durch den gesamten Onboarding-Prozess auf EUCX.",
+    readMin: 18,
+    published: "2026-03-23",
+    sections: [
+      {
+        id: "ueberblick",
+        heading: "Überblick: Der EUCX-Onboarding-Prozess",
+        body: "Der Weg vom neuen Nutzer zum aktiven Marktteilnehmer auf EUCX umfasst 5 klar definierte Phasen: (1) Online-Registrierung und Dateneingabe, (2) KYC/AML-Identitätsprüfung, (3) Compliance-Freigabe durch das EUCX-Team, (4) Einzahlung der Initial Margin, (5) Erste Orderabgabe im Handelssystem. Die Durchlaufzeit beträgt typischerweise 3–7 Werktage.",
+      },
+      {
+        id: "schritt-1-registrierung",
+        heading: "Schritt 1: Online-Registrierung",
+        body: "Rufen Sie eucx.eu/register auf und wählen Sie Ihren Unternehmenstyp: Händler/Importeur, Produzent/Hersteller, Finanzinstitut oder Industrieabnehmer. Pflichtangaben: Firmenname, Handelsregisternummer, USt-ID, LEI-Nummer (Legal Entity Identifier – sofern vorhanden), Hauptansprechpartner mit Titel und direkter Durchwahl, Geschäftsadresse (muss mit Handelsregistereintrag übereinstimmen). Tipp: Bereiten Sie Ihren Handelsregisterauszug (nicht älter als 3 Monate) und eine aktuelle Gesellschafterliste vor.",
+      },
+      {
+        id: "schritt-2-kyc",
+        heading: "Schritt 2: KYC/AML-Prüfung",
+        body: "Nach der Registrierung erhalten Sie per E-Mail einen Link zur digitalen Dokumenteneinreichung (powered by IDnow). Erforderliche Dokumente für GmbH/AG: Handelsregisterauszug (< 3 Monate), Gesellschafterliste aller direkten Gesellschafter > 25 %, Transparenzregistereintrag, Ausweis aller wirtschaftlich Berechtigten (UBOs), Letzter Jahresabschluss oder Bankauskunft. Bearbeitungszeit: In der Regel 1–2 Werktage. Bei komplexen Eigentümerstrukturen oder Nicht-EU-Sitz bis zu 5 Werktage.",
+      },
+      {
+        id: "schritt-3-compliance",
+        heading: "Schritt 3: Compliance-Freigabe und MiFID-II-Einstufung",
+        body: "Das EUCX-Compliance-Team prüft Ihre Unterlagen auf Vollständigkeit und Plausibilität. Parallel erfolgt die MiFID-II-Kategorisierung: Geeignete Gegenpartei (Eligible Counterparty): Kreditinstitute, Wertpapierfirmen, Versicherungsunternehmen – höchste Handelslimits, geringste Schutzvorschriften. Professioneller Kunde (Professional Client): Großunternehmen mit min. 2 von 3 Kriterien (Bilanzsumme > 20 Mio. EUR, Nettoerlöse > 40 Mio. EUR, Eigenkapital > 2 Mio. EUR). Kleinere Unternehmen erhalten standardmäßig Professioneller Kunde-Status nach Eignungsprüfung.",
+      },
+      {
+        id: "schritt-4-margin",
+        heading: "Schritt 4: Initial Margin einzahlen",
+        body: "Nach der Compliance-Freigabe erhalten Sie Zugang zum EUCX-Kundenportal. Überweisen Sie die Initial Margin auf das EUCX-Treuhandkonto (IBAN wird im Portal angezeigt). Mindestbetrag: 10.000 EUR. Standard für mittelgroße Händler: 50.000–250.000 EUR. Die Margin steht Ihnen jederzeit zur Verfügung, solange keine offenen Positionen bestehen. Die Margin wird zum EZB-Einlagezinssatz − 0,25 % p.a. verzinst.",
+      },
+      {
+        id: "schritt-5-erste-order",
+        heading: "Schritt 5: Erste Order abgeben",
+        body: "Loggen Sie sich unter portal.eucx.eu ein. Wählen Sie den gewünschten Rohstoff-Markt (z.B. Betonstahl B500B, Lieferung Frankfurt). Wählen Sie den Ordertyp: Limit Order (fixer Preis, wartet auf Gegenpartei) oder Market Order (sofortige Ausführung zum besten verfügbaren Preis). Geben Sie Menge (in Tonnen, Mindestlot: 25 t) und Preis (€/t) ein. Wählen Sie Lieferbedingung (DAP/EXW) und Lieferzeitraum. Bestätigen Sie die Order mit Ihrer Trading-PIN. Nach Matching erhalten Sie eine Handelsbestätigung per E-Mail und im Portal.",
+      },
+      {
+        id: "tipps-erste-wochen",
+        heading: "Tipps für die ersten Wochen",
+        body: "Nutzen Sie den Testmodus: EUCX bietet eine Paper-Trading-Umgebung, in der Sie ohne echtes Kapital Orderabgabe und Matching üben können. Beobachten Sie zunächst den Markt: Verfolgen Sie 1–2 Wochen die Preisbewegungen im gewünschten Segment, bevor Sie eine große Order platzieren. Starten Sie mit Limit Orders: Im Gegensatz zu Market Orders können Sie Limit Orders jederzeit stornieren, solange kein Matching stattgefunden hat. Nutzen Sie den EUCX-Kundendienst: Ihr persönlicher Relationship Manager steht Ihnen in den ersten 3 Monaten täglich für Fragen zur Verfügung.",
+      },
     ],
   },
 ];
