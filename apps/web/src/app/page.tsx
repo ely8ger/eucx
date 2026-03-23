@@ -22,12 +22,11 @@ export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const NAV_LINKS = [
-    { label: t("nav_katalog"),      href: "/katalog" },
-    { label: t("nav_marktpreise"),  href: "/marktpreise" },
-    { label: t("nav_markets"),      href: "#marktbereiche" },
-    { label: t("nav_how"),        href: "#wie-es-funktioniert" },
-    { label: t("nav_regulation"), href: "#regulierung" },
-    { label: t("nav_join"),       href: "#teilnehmer" },
+    { label: t("nav_katalog"),     href: "/katalog" },
+    { label: t("nav_markets"),     href: "#marktbereiche" },
+    { label: t("nav_how"),         href: "#wie-es-funktioniert" },
+    { label: t("nav_regulation"),  href: "#regulierung" },
+    { label: t("nav_join"),        href: "#teilnehmer" },
   ];
 
   return (
@@ -92,6 +91,12 @@ export default function HomePage() {
                 {label}
               </a>
             ))}
+            <Link href="/marktpreise"
+              style={{ fontSize: 12, fontWeight: 700, color: "#154194", backgroundColor: "#eef2fb", padding: "5px 14px", textDecoration: "none", letterSpacing: "0.04em", marginLeft: 8, border: "1px solid #c7d7f0" }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#154194", e.currentTarget.style.color = "#fff")}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#eef2fb", e.currentTarget.style.color = "#154194")}>
+              {t("nav_marktpreise")} ↗
+            </Link>
           </nav>
 
           <div className="flex items-center gap-3">
@@ -135,6 +140,24 @@ export default function HomePage() {
 
           <h1 className="r-hero-h1">{t("hero_h1")}</h1>
           <p className="r-hero-sub">{t("hero_sub")}</p>
+
+          {/* Marktpreise-Banner */}
+          <Link href="/marktpreise" style={{
+            display: "inline-flex", alignItems: "center", gap: 12, marginBottom: 24,
+            backgroundColor: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.15)",
+            padding: "10px 18px", textDecoration: "none",
+          }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,.1)")}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,.06)")}>
+            <span style={{ width: 6, height: 6, backgroundColor: "#22c55e", borderRadius: "50%", flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: "rgba(255,255,255,.6)" }}>
+              {t("nav_marktpreise")}:
+            </span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#fff", fontFamily: "'IBM Plex Mono', monospace" }}>
+              Betonstahl 698,00 €/t · Walzdraht 672,00 €/t · Harnstoff 485,00 €/t
+            </span>
+            <span style={{ fontSize: 11, color: "#22c55e", fontWeight: 700, marginLeft: 4 }}>→</span>
+          </Link>
 
           <div className="flex flex-wrap gap-4">
             <Link href="/login"
