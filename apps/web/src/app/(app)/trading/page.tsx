@@ -14,18 +14,18 @@ type SessionStage = "OFFEN" | "NUR_VERKAUF" | "GESCHLOSSEN" | "ABGESCHLOSSEN";
 
 interface Session {
   id: string; no: string; date: string; time: string;
-  category: string; name: string; stage: SessionStage;
+  categoryKey: string; nameKey: string; stage: SessionStage;
   buyOrders: number; sellOrders: number; deals: number; volume: string;
   participants: number;
 }
 
 const SESSIONS: Session[] = [
-  { id: "ses-041", no: "M-2026-041", date: "23.03.2026", time: "10:00–13:00", category: "Metalle",  name: "Betonstahl / Walzdraht Spotmarkt",  stage: "OFFEN",        buyOrders: 12, sellOrders: 18, deals: 4,  volume: "620 t",    participants: 9  },
-  { id: "ses-040", no: "M-2026-040", date: "23.03.2026", time: "10:00–13:00", category: "Metalle",  name: "Träger & Profile — Export",          stage: "NUR_VERKAUF",  buyOrders: 0,  sellOrders: 9,  deals: 0,  volume: "—",        participants: 5  },
-  { id: "ses-039", no: "D-2026-039", date: "23.03.2026", time: "10:00–13:00", category: "Dünger",   name: "Harnstoff 46 % N — Spotmarkt",      stage: "OFFEN",        buyOrders: 6,  sellOrders: 14, deals: 2,  volume: "480 t",    participants: 7  },
-  { id: "ses-038", no: "M-2026-038", date: "20.03.2026", time: "10:00–13:00", category: "Metalle",  name: "Flachstahl / Bleche — Inlandsmarkt", stage: "ABGESCHLOSSEN",buyOrders: 8,  sellOrders: 11, deals: 7,  volume: "1.200 t",  participants: 12 },
-  { id: "ses-037", no: "D-2026-037", date: "20.03.2026", time: "10:00–13:00", category: "Dünger",   name: "NPK 15-15-15 — Frühjahrsware",      stage: "ABGESCHLOSSEN",buyOrders: 14, sellOrders: 22, deals: 11, volume: "4.400 t",  participants: 18 },
-  { id: "ses-036", no: "M-2026-036", date: "19.03.2026", time: "10:00–13:00", category: "Metalle",  name: "Rundrohre / Vierkantrohr — Export",  stage: "GESCHLOSSEN",  buyOrders: 5,  sellOrders: 5,  deals: 0,  volume: "—",        participants: 4  },
+  { id: "ses-041", no: "M-2026-041", date: "23.03.2026", time: "10:00–13:00", categoryKey: "cat_badge_metalle", nameKey: "trading_ses_betonstahl",  stage: "OFFEN",        buyOrders: 12, sellOrders: 18, deals: 4,  volume: "620 t",    participants: 9  },
+  { id: "ses-040", no: "M-2026-040", date: "23.03.2026", time: "10:00–13:00", categoryKey: "cat_badge_metalle", nameKey: "trading_ses_traeger",     stage: "NUR_VERKAUF",  buyOrders: 0,  sellOrders: 9,  deals: 0,  volume: "—",        participants: 5  },
+  { id: "ses-039", no: "D-2026-039", date: "23.03.2026", time: "10:00–13:00", categoryKey: "cat_badge_duenger", nameKey: "trading_ses_harnstoff",   stage: "OFFEN",        buyOrders: 6,  sellOrders: 14, deals: 2,  volume: "480 t",    participants: 7  },
+  { id: "ses-038", no: "M-2026-038", date: "20.03.2026", time: "10:00–13:00", categoryKey: "cat_badge_metalle", nameKey: "trading_ses_flachstahl",  stage: "ABGESCHLOSSEN",buyOrders: 8,  sellOrders: 11, deals: 7,  volume: "1.200 t",  participants: 12 },
+  { id: "ses-037", no: "D-2026-037", date: "20.03.2026", time: "10:00–13:00", categoryKey: "cat_badge_duenger", nameKey: "trading_ses_npk",         stage: "ABGESCHLOSSEN",buyOrders: 14, sellOrders: 22, deals: 11, volume: "4.400 t",  participants: 18 },
+  { id: "ses-036", no: "M-2026-036", date: "19.03.2026", time: "10:00–13:00", categoryKey: "cat_badge_metalle", nameKey: "trading_ses_rundrohre",   stage: "GESCHLOSSEN",  buyOrders: 5,  sellOrders: 5,  deals: 0,  volume: "—",        participants: 4  },
 ];
 
 /* ── Aggregate stats ─────────────────────────────────────────────────── */
@@ -147,15 +147,15 @@ function SessionCard({
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
             <span style={{ fontFamily: MONO, fontSize: 11, color: "#aaa", letterSpacing: "0.04em" }}>{s.no}</span>
             <span style={{ color: "#ddd" }}>·</span>
-            <span style={{ fontSize: 11, color: "#999" }}>{s.date}, {s.time} Uhr</span>
+            <span style={{ fontSize: 11, color: "#999" }}>{s.date}, {s.time}{t("lbl_uhr") ? " " + t("lbl_uhr") : ""}</span>
             <span style={{ fontSize: 10, fontWeight: 700, color: BLUE, backgroundColor: "#eef2fb", padding: "1px 8px", letterSpacing: "0.04em" }}>
-              {s.category}
+              {t(s.categoryKey as any)}
             </span>
             <span style={{ fontSize: 11, color: "#bbb" }}>{s.participants} {t("trading_participants")}</span>
           </div>
 
           {/* Name */}
-          <p style={{ fontSize: 15, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>{s.name}</p>
+          <p style={{ fontSize: 15, fontWeight: 600, color: "#0d1b2a", margin: 0 }}>{t(s.nameKey as any)}</p>
 
           {/* Kauf/Verkauf Balance + Stats */}
           <div style={{ marginTop: 12 }}>
