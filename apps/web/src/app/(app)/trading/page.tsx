@@ -19,12 +19,12 @@ interface Session {
 }
 
 const SESSIONS: Session[] = [
-  { id: "ses-041", no: "M-2026-041", date: "18.03.2026", time: "09:00–14:00", category: "Metalle",  name: "Betonstahl / Walzdraht Spotmarkt",  stage: "OFFEN",        buyOrders: 12, sellOrders: 18, deals: 4,  volume: "620 t",    participants: 9  },
-  { id: "ses-040", no: "M-2026-040", date: "18.03.2026", time: "10:30–15:00", category: "Metalle",  name: "Träger & Profile — Export",          stage: "NUR_VERKAUF",  buyOrders: 0,  sellOrders: 9,  deals: 0,  volume: "—",        participants: 5  },
-  { id: "ses-039", no: "S-2026-039", date: "18.03.2026", time: "08:00–12:00", category: "Schrott",  name: "Eisenschrott ISRI 210/211 Inland",  stage: "OFFEN",        buyOrders: 6,  sellOrders: 14, deals: 2,  volume: "480 t",    participants: 7  },
-  { id: "ses-038", no: "H-2026-038", date: "17.03.2026", time: "09:00–13:00", category: "Holz",     name: "Fichten-Rundholz 2b-Qualität",      stage: "ABGESCHLOSSEN",buyOrders: 8,  sellOrders: 11, deals: 7,  volume: "1.200 m³", participants: 12 },
-  { id: "ses-037", no: "A-2026-037", date: "17.03.2026", time: "11:00–16:00", category: "Agrar",    name: "Weizen A-Qualität Ernte 2025",      stage: "ABGESCHLOSSEN",buyOrders: 14, sellOrders: 22, deals: 11, volume: "4.400 t",  participants: 18 },
-  { id: "ses-036", no: "M-2026-036", date: "17.03.2026", time: "08:30–13:30", category: "Metalle",  name: "Aluminium-Walzbarren 1050A",        stage: "GESCHLOSSEN",  buyOrders: 5,  sellOrders: 5,  deals: 0,  volume: "—",        participants: 4  },
+  { id: "ses-041", no: "M-2026-041", date: "23.03.2026", time: "10:00–13:00", category: "Metalle",  name: "Betonstahl / Walzdraht Spotmarkt",  stage: "OFFEN",        buyOrders: 12, sellOrders: 18, deals: 4,  volume: "620 t",    participants: 9  },
+  { id: "ses-040", no: "M-2026-040", date: "23.03.2026", time: "10:00–13:00", category: "Metalle",  name: "Träger & Profile — Export",          stage: "NUR_VERKAUF",  buyOrders: 0,  sellOrders: 9,  deals: 0,  volume: "—",        participants: 5  },
+  { id: "ses-039", no: "D-2026-039", date: "23.03.2026", time: "10:00–13:00", category: "Dünger",   name: "Harnstoff 46 % N — Spotmarkt",      stage: "OFFEN",        buyOrders: 6,  sellOrders: 14, deals: 2,  volume: "480 t",    participants: 7  },
+  { id: "ses-038", no: "M-2026-038", date: "20.03.2026", time: "10:00–13:00", category: "Metalle",  name: "Flachstahl / Bleche — Inlandsmarkt", stage: "ABGESCHLOSSEN",buyOrders: 8,  sellOrders: 11, deals: 7,  volume: "1.200 t",  participants: 12 },
+  { id: "ses-037", no: "D-2026-037", date: "20.03.2026", time: "10:00–13:00", category: "Dünger",   name: "NPK 15-15-15 — Frühjahrsware",      stage: "ABGESCHLOSSEN",buyOrders: 14, sellOrders: 22, deals: 11, volume: "4.400 t",  participants: 18 },
+  { id: "ses-036", no: "M-2026-036", date: "19.03.2026", time: "10:00–13:00", category: "Metalle",  name: "Rundrohre / Vierkantrohr — Export",  stage: "GESCHLOSSEN",  buyOrders: 5,  sellOrders: 5,  deals: 0,  volume: "—",        participants: 4  },
 ];
 
 const STAGE_CFG: Record<SessionStage, { label: string; color: string; bg: string; border: string }> = {
