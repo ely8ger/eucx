@@ -55,13 +55,22 @@ export default function TradingPage() {
             Laufende und abgeschlossene Sitzungen · Kauf- & Verkaufsaufträge
           </p>
         </div>
-        <Link href="/trading/terminal" style={{
-          display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px",
-          backgroundColor: BLUE, color: "#fff", fontSize: 12, fontWeight: 600,
-          textDecoration: "none", letterSpacing: "0.02em",
-        }}>
-          Pro Terminal →
-        </Link>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Link href="/orders/new" style={{
+            display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 18px",
+            backgroundColor: BLUE, color: "#fff", fontSize: 12, fontWeight: 700,
+            textDecoration: "none", letterSpacing: "0.02em",
+          }}>
+            + Neuen Auftrag erstellen
+          </Link>
+          <Link href="/trading/terminal" style={{
+            display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px",
+            backgroundColor: "transparent", color: BLUE, fontSize: 12, fontWeight: 600,
+            textDecoration: "none", letterSpacing: "0.02em", border: `1px solid ${BLUE}`,
+          }}>
+            Pro Terminal →
+          </Link>
+        </div>
       </div>
 
       {/* ── Statistik-Leiste ─────────────────────────────────────────────── */}

@@ -295,7 +295,7 @@ export default function KategoriePage() {
                 {/* Buttons */}
                 <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", gap: 8 }}>
                   <Link
-                    href="/trading"
+                    href="/orders/new"
                     style={{
                       display: "inline-flex", alignItems: "center", justifyContent: "center",
                       height: 36, padding: "0 18px",

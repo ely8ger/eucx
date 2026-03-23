@@ -125,6 +125,10 @@ export default function LoginPage() {
   const setAuth = useAuthStore((s) => s.setAuth);
   const { t }   = useI18n();
 
+  const nextPath = typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search).get("next") ?? "/dashboard"
+    : "/dashboard";
+
   const [step,     setStep    ] = useState<Step>("password");
   const [email,    setEmail   ] = useState("");
   const [password, setPassword] = useState("");
@@ -177,7 +181,7 @@ export default function LoginPage() {
         if (data.data.user) setAuth(data.data.user, expiresAt);
         scheduleAutoLogout(expiresAt);
         if (typeof window !== "undefined") localStorage.setItem("eucx_prev_login", new Date().toISOString());
-        router.push("/dashboard");
+        router.push(nextPath);
       }
     } catch {
       setErrors({ email: t("login_err_conn") });
@@ -205,7 +209,7 @@ export default function LoginPage() {
         if (data.data.user) setAuth(data.data.user, expiresAt);
         scheduleAutoLogout(expiresAt);
         if (typeof window !== "undefined") localStorage.setItem("eucx_prev_login", new Date().toISOString());
-        router.push("/dashboard");
+        router.push(nextPath);
       }
     } catch { setErrors({ code: t("login_err_conn") }); }
     finally  { setLoading(false); }

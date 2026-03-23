@@ -159,7 +159,7 @@ export default function ProduktPage() {
               <ProductThumbLg physForm={produkt.physForm} id={produkt.id} />
             </div>
             {/* Handeln-Button */}
-            <Link href="/trading" style={{
+            <Link href="/orders/new" style={{
               display: "flex", alignItems: "center", justifyContent: "center",
               height: 44, backgroundColor: BLUE, color: "#fff",
               textDecoration: "none", fontSize: 14, fontWeight: 600, fontFamily: F,

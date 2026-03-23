@@ -401,7 +401,7 @@ export default function KatalogPage() {
                     <td style={{ ...TD, textAlign: "right", fontWeight: 600, color: "#0d1b2a" }}>{formatPreis(p.preisKg)}</td>
                     <td style={{ ...TD, textAlign: "right", color: "#555" }}>{formatTonne(p.preisKg)}</td>
                     <td style={{ ...TD, textAlign: "center", padding: "6px 10px" }}>
-                      <Link href="/trading" style={{ display: "inline-block", fontSize: 12, fontWeight: 600, color: "#fff", backgroundColor: BLUE, padding: "5px 12px", textDecoration: "none" }}
+                      <Link href="/orders/new" style={{ display: "inline-block", fontSize: 12, fontWeight: 600, color: "#fff", backgroundColor: BLUE, padding: "5px 12px", textDecoration: "none" }}
                         onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#0f3070"; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = BLUE; }}>
                         Handeln →

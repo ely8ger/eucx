@@ -80,10 +80,20 @@ export default function TradingSessionPage({ params }: { params: Promise<{ id: s
               </div>
               <p className="text-sm text-gray-500">Sitzung M-2026-{id} · Warengruppe Metalle · 18. März 2026</p>
             </div>
-            <div className="flex items-center gap-1.5 text-sm text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5">
-              <Clock size={14} />
-              <span className="font-mono font-medium text-gray-900">02:28:14</span>
-              <span>verbleibend</span>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 text-sm text-gray-500 bg-gray-50 border border-gray-200 px-3 py-1.5">
+                <Clock size={14} />
+                <span className="font-mono font-medium text-gray-900">02:28:14</span>
+                <span>verbleibend</span>
+              </div>
+              <Link href="/orders/new" style={{
+                display: "inline-flex", alignItems: "center", gap: 6,
+                height: 36, padding: "0 18px",
+                backgroundColor: "#154194", color: "#fff", fontSize: 13, fontWeight: 700,
+                textDecoration: "none", letterSpacing: "0.02em", whiteSpace: "nowrap",
+              }}>
+                + Auftrag einreichen
+              </Link>
             </div>
           </div>
 

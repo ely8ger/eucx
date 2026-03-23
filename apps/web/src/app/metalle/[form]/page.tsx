@@ -233,7 +233,7 @@ export default function FormPage() {
                 {/* Handeln-Button */}
                 <div style={{ flexShrink: 0 }}>
                   <Link
-                    href="/trading"
+                    href="/orders/new"
                     style={{
                       display: "inline-flex", alignItems: "center", height: 36, padding: "0 18px",
                       backgroundColor: BLUE, color: "#fff", textDecoration: "none",

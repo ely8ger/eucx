@@ -45,7 +45,9 @@ export async function middleware(req: NextRequest) {
 
   const token = req.cookies.get("access_token")?.value;
   if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("next", pathname);
+    return NextResponse.redirect(loginUrl);
   }
   try {
     const payload = await verifyAccessToken(token);
@@ -59,7 +61,9 @@ export async function middleware(req: NextRequest) {
 
     return NextResponse.next();
   } catch {
-    const res = NextResponse.redirect(new URL("/login", req.url));
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("next", pathname);
+    const res = NextResponse.redirect(loginUrl);
     res.cookies.delete("access_token");
     return res;
   }
