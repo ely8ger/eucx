@@ -190,6 +190,60 @@ export default function MarktpreisePage() {
             <PriceTable />
           </section>
 
+          {/* ── Marktkommentar ────────────────────────────────────────── */}
+          <section style={{ padding: "48px 0", backgroundColor: "#f9fafb", borderTop: "1px solid #e8e8e8", borderBottom: "1px solid #e8e8e8", marginTop: 48, marginLeft: -24, marginRight: -24 }}>
+            <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+              <div style={{ display: "flex", gap: 32, flexWrap: "wrap" }}>
+                {/* Hauptkommentar */}
+                <div style={{ flex: "1 1 480px" }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: BLUE, display: "block", marginBottom: 8 }}>
+                    Marktkommentar · KW 12 / 2026
+                  </span>
+                  <h2 style={{ fontSize: 22, fontWeight: 600, color: "#1a1a1a", margin: "0 0 16px", lineHeight: 1.3 }}>
+                    Betonstahl stabilisiert — Kupfer auf 3-Monats-Hoch
+                  </h2>
+                  <p style={{ fontSize: 14, color: "#505050", lineHeight: 1.8, margin: "0 0 12px" }}>
+                    Nach dem scharfen Preisrückgang im Februar zeigt sich der Betonstahl-Markt in KW 12 stabilisiert (+3,2 % WoW).
+                    Haupttreiber sind gestiegene Bauaktivitäten in Deutschland und Polen sowie rückläufige Schrottpreise in der Türkei,
+                    dem wichtigsten EAF-Stahlproduzenten für den EU-Markt. Die Produktion türkischer EAF-Werke lag im Februar 2026
+                    rund 8 % unter Vorjahresniveau, was den Exportdruck auf den EU-Markt dämpft.
+                  </p>
+                  <p style={{ fontSize: 14, color: "#505050", lineHeight: 1.8, margin: "0 0 12px" }}>
+                    Kupfer notiert auf einem 3-Monats-Hoch bei 9.847 $/t (LME Cash). Die LME-Lagerbestände sind auf 87.450 t
+                    gefallen — ein Rückgang von 12 % gegenüber der Vorwoche. Anhaltende Nachfrage aus dem Elektrifizierungssektor
+                    (EV-Batterien, Windkraftanlagen, Smart-Grid-Infrastruktur) und Produktionsausfälle in chilenischen Kupferminen
+                    (Codelco: −4,3 % YoY) stützen die Notierungen.
+                  </p>
+                  <p style={{ fontSize: 14, color: "#505050", lineHeight: 1.8, margin: 0 }}>
+                    <strong>Ausblick KW 13:</strong> Seitwärtsbewegung bei Baustahl erwartet. CBAM-Effekte werden ab Q3 2026
+                    Importpreise spürbar anheben — strukturell bullisch für EU-produzierte Ware.
+                  </p>
+                </div>
+                {/* Sidebar: Top-Mover */}
+                <div style={{ flex: "0 0 260px" }}>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a", margin: "0 0 16px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                    Top-Mover KW 12
+                  </h3>
+                  {[
+                    { name: "Kupfer (LME)", delta: "+2,7 %", dir: "up" },
+                    { name: "Betonstahl B500B", delta: "+3,2 %", dir: "up" },
+                    { name: "Weizen MATIF", delta: "+1,8 %", dir: "up" },
+                    { name: "Erdgas TTF", delta: "−4,1 %", dir: "down" },
+                    { name: "Nickel (LME)", delta: "−3,1 %", dir: "down" },
+                    { name: "Walzdraht SAE1008", delta: "−0,6 %", dir: "down" },
+                  ].map(item => (
+                    <div key={item.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid #f0f0f0" }}>
+                      <span style={{ fontSize: 13, color: "#3a3a3a" }}>{item.name}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: item.dir === "up" ? "#16a34a" : "#dc2626", fontFamily: MONO }}>
+                        {item.delta}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* ── Marktberichte ─────────────────────────────────────────── */}
           <section aria-label="Marktberichte" style={{ marginTop: 64 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
@@ -525,6 +579,90 @@ export default function MarktpreisePage() {
                 </tbody>
               </table>
               <p style={{ fontSize: 11, color: "#bbb", padding: "10px 14px", margin: 0 }}>Preise in EUR (netto), frei Lager DE. Quelle: EUCX-Sitzungsabschlüsse.</p>
+            </div>
+          </section>
+
+          {/* ── Holz & Forst ──────────────────────────────────────────── */}
+          <section style={{ padding: "48px 0", backgroundColor: "#fff", marginTop: 64 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 300, color: "#1a1a1a", margin: "0 0 6px" }}>
+              Holz- &amp; Forstprodukte
+            </h2>
+            <p style={{ fontSize: 13, color: "#666", margin: "0 0 24px" }}>Schnittholz, Rundholz und Holzwerkstoffe — Preise ab Sägewerk (EXW) bzw. frei Haus (DAP)</p>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: SANS }}>
+                <thead>
+                  <tr style={{ backgroundColor: "#f8f9fa" }}>
+                    {["Produkt", "Spezifikation", "Herkunft", "Preis KW 12", "Δ WoW", "Δ MoM"].map(h => (
+                      <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#555", borderBottom: "2px solid #e8e8e8" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { produkt: "Fichtenschnittholz", spez: "S10, 100×200 mm, KD", herkunft: "Österreich/Bayern", preis: "320 €/m³", wow: "+1,4 %", mom: "+0,8 %", updown: "up" },
+                    { produkt: "Kiefernschnittholz", spez: "S10, 100×200 mm, KD", herkunft: "Skandinavien", preis: "298 €/m³", wow: "+0,9 %", mom: "−1,2 %", updown: "up" },
+                    { produkt: "Buchenfurnierholz", spez: "A/B, 25 mm, KD", herkunft: "Deutschland", preis: "485 €/m³", wow: "−0,4 %", mom: "+2,1 %", updown: "down" },
+                    { produkt: "Fichtenstammholz", spez: "B, ø 25–35 cm", herkunft: "Tschechien/Polen", preis: "98 €/fm", wow: "−1,8 %", mom: "−4,3 %", updown: "down" },
+                    { produkt: "OSB/3 Platten", spez: "18 mm, 2500×1250", herkunft: "EU-Produktion", preis: "18,40 €/m²", wow: "+0,0 %", mom: "+1,1 %", updown: "neutral" },
+                    { produkt: "Holzpellets (Sack)", spez: "ENplus A1, 15 kg", herkunft: "Österreich", preis: "7,20 €/Sack", wow: "−2,1 %", mom: "−5,8 %", updown: "down" },
+                  ].map((row, i) => (
+                    <tr key={i} style={{ backgroundColor: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                      <td style={{ padding: "10px 14px", borderBottom: "1px solid #f0f0f0", fontWeight: 600, color: "#1a1a1a" }}>{row.produkt}</td>
+                      <td style={{ padding: "10px 14px", borderBottom: "1px solid #f0f0f0", color: "#555" }}>{row.spez}</td>
+                      <td style={{ padding: "10px 14px", borderBottom: "1px solid #f0f0f0", color: "#555" }}>{row.herkunft}</td>
+                      <td style={{ padding: "10px 14px", borderBottom: "1px solid #f0f0f0", fontWeight: 700, color: "#1a1a1a", fontFamily: MONO }}>{row.preis}</td>
+                      <td style={{ padding: "10px 14px", borderBottom: "1px solid #f0f0f0", fontWeight: 700, color: row.updown === "up" ? "#16a34a" : row.updown === "down" ? "#dc2626" : "#666", fontFamily: MONO }}>{row.wow}</td>
+                      <td style={{ padding: "10px 14px", borderBottom: "1px solid #f0f0f0", color: "#888", fontFamily: MONO }}>{row.mom}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* ── Energie & CO₂ ─────────────────────────────────────────── */}
+          <section style={{ padding: "48px 0", backgroundColor: "#f9fafb", borderTop: "1px solid #e8e8e8", marginLeft: -24, marginRight: -24, paddingLeft: 24, paddingRight: 24 }}>
+            <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+              <h2 style={{ fontSize: 24, fontWeight: 300, color: "#1a1a1a", margin: "0 0 6px" }}>
+                Energie &amp; CO₂-Zertifikate
+              </h2>
+              <p style={{ fontSize: 13, color: "#666", margin: "0 0 24px" }}>Energieträger und EU-ETS-Preise — entscheidend für Produktionskosten im Rohstoffsektor</p>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                  <thead>
+                    <tr style={{ backgroundColor: "#f0f0f0" }}>
+                      {["Energie-Träger", "Handelsplatz", "Einheit", "Preis KW 12", "Δ WoW", "Δ 3 Monate"].map(h => (
+                        <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#555", borderBottom: "2px solid #e8e8e8" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { name: "Erdgas", platz: "TTF (NL)", einheit: "€/MWh", preis: "34,20", wow: "−4,1 %", d3m: "−18,3 %", dir: "down" },
+                      { name: "Strom Base", platz: "EEX (DE)", einheit: "€/MWh", preis: "89,50", wow: "+2,3 %", d3m: "+7,1 %", dir: "up" },
+                      { name: "EU-ETS (EUA)", platz: "ICE Endex", einheit: "€/tCO₂", preis: "65,40", wow: "−0,8 %", d3m: "+4,2 %", dir: "down" },
+                      { name: "Brent Crude", platz: "ICE (London)", einheit: "$/bbl", preis: "74,30", wow: "+1,2 %", d3m: "−8,9 %", dir: "up" },
+                      { name: "Steinkohle", platz: "Rotterdam API2", einheit: "$/t", preis: "112,50", wow: "−0,4 %", d3m: "−12,1 %", dir: "down" },
+                      { name: "Wasserstoff (grün)", platz: "OTC Europe", einheit: "€/kg", preis: "4,80", wow: "+0,0 %", d3m: "−6,2 %", dir: "neutral" },
+                    ].map((row, i) => (
+                      <tr key={i} style={{ backgroundColor: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                        <td style={{ padding: "10px 14px", borderBottom: "1px solid #f0f0f0", fontWeight: 600 }}>{row.name}</td>
+                        <td style={{ padding: "10px 14px", borderBottom: "1px solid #f0f0f0", color: "#666" }}>{row.platz}</td>
+                        <td style={{ padding: "10px 14px", borderBottom: "1px solid #f0f0f0", color: "#666" }}>{row.einheit}</td>
+                        <td style={{ padding: "10px 14px", borderBottom: "1px solid #f0f0f0", fontWeight: 700, fontFamily: MONO }}>{row.preis}</td>
+                        <td style={{ padding: "10px 14px", borderBottom: "1px solid #f0f0f0", fontWeight: 700, color: row.dir === "up" ? "#16a34a" : row.dir === "down" ? "#dc2626" : "#666", fontFamily: MONO }}>{row.wow}</td>
+                        <td style={{ padding: "10px 14px", borderBottom: "1px solid #f0f0f0", color: "#888", fontFamily: MONO }}>{row.d3m}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p style={{ fontSize: 11, color: "#aaa", marginTop: 12 }}>
+                * EUA-Preis direkt relevant für CBAM-Berechnung.{" "}
+                <Link href="/insights/lexikon/cbam" style={{ color: BLUE, textDecoration: "none" }}>
+                  &rarr; CBAM-Erklärung
+                </Link>
+              </p>
             </div>
           </section>
 

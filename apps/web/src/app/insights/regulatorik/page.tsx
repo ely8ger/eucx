@@ -7,8 +7,8 @@ const BLUE = "#154194";
 const SANS = "'IBM Plex Sans', Arial, sans-serif";
 
 export const metadata = {
-  title: "EU-Regulatorik | EUCX",
-  description: "MiFID II, OTF, CBAM, MAR, EMIR – alle regulatorischen Grundlagen für den institutionellen Rohstoffhandel auf EUCX kompakt erklärt.",
+  title: "EU-Regulatorik: MiFID II, CBAM, MAR, EMIR | EUCX",
+  description: "Vollständiger Regulatorik-Guide für institutionellen Rohstoffhandel: MiFID II OTF, CBAM ab 2026, Marktmissbrauch MAR, EMIR-Derivate. BaFin-lizenziert.",
 };
 
 export default function RegulatoriePage() {
@@ -188,6 +188,189 @@ export default function RegulatoriePage() {
             </div>
           </div>
 
+          {/* ── CBAM in der Praxis ─────────────────────────────────── */}
+          <div style={{ marginBottom: 64 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 300, color: "#1a1a1a", margin: "0 0 8px" }}>
+              CBAM in der Praxis — Was Händler wissen müssen
+            </h2>
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 24px", maxWidth: 780 }}>
+              Der Carbon Border Adjustment Mechanism (CBAM) — Verordnung (EU) 2023/956 — tritt ab{" "}
+              <strong>1. Januar 2026</strong> in seiner kostenpflichtigen Phase in Kraft. Die Übergangsphase
+              (Oktober 2023 – Dezember 2025) verpflichtete Importeure bereits zur Quartalsberichterstattung
+              ohne Zahlungspflicht. Ab 2026 müssen CBAM-Importeure (definiert als in der EU ansässige
+              natürliche oder juristische Personen, die CBAM-Waren in das Zollgebiet einführen)
+              CBAM-Zertifikate erwerben und vorhalten. Jedes Zertifikat entspricht einer Tonne CO₂e und
+              wird zu einem Preis veräußert, der dem wöchentlichen Durchschnittspreis der EU-ETS-Zertifikate
+              (EUA) entspricht.
+            </p>
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 24px", maxWidth: 780 }}>
+              Die praktischen Konsequenzen für Importeure sind erheblich: Sie müssen sich beim nationalen
+              Zollregister als CBAM-Anmelder registrieren, bis zum 31. Mai jedes Jahres eine Jahreserklärung
+              über die im Vorjahr eingeführten Waren und deren eingebettete Emissionen einreichen und eine
+              ausreichende Anzahl von CBAM-Zertifikaten auf ihrem Konto vorhalten. Händler, die auf EUCX
+              Waren importieren, sind unmittelbar betroffen — die Kosten fließen direkt in die Preiskalkulation
+              ein und beeinflussen die Wettbewerbsfähigkeit gegenüber EU-produzierter Ware.
+            </p>
+
+            {/* CN-Code-Tabelle */}
+            <h3 style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", margin: "0 0 16px" }}>
+              Betroffene Warengruppen auf EUCX
+            </h3>
+            <div style={{ overflowX: "auto", marginBottom: 32 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: SANS }}>
+                <thead>
+                  <tr style={{ backgroundColor: "#f0f4ff" }}>
+                    {["Warengruppe", "Beispiele", "Ø CO₂-Intensität", "CBAM-Aufschlag (EUA 65 €)"].map(h => (
+                      <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: BLUE, borderBottom: "2px solid #c7d7f5" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { gruppe: "Stahl/Eisen (HS 72)", beispiele: "Betonstahl, Walzdraht, Brammen", co2: "1,6–2,0 tCO₂/t", aufschlag: "104–130 €/t" },
+                    { gruppe: "Aluminium (HS 76)", beispiele: "Primäraluminium, Pressbolzen", co2: "6,5–16 tCO₂/t", aufschlag: "423–1.040 €/t" },
+                    { gruppe: "Düngemittel (HS 31)", beispiele: "Harnstoff, Ammoniumnitrat", co2: "1,4–2,8 tCO₂/t", aufschlag: "91–182 €/t" },
+                    { gruppe: "Strom (HS 2716)", beispiele: "Elektrischer Strom", co2: "variabel", aufschlag: "variabel" },
+                  ].map((row, i) => (
+                    <tr key={i} style={{ backgroundColor: i % 2 === 0 ? "#fff" : "#fafbff" }}>
+                      <td style={{ padding: "10px 16px", borderBottom: "1px solid #eef0f8", fontWeight: 600, color: "#1a1a1a" }}>{row.gruppe}</td>
+                      <td style={{ padding: "10px 16px", borderBottom: "1px solid #eef0f8", color: "#555" }}>{row.beispiele}</td>
+                      <td style={{ padding: "10px 16px", borderBottom: "1px solid #eef0f8", color: "#555", fontFamily: "'IBM Plex Mono', monospace" }}>{row.co2}</td>
+                      <td style={{ padding: "10px 16px", borderBottom: "1px solid #eef0f8", fontWeight: 700, color: BLUE, fontFamily: "'IBM Plex Mono', monospace" }}>{row.aufschlag}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* CBAM-Zeitplan */}
+            <h3 style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", margin: "0 0 16px" }}>
+              CBAM-Zeitplan
+            </h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: 0, marginBottom: 28 }}>
+              {[
+                { datum: "Okt 2023", text: "Übergangsphase beginnt — nur Berichtspflicht (quartalsweise), keine Zahlungspflicht", aktiv: false },
+                { datum: "Jan 2026", text: "Kostenpflichtige Phase: CBAM-Zertifikate werden Pflicht. Preis orientiert sich am EU-ETS.", aktiv: true },
+                { datum: "2026–2034", text: "EU-ETS-Freiallokationen für betroffene Sektoren werden schrittweise abgebaut (ca. −10 % p.a.)", aktiv: false },
+                { datum: "Ab 2034", text: "Vollimplementierung: 100 % kostenpflichtig, keine Freiallokationen mehr für CBAM-Waren", aktiv: false },
+              ].map((item, i) => (
+                <div key={i} style={{ display: "flex", gap: 0, alignItems: "stretch" }}>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 32, flexShrink: 0 }}>
+                    <div style={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: item.aktiv ? BLUE : "#c7d7f5", marginTop: 14, flexShrink: 0 }} />
+                    {i < 3 && <div style={{ width: 2, flex: 1, backgroundColor: "#e0e8f4" }} />}
+                  </div>
+                  <div style={{ padding: "10px 0 18px 16px" }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: item.aktiv ? BLUE : "#888", letterSpacing: "0.06em", textTransform: "uppercase", display: "block", marginBottom: 4 }}>
+                      {item.datum}
+                    </span>
+                    <p style={{ fontSize: 13, color: "#505050", margin: 0, lineHeight: 1.7 }}>{item.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Link href="/insights/lexikon/cbam" style={{ fontSize: 13, color: BLUE, fontWeight: 600, textDecoration: "none" }}>
+              &rarr; Ausführliche CBAM-Erklärung im Lexikon
+            </Link>
+          </div>
+
+          {/* ── ESG-Reporting ──────────────────────────────────────────── */}
+          <div style={{ marginBottom: 64 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 300, color: "#1a1a1a", margin: "0 0 8px" }}>
+              ESG-Reporting für Rohstoffhändler
+            </h2>
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 20px", maxWidth: 780 }}>
+              Mit der <strong>CSRD (Corporate Sustainability Reporting Directive)</strong> — Richtlinie
+              2022/2464/EU — hat die EU eine umfassende Berichtspflicht für Nachhaltigkeitsinformationen
+              eingeführt. Für große Unternehmen (mehr als 500 Mitarbeiter) gilt die Pflicht seit dem
+              Geschäftsjahr 2024, für kapitalmarktorientierte KMU stufenweise ab 2026–2027. Unternehmen,
+              die auf EUCX handeln und in diese Schwellenwerte fallen, müssen ihren Nachhaltigkeitsbericht
+              nach den European Sustainability Reporting Standards (ESRS) erstellen.
+            </p>
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 20px", maxWidth: 780 }}>
+              Die <strong>SFDR (Sustainable Finance Disclosure Regulation)</strong> — Verordnung
+              (EU) 2019/2088 — betrifft primär Finanzmarktteilnehmer und Finanzberater. Wer
+              Rohstoff-Fonds oder strukturierte Produkte auf Rohstoffbasis anbietet, muss die
+              Nachhaltigkeitseigenschaften seiner Produkte offenlegen (Artikel-6-, 8- oder
+              9-Produkte gemäß SFDR-Klassifizierung).
+            </p>
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 20px", maxWidth: 780 }}>
+              Im Rohstoffhandel sind die <strong>Scope-Emissionen</strong> besonders relevant:
+              Scope 1 umfasst direkte Emissionen aus eigenen Anlagen (z.B. Lagerhaltung, Fuhrpark),
+              Scope 2 die indirekten Emissionen aus eingekaufter Energie. Für Rohstoffhändler
+              entscheidend ist Scope 3 — die vor- und nachgelagerten Emissionen entlang der
+              Lieferkette. Beim Kauf und Verkauf von Stahl, Dünger oder Aluminium entstehen die
+              größten CO₂-Äquivalente in Produktion und Transport, die dem Händler als Scope-3-Emissionen
+              zuzurechnen sind.
+            </p>
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 24px", maxWidth: 780 }}>
+              <strong>Praktische Anforderungen für EUCX-Teilnehmer:</strong> Dokumentieren Sie für
+              jeden Kauf die Herkunft der Ware (Ursprungsland, Produktionsweg), erfassen Sie die
+              eingebetteten Emissionen (embedded emissions) für CBAM-pflichtige Waren und führen Sie
+              ein Transaktionsregister, das für die CSRD-Berichterstattung verwendet werden kann.
+              Auf Basis der EUCX-Handelsdaten lassen sich CO₂-Äquivalente pro Transaktion berechnen.
+            </p>
+
+            {/* ESG Infobox */}
+            <div style={{ backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0", padding: "24px 28px" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+                <div style={{ width: 4, backgroundColor: "#166534", flexShrink: 0, alignSelf: "stretch" }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#166534", margin: "0 0 8px" }}>
+                    EUCX CO₂-Tracking
+                  </p>
+                  <p style={{ fontSize: 13, color: "#14532d", lineHeight: 1.7, margin: 0 }}>
+                    Das Handelssystem berechnet automatisch die geschätzten Scope-3-Emissionen jeder
+                    Transaktion auf Basis von Produktkategorie, Herkunftsland und Handelsvolumen. Die
+                    aggregierten Emissionsdaten stehen EUCX-Teilnehmern im Mitgliederbereich als
+                    strukturierter Export (CSV/PDF) für das ESG-Reporting zur Verfügung.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── MAR — Marktmissbrauch ──────────────────────────────────── */}
+          <div style={{ marginBottom: 64 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 300, color: "#1a1a1a", margin: "0 0 8px" }}>
+              MAR — Marktmissbrauch im Rohstoffhandel
+            </h2>
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 20px", maxWidth: 780 }}>
+              Die <strong>Marktmissbrauchsverordnung (MAR)</strong> — Verordnung (EU) 596/2014 —
+              verbietet Insiderhandel, Marktmanipulation und die unrechtmäßige Weitergabe von
+              Insiderinformationen. Im Rohstoffhandel gilt: Wer über nicht-öffentliche Informationen
+              verfügt, die den Preis eines an der EUCX gehandelten Rohstoffs erheblich beeinflussen
+              könnten — etwa Ernteausfälle, bevorstehende Antidumping-Entscheidungen oder
+              Produktionsausfälle — und auf Basis dieser Informationen handelt, begeht Insiderhandel
+              im Sinne von Art. 8 MAR.
+            </p>
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 20px", maxWidth: 780 }}>
+              Verbotene Praktiken der <strong>Marktmanipulation</strong> umfassen unter anderem:
+              <strong> Spoofing</strong> (Eingabe großer Orders ohne Ausführungsabsicht, um den Preis
+              zu bewegen), <strong>Layering</strong> (schichtweise Ordereingabe zur Täuschung über
+              die Markttiefe) und <strong>Wash Trading</strong> (künstliche Umsätze durch koordinierten
+              Kauf und Verkauf zwischen verbundenen Parteien). Diese Praktiken sind nach Art. 12 MAR
+              verboten und werden von der EUCX-Handelssüberwachung in Echtzeit detektiert.
+            </p>
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 20px", maxWidth: 780 }}>
+              Alle EUCX-Teilnehmer sind verpflichtet, verdächtige Transaktionen oder Orders dem
+              Betreiber zu melden. EUCX als OTF-Betreiber ist seinerseits nach Art. 16 MAR
+              verpflichtet, <strong>STORs (Suspicious Transaction and Order Reports)</strong> an die
+              BaFin zu erstatten, wenn ein begründeter Verdacht auf Marktmissbrauch besteht.
+              Meldungen an die Aufsichtsbehörde erfolgen elektronisch über das TREM-System (Transaction
+              Reporting Exchange Mechanism).
+            </p>
+            <div style={{ backgroundColor: "#fef2f2", border: "1px solid #fecaca", padding: "20px 24px" }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#991b1b", margin: "0 0 6px" }}>Sanktionsrahmen MAR</p>
+              <p style={{ fontSize: 13, color: "#7f1d1d", lineHeight: 1.7, margin: 0 }}>
+                Bei Verstößen gegen die MAR drohen strafrechtliche Sanktionen sowie Bußgelder von bis zu
+                <strong> 5 Mio. EUR</strong> für natürliche Personen bzw. <strong>15 % des jährlichen
+                Gesamtumsatzes</strong> für juristische Personen (Art. 30 MAR). Zusätzlich kann die
+                BaFin die Zulassung zum Handel widerrufen und ein öffentliches Statement veröffentlichen.
+              </p>
+            </div>
+          </div>
+
           {/* Compliance-Checkliste */}
           <div style={{ border: "1px solid #e8e8e8", padding: "32px 36px" }}>
             <h3 style={{ fontSize: 20, fontWeight: 600, color: "#1a1a1a", margin: "0 0 20px" }}>
@@ -227,6 +410,85 @@ export default function RegulatoriePage() {
 
         </div>
       </section>
+
+      {/* FAQ-Sektion */}
+      <section style={{ backgroundColor: "#f9fafb", borderTop: "1px solid #e8e8e8", padding: "64px 0" }}>
+        <div style={{ maxWidth: 1180, margin: "0 auto", padding: "0 40px" }}>
+          <h2 style={{ fontSize: 28, fontWeight: 300, color: "#1a1a1a", margin: "0 0 8px" }}>
+            Häufige Fragen — Regulatorik
+          </h2>
+          <p style={{ fontSize: 14, color: "#666", margin: "0 0 36px" }}>
+            Die wichtigsten Fragen zum regulatorischen Rahmen des EUCX-Handels.
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2, backgroundColor: "#e8e8e8" }}>
+            {[
+              {
+                q: "Was ist CBAM und wen betrifft es?",
+                a: "CBAM (Carbon Border Adjustment Mechanism) ist ein EU-Grenzausgleichsmechanismus für CO₂-Kosten, der auf Importe von Stahl, Aluminium, Zement, Düngemitteln und Strom aus Drittstaaten erhoben wird. Betroffen sind alle in der EU ansässigen Unternehmen und Personen, die diese Waren einführen — unabhängig von der Unternehmensgröße.",
+              },
+              {
+                q: "Ab wann ist CBAM kostenpflichtig?",
+                a: "Ab 1. Januar 2026 ist CBAM in seiner kostenpflichtigen Phase in Kraft. Importeure müssen ab diesem Zeitpunkt CBAM-Zertifikate erwerben, die dem EUA-Preis des EU-Emissionshandelssystems entsprechen. Die vorangehende Übergangsphase (Oktober 2023 – Dezember 2025) umfasste lediglich Berichtspflichten ohne Zahlungsverpflichtung.",
+              },
+              {
+                q: "Benötige ich als Händler auf EUCX eine eigene BaFin-Lizenz?",
+                a: "Nein. EUCX betreibt als zugelassener OTF-Betreiber die regulierte Handelsinfrastruktur. Für die reine Teilnahme als Käufer oder Verkäufer physischer Waren benötigen Sie keine eigene BaFin-Zulassung. Wer jedoch im eigenen Namen Handelsdienstleistungen für Dritte erbringt oder Finanzinstrumente handelt, kann einer eigenständigen Erlaubnispflicht unterliegen.",
+              },
+              {
+                q: "Was ist der Unterschied zwischen MiFID II und MiFIR?",
+                a: "MiFID II (Richtlinie 2014/65/EU) ist eine EU-Richtlinie, die von den Mitgliedstaaten in nationales Recht umgesetzt wird — in Deutschland als WpHG. MiFIR (Verordnung 600/2014) ist eine EU-Verordnung, die unmittelbar und einheitlich in allen Mitgliedstaaten gilt. MiFIR regelt insbesondere die Transparenzpflichten (Pre-Trade, Post-Trade) und die Transaktionsmeldepflichten an die Aufsichtsbehörden.",
+              },
+              {
+                q: "Welche ESG-Reportingpflichten habe ich als Rohstoffhändler?",
+                a: "Die Pflichten richten sich nach Unternehmensgröße und Kapitalmarktzugang. Große Unternehmen (>500 Mitarbeiter) unterliegen seit Geschäftsjahr 2024 der CSRD und müssen nach ESRS berichten. KMU folgen stufenweise ab 2026–2027. Auch ohne formelle Berichtspflicht sollten Händler Scope-3-Emissionen ihrer Transaktionen erfassen, da Geschäftspartner im Rahmen ihrer eigenen CSRD-Pflichten entsprechende Daten einfordern werden.",
+              },
+            ].map(({ q, a }, i) => (
+              <div key={i} style={{ backgroundColor: "#fff", padding: "24px 28px", borderBottom: "1px solid #f5f5f5" }}>
+                <h3 style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a", margin: "0 0 10px", lineHeight: 1.4 }}>{q}</h3>
+                <p style={{ fontSize: 13, color: "#505050", lineHeight: 1.75, margin: 0 }}>{a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* JSON-LD FAQPage */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "Was ist CBAM und wen betrifft es?",
+                acceptedAnswer: { "@type": "Answer", text: "CBAM (Carbon Border Adjustment Mechanism) ist ein EU-Grenzausgleichsmechanismus für CO₂-Kosten, der auf Importe von Stahl, Aluminium, Zement, Düngemitteln und Strom aus Drittstaaten erhoben wird. Betroffen sind alle in der EU ansässigen Unternehmen und Personen, die diese Waren einführen." }
+              },
+              {
+                "@type": "Question",
+                name: "Ab wann ist CBAM kostenpflichtig?",
+                acceptedAnswer: { "@type": "Answer", text: "Ab 1. Januar 2026 ist CBAM in seiner kostenpflichtigen Phase in Kraft. Importeure müssen CBAM-Zertifikate erwerben, die dem EUA-Preis des EU-ETS entsprechen. Die Übergangsphase (Oktober 2023 – Dezember 2025) umfasste nur Berichtspflichten." }
+              },
+              {
+                "@type": "Question",
+                name: "Benötige ich als Händler auf EUCX eine eigene BaFin-Lizenz?",
+                acceptedAnswer: { "@type": "Answer", text: "Nein. EUCX betreibt als zugelassener OTF-Betreiber die regulierte Handelsinfrastruktur. Für die reine Teilnahme als Käufer oder Verkäufer physischer Waren benötigen Sie keine eigene BaFin-Zulassung." }
+              },
+              {
+                "@type": "Question",
+                name: "Was ist der Unterschied zwischen MiFID II und MiFIR?",
+                acceptedAnswer: { "@type": "Answer", text: "MiFID II (Richtlinie 2014/65/EU) wird in nationales Recht umgesetzt (in Deutschland als WpHG). MiFIR (Verordnung 600/2014) gilt unmittelbar in allen Mitgliedstaaten und regelt insbesondere Pre-/Post-Trade-Transparenz und Transaktionsmeldepflichten." }
+              },
+              {
+                "@type": "Question",
+                name: "Welche ESG-Reportingpflichten habe ich als Rohstoffhändler?",
+                acceptedAnswer: { "@type": "Answer", text: "Große Unternehmen (>500 Mitarbeiter) unterliegen seit Geschäftsjahr 2024 der CSRD und müssen nach ESRS berichten. KMU folgen stufenweise ab 2026–2027. Auch ohne formelle Pflicht sollten Händler Scope-3-Emissionen erfassen, da Geschäftspartner im Rahmen ihrer CSRD-Pflichten entsprechende Daten einfordern." }
+              },
+            ],
+          }),
+        }}
+      />
 
       <SiteFooter />
     </div>
