@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import {
   ShieldCheck, TrendingUp, FileText, Users,
   ArrowRight, BarChart3, Layers, Lock,
-  Globe, Building2, FlaskConical, Trees, Package, X,
+  Globe, Building2, FlaskConical, Trees, Package,
 } from "lucide-react";
 import { EucxLogo } from "@/components/logo/EucxLogo";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n/context";
+import { SiteNav } from "@/components/SiteNav";
 
 const S: Record<string, React.CSSProperties> = {
   label: { fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "#154194", marginBottom: 10, display: "block" },
@@ -19,102 +18,11 @@ const S: Record<string, React.CSSProperties> = {
 
 export default function HomePage() {
   const { t } = useI18n();
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const NAV_LINKS = [
-    { label: t("nav_katalog"),     href: "/katalog" },
-    { label: t("nav_markets"),     href: "#marktbereiche" },
-    { label: t("nav_how"),         href: "#wie-es-funktioniert" },
-    { label: t("nav_regulation"),  href: "#regulierung" },
-    { label: t("nav_join"),        href: "#teilnehmer" },
-  ];
 
   return (
     <div style={{ fontFamily: "'IBM Plex Sans', Arial, sans-serif", backgroundColor: "#fff", color: "#1a1a1a" }}>
 
-      {/* ── Mobile Nav Overlay ── */}
-      <div className={`r-mobile-menu ${menuOpen ? "open" : ""}`}>
-        <button onClick={() => setMenuOpen(false)}
-          style={{ position: "absolute", top: 20, right: 20, background: "none", border: "none", color: "#fff", cursor: "pointer" }}>
-          <X size={24} />
-        </button>
-        <div style={{ marginBottom: 28 }}><Link href="/" onClick={() => setMenuOpen(false)} style={{ textDecoration: "none" }}><EucxLogo variant="dark" size="sm" /></Link></div>
-        {NAV_LINKS.map(({ label, href }) => (
-          <a key={href} href={href} onClick={() => setMenuOpen(false)}
-            style={{ fontSize: 18, color: "rgba(255,255,255,.85)", textDecoration: "none", padding: "14px 0", borderBottom: "1px solid rgba(255,255,255,.08)", display: "block" }}>
-            {label}
-          </a>
-        ))}
-        <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 12 }}>
-          <Link href="/login" onClick={() => setMenuOpen(false)}
-            style={{ textAlign: "center", fontSize: 14, fontWeight: 600, color: "#154194", backgroundColor: "#fff", padding: "13px 28px", textDecoration: "none" }}>
-            {t("nav_login")}
-          </Link>
-          <Link href="/register" onClick={() => setMenuOpen(false)}
-            style={{ textAlign: "center", fontSize: 14, fontWeight: 600, color: "#fff", backgroundColor: "#154194", padding: "13px 28px", textDecoration: "none" }}>
-            {t("nav_register")}
-          </Link>
-          <div style={{ paddingTop: 8, display: "flex", justifyContent: "center" }}>
-            <LanguageSwitcher dark />
-          </div>
-        </div>
-      </div>
-
-      {/* ── Topbar ── */}
-      <div style={{ backgroundColor: "#111", height: 38, display: "flex", alignItems: "center" }}>
-        <div className="r-container flex items-center justify-between w-full">
-          <span className="r-topbar-text" style={{ fontSize: 12, color: "rgba(255,255,255,.45)", letterSpacing: "0.02em" }}>
-            {t("topbar")}
-          </span>
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-5">
-              {([<><Lock size={11}/> {t("topbar_tls")}</>, <><ShieldCheck size={11}/> {t("topbar_dsgvo")}</>] as React.ReactNode[]).map((item, i) => (
-                <span key={i} className="flex items-center gap-1.5" style={{ fontSize: 11, color: "rgba(255,255,255,.35)" }}>{item}</span>
-              ))}
-            </div>
-            <LanguageSwitcher dark />
-          </div>
-        </div>
-      </div>
-
-      {/* ── Header ── */}
-      <header style={{ backgroundColor: "#fff", borderTop: "3px solid #154194", boxShadow: "0 1px 4px rgba(0,0,0,.15)", position: "sticky", top: 0, zIndex: 50 }}>
-        <div className="r-container" style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Link href="/" style={{ textDecoration: "none" }}><EucxLogo size="md" /></Link>
-
-          <nav className="hidden md:flex items-center">
-            {NAV_LINKS.map(({ label, href }) => (
-              <a key={href} href={href}
-                style={{ fontSize: 14, color: "#333", padding: "0 18px", height: 64, display: "flex", alignItems: "center", borderBottom: "2px solid transparent", textDecoration: "none", transition: "color .15s, border-color .15s" }}
-                onMouseEnter={e => { e.currentTarget.style.color="#154194"; e.currentTarget.style.borderBottomColor="#154194"; }}
-                onMouseLeave={e => { e.currentTarget.style.color="#333"; e.currentTarget.style.borderBottomColor="transparent"; }}>
-                {label}
-              </a>
-            ))}
-            <Link href="/marktpreise"
-              style={{ fontSize: 12, fontWeight: 700, color: "#154194", backgroundColor: "#eef2fb", padding: "5px 14px", textDecoration: "none", letterSpacing: "0.04em", marginLeft: 8, border: "1px solid #c7d7f0" }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#154194", e.currentTarget.style.color = "#fff")}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#eef2fb", e.currentTarget.style.color = "#154194")}>
-              {t("nav_marktpreise")} ↗
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="hidden sm:block" style={{ fontSize: 13, color: "#154194", fontWeight: 500, textDecoration: "none" }}>
-              {t("nav_login")}
-            </Link>
-            <Link href="/register" className="hidden sm:flex items-center gap-1.5"
-              style={{ fontSize: 13, fontWeight: 600, color: "#fff", backgroundColor: "#154194", padding: "9px 20px", textDecoration: "none", transition: "background .15s" }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#0f3070")}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#154194")}>
-              {t("nav_register")} <ArrowRight size={13} />
-            </Link>
-            <button className="r-hamburger" onClick={() => setMenuOpen(true)} aria-label="Menu">
-              <span /><span /><span />
-            </button>
-          </div>
-        </div>
-      </header>
+      <SiteNav rootPage />
 
       {/* ── Hero ── */}
       <section className="r-section-hero" style={{ backgroundColor: "#0b1e36" }}>

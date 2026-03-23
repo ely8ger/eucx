@@ -1,0 +1,260 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { ArrowRight, Lock, ShieldCheck, X } from "lucide-react";
+import { EucxLogo } from "@/components/logo/EucxLogo";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n/context";
+
+const BLUE = "#154194";
+const SANS = "'IBM Plex Sans', Arial, sans-serif";
+
+interface Props {
+  /** highlight this href in the nav */
+  activeHref?: string;
+  /** prefix anchor-links with "/" so they work from sub-pages */
+  rootPage?: boolean;
+}
+
+export function SiteNav({ activeHref, rootPage = false }: Props) {
+  const { t } = useI18n();
+  const [open, setOpen] = useState(false);
+
+  const prefix = rootPage ? "" : "/";
+
+  const NAV: { label: string; href: string }[] = [
+    { label: t("nav_katalog"),    href: "/katalog" },
+    { label: t("nav_markets"),    href: `${prefix}#marktbereiche` },
+    { label: t("nav_how"),        href: `${prefix}#wie-es-funktioniert` },
+    { label: t("nav_regulation"), href: `${prefix}#regulierung` },
+    { label: t("nav_join"),       href: `${prefix}#teilnehmer` },
+  ];
+
+  return (
+    <>
+      {/* ── Mobile Overlay ─────────────────────────────────────────────── */}
+      <div
+        style={{
+          position: "fixed", inset: 0, zIndex: 200,
+          backgroundColor: "#0b1e36",
+          transform: open ? "translateX(0)" : "translateX(-100%)",
+          transition: "transform 280ms ease",
+          display: "flex", flexDirection: "column",
+          padding: "28px 28px 36px", fontFamily: SANS,
+        }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 36 }}>
+          <Link href="/" onClick={() => setOpen(false)} style={{ textDecoration: "none" }}>
+            <EucxLogo variant="dark" size="sm" />
+          </Link>
+          <button onClick={() => setOpen(false)}
+            style={{ background: "none", border: "none", color: "rgba(255,255,255,.6)", cursor: "pointer", padding: 4 }}>
+            <X size={22} />
+          </button>
+        </div>
+
+        {NAV.map(({ label, href }) => (
+          <a key={href} href={href} onClick={() => setOpen(false)}
+            style={{
+              fontSize: 17, color: "rgba(255,255,255,.8)", textDecoration: "none",
+              padding: "15px 0", borderBottom: "1px solid rgba(255,255,255,.07)", display: "block",
+              fontWeight: 400, letterSpacing: "0.01em",
+            }}>
+            {label}
+          </a>
+        ))}
+        <Link href="/marktpreise" onClick={() => setOpen(false)}
+          style={{
+            fontSize: 17, color: "#7aa4d4", textDecoration: "none",
+            padding: "15px 0", borderBottom: "1px solid rgba(255,255,255,.07)", display: "block",
+            fontWeight: 600,
+          }}>
+          {t("nav_marktpreise")} ↗
+        </Link>
+
+        <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: 10 }}>
+          <Link href="/login" onClick={() => setOpen(false)}
+            style={{
+              textAlign: "center", fontSize: 14, fontWeight: 600,
+              color: BLUE, backgroundColor: "#fff", padding: "13px 0", textDecoration: "none",
+            }}>
+            {t("nav_login")}
+          </Link>
+          <Link href="/register" onClick={() => setOpen(false)}
+            style={{
+              textAlign: "center", fontSize: 14, fontWeight: 700,
+              color: "#fff", backgroundColor: BLUE, padding: "13px 0", textDecoration: "none",
+            }}>
+            {t("nav_register")} →
+          </Link>
+          <div style={{ paddingTop: 10, display: "flex", justifyContent: "center" }}>
+            <LanguageSwitcher dark />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Topbar ──────────────────────────────────────────────────────── */}
+      <div style={{
+        backgroundColor: "#0d1117", height: 42,
+        display: "flex", alignItems: "center", fontFamily: SANS,
+      }}>
+        <div style={{
+          maxWidth: 1240, margin: "0 auto", padding: "0 32px",
+          width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+        }}>
+          <span style={{ fontSize: 12, color: "rgba(255,255,255,.38)", letterSpacing: "0.02em" }}>
+            {t("topbar")}
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+              {[
+                { icon: <Lock size={10} />, label: t("topbar_tls") },
+                { icon: <ShieldCheck size={10} />, label: t("topbar_dsgvo") },
+              ].map(({ icon, label }) => (
+                <span key={label} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: "rgba(255,255,255,.28)" }}>
+                  {icon} {label}
+                </span>
+              ))}
+            </div>
+            <LanguageSwitcher dark />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Header ──────────────────────────────────────────────────────── */}
+      <header style={{
+        backgroundColor: "#fff",
+        borderTop: `3px solid ${BLUE}`,
+        boxShadow: "0 1px 0 #e8e8e8, 0 2px 8px rgba(0,0,0,.06)",
+        position: "sticky", top: 0, zIndex: 100,
+        fontFamily: SANS,
+      }}>
+        <div style={{
+          maxWidth: 1240, margin: "0 auto", padding: "0 32px",
+          height: 68, display: "flex", alignItems: "center", gap: 0,
+        }}>
+
+          {/* Logo */}
+          <Link href="/" style={{ textDecoration: "none", flexShrink: 0, marginRight: 40 }}>
+            <EucxLogo size="md" />
+          </Link>
+
+          {/* Nav links */}
+          <nav style={{ display: "flex", alignItems: "stretch", flex: 1, gap: 0 }}
+            className="hidden-mobile">
+            {NAV.map(({ label, href }) => {
+              const isActive = activeHref === href;
+              return (
+                <a key={href} href={href}
+                  style={{
+                    fontSize: 13, fontWeight: isActive ? 600 : 400,
+                    color: isActive ? BLUE : "#3a3a3a",
+                    padding: "0 18px", height: 68,
+                    display: "flex", alignItems: "center",
+                    borderBottom: isActive ? `2px solid ${BLUE}` : "2px solid transparent",
+                    textDecoration: "none",
+                    whiteSpace: "nowrap",
+                    transition: "color .15s, border-color .15s",
+                    letterSpacing: "0.01em",
+                  }}
+                  onMouseEnter={e => {
+                    if (!isActive) {
+                      e.currentTarget.style.color = BLUE;
+                      e.currentTarget.style.borderBottomColor = "rgba(21,65,148,.3)";
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (!isActive) {
+                      e.currentTarget.style.color = "#3a3a3a";
+                      e.currentTarget.style.borderBottomColor = "transparent";
+                    }
+                  }}>
+                  {label}
+                </a>
+              );
+            })}
+
+            {/* Marktpreise — highlighted */}
+            <Link href="/marktpreise"
+              style={{
+                fontSize: 12, fontWeight: 700, color: BLUE,
+                padding: "0 16px", height: 68,
+                display: "flex", alignItems: "center",
+                borderBottom: activeHref === "/marktpreise" ? `2px solid ${BLUE}` : "2px solid transparent",
+                textDecoration: "none", whiteSpace: "nowrap",
+                letterSpacing: "0.04em",
+                gap: 5,
+                marginLeft: 4,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = "#0f3070"; e.currentTarget.style.backgroundColor = "#f4f7fd"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = BLUE; e.currentTarget.style.backgroundColor = "transparent"; }}>
+              <span style={{
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                width: 7, height: 7, backgroundColor: "#22c55e", borderRadius: "50%",
+                boxShadow: "0 0 0 2px rgba(34,197,94,.25)",
+              }} />
+              {t("nav_marktpreise")}
+            </Link>
+          </nav>
+
+          {/* Spacer */}
+          <div style={{ flex: 1 }} className="hidden-mobile" />
+
+          {/* Divider */}
+          <div style={{ width: 1, height: 24, backgroundColor: "#e8e8e8", margin: "0 20px", flexShrink: 0 }} className="hidden-mobile" />
+
+          {/* Actions */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+            <Link href="/login"
+              style={{
+                fontSize: 13, color: "#3a3a3a", fontWeight: 500,
+                textDecoration: "none", padding: "8px 14px",
+                whiteSpace: "nowrap",
+              }}
+              className="hidden-mobile"
+              onMouseEnter={e => (e.currentTarget.style.color = BLUE)}
+              onMouseLeave={e => (e.currentTarget.style.color = "#3a3a3a")}>
+              {t("nav_login")}
+            </Link>
+            <Link href="/register"
+              style={{
+                fontSize: 13, fontWeight: 700, color: "#fff",
+                backgroundColor: BLUE, padding: "9px 20px",
+                textDecoration: "none", display: "flex", alignItems: "center", gap: 6,
+                whiteSpace: "nowrap",
+              }}
+              className="hidden-mobile"
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#0f3070")}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = BLUE)}>
+              {t("nav_register")} <ArrowRight size={12} />
+            </Link>
+
+            {/* Hamburger */}
+            <button
+              onClick={() => setOpen(true)}
+              aria-label="Menu öffnen"
+              className="show-mobile"
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                display: "flex", flexDirection: "column", gap: 5, padding: 4,
+              }}>
+              <span style={{ display: "block", width: 22, height: 2, backgroundColor: BLUE }} />
+              <span style={{ display: "block", width: 22, height: 2, backgroundColor: BLUE }} />
+              <span style={{ display: "block", width: 16, height: 2, backgroundColor: BLUE }} />
+            </button>
+          </div>
+
+        </div>
+      </header>
+
+      <style>{`
+        @media (max-width: 900px) {
+          .hidden-mobile { display: none !important; }
+        }
+        @media (min-width: 901px) {
+          .show-mobile { display: none !important; }
+        }
+      `}</style>
+    </>
+  );
+}

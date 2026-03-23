@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { EucxLogo } from "@/components/logo/EucxLogo";
-import { ArrowRight, Lock, ShieldCheck } from "lucide-react";
+import { SiteNav } from "@/components/SiteNav";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const S: Record<string, React.CSSProperties> = {
   container: { maxWidth: 1180, margin: "0 auto", padding: "0 40px" },
@@ -16,35 +16,7 @@ export default function ImpressumPage() {
   return (
     <div style={{ fontFamily: "'IBM Plex Sans', Arial, sans-serif", backgroundColor: "#fff", color: "#1a1a1a" }}>
 
-      {/* ── Topbar ── */}
-      <div style={{ backgroundColor: "#111", height: 38, display: "flex", alignItems: "center" }}>
-        <div style={{ ...S.container, display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-          <span style={{ fontSize: 12, color: "rgba(255,255,255,.45)", letterSpacing: "0.02em" }}>
-            BaFin-regulierte Handelsplattform · Frankfurt am Main · MiFID II OTF
-          </span>
-          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-            {[["TLS 1.3", <Lock key="l" size={11}/>], ["DSGVO-konform", <ShieldCheck key="s" size={11}/>]].map(([label, icon]) => (
-              <span key={label as string} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(255,255,255,.35)" }}>{icon as React.ReactNode} {label as string}</span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Header ── */}
-      <header style={{ backgroundColor: "#fff", borderTop: "3px solid #154194", boxShadow: "0 1px 4px rgba(0,0,0,.15)", position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ ...S.container, height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Link href="/" style={{ textDecoration: "none" }}><EucxLogo size="md" /></Link>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <Link href="/login" style={{ fontSize: 13, color: "#154194", fontWeight: 500, textDecoration: "none" }}>Anmelden</Link>
-            <Link href="/register"
-              style={{ fontSize: 13, fontWeight: 600, color: "#fff", backgroundColor: "#154194", padding: "9px 20px", textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#0f3070")}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#154194")}>
-              Registrieren <ArrowRight size={13} />
-            </Link>
-          </div>
-        </div>
-      </header>
+      <SiteNav />
 
       {/* ── Page Hero ── */}
       <section style={{ backgroundColor: "#0b1e36", padding: "56px 0 48px" }}>
@@ -229,40 +201,7 @@ export default function ImpressumPage() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer style={{ backgroundColor: "#111", color: "#666" }}>
-        <div style={{ ...S.container, padding: "48px 40px 0" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", paddingBottom: 32, borderBottom: "1px solid #222", flexWrap: "wrap", gap: 24 }}>
-            <div>
-              <div style={{ marginBottom: 12 }}><Link href="/" style={{ textDecoration: "none", display: "inline-block" }}><EucxLogo variant="dark" size="md" showTagline /></Link></div>
-              <p style={{ fontSize: 13, color: "#555", lineHeight: 1.7, maxWidth: 320, margin: 0 }}>
-                Digitale B2B-Warenbörse für institutionellen Rohstoffhandel in der Europäischen Union.
-              </p>
-            </div>
-            <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
-              {[
-                { title: "Rechtliches", links: [["Impressum", "/impressum"], ["Datenschutz", "/datenschutz"], ["AGB", "/agb"]] },
-                { title: "Plattform",   links: [["Anmelden", "/login"], ["Registrieren", "/register"]] },
-              ].map(({ title, links }) => (
-                <div key={title}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#888", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 14 }}>{title}</div>
-                  {links.map(([label, href]) => (
-                    <Link key={label} href={href as string} style={{ display: "block", fontSize: 13, color: "#555", textDecoration: "none", marginBottom: 8 }}
-                      onMouseEnter={e => (e.currentTarget.style.color="#fff")}
-                      onMouseLeave={e => (e.currentTarget.style.color="#555")}>
-                      {label}
-                    </Link>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", padding: "20px 0", flexWrap: "wrap", gap: 8 }}>
-            <span style={{ fontSize: 11, color: "#333" }}>© 2026 EUCX GmbH · Frankfurt am Main · HRB 123456 AG Frankfurt</span>
-            <span style={{ fontSize: 11, color: "#333" }}>Reguliert durch die BaFin · MiFID II OTF-Zulassung</span>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
 
     </div>
   );

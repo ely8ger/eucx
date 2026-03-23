@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { COMMODITIES, CATEGORIES, type Category, type Commodity } from "./data";
 import { fmtEUR } from "@/lib/fmt";
@@ -123,7 +122,7 @@ export function PriceTable() {
         <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: SANS }}>
           <thead>
             <tr style={{ backgroundColor: "#fafafa", borderBottom: "1px solid #f0f0f0" }}>
-              {["Rohstoff", "Spezifikation", "Preis", "Woche Δ", "30-Tage-Chart", "Monat H / T", ""].map((h, i) => (
+              {["Rohstoff", "Spezifikation", "Preis", "Woche Δ", "30-Tage-Chart", "Monat H / T"].map((h, i) => (
                 <th key={i} style={{
                   padding: "11px 16px", fontSize: 10, fontWeight: 700, textTransform: "uppercase",
                   letterSpacing: "0.1em", color: "#888",
@@ -183,16 +182,6 @@ export function PriceTable() {
                     <p style={{ fontSize: 11, fontFamily: MONO, color: RED,   margin: "3px 0 0", fontWeight: 600 }}>T {fmtEUR(c.monthLow)}</p>
                   </td>
 
-                  {/* CTA */}
-                  <td style={{ padding: "14px 16px", textAlign: "right" }}>
-                    <Link href="/register" style={{
-                      display: "inline-flex", alignItems: "center", height: 28, padding: "0 12px",
-                      backgroundColor: BLUE, color: "#fff", fontSize: 11, fontWeight: 700,
-                      textDecoration: "none", letterSpacing: "0.04em", whiteSpace: "nowrap",
-                    }}>
-                      Handeln →
-                    </Link>
-                  </td>
                 </tr>
               );
             })}
