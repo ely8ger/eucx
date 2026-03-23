@@ -22,7 +22,7 @@ export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const NAV_LINKS = [
-    { label: "Katalog",           href: "/katalog" },
+    { label: t("nav_katalog"),     href: "/katalog" },
     { label: t("nav_markets"),    href: "#marktbereiche" },
     { label: t("nav_how"),        href: "#wie-es-funktioniert" },
     { label: t("nav_regulation"), href: "#regulierung" },

@@ -2,6 +2,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { QueryProvider } from "@/providers/QueryProvider";
 import Link from "next/link";
 import { EucxLogo } from "@/components/logo/EucxLogo";
+import { FooterNav } from "@/components/layout/FooterNav";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,12 +19,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <Link href="/" style={{ textDecoration: "none" }}>
               <EucxLogo size="sm" />
             </Link>
-            <nav style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 11, color: "#aaa" }}>
-              <a href="/impressum" style={{ color: "#aaa", textDecoration: "none" }}>Impressum</a>
-              <a href="/datenschutz" style={{ color: "#aaa", textDecoration: "none" }}>Datenschutz</a>
-              <a href="/agb" style={{ color: "#aaa", textDecoration: "none" }}>AGB</a>
-              <span>© 2026 EUCX</span>
-            </nav>
+            <FooterNav />
           </div>
         </footer>
       </div>

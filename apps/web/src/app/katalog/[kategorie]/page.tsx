@@ -281,7 +281,7 @@ export default function KatalogPage() {
           </Link>
           <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
             <Link href="/metalle" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>{t("katalog_title")}</Link>
-            <Link href="/duenger" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>Dünger & Agrarchemie</Link>
+            <Link href="/duenger" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>{t("duenger_title")}</Link>
             <Link href="/trading" style={{ fontSize: 13, color: "#fff", textDecoration: "none", backgroundColor: BLUE, padding: "8px 16px", fontWeight: 600 }}>
               {t("btn_trading_room")}
             </Link>
@@ -295,7 +295,7 @@ export default function KatalogPage() {
           <Link href="/"        style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_home")}</Link>
           <span>›</span>
           <Link href="/katalog" style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_catalog")}</Link>
-          {!searchAktiv && kat && <><span>›</span><span style={{ color: "#333" }}>{kat.label}</span></>}
+          {!searchAktiv && kat && <><span>›</span><span style={{ color: "#333" }}>{t(KAT_KEY_MAP[katId] as any)}</span></>}
           {searchAktiv && <><span>›</span><span style={{ color: "#333" }}>{t("katalog_suchergebnisse")}</span></>}
         </div>
       </div>
@@ -315,7 +315,7 @@ export default function KatalogPage() {
           {/* ── Kategorie-Header (nur ohne globale Suche) ─────────────── */}
           {!searchAktiv && kat && (
             <div style={{ backgroundColor: "#fff", border: `1px solid ${BORDER}`, padding: "14px 18px", marginBottom: 10 }}>
-              <div style={{ fontSize: 17, fontWeight: 300, color: "#0d1b2a", marginBottom: 3 }}>{kat.label}</div>
+              <div style={{ fontSize: 17, fontWeight: 300, color: "#0d1b2a", marginBottom: 3 }}>{t(KAT_KEY_MAP[katId] as any)}</div>
               <div style={{ fontSize: 12, color: "#666" }}>{kat.description}</div>
             </div>
           )}
