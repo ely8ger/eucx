@@ -211,12 +211,12 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
                 }}>
 
                   {/* Marktpreise — top item with live dot */}
-                  <Link href="/marktpreise"
+                  <Link href="/marktpreise" className="dd-item"
                     style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 18px 10px", textDecoration: "none", borderBottom: "1px solid #f0f0f0", marginBottom: 4 }}>
-                    <div style={{ width: 3, height: 36, backgroundColor: "#154194", flexShrink: 0, marginTop: 2 }} />
+                    <div className="dd-bar" style={{ width: 3, height: 36, backgroundColor: "#154194", flexShrink: 0, marginTop: 2 }} />
                     <div style={{ flex: 1 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
-                        <p style={{ fontSize: 13, fontWeight: 700, color: "#0d1b2a", margin: 0 }}>{t("nav_marktpreise")}</p>
+                        <p className="dd-title" style={{ fontSize: 13, fontWeight: 700, color: "#0d1b2a", margin: 0 }}>{t("nav_marktpreise")}</p>
                         <span style={{
                           width: 7, height: 7, backgroundColor: "#22c55e", borderRadius: "50%", flexShrink: 0,
                           boxShadow: "0 0 0 2px rgba(34,197,94,.25)",
@@ -235,11 +235,11 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
                     { label: "Händler-Akademie", sub: "Leitfäden & Best Practices",  href: "/insights/akademie",     color: "#92400e" },
                     { label: "EU-Regulatorik",   sub: "MiFID II, OTF, CBAM & mehr",  href: "/insights/regulatorik",  color: "#44403c" },
                   ].map(item => (
-                    <Link key={item.href} href={item.href}
+                    <Link key={item.href} href={item.href} className="dd-item"
                       style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "9px 18px", textDecoration: "none" }}>
-                      <div style={{ width: 3, height: 34, backgroundColor: item.color, flexShrink: 0, marginTop: 2 }} />
+                      <div className="dd-bar" style={{ width: 3, height: 34, backgroundColor: item.color, flexShrink: 0, marginTop: 2 }} />
                       <div>
-                        <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 2px" }}>{item.label}</p>
+                        <p className="dd-title" style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 2px" }}>{item.label}</p>
                         <p style={{ fontSize: 11, color: "#888", margin: 0 }}>{item.sub}</p>
                       </div>
                     </Link>
@@ -309,6 +309,26 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
         }
         @media (min-width: 901px) {
           .show-mobile { display: none !important; }
+        }
+        .dd-item {
+          transition: background-color 200ms ease;
+        }
+        .dd-item:hover {
+          background-color: rgba(21,65,148,0.05);
+        }
+        .dd-item .dd-bar {
+          transition: opacity 200ms ease, box-shadow 200ms ease;
+          opacity: 0.65;
+        }
+        .dd-item:hover .dd-bar {
+          opacity: 1;
+          box-shadow: 2px 0 6px rgba(21,65,148,0.3);
+        }
+        .dd-item .dd-title {
+          transition: color 200ms ease;
+        }
+        .dd-item:hover .dd-title {
+          color: #154194 !important;
         }
       `}</style>
     </>
