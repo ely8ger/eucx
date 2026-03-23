@@ -397,6 +397,13 @@ const de = {
   dash_cat_industrials:    "Industriegüter",
   dash_cat_industrials_sub: "Maschinen · Kabel · Elektronik",
 
+  // ── Session-Badges & Zeitformat ───────────────────────────────────────
+  lbl_uhr:                 "Uhr",
+  cat_badge_metalle:       "Metalle",
+  cat_badge_agrar:         "Agrar",
+  cat_badge_holz:          "Holz",
+  cat_badge_schrott:       "Schrott",
+
   // ── Login — Validierungsmeldungen & Labels ────────────────────────────
   login_email_req:         "Bitte geben Sie Ihre E-Mail-Adresse ein.",
   login_pw_req:            "Bitte geben Sie Ihr Passwort ein.",
@@ -827,6 +834,12 @@ const en: T = {
   dash_cat_industrials:    "Industrial Goods",
   dash_cat_industrials_sub: "Machinery · Cables · Electronics",
 
+  lbl_uhr:                 "",
+  cat_badge_metalle:       "Metals",
+  cat_badge_agrar:         "Agri.",
+  cat_badge_holz:          "Timber",
+  cat_badge_schrott:       "Scrap",
+
   login_email_req:         "Please enter your email address.",
   login_pw_req:            "Please enter your password.",
   login_code_req:          "Please enter a 6-digit code.",
@@ -1254,6 +1267,12 @@ const fr: T = {
   dash_cat_construction_sub: "Ciment · Granulats · Briques",
   dash_cat_industrials:    "Biens industriels",
   dash_cat_industrials_sub: "Machines · Câbles · Électronique",
+
+  lbl_uhr:                 "",
+  cat_badge_metalle:       "Métaux",
+  cat_badge_agrar:         "Agric.",
+  cat_badge_holz:          "Bois",
+  cat_badge_schrott:       "Ferraille",
 
   login_email_req:         "Veuillez saisir votre adresse e-mail.",
   login_pw_req:            "Veuillez saisir votre mot de passe.",
@@ -1683,6 +1702,12 @@ const es: T = {
   dash_cat_industrials:    "Bienes industriales",
   dash_cat_industrials_sub: "Maquinaria · Cables · Electrónica",
 
+  lbl_uhr:                 "",
+  cat_badge_metalle:       "Metales",
+  cat_badge_agrar:         "Agrar.",
+  cat_badge_holz:          "Madera",
+  cat_badge_schrott:       "Chatarra",
+
   login_email_req:         "Por favor, introduzca su dirección de correo electrónico.",
   login_pw_req:            "Por favor, introduzca su contraseña.",
   login_code_req:          "Por favor, introduzca un código de 6 dígitos.",
@@ -2111,6 +2136,12 @@ const pl: T = {
   dash_cat_industrials:    "Towary przemysłowe",
   dash_cat_industrials_sub: "Maszyny · Kable · Elektronika",
 
+  lbl_uhr:                 "",
+  cat_badge_metalle:       "Metale",
+  cat_badge_agrar:         "Rolnicze",
+  cat_badge_holz:          "Drewno",
+  cat_badge_schrott:       "Złom",
+
   login_email_req:         "Proszę podać adres e-mail.",
   login_pw_req:            "Proszę podać hasło.",
   login_code_req:          "Proszę podać 6-cyfrowy kod.",
@@ -2538,6 +2569,12 @@ const ru: T = {
   dash_cat_construction_sub: "Цемент · Щебень · Кирпич",
   dash_cat_industrials:    "Промышленные товары",
   dash_cat_industrials_sub: "Оборудование · Кабели · Электроника",
+
+  lbl_uhr:                 "",
+  cat_badge_metalle:       "Металлы",
+  cat_badge_agrar:         "Агро",
+  cat_badge_holz:          "Дерево",
+  cat_badge_schrott:       "Лом",
 
   login_email_req:         "Пожалуйста, введите адрес электронной почты.",
   login_pw_req:            "Пожалуйста, введите пароль.",

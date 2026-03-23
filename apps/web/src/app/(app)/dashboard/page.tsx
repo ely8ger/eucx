@@ -30,11 +30,11 @@ const CATEGORIES = [
 ] as const;
 
 const ACTIVE_SESSIONS = [
-  { id: "247", name: "Bewehrungsstahl A1 Ø12mm", cat: "Metalle", time: "14:00–16:30", orders: 34, volume: "420 t",   status: "OFFEN"       },
-  { id: "248", name: "Kupfer Cu-ETP Walzdraht",  cat: "Metalle", time: "14:00–16:30", orders: 18, volume: "85 t",    status: "OFFEN"       },
-  { id: "249", name: "Weizenmehl Type 550",       cat: "Agrar",   time: "10:00–12:00", orders: 22, volume: "1.200 t", status: "NUR_VERKAUF" },
-  { id: "250", name: "Fichtenstammholz I/II",     cat: "Holz",    time: "09:00–11:00", orders: 11, volume: "340 m³",  status: "OFFEN"       },
-  { id: "251", name: "Aluminiumschrott 6061",     cat: "Schrott", time: "13:00–15:00", orders:  9, volume: "60 t",    status: "OFFEN"       },
+  { id: "247", name: "Bewehrungsstahl A1 Ø12mm", catKey: "cat_badge_metalle", time: "14:00–16:30", orders: 34, volume: "420 t",   status: "OFFEN"       },
+  { id: "248", name: "Kupfer Cu-ETP Walzdraht",  catKey: "cat_badge_metalle", time: "14:00–16:30", orders: 18, volume: "85 t",    status: "OFFEN"       },
+  { id: "249", name: "Weizenmehl Type 550",       catKey: "cat_badge_agrar",   time: "10:00–12:00", orders: 22, volume: "1.200 t", status: "NUR_VERKAUF" },
+  { id: "250", name: "Fichtenstammholz I/II",     catKey: "cat_badge_holz",    time: "09:00–11:00", orders: 11, volume: "340 m³",  status: "OFFEN"       },
+  { id: "251", name: "Aluminiumschrott 6061",     catKey: "cat_badge_schrott", time: "13:00–15:00", orders:  9, volume: "60 t",    status: "OFFEN"       },
 ];
 
 /* ─── Sub-components ─────────────────────────────────────────────────── */
@@ -60,9 +60,12 @@ function SectionHeader({ title, right }: { title: string; right?: React.ReactNod
 /* ─── Page ───────────────────────────────────────────────────────────── */
 
 export default function DashboardPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
-  const now = new Date().toLocaleDateString("de-DE", {
+  const LOCALE_BCP: Record<string, string> = { de: "de-DE", en: "en-GB", fr: "fr-FR", es: "es-ES", pl: "pl-PL", ru: "ru-RU" };
+  const bcp = LOCALE_BCP[locale] ?? "de-DE";
+
+  const now = new Date().toLocaleDateString(bcp, {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
 
@@ -72,7 +75,7 @@ export default function DashboardPage() {
     return () => clearInterval(timer);
   }, []);
 
-  const timeStr = new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+  const timeStr = new Date().toLocaleTimeString(bcp, { hour: "2-digit", minute: "2-digit" });
 
   const KPI = [
     { label: t("dash_kpi_sessions"), value: "20",          sub: t("dash_kpi_sub_groups"),  delta: "+2 heute",  sign: 1  },
@@ -94,7 +97,7 @@ export default function DashboardPage() {
             {t("dash_title")}
           </h1>
           <p style={{ fontSize: 12, color: "#999", marginTop: 6, fontFamily: MONO }}>
-            {now} · Frankfurt am Main · {timeStr} Uhr
+            {now} · Frankfurt am Main · {timeStr}{t("lbl_uhr") ? " " + t("lbl_uhr") : ""}
           </p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -108,7 +111,7 @@ export default function DashboardPage() {
           <div style={{ width: 1, height: 32, backgroundColor: "#e8e8e8" }} />
           <div style={{ textAlign: "right" }}>
             <p style={{ fontSize: 10, color: "#bbb", margin: 0, letterSpacing: "0.08em", textTransform: "uppercase" }}>{t("dash_session_end")}</p>
-            <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "4px 0 0", fontFamily: MONO }}>18:00 Uhr</p>
+            <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "4px 0 0", fontFamily: MONO }}>18:00{t("lbl_uhr") ? " " + t("lbl_uhr") : ""}</p>
           </div>
         </div>
       </div>
@@ -286,11 +289,11 @@ export default function DashboardPage() {
                     </td>
 
                     <td style={{ padding: "12px 16px" }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: BLUE, backgroundColor: "#eef2fb", padding: "2px 8px" }}>{s.cat}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: BLUE, backgroundColor: "#eef2fb", padding: "2px 8px" }}>{t(s.catKey as any)}</span>
                     </td>
 
                     <td style={{ padding: "12px 16px", fontSize: 12, fontFamily: MONO, color: "#505050", whiteSpace: "nowrap" }}>
-                      {s.time} Uhr
+                      {s.time}{t("lbl_uhr") ? " " + t("lbl_uhr") : ""}
                     </td>
 
                     <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 13, fontWeight: 600, color: "#0d1b2a", fontFamily: MONO }}>
