@@ -22,6 +22,7 @@ export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const NAV_LINKS = [
+    { label: "Katalog",           href: "/katalog" },
     { label: t("nav_markets"),    href: "#marktbereiche" },
     { label: t("nav_how"),        href: "#wie-es-funktioniert" },
     { label: t("nav_regulation"), href: "#regulierung" },
@@ -181,7 +182,7 @@ export default function HomePage() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 1, backgroundColor: "#e0e0e0" }}>
             {/* ── METALLE — klickbar ── */}
-            <Link href="/metalle" style={{ textDecoration: "none" }}>
+            <Link href="/katalog" style={{ textDecoration: "none" }}>
               <div style={{ backgroundColor: "#fff", padding: "32px 28px", cursor: "pointer", height: "100%" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#f0f4fb"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#fff"; }}>
