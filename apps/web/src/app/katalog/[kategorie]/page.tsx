@@ -87,94 +87,114 @@ const EMPTY_SEARCH: SearchState = {
   text: "", dim: "", breite: "", laenge: "", werkstoff: "", oberflaeche: "",
 };
 
+const H = 36; // einheitliche Höhe aller Felder
+
 function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void }) {
-  const inp = (key: keyof SearchState) => ({
-    value: s[key],
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-      set({ ...s, [key]: e.target.value }),
-  });
+  const onChange = (key: keyof SearchState) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      set({ ...s, [key]: e.target.value });
+
+  const fieldStyle: React.CSSProperties = {
+    height: H, width: "100%", boxSizing: "border-box",
+    fontSize: 13, padding: "0 10px",
+    border: `1px solid ${BORDER}`, fontFamily: F,
+    color: "#333", backgroundColor: "#fff", outline: "none",
+    appearance: "none" as const,
+  };
 
   return (
-    <div style={{
-      backgroundColor: "#fff", border: `1px solid ${BORDER}`,
-      padding: "14px 16px", marginBottom: 12,
-    }}>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}>
+    <div style={{ backgroundColor: "#fff", border: `1px solid ${BORDER}`, padding: "12px 14px", marginBottom: 12 }}>
+      <div style={{ display: "flex", gap: 8, alignItems: "flex-end", flexWrap: "wrap" }}>
 
-        {/* Freitext */}
-        <div style={{ flex: "2 1 200px" }}>
+        {/* Freitext — breiter */}
+        <div style={{ flex: "2 1 180px", minWidth: 0 }}>
           <label style={LBL}>Suche</label>
           <div style={{ position: "relative" }}>
-            <svg style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}
-              width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth={2}>
+            <svg style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}
+              width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth={2.2}>
               <circle cx={11} cy={11} r={8}/><line x1={21} y1={21} x2={16.65} y2={16.65}/>
             </svg>
-            <input
-              {...inp("text")}
-              placeholder="z.B. Rundrohr, IPE 200, Blech..."
-              style={{ ...INP, paddingLeft: 30, width: "100%", boxSizing: "border-box" }}
-            />
+            <input value={s.text} onChange={onChange("text")}
+              placeholder="z.B. Rohr, IPE 200, Blech, S355..."
+              style={{ ...fieldStyle, paddingLeft: 32 }} />
           </div>
         </div>
 
-        {/* Dimension */}
-        <div style={{ flex: "1 1 90px" }}>
-          <label style={LBL}>Ø / Maß (mm)</label>
-          <input {...inp("dim")} type="number" min={0} placeholder="z.B. 60"
-            style={{ ...INP, width: "100%", boxSizing: "border-box" }} />
+        {/* Ø / Maß */}
+        <div style={{ flex: "1 1 90px", minWidth: 80 }}>
+          <label style={LBL}>Ø / Maß mm</label>
+          <input value={s.dim} onChange={onChange("dim")}
+            type="text" inputMode="numeric" placeholder="z.B. 60"
+            style={fieldStyle} />
         </div>
 
         {/* Breite */}
-        <div style={{ flex: "1 1 90px" }}>
-          <label style={LBL}>Breite (mm)</label>
-          <input {...inp("breite")} type="number" min={0} placeholder="z.B. 40"
-            style={{ ...INP, width: "100%", boxSizing: "border-box" }} />
+        <div style={{ flex: "1 1 90px", minWidth: 80 }}>
+          <label style={LBL}>Breite mm</label>
+          <input value={s.breite} onChange={onChange("breite")}
+            type="text" inputMode="numeric" placeholder="z.B. 40"
+            style={fieldStyle} />
         </div>
 
         {/* Länge */}
-        <div style={{ flex: "1 1 110px" }}>
+        <div style={{ flex: "1 1 110px", minWidth: 90 }}>
           <label style={LBL}>Länge</label>
-          <select {...inp("laenge")} style={{ ...INP, width: "100%", boxSizing: "border-box" }}>
-            <option value="">Alle</option>
-            {ALLE_LAENGEN.map(l => (
-              <option key={l} value={l}>{formatLaenge(l)}</option>
-            ))}
-          </select>
+          <div style={{ position: "relative" }}>
+            <select value={s.laenge} onChange={onChange("laenge")} style={fieldStyle}>
+              <option value="">Alle</option>
+              {ALLE_LAENGEN.map(l => <option key={l} value={l}>{formatLaenge(l)}</option>)}
+            </select>
+            <Chevron />
+          </div>
         </div>
 
         {/* Werkstoff */}
-        <div style={{ flex: "1 1 130px" }}>
+        <div style={{ flex: "1 1 130px", minWidth: 110 }}>
           <label style={LBL}>Werkstoff</label>
-          <select {...inp("werkstoff")} style={{ ...INP, width: "100%", boxSizing: "border-box" }}>
-            <option value="">Alle</option>
-            {ALLE_WERKSTOFFE.map(w => <option key={w} value={w}>{w}</option>)}
-          </select>
+          <div style={{ position: "relative" }}>
+            <select value={s.werkstoff} onChange={onChange("werkstoff")} style={fieldStyle}>
+              <option value="">Alle</option>
+              {ALLE_WERKSTOFFE.map(w => <option key={w} value={w}>{w}</option>)}
+            </select>
+            <Chevron />
+          </div>
         </div>
 
         {/* Oberfläche */}
-        <div style={{ flex: "1 1 110px" }}>
+        <div style={{ flex: "1 1 110px", minWidth: 90 }}>
           <label style={LBL}>Oberfläche</label>
-          <select {...inp("oberflaeche")} style={{ ...INP, width: "100%", boxSizing: "border-box" }}>
-            <option value="">Alle</option>
-            {ALLE_OBERFL.map(o => <option key={o} value={o}>{o}</option>)}
-          </select>
+          <div style={{ position: "relative" }}>
+            <select value={s.oberflaeche} onChange={onChange("oberflaeche")} style={fieldStyle}>
+              <option value="">Alle</option>
+              {ALLE_OBERFL.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+            <Chevron />
+          </div>
         </div>
 
         {/* Reset */}
         <div style={{ flex: "0 0 auto" }}>
           <label style={LBL}>&nbsp;</label>
-          <button
-            onClick={() => set(EMPTY_SEARCH)}
-            style={{
-              ...INP, cursor: "pointer", backgroundColor: "#f0f3f8",
-              color: "#555", border: `1px solid ${BORDER}`, whiteSpace: "nowrap",
-            }}
-          >
-            ✕ Zurücksetzen
+          <button onClick={() => set(EMPTY_SEARCH)} style={{
+            height: H, padding: "0 14px", fontSize: 12, fontFamily: F,
+            cursor: "pointer", backgroundColor: "#f0f3f8", color: "#555",
+            border: `1px solid ${BORDER}`, whiteSpace: "nowrap", display: "flex",
+            alignItems: "center", gap: 6,
+          }}>
+            <span style={{ fontSize: 14, lineHeight: 1 }}>×</span> Zurücksetzen
           </button>
         </div>
       </div>
     </div>
+  );
+}
+
+function Chevron() {
+  return (
+    <svg style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}
+      width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth={2.5}>
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
   );
 }
 
