@@ -64,20 +64,21 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
             {label}
           </a>
         ))}
+        <Link href="/marktpreise" onClick={() => setOpen(false)}
+          style={{
+            fontSize: 17, color: "rgba(255,255,255,.8)", textDecoration: "none",
+            padding: "15px 0", borderBottom: "1px solid rgba(255,255,255,.07)", display: "flex",
+            alignItems: "center", gap: 8,
+          }}>
+          <span style={{ width: 7, height: 7, backgroundColor: "#22c55e", borderRadius: "50%", flexShrink: 0 }} />
+          {t("nav_marktpreise")}
+        </Link>
         <Link href="/insights" onClick={() => setOpen(false)}
           style={{
             fontSize: 17, color: "rgba(255,255,255,.8)", textDecoration: "none",
             padding: "15px 0", borderBottom: "1px solid rgba(255,255,255,.07)", display: "block",
           }}>
           Marktwissen & Insights
-        </Link>
-        <Link href="/marktpreise" onClick={() => setOpen(false)}
-          style={{
-            fontSize: 17, color: "#7aa4d4", textDecoration: "none",
-            padding: "15px 0", borderBottom: "1px solid rgba(255,255,255,.07)", display: "block",
-            fontWeight: 600,
-          }}>
-          {t("nav_marktpreise")} ↗
         </Link>
 
         <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: 10 }}>
@@ -206,51 +207,50 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
                   position: "absolute", top: "100%", left: 0, zIndex: 300,
                   backgroundColor: "#fff", border: "1px solid #e8e8e8",
                   boxShadow: "0 8px 32px rgba(0,0,0,.12)",
-                  minWidth: 280, padding: "8px 0",
+                  minWidth: 300, padding: "8px 0",
                 }}>
+
+                  {/* Marktpreise — top item with live dot */}
+                  <Link href="/marktpreise"
+                    style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 18px 10px", textDecoration: "none", borderBottom: "1px solid #f0f0f0", marginBottom: 4 }}>
+                    <div style={{ width: 3, height: 36, backgroundColor: "#154194", flexShrink: 0, marginTop: 2 }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#0d1b2a", margin: 0 }}>{t("nav_marktpreise")}</p>
+                        <span style={{
+                          width: 7, height: 7, backgroundColor: "#22c55e", borderRadius: "50%", flexShrink: 0,
+                          boxShadow: "0 0 0 2px rgba(34,197,94,.25)",
+                          animation: "pulse 2s infinite",
+                        }} />
+                        <span style={{ fontSize: 9, fontWeight: 700, color: "#22c55e", letterSpacing: "0.08em" }}>LIVE</span>
+                      </div>
+                      <p style={{ fontSize: 11, color: "#888", margin: 0 }}>Echtzeit-Kurse & Tagespreise</p>
+                    </div>
+                  </Link>
+
+                  {/* Other sections */}
                   {[
-                    { label: "Rohstoff-Lexikon",  sub: "Definitionen & Normen",       href: "/insights/lexikon",      color: "#154194" },
-                    { label: "Marktanalysen",     sub: "Wöchentliche Preisberichte",   href: "/insights/analysen",     color: "#166534" },
-                    { label: "Händler-Akademie",  sub: "Leitfäden & Best Practices",   href: "/insights/akademie",     color: "#92400e" },
-                    { label: "EU-Regulatorik",    sub: "MiFID II, OTF, CBAM & mehr",   href: "/insights/regulatorik",  color: "#44403c" },
+                    { label: "Marktanalysen",    sub: "Wöchentliche Preisberichte",  href: "/insights/analysen",     color: "#166534" },
+                    { label: "Rohstoff-Lexikon", sub: "Definitionen & Normen",       href: "/insights/lexikon",      color: "#154194" },
+                    { label: "Händler-Akademie", sub: "Leitfäden & Best Practices",  href: "/insights/akademie",     color: "#92400e" },
+                    { label: "EU-Regulatorik",   sub: "MiFID II, OTF, CBAM & mehr",  href: "/insights/regulatorik",  color: "#44403c" },
                   ].map(item => (
                     <Link key={item.href} href={item.href}
-                      style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 18px", textDecoration: "none" }}>
-                      <div style={{ width: 3, height: 36, backgroundColor: item.color, flexShrink: 0, marginTop: 2 }} />
+                      style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "9px 18px", textDecoration: "none" }}>
+                      <div style={{ width: 3, height: 34, backgroundColor: item.color, flexShrink: 0, marginTop: 2 }} />
                       <div>
                         <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 2px" }}>{item.label}</p>
                         <p style={{ fontSize: 11, color: "#888", margin: 0 }}>{item.sub}</p>
                       </div>
                     </Link>
                   ))}
-                  <div style={{ borderTop: "1px solid #f0f0f0", margin: "8px 0 0", padding: "8px 18px 4px" }}>
+
+                  <div style={{ borderTop: "1px solid #f0f0f0", margin: "6px 0 0", padding: "8px 18px 4px" }}>
                     <Link href="/insights" style={{ fontSize: 11, color: BLUE, fontWeight: 600, textDecoration: "none" }}>Alle Inhalte →</Link>
                   </div>
                 </div>
               )}
             </div>
-
-            {/* Marktpreise — highlighted */}
-            <Link href="/marktpreise"
-              style={{
-                fontSize: 12, fontWeight: 700, color: BLUE,
-                padding: "0 16px", height: 68,
-                display: "flex", alignItems: "center",
-                borderBottom: activeHref === "/marktpreise" ? `2px solid ${BLUE}` : "2px solid transparent",
-                textDecoration: "none", whiteSpace: "nowrap",
-                letterSpacing: "0.04em",
-                gap: 5,
-                marginLeft: 4,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.color = "#0f3070"; e.currentTarget.style.backgroundColor = "#f4f7fd"; }}
-              onMouseLeave={e => { e.currentTarget.style.color = BLUE; e.currentTarget.style.backgroundColor = "transparent"; }}>
-              <span style={{
-                display: "inline-flex", alignItems: "center", justifyContent: "center",
-                width: 7, height: 7, backgroundColor: "#22c55e", borderRadius: "50%",
-                boxShadow: "0 0 0 2px rgba(34,197,94,.25)",
-              }} />
-              {t("nav_marktpreise")}
-            </Link>
           </nav>
 
           {/* Spacer */}
