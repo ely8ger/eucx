@@ -192,14 +192,14 @@ export default function KategoriePage() {
           <span>›</span>
           <Link href="/duenger" style={{ color: "#888", textDecoration: "none" }}>{t("duenger_title")}</Link>
           <span>›</span>
-          <span style={{ color: "#333" }}>{kategorie.label}</span>
+          <span style={{ color: "#333" }}>{t(kategorie.labelKey as any)}</span>
         </div>
       </div>
 
       {/* ── Seitentitel ─────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "28px 32px 0" }}>
         <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: BLUE, display: "block", marginBottom: 8 }}>{t("duenger_badge")}</span>
-        <h1 style={{ fontSize: 26, fontWeight: 300, color: "#0d1b2a", margin: "0 0 4px" }}>{kategorie.label}</h1>
+        <h1 style={{ fontSize: 26, fontWeight: 300, color: "#0d1b2a", margin: "0 0 4px" }}>{t(kategorie.labelKey as any)}</h1>
         <p style={{ fontSize: 13, color: "#666", margin: 0, maxWidth: 720 }}>{kategorie.description}</p>
       </div>
 
@@ -227,7 +227,7 @@ export default function KategoriePage() {
       {/* ── Ergebnisse ──────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 32px 0" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <span style={{ fontSize: 13, color: "#666" }}>{filtered.length} {filtered.length !== 1 ? "Produkte" : "Produkt"}</span>
+          <span style={{ fontSize: 13, color: "#666" }}>{filtered.length} {filtered.length !== 1 ? t("lbl_produkte") : t("lbl_produkt")}</span>
           <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#666", cursor: "pointer" }}>
             <input type="checkbox" style={{ accentColor: BLUE }} />
             {t("lbl_ab_lager")}
@@ -341,7 +341,7 @@ export default function KategoriePage() {
               onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#f0f4fb"; (e.currentTarget as HTMLAnchorElement).style.color = BLUE; }}
               onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#fff"; (e.currentTarget as HTMLAnchorElement).style.color = "#444"; }}
               >
-                {c.label}
+                {t(c.labelKey as any)}
               </Link>
             ))}
           </div>

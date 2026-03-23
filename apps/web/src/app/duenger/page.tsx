@@ -139,8 +139,8 @@ export default function DuengerPage() {
                 >
                   <Icon />
                   <div style={{ textAlign: "center" }}>
-                    <span style={{ fontSize: 14, fontWeight: 500, color: "#0d1b2a", display: "block", marginBottom: 6 }}>{cat.label}</span>
-                    <span style={{ fontSize: 11, color: "#888" }}>{count} {count !== 1 ? "Produkte" : "Produkt"}</span>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: "#0d1b2a", display: "block", marginBottom: 6 }}>{t(cat.labelKey as any)}</span>
+                    <span style={{ fontSize: 11, color: "#888" }}>{count} {count !== 1 ? t("lbl_produkte") : t("lbl_produkt")}</span>
                   </div>
                 </div>
               </Link>

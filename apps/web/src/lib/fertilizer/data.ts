@@ -32,6 +32,7 @@ export interface FertilizerFilters {
 export interface FertiCategory {
   id:          string;
   label:       string;
+  labelKey:    string;
   description: string;
   filters:     FertilizerFilters;
   products:    FertilizerProduct[];
@@ -45,6 +46,7 @@ export const FERTILIZER_CATEGORIES: FertiCategory[] = [
   {
     id:          "kaliumduenger",
     label:       "Kaliumdünger",
+    labelKey:    "duenger_li_1",
     description: "Kaliumdünger steigern die Photosynthese, verbessern die Wasseraufnahme und erhöhen die Widerstandsfähigkeit der Pflanzen. Geeignet für nahezu alle Kulturpflanzen außer chloridempfindlichen Sorten.",
     filters: {
       anwendung:      ["Bodenbehandlung", "Fertigation", "Blattdüngung"],
@@ -149,6 +151,7 @@ export const FERTILIZER_CATEGORIES: FertiCategory[] = [
   {
     id:          "npk-duenger",
     label:       "NPK-Dünger",
+    labelKey:    "duenger_li_2",
     description: "Mehrkomponentige Mineraldünger, die Stickstoff, Phosphor und Kalium in einer ausgewogenen Formulierung vereinen. Ideal für alle Feldkulturen und Grünfutter auf kaliumarmen Böden.",
     filters: {
       anwendung:      ["Bodenbehandlung", "Frühjahrsbehandlung", "Herbstbehandlung"],
@@ -237,6 +240,7 @@ export const FERTILIZER_CATEGORIES: FertiCategory[] = [
   {
     id:          "stickstoffduenger",
     label:       "Stickstoffdünger",
+    labelKey:    "duenger_li_3",
     description: "Stickstoffdünger fördern das Pflanzenwachstum und die Blattentwicklung. Geeignet für Frühjahrs- und Sommerdüngung von Kulturpflanzen und Zierpflanzen.",
     filters: {
       anwendung:      ["Bodenbehandlung", "Blattdüngung", "Fertigation"],
@@ -303,6 +307,7 @@ export const FERTILIZER_CATEGORIES: FertiCategory[] = [
   {
     id:          "phosphorduenger",
     label:       "Phosphordünger",
+    labelKey:    "duenger_li_4",
     description: "Phosphordünger fördern die Wurzelentwicklung und steigern die Ernteerträge. Besonders geeignet für Getreide und Gemüse sowie phosphorarme Böden.",
     filters: {
       anwendung:      ["Bodenbehandlung", "Saatbettdüngung", "Herbstbehandlung"],

@@ -408,6 +408,8 @@ const de = {
 
   // ── Startseite — Prozess ──────────────────────────────────────────────
   step_prefix:             "SCHRITT",
+  lbl_produkt:             "Produkt",
+  lbl_produkte:            "Produkte",
 
   // ── Katalog Sidebar — Gruppenüberschriften ────────────────────────────
   sidebar_stabstahl:          "Stabstahl",
@@ -833,6 +835,8 @@ const en: T = {
   login_pw_hide:           "Hide password",
 
   step_prefix:             "STEP",
+  lbl_produkt:             "Product",
+  lbl_produkte:            "Products",
 
   // ── Katalog Sidebar — Gruppenüberschriften ────────────────────────────
   sidebar_stabstahl:          "Rebar & Bars",
@@ -1258,6 +1262,8 @@ const fr: T = {
   login_pw_hide:           "Masquer le mot de passe",
 
   step_prefix:             "ÉTAPE",
+  lbl_produkt:             "Produit",
+  lbl_produkte:            "Produits",
 
   // ── Katalog Sidebar — Gruppenüberschriften ────────────────────────────
   sidebar_stabstahl:          "Barres & Ronds",
@@ -1683,6 +1689,8 @@ const es: T = {
   login_pw_hide:           "Ocultar contraseña",
 
   step_prefix:             "PASO",
+  lbl_produkt:             "Producto",
+  lbl_produkte:            "Productos",
 
   // ── Katalog Sidebar — Gruppenüberschriften ────────────────────────────
   sidebar_stabstahl:          "Barras de Acero",
@@ -2108,6 +2116,8 @@ const pl: T = {
   login_pw_hide:           "Ukryj hasło",
 
   step_prefix:             "KROK",
+  lbl_produkt:             "Produkt",
+  lbl_produkte:            "Produkty",
 
   // ── Katalog Sidebar — Gruppenüberschriften ────────────────────────────
   sidebar_stabstahl:          "Stal Zbrojeniowa",
@@ -2533,6 +2543,8 @@ const ru: T = {
   login_pw_hide:           "Скрыть пароль",
 
   step_prefix:             "ШАГ",
+  lbl_produkt:             "Продукт",
+  lbl_produkte:            "Продукты",
 
   // ── Katalog Sidebar — Gruppenüberschriften ────────────────────────────
   sidebar_stabstahl:          "Арматура & Прутки",
