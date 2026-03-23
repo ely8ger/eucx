@@ -84,7 +84,7 @@ export default function OrdersPage() {
         {[
           { label: t("orders_kpi_open"),     value: String(openCount),                        color: "#0d1b2a" },
           { label: t("orders_kpi_accepted"), value: String(acceptedCount),                    color: "#166534" },
-          { label: t("orders_kpi_volume"),   value: `€ ${(totalValue / 1000).toFixed(0)}k`,  color: "#0d1b2a" },
+          { label: t("orders_kpi_volume"),   value: totalValue.toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €",  color: "#0d1b2a" },
         ].map(k => (
           <div key={k.label} style={{ backgroundColor: "#fff", padding: "18px 24px" }}>
             <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "#888", margin: 0, fontWeight: 500 }}>{k.label}</p>

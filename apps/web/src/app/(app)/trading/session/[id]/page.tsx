@@ -110,7 +110,7 @@ export default function TradingSessionPage({ params }: { params: Promise<{ id: s
               { label: t("trading_best_bid"),   value: `${bestBuy.toLocaleString(bcp)} €/t`,  cls: "text-emerald-600" },
               { label: t("trading_spread"),     value: `${spread.toFixed(0)} €/t`,                cls: "text-gray-700"    },
               { label: t("trading_deals"),      value: `${DEALS.length}`,                         cls: "text-gray-700"    },
-              { label: t("trading_volume"),     value: `€ ${(totalVol / 1000).toFixed(0)}k`,      cls: "text-gray-700"    },
+              { label: t("trading_volume"),     value: `${totalVol.toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`, cls: "text-gray-700"    },
             ].map((k) => (
               <div key={k.label}>
                 <p className="text-xs text-gray-400 uppercase tracking-wider mb-0.5">{k.label}</p>
