@@ -49,24 +49,6 @@ export default function HomePage() {
           <h1 className="r-hero-h1">{t("hero_h1")}</h1>
           <p className="r-hero-sub">{t("hero_sub")}</p>
 
-          {/* Marktpreise-Banner */}
-          <Link href="/marktpreise" style={{
-            display: "inline-flex", alignItems: "center", gap: 12, marginBottom: 24,
-            backgroundColor: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.15)",
-            padding: "10px 18px", textDecoration: "none",
-          }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,.1)")}
-            onMouseLeave={e => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,.06)")}>
-            <span style={{ width: 6, height: 6, backgroundColor: "#22c55e", borderRadius: "50%", flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,.6)" }}>
-              {t("nav_marktpreise")}:
-            </span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#fff", fontFamily: "'IBM Plex Mono', monospace" }}>
-              Betonstahl 698,00 €/t · Walzdraht 672,00 €/t · Harnstoff 485,00 €/t
-            </span>
-            <span style={{ fontSize: 11, color: "#22c55e", fontWeight: 700, marginLeft: 4 }}>→</span>
-          </Link>
-
           <div className="flex flex-wrap gap-4">
             <Link href="/login"
               style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, color: "#154194", backgroundColor: "#fff", padding: "13px 28px", textDecoration: "none", transition: "background .15s" }}
