@@ -20,6 +20,7 @@ interface Props {
 export function SiteNav({ activeHref, rootPage = false }: Props) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
+  const [dropdown, setDropdown] = useState<string | null>(null);
 
   const prefix = rootPage ? "" : "/";
 
@@ -63,6 +64,13 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
             {label}
           </a>
         ))}
+        <Link href="/insights" onClick={() => setOpen(false)}
+          style={{
+            fontSize: 17, color: "rgba(255,255,255,.8)", textDecoration: "none",
+            padding: "15px 0", borderBottom: "1px solid rgba(255,255,255,.07)", display: "block",
+          }}>
+          Marktwissen & Insights
+        </Link>
         <Link href="/marktpreise" onClick={() => setOpen(false)}
           style={{
             fontSize: 17, color: "#7aa4d4", textDecoration: "none",
@@ -173,6 +181,54 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
                 </a>
               );
             })}
+
+            {/* Insights Dropdown */}
+            <div
+              style={{ position: "relative", display: "flex", alignItems: "stretch" }}
+              onMouseEnter={() => setDropdown("insights")}
+              onMouseLeave={() => setDropdown(null)}>
+              <Link href="/insights"
+                style={{
+                  fontSize: 13,
+                  fontWeight: activeHref === "/insights" ? 600 : 400,
+                  color: (activeHref === "/insights" || dropdown === "insights") ? BLUE : "#3a3a3a",
+                  padding: "0 18px", height: 68,
+                  display: "flex", alignItems: "center", gap: 5,
+                  borderBottom: activeHref === "/insights" ? `2px solid ${BLUE}` : dropdown === "insights" ? `2px solid rgba(21,65,148,.25)` : "2px solid transparent",
+                  textDecoration: "none", whiteSpace: "nowrap",
+                  transition: "color .15s",
+                }}>
+                Marktwissen
+                <span style={{ fontSize: 9, marginTop: 1 }}>▾</span>
+              </Link>
+              {dropdown === "insights" && (
+                <div style={{
+                  position: "absolute", top: "100%", left: 0, zIndex: 300,
+                  backgroundColor: "#fff", border: "1px solid #e8e8e8",
+                  boxShadow: "0 8px 32px rgba(0,0,0,.12)",
+                  minWidth: 280, padding: "8px 0",
+                }}>
+                  {[
+                    { label: "Rohstoff-Lexikon",  sub: "Definitionen & Normen",       href: "/insights/lexikon",      color: "#154194" },
+                    { label: "Marktanalysen",     sub: "Wöchentliche Preisberichte",   href: "/insights/analysen",     color: "#166534" },
+                    { label: "Händler-Akademie",  sub: "Leitfäden & Best Practices",   href: "/insights/akademie",     color: "#92400e" },
+                    { label: "EU-Regulatorik",    sub: "MiFID II, OTF, CBAM & mehr",   href: "/insights/regulatorik",  color: "#44403c" },
+                  ].map(item => (
+                    <Link key={item.href} href={item.href}
+                      style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 18px", textDecoration: "none" }}>
+                      <div style={{ width: 3, height: 36, backgroundColor: item.color, flexShrink: 0, marginTop: 2 }} />
+                      <div>
+                        <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 2px" }}>{item.label}</p>
+                        <p style={{ fontSize: 11, color: "#888", margin: 0 }}>{item.sub}</p>
+                      </div>
+                    </Link>
+                  ))}
+                  <div style={{ borderTop: "1px solid #f0f0f0", margin: "8px 0 0", padding: "8px 18px 4px" }}>
+                    <Link href="/insights" style={{ fontSize: 11, color: BLUE, fontWeight: 600, textDecoration: "none" }}>Alle Inhalte →</Link>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Marktpreise — highlighted */}
             <Link href="/marktpreise"
