@@ -173,7 +173,7 @@ export default function OrdersPage() {
                       {o.qty.toLocaleString(bcp)} {o.unit}
                     </td>
                     <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 13, fontFamily: "monospace", fontWeight: 600, color: "#0d1b2a" }}>
-                      {o.total.toLocaleString(bcp)} €
+                      {o.total.toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
                     </td>
                     <td style={{ padding: "12px 16px" }}>
                       <p style={{ fontSize: 12, color: "#505050", margin: 0 }}>{o.sessionDate}</p>

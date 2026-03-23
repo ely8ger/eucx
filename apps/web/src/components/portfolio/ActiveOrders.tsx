@@ -33,7 +33,7 @@ function OrderRow({
   const fmtPrice  = new Decimal(order.pricePerUnit).toFixed(2);
   const fmtQty    = new Decimal(order.quantity).toFixed(0);
   const fmtFilled = new Decimal(order.filledQuantity).toFixed(0);
-  const fmtTotal  = new Decimal(order.totalValue).toNumber().toLocaleString(bcp, { maximumFractionDigits: 0 });
+  const fmtTotal  = new Decimal(order.totalValue).toNumber().toLocaleString(bcp, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const fmtTime   = new Date(order.createdAt).toLocaleString(bcp, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 
   return (
