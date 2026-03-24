@@ -143,9 +143,22 @@ export default function LexikonPage() {
 
         {/* Hover-CSS */}
         <style>{`
-          .lex-card { transition: background-color 200ms ease, box-shadow 200ms ease; }
-          .lex-card:hover { background-color: rgba(21,65,148,0.04) !important; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-          .lex-card:hover h3 { color: #154194 !important; }
+          .lex-card {
+            transition: background-color 250ms ease, box-shadow 250ms ease, border-left-width 150ms ease;
+          }
+          .lex-card:hover {
+            background-color: rgba(21,65,148,0.06) !important;
+            box-shadow: inset 0 0 0 1px rgba(21,65,148,0.15), 0 4px 16px rgba(21,65,148,0.08);
+            border-left-width: 6px !important;
+          }
+          .lex-card:hover .lex-title { color: #154194 !important; }
+          .lex-desc {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+          .lex-card:hover .lex-readmin { color: #154194 !important; }
         `}</style>
 
         {/* Einträge nach Alphabet */}
@@ -184,7 +197,7 @@ export default function LexikonPage() {
               >
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                    <h3 style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", margin: 0 }}>
+                    <h3 className="lex-title" style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", margin: 0, transition: "color 200ms ease" }}>
                       {entry.term}
                     </h3>
                     <span
@@ -200,11 +213,11 @@ export default function LexikonPage() {
                       {entry.category}
                     </span>
                   </div>
-                  <p style={{ fontSize: 13, color: "#666", lineHeight: 1.6, margin: 0 }}>
+                  <p className="lex-desc" style={{ fontSize: 13, color: "#666", lineHeight: 1.6, margin: 0 }}>
                     {entry.shortDef}
                   </p>
                 </div>
-                <div style={{ fontSize: 11, color: "#aaa", flexShrink: 0, paddingTop: 4 }}>
+                <div className="lex-readmin" style={{ fontSize: 11, color: "#aaa", flexShrink: 0, paddingTop: 4, transition: "color 200ms ease", whiteSpace: "nowrap" }}>
                   {entry.readMin} Min →
                 </div>
               </Link>

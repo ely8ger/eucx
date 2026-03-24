@@ -173,10 +173,10 @@ export const LEXIKON: LexikonEntry[] = [
   {
     slug: "cbam",
     term: "CBAM — Carbon Border Adjustment Mechanism",
-    shortDef: "EU-Grenzausgleichsmechanismus für CO₂-intensive Importwaren: Stahl, Aluminium, Zement, Düngemittel, Energie.",
-    description: "Der EU CBAM ab 2026: Wer zahlt? Was sind CBAM-Zertifikate? Welche Auswirkungen hat CBAM auf Stahlpreise und Düngemittelpreise?",
+    shortDef: "EU-Grenzausgleichsmechanismus für CO₂-intensive Importwaren: Stahl, Aluminium, Zement, Düngemittel, Energie. Ab 1. Januar 2026 kostenpflichtig.",
+    description: "Der vollständige CBAM-Guide für Rohstoffhändler: Übergangsphase, Zertifikate, Berechnung, CN-Codes, Reporting-Pflichten, Auswirkungen auf Stahl- und Düngemittelpreise. BaFin-lizenzierter OTF EUCX erklärt.",
     category: "Regulierung",
-    readMin: 7,
+    readMin: 14,
     published: "2026-03-01",
     updated: "2026-03-23",
     norm: "VO (EU) 2023/956",
@@ -184,30 +184,92 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "was-ist-cbam",
         heading: "Was ist der CBAM?",
-        body: "Der Carbon Border Adjustment Mechanism (CBAM, VO (EU) 2023/956) ist ein CO₂-Grenzausgleich der EU. Ziel: Carbon Leakage verhindern. Ab 1. Januar 2026 müssen Importeure aus CBAM-Sektoren Zertifikate kaufen — entsprechend den CO₂-Emissionen bei der Herstellung.",
+        body: "Der Carbon Border Adjustment Mechanism (CBAM, Verordnung (EU) 2023/956) ist das bisher ehrgeizigste Klimaschutzinstrument der Europäischen Union im Außenhandel. Als CO₂-Grenzausgleich verhindert er das sogenannte Carbon Leakage — die Verlagerung emissionsintensiver Produktion in Länder mit weniger strengen Klimaschutzauflagen, nur um EU-CO₂-Kosten zu umgehen.\n\nDas Grundprinzip ist einfach: Wer emissionsintensive Güter in die EU importiert, muss denselben CO₂-Preis zahlen wie ein EU-Produzent, der dem EU-Emissionshandelssystem (EU-ETS) unterliegt. Der Preis der CBAM-Zertifikate richtet sich nach dem wöchentlichen Durchschnittspreis der EU-ETS-Emissionsrechte (European Union Allowances, EUA).\n\nCBAM ist kein Zoll im klassischen Sinne. Es ist eine Regulierung, die sicherstellt, dass der CO₂-Preis, den EU-Produzenten zahlen, nicht durch billige Importe unterlaufen wird. Für Rohstoffhändler, die auf der EUCX-Plattform aktiv sind, hat dies fundamentale Auswirkungen auf die Wettbewerbsfähigkeit europäischer gegenüber außereuropäischer Ware.",
         sub: [
           {
-            id: "cbam-sektoren",
-            heading: "Betroffene Sektoren ab 2026",
-            body: "Stahl/Eisen (HS 72, 73): Betonstahl, Walzdraht, Träger, Bleche\nAluminium (HS 76)\nZement (HS 2523)\nDüngemittel (HS 31): Harnstoff, Ammoniumnitrat, NPK\nStrom, Wasserstoff\n\nFür EUCX-Händler relevant: Stahl und Düngemittel."
+            id: "cbam-hintergrund",
+            heading: "Hintergrund: Carbon Leakage und EU Green Deal",
+            body: "Das EU-ETS (Emissionshandelssystem, seit 2005) verpflichtet EU-Produzenten dazu, für jede Tonne CO₂-Emission ein Zertifikat (EUA) zu kaufen oder zu nutzen. Mit steigendem EUA-Preis (von ca. 5 €/t CO₂ in 2018 auf über 90 €/t CO₂ im Jahr 2023, aktuell ~65 €/t) wuchs die Gefahr, dass europäische Stahl-, Zement- und Düngemittelproduzenten im globalen Wettbewerb benachteiligt werden — und Produktion abwandert.\n\nCBAM schließt diese Lücke. Er ist zentraler Bestandteil des Fit for 55-Pakets, mit dem die EU bis 2030 eine Reduktion der Treibhausgasemissionen um 55 % gegenüber 1990 anstrebt. Mit CBAM wird der CO₂-Preis erstmals konsequent auf alle Marktteilnehmer ausgedehnt — unabhängig vom Produktionsort."
           },
           {
-            id: "cbam-preis",
-            heading: "CBAM-Preis und Berechnung",
-            body: "CBAM-Zertifikatspreis = wöchentlicher EUA-Durchschnitt. Bei EUA 65 €/t CO₂ und 1,8 t CO₂/t Rohstahl: CBAM-Aufschlag 117 €/t für importierten Stahl ohne CO₂-Bepreisung im Ursprungsland. Das entspricht ca. 15–17 % Aufschlag auf den aktuellen Betonstahl-Preis."
+            id: "cbam-sektoren",
+            heading: "Betroffene Sektoren und CN-Codes",
+            body: "Stahl und Eisen (HS 72 / CN 7206–7229): Roheisen, Ferrolegierungen, Rohblöcke, Halbzeug, Flacherzeugnisse, Langerzeugnisse (inkl. Betonstahl B500B, Walzdraht, Träger, Winkelprofile). Stahlrohre (HS 7304–7306) werden ab Phase 2 einbezogen.\n\nAluminium (HS 76 / CN 7601–7616): Primäraluminium (elektrolytisch), Sekundäraluminium, Pressbolzen, Bleche, Strangpressprofile.\n\nZement (HS 2523): Portlandzement, Tonerdezement, Schlackenzement.\n\nDüngemittel (HS 31 / CN 3102–3105): Harnstoff (Urea), Ammoniumnitrat (AN 34 %), NPK-Dünger, Kaliumnitrat.\n\nElektrischer Strom (HS 2716): Importierter Strom aus Drittstaaten über Interkonnektoren.\n\nWasserstoff (HS 2804 10): Grauer, blauer und grüner Wasserstoff.\n\nFür EUCX-Händler direkt relevant: Stahl/Eisen (primär) und Düngemittel (sekundär). Kupfer, Zink und Nickel sind derzeit nicht im Scope, werden aber für Phase 3 (ab 2030+) diskutiert."
           }
         ]
       },
       {
-        id: "auswirkungen",
-        heading: "Auswirkungen auf den Rohstoffmarkt",
-        body: "CBAM verändert die Wettbewerbslandschaft. Importeure aus China, Indien, Türkei, Ukraine werden belastet. EU-Erzeuger mit niedrigem CO₂-Fußabdruck (Elektrostahl) profitieren.\n\nBetonstahl: Importdruck sinkt — stützend für EU-Preise. Harnstoff/AN: Importe aus Russland, Ägypten teurer. Schrott: Als CO₂-armer Einsatzstoff wertvoller."
+        id: "uebergangsphasephase",
+        heading: "Übergangsphase 2023–2025: Nur Berichtspflicht",
+        body: "Die CBAM-Übergangsphase lief vom 1. Oktober 2023 bis zum 31. Dezember 2025. In dieser Phase bestanden ausschließlich Berichtspflichten — es fielen keine Zahlungen an. Importeure mussten quartalsweise einen CBAM-Übergangsbericht einreichen, der folgende Angaben enthält:\n\n1. Menge der importierten CBAM-Waren in Tonnen\n2. Eingebettete direkte und indirekte CO₂-Emissionen (in tCO₂e)\n3. Produktionsland und -anlage\n4. Im Ursprungsland bereits gezahlter CO₂-Preis (falls vorhanden)\n\nBerichte wurden über das EU-CBAM-Übergangsregister (CBAM Transitional Registry) eingereicht, das von der EU-Kommission betrieben wird. Verstöße gegen die Berichtspflicht während der Übergangsphase wurden mit Bußgeldern von 10–50 EUR je nicht gemeldeter Tonne CO₂e sanktioniert (Art. 26 Abs. 1 VO (EU) 2023/956).",
+        sub: [
+          {
+            id: "cbam-lektionen",
+            heading: "Was die Übergangsphase gezeigt hat",
+            body: "Die Übergangsphase lieferte wertvolle Erkenntnisse. Hauptproblem: Viele Importeure hatten keine Daten zu den eingebetteten Emissionen ihrer Lieferanten. Insbesondere bei Importen aus China, Indien und der Türkei fehlten belastbare CO₂-Intensitätsdaten.\n\nDie EU-Kommission stellte daher vorübergehend vereinfachte Standardwerte zur Verfügung (Default Values), die auf Durchschnittsemissionen der jeweiligen Ursprungsländer basieren. Ab 2026 sind nur noch tatsächlich gemessene Emissionen (verified emissions) oder offizielle nationale Defaultwerte zulässig."
+          }
+        ]
+      },
+      {
+        id: "cbam-2026",
+        heading: "Ab 2026: Kostenpflichtige Phase",
+        body: "Am 1. Januar 2026 beginnt die vollständige, kostenpflichtige CBAM-Phase. Die wesentlichen Änderungen gegenüber der Übergangsphase:\n\nEinführung des CBAM-Zertifikatsystems: Importeure müssen CBAM-Zertifikate kaufen, die den eingebetteten Emissionen ihrer Importe entsprechen. Jedes CBAM-Zertifikat repräsentiert 1 Tonne CO₂e. Der Preis richtet sich nach dem wöchentlichen EUA-Durchschnittspreis an der ICE Endex.\n\nAnrechnung ausländischer CO₂-Preise: Falls im Ursprungsland bereits ein CO₂-Preis gezahlt wurde (z.B. Schweizer ETS, UK-ETS, South Korean ETS), kann dieser angerechnet werden. Der effektive CBAM-Aufschlag reduziert sich entsprechend. Länder ohne CO₂-Bepreisung (China, Türkei, Indien, Russland) zahlen den vollen CBAM-Preis.\n\nJährliche CBAM-Erklärung: Bis zum 31. Mai jedes Jahres muss für das Vorjahr eine CBAM-Erklärung beim nationalen CBAM-Register eingereicht und die entsprechenden Zertifikate abgegeben werden.",
+        sub: [
+          {
+            id: "cbam-zeitplan-detail",
+            heading: "Implementierungszeitplan 2026–2034",
+            body: "2026: Vollständige CBAM-Einführung. EU-ETS-Freiallokationen für CBAM-Sektoren beginnen zu sinken (-2,5 % p.a.).\n2027: Erste vollständige Jahresmeldung (für 2026) fällig (31. Mai 2027).\n2028–2030: Freiallokationen sinken weiter; CBAM-Zahllast steigt proportional.\n2030: Freiallokationen auf ca. 75 % des 2025-Niveaus reduziert.\n2030–2034: Beschleunigter Abbau der Freiallokationen (-10 % p.a.).\n2034: Vollständige Implementierung. Alle Freiallokationen für CBAM-Sektoren entfallen. 100 % CBAM-Zahllast für Importeure."
+          }
+        ]
+      },
+      {
+        id: "cbam-berechnung",
+        heading: "CBAM-Preis: Berechnung und Formel",
+        body: "Die CBAM-Zahllast errechnet sich nach folgender Formel:\n\nCBAM-Zahllast (€) = Eingebettete Emissionen (tCO₂e/t Ware) × Importmenge (t) × EUA-Wochenpreis (€/tCO₂e) − bereits im Ursprungsland gezahlter CO₂-Preis\n\nDie eingebetteten Emissionen umfassen:\n— Direkte Emissionen (Scope 1): Aus dem Produktionsprozess selbst (z.B. Hochofengas, Koksverbrennung)\n— Indirekte Emissionen (Scope 2): Aus dem verbrauchten Strom (nur für Strom, Aluminium und Stahl relevant, soweit national festgelegt)\n\nWichtig: Ab 2026 sind ausschließlich verifizierte Emissionen oder offizielle EU-Standardwerte zulässig. Die Verifizierung muss durch akkreditierte Verifizierer (nach Delegierter Verordnung (EU) 2023/1604) erfolgen.",
+        sub: [
+          {
+            id: "cbam-beispiel-stahl",
+            heading: "Rechenbeispiel: Betonstahl-Import Türkei",
+            body: "Szenario: Import von 500 t Betonstahl B500B aus türkischer EAF-Produktion.\n\nCO₂-Intensität türkischer EAF-Stahl: 1,80 tCO₂/t (typischer Wert für Lichtbogenofen mit türkischem Strommix)\nEUA-Wochenpreis: 65,40 €/tCO₂ (Stand KW 12/2026)\nTürkei: Kein eigenes ETS, kein CO₂-Preis anrechenbar.\n\nCBAM-Zahllast = 1,80 × 500 × 65,40 − 0 = 58.860 EUR\nJe Tonne: 117,72 €/t Aufschlag\nBasispreis Betonstahl: 620 €/t CIF Europa\nEffektiver Importpreis inkl. CBAM: 737,72 €/t\nVergleich EU-Ware (keine CBAM): 698 €/t DAP Frankfurt\n\nErgebnis: EU-Ware ist nach CBAM preislich wettbewerbsfähig, was vorher nicht der Fall war."
+          },
+          {
+            id: "cbam-beispiel-harnstoff",
+            heading: "Rechenbeispiel: Harnstoff-Import Russland",
+            body: "Szenario: Import von 200 t Harnstoff (46 % N) aus russischer Produktion.\n\nCO₂-Intensität russischer Harnstoff (Synthesegas-Route): 2,4 tCO₂/t\nEUA: 65,40 €/tCO₂\nRussland: kein CO₂-Preis anrechenbar.\n\nCBAM-Zahllast = 2,4 × 200 × 65,40 = 31.392 EUR\nJe Tonne: 156,96 €/t Aufschlag\nBasispreis Harnstoff: 485 $/t CIF Hamburg ≈ 450 €/t\nEffektiver Preis inkl. CBAM: ~607 €/t\n\nAuswirkung: Harnstoff-Importe aus Russland werden nahezu unrentabel, was EU-Produzenten (z.B. SKW Piesteritz, BASF Ludwigshafen) massiv begünstigt."
+          }
+        ]
+      },
+      {
+        id: "cbam-reporting",
+        heading: "Reporting-Pflichten für Importeure",
+        body: "Als CBAM-Importeur (natürliche oder juristische Person mit Sitz in der EU, die CBAM-Waren aus Drittstaaten importiert) gelten ab 2026 folgende Pflichten:\n\nRegistrierung: Jeder CBAM-Importeur muss sich beim nationalen CBAM-Register registrieren (in Deutschland beim Zoll / BAFA). Die Registrierung ist Voraussetzung für den Import von CBAM-Waren.\n\nQuartalsberichte (2026 ff.): Weiterführung der Mengenmeldungen aus der Übergangsphase, jetzt aber mit verifizierten Emissionsdaten.\n\nJährliche CBAM-Erklärung: Bis 31. Mai des Folgejahres: Gesamtemissionen des Vorjahres + Abgabe entsprechender CBAM-Zertifikate. Nicht abgegebene Zertifikate werden mit 100 EUR/tCO₂e sanktioniert.\n\nAufbewahrungspflicht: Alle Emissionsnachweise, Produktionsdaten und Lieferantendokumente müssen 5 Jahre aufbewahrt werden.\n\nDrittlandsbescheinigung: Für jede CBAM-Lieferung muss der Lieferant im Drittland eine Bescheinigung über die eingebetteten Emissionen ausstellen (nach VO (EU) 2023/1773).",
+      },
+      {
+        id: "cbam-eucx",
+        heading: "CBAM und der Handel auf EUCX",
+        body: "Auf der EUCX-Plattform werden ausschließlich Waren gehandelt, die sich bereits rechtmäßig im EU-Zollgebiet befinden oder bestimmungsgemäß importiert wurden. EUCX selbst ist kein Importeur und unterliegt keiner CBAM-Zahllast.\n\nFür Händler auf EUCX gilt:\n\nVerkäufer von Nicht-EU-Ursprungsware müssen beim Angebotseintrag den CBAM-Status dokumentieren. Das EUCX-System unterscheidet automatisch zwischen EU-Ursprungsware (kein CBAM) und Drittlands-Ursprungsware (CBAM-pflichtig, sofern noch nicht abgewickelt).\n\nPreistransparenz: EUCX zeigt bei CBAM-relevanten Angeboten den geschätzten CO₂-Aufschlag basierend auf dem aktuellen EUA-Wochenpreis. So können Käufer den tatsächlichen Total-Cost-of-Ownership vergleichen.\n\nCompliance-Dokumentation: EUCX stellt für jede Transaktion automatisch die notwendigen Handelsdokumente bereit, die für die CBAM-Erklärung benötigt werden (Lieferdatum, Ursprungsland, Produktbeschreibung mit CN-Code).",
+        sub: [
+          {
+            id: "cbam-eucx-checkliste",
+            heading: "Checkliste: CBAM-Compliance für EUCX-Händler",
+            body: "Vor dem ersten Import: Registrierung beim nationalen CBAM-Register (BAFA für Deutschland).\nBei jedem Import: CBAM-Zertifikate kaufen (über EU-CBAM-Register: cbam.ec.europa.eu).\nBis 31. Mai: Jährliche CBAM-Erklärung einreichen und Zertifikate abgeben.\nDauerhaft: Emissionsnachweise und Lieferantendokumente 5 Jahre archivieren.\nBei EUCX-Handel: CBAM-Status im Angebot korrekt angeben (EU-Ursprung / Drittland)."
+          }
+        ]
+      },
+      {
+        id: "cbam-marktauswirkungen",
+        heading: "Auswirkungen auf den EU-Rohstoffmarkt",
+        body: "CBAM ist eine der größten strukturellen Verschiebungen im europäischen Rohstoffhandel seit der ETS-Einführung 2005. Die Auswirkungen sind sektorspezifisch:\n\nBetonstahl: Türkische und osteuropäische (Nicht-EU) Betonstahl-Importe decken ca. 18 % des EU-Bedarfs. CBAM macht diese Importe um 100–130 €/t teurer. Dies stützt EU-Erzeugerpreise strukturell — insbesondere für EAF-Produzenten mit grünem Strommix (Skandinavien, Frankreich).\n\nFlachstahl (nicht auf EUCX): Hochofenstahl aus China (~2,1 tCO₂/t) wird mit ~137 €/t CBAM belastet. EU-Hochofenstahl erhält schrittweise weniger Freiallokationen — Kostensteigerung von 20–40 €/t bis 2030.\n\nHarnstoff und Stickstoffdünger: Importe aus Russland (ca. 35 % der EU-Importe vor 2022), Ägypten und Algerien werden massiv teurer. EU-Produzenten (SKW Piesteritz, Yara, BASF) profitieren.\n\nAluminium: Primäraluminium aus Russland, China und dem Mittleren Osten mit 8–16 tCO₂/t trägt CBAM von 520–1.040 €/t (bei EUA 65 €/t). De facto Abschottung des EU-Markts für konventionell produziertes Aluminium.",
       },
     ],
-    related: ["betonstahl", "otf-eucx"],
+    related: ["betonstahl", "otf-eucx", "abwicklungsgarantie"],
     faq: [
-      { q: "Ab wann gilt CBAM vollständig?", a: "Ab 1. Januar 2026. Übergangsphase (nur Berichtspflicht) lief Oktober 2023 bis Dezember 2025." },
-      { q: "Betrifft CBAM auch Stahlschrott?", a: "Nein. CBAM gilt für verarbeitete Erzeugnisse (Betonstahl, Bleche), nicht für Schrott als Rohmaterial." },
+      { q: "Ab wann ist CBAM kostenpflichtig?", a: "Ab 1. Januar 2026. Die Übergangsphase (Oktober 2023 – Dezember 2025) hatte nur Berichtspflichten ohne Zahlungslast." },
+      { q: "Betrifft CBAM auch Stahlschrott?", a: "Nein. CBAM gilt für verarbeitete Erzeugnisse (Betonstahl, Bleche, Walzdraht), nicht für Schrott als Rohmaterial. Schrott fällt unter HS 7204 und ist explizit ausgenommen." },
+      { q: "Wie kaufe ich CBAM-Zertifikate?", a: "Über das EU-CBAM-Register (cbam.ec.europa.eu). In Deutschland ist die Bundeszollverwaltung / BAFA zuständig für Registrierung und Abwicklung. Der Zertifikatspreis wird wöchentlich aus dem EUA-Durchschnitt berechnet." },
+      { q: "Was ist der Unterschied zwischen CBAM und EU-ETS?", a: "EU-ETS betrifft EU-Produzenten direkt (Zertifikatspflicht für eigene Emissionen). CBAM betrifft Importeure und stellt sicher, dass Importe denselben CO₂-Preis zahlen wie EU-Erzeuger. Beide Systeme sind eng verknüpft — der CBAM-Preis basiert auf dem EUA-Preis." },
+      { q: "Gilt CBAM auch für Recycling-Stahl (EAF)?", a: "Ja, aber mit deutlich niedrigerem CO₂-Faktor. EAF-Stahl aus der Türkei emittiert ca. 1,8 tCO₂/t, Hochofenstahl ca. 2,1 tCO₂/t. Bei EAF-Stahl mit erneuerbarem Strom kann die CO₂-Intensität auf 0,4–0,6 tCO₂/t sinken — CBAM-Aufschlag dann nur 26–39 €/t." },
+      { q: "Muss EUCX als Handelsplattform CBAM abführen?", a: "Nein. CBAM liegt beim Importeur (der Partei, die Waren aus Drittstaaten in die EU einführt). EUCX als Handelsplattform für bereits in der EU befindliche Waren ist kein Importeur und unterliegt keiner CBAM-Zahllast." },
     ],
   },
   // --- Neue Einträge ---
