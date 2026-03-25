@@ -93,6 +93,7 @@ export default function LexikonPage() {
               <a
                 key={letter}
                 href={`#buchstabe-${letter}`}
+                className="lex-alpha"
                 style={{
                   display: "inline-flex", alignItems: "center", justifyContent: "center",
                   width: 36, height: 36, fontSize: 14, fontWeight: 700,
@@ -143,13 +144,22 @@ export default function LexikonPage() {
 
         {/* Hover-CSS */}
         <style>{`
+          .lex-alpha {
+            transition: transform 180ms ease, box-shadow 180ms ease;
+            cursor: pointer;
+          }
+          .lex-alpha:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(21,65,148,0.35);
+          }
           .lex-card {
             transition: background-color 250ms ease, box-shadow 250ms ease, border-left-width 150ms ease;
+            cursor: pointer;
           }
           .lex-card:hover {
             background-color: rgba(21,65,148,0.06) !important;
             box-shadow: inset 0 0 0 1px rgba(21,65,148,0.15), 0 4px 16px rgba(21,65,148,0.08);
-            border-left-width: 6px !important;
+            border-left-width: 8px !important;
           }
           .lex-card:hover .lex-title { color: #154194 !important; }
           .lex-desc {

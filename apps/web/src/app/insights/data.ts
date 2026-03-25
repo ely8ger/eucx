@@ -357,41 +357,118 @@ export const LEXIKON: LexikonEntry[] = [
   {
     slug: "abwicklungsgarantie",
     term: "Abwicklungsgarantie",
-    shortDef: "Die Abwicklungsgarantie (Settlement Guarantee) sichert Handelstransaktionen ab und schützt beide Vertragsparteien vor Gegenparteiausfällen.",
-    description: "Wie funktioniert die Abwicklungsgarantie auf EUCX? Margin-Typen, Ausfallfonds und rechtliche Grundlagen erklärt.",
+    shortDef: "Die Abwicklungsgarantie (Settlement Guarantee) sichert Handelstransaktionen ab und schützt beide Vertragsparteien vor Gegenparteiausfällen — regulatorisch vorgeschrieben nach MiFID II.",
+    description: "Abwicklungsgarantie im institutionellen Rohstoffhandel: Leistung-gegen-Zahlung, Margin-Mechanismus, Ausfallfonds, Clearingstelle und rechtliche Grundlagen nach MiFID II und WpHG. Vollständiger EUCX-Guide.",
     category: "Regulierung",
-    readMin: 5,
+    readMin: 13,
     published: "2026-03-23",
-    updated: "2026-03-23",
+    updated: "2026-03-25",
     norm: "§ 72 WpHG · Art. 20 MiFID II",
     sections: [
       {
         id: "definition",
         heading: "Definition und rechtliche Grundlage",
-        body: "Die Abwicklungsgarantie (engl. Settlement Guarantee) ist eine rechtsverbindliche Zusage, dass eine Transaktion auf einem organisierten Handelssystem (OTF) vollständig abgewickelt wird – unabhängig davon, ob eine der Vertragsparteien ihren Verpflichtungen nachkommt. Rechtsgrundlage: § 72 WpHG i.V.m. Art. 20 MiFID II. Die EUCX GmbH als OTF-Betreiberin ist verpflichtet, geeignete Mechanismen zur Sicherung der Handelsabwicklung vorzuhalten.",
+        body: "Die Abwicklungsgarantie (engl. Settlement Guarantee oder Settlement Assurance) ist eine rechtsverbindliche Zusage eines Handelsplatzbetreibers oder einer Clearingstelle, dass eine Transaktion vollständig und fristgerecht abgewickelt wird — unabhängig davon, ob eine der Vertragsparteien ihren Pflichten nachkommt. Sie bildet das Fundament des institutionellen Wertpapier- und Warenhandels.\n\nIm Kontext der EUCX gilt: Jeder über die Plattform abgeschlossene Kontrakt ist durch die Abwicklungsgarantie der EUCX GmbH gesichert. Käufer erhalten ihre Ware, Verkäufer erhalten ihre Zahlung — oder der Schadensfonds der EUCX tritt ein. Dieses Prinzip schafft das Vertrauen, das für einen funktionierenden organisierten Markt unabdingbar ist.",
+        sub: [
+          {
+            id: "definition-rechtsgrundlage",
+            heading: "Rechtsgrundlagen im Detail",
+            body: "§ 72 WpHG (Wertpapierhandelsgesetz): Verpflichtet OTF-Betreiber zur Einrichtung angemessener Systeme und Verfahren zur Abwicklungssicherung. Verstoss kann zum Entzug der BaFin-Lizenz führen.\n\nArt. 20 MiFID II (Richtlinie 2014/65/EU): Definiert Anforderungen an Organised Trading Facilities. Abwicklungssicherung ist explizite Betreiberpflicht.\n\nArt. 3 CSDR (Verordnung (EU) 909/2014 — Central Securities Depository Regulation): Setzt EU-weite Mindeststandards fuer Wertpapierabwicklung, analog anwendbar auf physische Warenkontrakte an OTFs.\n\nDelgierte Verordnung (EU) 2017/565: Konkretisiert organisatorische Anforderungen an OTF-Betreiber, u.a. Risikomanagement und Notfallplaene."
+          },
+          {
+            id: "definition-pvp",
+            heading: "Leistung-gegen-Zahlung (PvP) als Kernprinzip",
+            body: "Das Prinzip Payment-versus-Payment (PvP) bzw. Delivery-versus-Payment (DvP) stellt sicher, dass Lieferung und Zahlung simultan oder in definierter Sequenz erfolgen. Kein Verkäufer liefert ohne Zahlungsgarantie, kein Käufer zahlt ohne Liefergarantie.\n\nAuf EUCX wird DvP wie folgt umgesetzt: (1) Zahlungsreservierung beim Käufer zum Zeitpunkt des Matchings, (2) Lieferanweisung an den Verkäufer erst nach Zahlungsbestätigung, (3) Zahlung an den Verkäufer erst nach Liefernachweis (Wiegerschein + Frachtdokumente). Bei Abweichungen greift das Ausfall- und Schlichtungsverfahren."
+          }
+        ]
       },
       {
         id: "mechanismus",
-        heading: "Funktionsweise auf EUCX",
-        body: "Vor Handelszulassung: Jeder Marktteilnehmer hinterlegt eine Sicherheitsleistung (Initial Margin) in Höhe von min. 5 % des zugelassenen Handelsvolumens. Bei Ordereingabe: Das System prüft automatisch die verfügbare Margin. Kontrakte ohne ausreichende Deckung werden abgewiesen. Bei Vertragsabschluss: Eine Abwicklungsbestätigung wird bilateral versendet. Die Lieferverpflichtung wird im EUCX-Settlement-System hinterlegt. Bei Ausfall einer Partei: Der Ausfallfonds der EUCX deckt Schäden bis 2 Mio. EUR je Einzelfall. Darüber hinaus greift die Berufshaftpflichtversicherung (Allianz, 5 Mio. EUR je Fall).",
+        heading: "Der EUCX-Abwicklungsmechanismus Schritt für Schritt",
+        body: "Die Abwicklungsgarantie wirkt nicht erst bei einem Ausfall — sie ist in jeden Schritt des Handelsprozesses eingebaut. Hier der vollständige Ablauf:",
+        sub: [
+          {
+            id: "mechanismus-phase1",
+            heading: "Phase 1: Vor dem Handel — Zulassung und Margin-Hinterlegung",
+            body: "Jeder neue Marktteilnehmer durchläuft vor der ersten Order eine vierstufige Prüfung:\n\n1. KYC/AML-Pruefung: Identitaetspruefung aller wirtschaftlich Berechtigten (UBOs) nach GwG.\n2. Kreditpruefung: Bonitaetsbeurteilung anhand Jahresabschluss und Bankauskunft.\n3. MiFID-II-Kategorisierung: Einstufung als Professioneller Kunde oder Geeignete Gegenpartei.\n4. Initial Margin: Einzahlung auf EUCX-Treuhandkonto (min. 10.000 EUR oder 5 % des genehmigten Jahresvolumens).\n\nOhne vollstaendige Initial Margin sind keine Orders moeglich. Das System blockiert die Ordermaske technisch."
+          },
+          {
+            id: "mechanismus-phase2",
+            heading: "Phase 2: Orderabgabe — automatische Margin-Prüfung",
+            body: "Jede eingehende Order wird in Echtzeit gegen die verfuegbare Margin geprueft:\n\nVerfuegbare Margin = Eingezahlte Initial Margin − reservierte Margin aus offenen Orders\n\nBeispiel: Haendler A hat 50.000 EUR Margin. Er gibt eine Kauforder fuer 200 t Betonstahl zu 700 EUR/t ein = Orderwert 140.000 EUR. Bei 5 % Margin-Satz werden 7.000 EUR reserviert. Verfuegbare Margin nach Order: 43.000 EUR. Weitere Orders bis 43.000 EUR / 5 % = 860.000 EUR Gesamtvolumen moeglich.\n\nAbgelehnte Orders werden mit Fehlercode M001 (Insufficient Margin) zurueckgewiesen. Der Haendler erhaelt eine automatische Benachrichtigung."
+          },
+          {
+            id: "mechanismus-phase3",
+            heading: "Phase 3: Nach dem Matching — Handelsbestätigung und Settlement-Einleitung",
+            body: "Nach erfolgreichem Matching (Bid >= Ask) laeuft der Settlement-Prozess automatisch an:\n\nT+0 (Handelsabschluss): Matching-Bestaetigung an beide Parteien per E-Mail und Portal. Die EUCX-Settlement-ID wird generiert. Reservierte Margin wird zu blockierter Margin.\n\nT+1 (Dokumentenaustausch): Verkäufer sendet Orderbestaetigung mit Lieferdatum, Lieferanschrift und Qualitaetszertifikat (Werksprüfzeugnis 3.1). Käufer bestätigt Lieferanschrift.\n\nT+2 (Zahlungsreservierung): EUCX reserviert den Kaufbetrag auf dem Treuhandkonto des Käufers. Betrag ist bis zur Lieferbestaetigung eingefroren.\n\nT+3 bis T+7 (physische Lieferung): Abhängig von Incoterm und Entfernung. EUCX-Logistikpartner überwacht Lieferfortschritt.\n\nT+8 (finale Abwicklung): Nach Eingang des signierten Liefernachweises (Wiegerschein, CMR-Frachtbrief) wird die Zahlung automatisch an den Verkäufer freigegeben. Margin-Reservierung beider Parteien aufgehoben."
+          },
+          {
+            id: "mechanismus-ausfall",
+            heading: "Phase 4: Ausfallverfahren bei Nichterfüllung",
+            body: "Kommt eine Partei ihren Verpflichtungen nicht nach, greift das EUCX-Ausfallverfahren in drei Stufen:\n\nStufe 1 — Margin-Einzug: Die gesamte blockierte Margin der ausfallenden Partei wird eingezogen. Dies deckt in den meisten Faellen den Schaden vollstaendig.\n\nStufe 2 — Ausfallfonds: Reicht die Margin nicht aus, greift der EUCX-Ausfallfonds (Kapital: 5 Mio. EUR, gespeist aus Handelsgebühren). Maximal 2 Mio. EUR je Einzelfall.\n\nStufe 3 — Berufshaftpflicht: Darueber hinausgehende Schaeden werden durch die Berufshaftpflichtversicherung der EUCX GmbH (Allianz Global Corporate & Specialty SE, 5 Mio. EUR je Fall) gedeckt.\n\nDer Nichterfüllende Marktteilnehmer wird sofort gesperrt und erhält eine formelle Abmahnung nach BGB. Bei wiederholtem Ausfall: dauerhafter Ausschluss von der Plattform und Meldung an die BaFin."
+          }
+        ]
       },
       {
         id: "margin-typen",
-        heading: "Initial Margin vs. Variation Margin",
-        body: "Initial Margin: Einmalige Sicherheitsleistung bei Kontoeröffnung. Variation Margin: Tägliche Mark-to-Market-Anpassung bei offenen Positionen (nur für Terminkontrakte). Maintenance Margin: Unterschreitung löst automatischen Margin Call aus.",
+        heading: "Margin-Typen im Detail",
+        body: "Das EUCX-Marginsystem kennt drei Arten von Sicherheitsleistungen, die unterschiedliche Funktionen erfuellen:",
+        sub: [
+          {
+            id: "margin-initial",
+            heading: "Initial Margin — Die Eintrittshuerde",
+            body: "Die Initial Margin ist die einmalige Grundsicherheit, die bei Kontoeröffnung hinterlegt wird. Sie richtet sich nach dem genehmigten Jahreshandelsvolumen:\n\nBis 2 Mio. EUR Jahresvolumen: 10.000 EUR Mindest-Margin (5,0 %)\n2–10 Mio. EUR: 50.000 EUR (2,5 %)\n10–50 Mio. EUR: 150.000 EUR (1,5 %)\nÜber 50 Mio. EUR: Individuell vereinbart (i.d.R. 1,0 %)\n\nDie Initial Margin liegt jederzeit auf einem segregierten Treuhandkonto bei der Deutschen Bank AG, getrennt vom EUCX-Betriebsvermögen. Sie ist damit im Insolvenzfall der EUCX GmbH vollstaendig geschützt.\n\nVerzinsung: EZB-Einlagezinssatz − 0,25 % p.a. (aktuell: ca. 3,65 % p.a.)."
+          },
+          {
+            id: "margin-variation",
+            heading: "Variation Margin — Tagesaktuelle Anpassung",
+            body: "Bei offenen Terminkontrakten (Futures/Forwards auf EUCX) wird taeglich eine Mark-to-Market-Bewertung durchgefuehrt. Liegt der aktuelle Marktpreis unter dem vereinbarten Terminpreis, muss der Käufer eine Variation Margin nachschiessen.\n\nBeispiel: Kaeufer schließt Forward-Kontrakt ueber 100 t Betonstahl zu 720 EUR/t ab. Aktueller Marktpreis faellt auf 680 EUR/t. Unrealisierter Verlust: (720 − 680) × 100 = 4.000 EUR. Dieser Betrag wird als Variation Margin täglich eingefordert.\n\nVariation Margin ist nur für Terminkontrakte relevant. Kassageschaefte (Spot) haben keine Variation Margin."
+          },
+          {
+            id: "margin-maintenance",
+            heading: "Maintenance Margin — Der Sicherheitspuffer",
+            body: "Die Maintenance Margin ist der Mindestbetrag, der jederzeit auf dem Marginkonto verfuegbar sein muss. Bei EUCX betraegt sie 80 % der Initial Margin.\n\nUnterschreitet die verfuegbare Margin die Maintenance Margin, loest das System automatisch einen Margin Call aus:\n1. Automatische E-Mail-Benachrichtigung an den Kontaktinhaber\n2. 24-Stunden-Frist zur Nachschusszahlung\n3. Bei Nichterfuellung: automatische Liquidation der aeltesten offenen Positionen bis zur Wiederherstellung der Initial Margin."
+          }
+        ]
       },
       {
-        id: "faq",
-        heading: "Häufige Fragen",
-        body: "",
-        faq: [
-          { q: "Was passiert, wenn ein Käufer nicht zahlt?", a: "EUCX aktiviert das Ausfallverfahren: Margin wird eingezogen, offene Position wird über den Markt geschlossen, Differenz wird aus dem Ausfallfonds gedeckt." },
-          { q: "Wie hoch ist die Initial Margin bei EUCX?", a: "Standardmäßig 5 % des genehmigten Handelsvolumens, mindestens jedoch 10.000 EUR. Für volatile Rohstoffe kann die Margin auf bis zu 15 % angehoben werden." },
-          { q: "Ist meine Margin-Einlage verzinst?", a: "Ja. EUCX verzinst Margin-Einlagen zum aktuellen EZB-Einlagezinssatz abzüglich 0,25 %." },
-        ],
+        id: "vergleich-otc",
+        heading: "Abwicklungsgarantie vs. OTC-Handel: Was Händler wissen müssen",
+        body: "Im Over-the-Counter (OTC) Handel — also dem direkten, bilateralen Handel ausserhalb einer Boerse — gibt es keine Abwicklungsgarantie. Kaeufer und Verkäufer tragen das volle Gegenparteirisiko. Laut BIS-Statistik (Bank for International Settlements) scheitern ca. 5–8 % aller OTC-Rohstoffgeschäfte an Abwicklungsproblemen.\n\nDie Abwicklungsgarantie der EUCX eliminiert dieses Risiko vollstaendig. Fuer mittelstaendische Industrieunternehmen, die bisher OTC handelten, bedeutet der Wechsel zur EUCX:\n\n— Keine Due-Diligence-Kosten fuer jeden einzelnen Handelspartner\n— Keine bilateralen Rahmenvertraege (ISDA/Master Agreement) noetig\n— Planungssicherheit: Liefertermin und Preis sind bei Abschluss garantiert\n— Bilanziell: Gegenparteirisiko entfaellt aus dem Risikobericht\n— Regulatorisch: Reduzierter Dokumentationsaufwand nach EMIR Art. 11",
+      },
+      {
+        id: "expertentipp",
+        heading: "Expertentipp: Margin-Optimierung für aktive Händler",
+        body: "Ein haeufiger Fehler neuer EUCX-Teilnehmer: Sie hinterlegen genau die Mindest-Margin und sind dann ueberrascht, wenn groessere Ordervolumina abgewiesen werden.\n\nProfi-Ansatz: Hinterlegen Sie 120–150 % der rein rechnerisch notwendigen Margin. Das gibt Ihnen Handlungsspielraum bei schnellen Marktbewegungen und verhindert Margin Calls in volatilen Phasen (z.B. waehrend CBAM-Ankuendigungen oder Zollerhoehungen).\n\nSteuertipp: Die Initial Margin ist kein Aufwand — sie bleibt Vermoegen Ihres Unternehmens. Die anfallenden Zinsertraege auf der Margin muessen als Kapitalertrag versteuert werden. Sprechen Sie mit Ihrem Steuerberater ueber die korrekte Bilanzierung nach HGB § 266 Abs. 2 B.II.4.",
       },
     ],
-    related: ["otf-eucx", "cbam"],
+    related: ["otf-eucx", "cbam", "mifid-ii-otf"],
+    faq: [
+      {
+        q: "Was passiert, wenn ein Käufer nicht zahlt?",
+        a: "EUCX aktiviert das dreistufige Ausfallverfahren: (1) Margin-Einzug der ausfallenden Partei, (2) Deckung verbleibender Differenzen aus dem 5-Mio.-EUR-Ausfallfonds, (3) Darueber hinausgehende Schaeden werden durch die Berufshaftpflicht (Allianz, 5 Mio. EUR je Fall) gedeckt. Der ausfallende Teilnehmer wird sofort gesperrt und bei der BaFin gemeldet."
+      },
+      {
+        q: "Was passiert, wenn ein Verkäufer nicht liefert?",
+        a: "Bei Lieferverzug: EUCX setzt dem Verkäufer eine 48-Stunden-Nachfrist. Bei Nichterfuellung: Die reservierte Zahlung des Käufers wird freigegeben. EUCX besorgt Ersatzlieferung am Markt (Close-out). Mehrkosten traegt der ausfallende Verkäufer, gedeckt aus seiner Margin."
+      },
+      {
+        q: "Wie hoch ist die Initial Margin bei EUCX?",
+        a: "Mindestens 10.000 EUR oder 5 % des genehmigten Jahreshandelsvolumens (bei bis zu 2 Mio. EUR Volumen). Ab 2 Mio. EUR Volumen sinkt der Satz auf 2,5 %, ab 10 Mio. EUR auf 1,5 %. Fuer volatile Rohstoffe kann die BaFin-konforme Margin auf bis zu 15 % angehoben werden."
+      },
+      {
+        q: "Ist meine Margin-Einlage sicher, wenn EUCX insolvent wird?",
+        a: "Ja. Die Initial Margin liegt auf einem segregierten Treuhandkonto bei der Deutschen Bank AG — getrennt vom EUCX-Betriebsvermögen. Im Insolvenzfall der EUCX GmbH hat der Insolvenzverwalter keinen Zugriff auf diese Mittel. Sie werden unverzueglich an die Teilnehmer zurueckuebertragen."
+      },
+      {
+        q: "Gilt die Abwicklungsgarantie auch fuer Terminkontrakte?",
+        a: "Ja, sowohl fuer Kassageschaefte (Spot) als auch fuer kurzfristige Terminkontrakte (bis 6 Monate). Bei Spot-Geschäften gilt DvP (Delivery-versus-Payment). Bei Terminkontrakten kommt zusaetzlich die Variation Margin hinzu."
+      },
+      {
+        q: "Muss ich als Käufer den vollen Kaufbetrag im Voraus einzahlen?",
+        a: "Nein. Sie benoetigen nur die Margin (5 % des Kaufbetrags) zum Zeitpunkt der Orderabgabe. Der volle Kaufbetrag wird erst bei Matching reserviert (nicht abgebucht) und nach erfolgter Lieferung automatisch an den Verkäufer transferiert."
+      },
+    ],
   },
   {
     slug: "cbam-detail",
