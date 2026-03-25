@@ -174,7 +174,7 @@ export default function LexikonPage() {
 
         {/* Einträge nach Alphabet */}
         {ALPHABET.filter((l) => byLetter[l]).map((letter) => (
-          <section key={letter} id={`buchstabe-${letter}`} style={{ marginBottom: 48 }}>
+          <section key={letter} id={`buchstabe-${letter}`} style={{ marginBottom: 48, scrollMarginTop: 120 }}>
             <h2
               style={{
                 fontSize: 32,
