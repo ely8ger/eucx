@@ -87,6 +87,7 @@ export function LexikonClient({ entries }: { entries: LexikonEntry[] }) {
         {activeCategory && (
           <button
             onClick={() => setActiveCategory(null)}
+            className="lex-cat-reset"
             style={{
               border: "1px solid #aaa",
               color: "#555",
@@ -108,6 +109,8 @@ export function LexikonClient({ entries }: { entries: LexikonEntry[] }) {
             <button
               key={cat}
               onClick={() => setActiveCategory(isActive ? null : cat)}
+              className={`lex-cat${isActive ? " lex-cat-active" : ""}`}
+              data-color={color}
               style={{
                 border: `1px solid ${color}`,
                 color: isActive ? "#fff" : color,
@@ -117,7 +120,6 @@ export function LexikonClient({ entries }: { entries: LexikonEntry[] }) {
                 fontWeight: 600,
                 cursor: "pointer",
                 letterSpacing: "0.04em",
-                transition: "background-color 150ms ease, color 150ms ease",
               }}
             >
               {cat}
@@ -141,6 +143,25 @@ export function LexikonClient({ entries }: { entries: LexikonEntry[] }) {
           transform: translateY(-2px) scale(1.1);
           box-shadow: 0 4px 12px rgba(21,65,148,0.35);
           background-color: #2563eb !important;
+        }
+        .lex-cat {
+          transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease, color 150ms ease;
+        }
+        .lex-cat:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+          opacity: 0.9;
+        }
+        .lex-cat-active:hover {
+          opacity: 1;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.22);
+        }
+        .lex-cat-reset {
+          transition: transform 150ms ease, box-shadow 150ms ease;
+        }
+        .lex-cat-reset:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 3px 8px rgba(0,0,0,0.12);
         }
         .lex-card {
           transition: background-color 250ms ease, box-shadow 250ms ease, border-left-width 150ms ease;
