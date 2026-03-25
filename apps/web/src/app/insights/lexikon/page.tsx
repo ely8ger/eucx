@@ -145,12 +145,13 @@ export default function LexikonPage() {
         {/* Hover-CSS */}
         <style>{`
           .lex-alpha {
-            transition: transform 180ms ease, box-shadow 180ms ease;
+            transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
             cursor: pointer;
           }
           .lex-alpha:hover {
-            transform: translateY(-2px);
+            transform: translateY(-2px) scale(1.1);
             box-shadow: 0 4px 12px rgba(21,65,148,0.35);
+            background-color: #2563eb !important;
           }
           .lex-card {
             transition: background-color 250ms ease, box-shadow 250ms ease, border-left-width 150ms ease;
