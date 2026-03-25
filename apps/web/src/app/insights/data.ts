@@ -1424,6 +1424,135 @@ export const LEXIKON: LexikonEntry[] = [
     ],
     related: ["kontrahentenrisiko", "abwicklungsgarantie", "incoterms-2020"],
   },
+  {
+    slug: "mar-marktmissbrauch",
+    term: "MAR — Marktmissbrauchsverordnung",
+    shortDef: "EU-Verordnung (EU) 596/2014 gegen Insiderhandel, Marktmanipulation und unerlaubte Weitergabe von Insiderinformationen — gilt auf allen regulierten Handelsplatzen einschliesslich EUCX.",
+    category: "Regulierung",
+    description: "EU-Verordnung (EU) 596/2014 gegen Insiderhandel, Marktmanipulation und unerlaubte Weitergabe von Insiderinformationen.",
+    published: "2026-03-25",
+    updated: "2026-03-25",
+    readMin: 8,
+    sections: [
+      {
+        id: "grundlagen",
+        heading: "Grundlagen und Anwendungsbereich",
+        body: "Die Marktmissbrauchsverordnung (MAR) — Verordnung (EU) 596/2014 — ist seit Juli 2016 in der EU unmittelbar anwendbar. Sie loeste die Marktmissbrauchsrichtlinie (MAD) ab und gilt einheitlich auf allen regulierten Handelsplatzen (Regulated Markets, MTFs, OTFs) sowie im ausserboerslichen Handel (OTC), wenn die Basiswerte an regulierten Platzen gehandelt werden. EUCX als OTF: Alle auf EUCX gehandelten Rohstoffe und Derivate unterliegen der MAR-Uberwachung. EUCX ist nach Art. 16 MAR verpflichtet, bei Verdacht auf Marktmissbrauch Suspicious Transaction and Order Reports (STORs) an die BaFin zu erstatten.",
+      },
+      {
+        id: "insiderhandel",
+        heading: "Insiderhandel (Art. 7-11 MAR)",
+        body: "Insiderinformation: Nicht oeffentlich bekannte, praezise Information, die bei Bekanntwerden den Preis eines Finanzinstruments erheblich beeinflussen wurde. Im Rohstoffhandel: Nicht oeffentliche Informationen uber Ernteausfaelle, bevorstehende Antidumping-Entscheidungen, Minen-Unfaelle, Produktionsausfaelle oder Politikentscheidungen koennen Insiderinformationen darstellen. Verbotene Handlungen: Handel auf Basis von Insiderinformationen (Art. 8), Weitergabe von Insiderinformationen (Art. 10), Empfehlung zum Handeln auf Basis von Insiderinformationen (Art. 8 Abs. 2). Ausnahmen: Legitime Geschaftstatigkeit (Market Making, eigener Handelsbedarf), Rueckkaufprogramme, Stabilisierungsmassnahmen.",
+      },
+      {
+        id: "marktmanipulation",
+        heading: "Marktmanipulation (Art. 12 MAR)",
+        body: "Verbotene Praktiken im Uberblick: Spoofing: Eingabe grosser Orders ohne Ausfuhrungsabsicht, um einen falschen Preis zu suggerieren und diesen dann auszunutzen. Layering: Mehrfache, gestaffelte Ordereingabe zur Tauschung uber Markttiefe. Wash Trading: Koordinierter Kauf und Verkauf zwischen verbundenen Parteien ohne tatsachlichen wirtschaftlichen Zweck. Cornering: Aufkaufen einer signifikanten Menge eines Rohstoffs zur Preiskontrolle. Quote Stuffing: Massenhafter Auftragsstrom zur Uberlastung von Handelssystemen. EUCX-Uberwachung: Echtzeit-Algorithmen detektieren verdachtige Handelsmuster. Bei Verdacht: sofortige Meldepflicht an BaFin via TREM-System.",
+      },
+      {
+        id: "sanktionen",
+        heading: "Sanktionsrahmen",
+        body: "Administrative Sanktionen (Art. 30 MAR): Natuerliche Personen: Bussgelder bis zu 5 Mio. EUR. Juristische Personen: Bussgelder bis 15% des jaehrlichen Gesamtumsatzes. Offentliche Bekanntmachung ('Name and Shame') durch BaFin. Befristetes oder dauerhaftes Verbot der Ausubung von Fuhrungsfunktionen. Strafrechtliche Sanktionen (Art. 7 MAD II / Paragraph 119 WpHG DE): Freiheitsstrafe bis zu 5 Jahren fuer Insiderhandel. Freiheitsstrafe bis zu 4 Jahren fuer Marktmanipulation. Vermogensabschopfung (Gewinn aus Insider-/Manipulationsgeschaften). EUCX-Konsequenz: Bei nachgewiesenem Marktmissbrauch wird Handelszulassung sofort gesperrt.",
+      },
+      {
+        id: "faq",
+        heading: "Haufige Fragen",
+        body: "",
+        faq: [
+          { q: "Gilt MAR auch fur physische Rohstoffe?", a: "Ja, wenn diese als Basiswert von Derivaten dienen, die an regulierten Platzen (RM, MTF, OTF) gehandelt werden. Da EUCX ein OTF ist, unterfallen alle EUCX-Rohstoffderivate und auch physische Kontrakte mit Derivate-Charakter der MAR." },
+          { q: "Was muss ich tun, wenn ich eine Insiderinformation erhalte?", a: "Handel auf Basis dieser Information ist verboten. Informieren Sie sofort Ihre Compliance-Abteilung. EUCX-Teilnehmer koennen verdachtige Sachverhalte auch anonym uber das EUCX-Whistleblower-System melden." },
+          { q: "Wie ueberwacht EUCX auf Marktmissbrauch?", a: "EUCX betreibt ein automatisiertes Handelsuberwachungssystem, das Echtzeit-Alerts bei verdachtigen Mustern generiert. Das Compliance-Team pruft alle Alerts und erstattet bei begruntetem Verdacht STORs an die BaFin." },
+        ],
+      },
+    ],
+    related: ["mifid-ii-otf", "otf-eucx", "emir-derivate"],
+  },
+  {
+    slug: "emir-derivate",
+    term: "EMIR — Derivate-Regulierung",
+    shortDef: "EU-Verordnung (EU) 648/2012 uber OTC-Derivate, zentrale Gegenparteien und Transaktionsregister — regelt Clearing-Pflicht, Meldepflichten und Risikominderung fuer Rohstoffderivate.",
+    category: "Regulierung",
+    description: "EU-Verordnung (EU) 648/2012 uber OTC-Derivate, zentrale Gegenparteien und Transaktionsregister.",
+    published: "2026-03-25",
+    updated: "2026-03-25",
+    readMin: 9,
+    sections: [
+      {
+        id: "grundlagen",
+        heading: "Grundlagen und Ziele",
+        body: "EMIR (European Market Infrastructure Regulation) — Verordnung (EU) 648/2012 — wurde als Reaktion auf die Finanzkrise 2008 verabschiedet und ist seit 2012 in Kraft. Ziel: Verringerung des systemischen Risikos durch zentrale Abwicklung standardisierter OTC-Derivate und verbesserte Transparenz durch Meldepflichten. EMIR-Refit (2019): Vereinfachungen fur kleine nicht-finanzielle Gegenparteien (NFCs). DORA-Schnittstelle: EMIR-Anforderungen an IT-Sicherheit werden durch DORA (Digital Operational Resilience Act) erganzt. Fur Rohstoffhandler: EMIR ist relevant, sobald Rohstoffderivate (Forwards, Futures, Optionen, Swaps) im OTC-Markt oder auf OTFs wie EUCX genutzt werden.",
+      },
+      {
+        id: "clearing-pflicht",
+        heading: "Clearing-Pflicht und Schwellenwerte",
+        body: "Clearing-Pflicht: Standardisierte OTC-Derivate (z.B. Zinsswaps, Credit Default Swaps) mussen uber zugelassene zentrale Gegenparteien (CCPs) abgewickelt werden. Schwellenwerte: Nicht-finanzielle Gegenparteien (NFCs) werden in NFC+ (uber Schwelle, clearing-pflichtig) und NFC- (unter Schwelle, vereinfachte Pflichten) eingeteilt. Schwellenwerte (EMIR Refit): Kreditderivate: 1 Mrd. EUR; Aktienderivate: 1 Mrd. EUR; Zinsderivate: 3 Mrd. EUR; FX-Derivate: 3 Mrd. EUR; Warenderivate und sonstige: 3 Mrd. EUR. Berechnung: Brutto-Nominalwert aller OTC-Derivate (ausser Absicherungsgeschaften). Commodity Dealer Exemption: Unternehmen, deren Haupttatigkeit Rohstoffhandel ist und deren Derivatenutzung der Absicherung dient, koennen unter bestimmten Bedingungen von Clearing-Pflicht ausgenommen sein.",
+      },
+      {
+        id: "meldepflicht",
+        heading: "Meldepflicht an Transaktionsregister",
+        body: "Alle OTC-Derivate-Transaktionen (und seit EMIR Refit auch boersengehandelte Derivate) mussen an ein zugelassenes Transaktionsregister (Trade Repository) gemeldet werden. Meldefrist: T+1 (Werktag nach Handelsabschluss). Meldepflichtige Daten: Gegenpartei-Identifikation (LEI), Kontraktdetails, Bewertungsdaten, Sicherheiten. Delegierte Meldung: EUCX als OTF kann Meldepflichten im Namen der Teilnehmer ubernehmen (delegated reporting). Transaktionsregister: DTCC, Regis-TR, UnaVista u.a. (alle ESMA-zugelassen). ESMA-Uberwachung: Europaische Wertpapier- und Marktaufsichtsbehorde uberwacht die Einhaltung und kann direkt sanktionieren.",
+      },
+      {
+        id: "risikominderung",
+        heading: "Risikominderungspflichten",
+        body: "Fur nicht-clearing-pflichtige OTC-Derivate gelten Risikominderungstechniken: Rechtzeitige Bestatigung: Kontraktbestatigung innerhalb definierter Fristen (je nach Produkt: T+1 bis T+3). Portfolio-Abstimmung: Regelmaessiger Abgleich offener Derivatpositionen mit Gegenparteien. Portfolio-Komprimierung: Periodische Nettierung von gegenlaufigen Positionen. Streitbeilegung: Dokumentierte Verfahren zur Losung von Bewertungsstreitigkeiten. Margin-Anforderungen: Initial Margin (Ersteinschuss) und Variation Margin (taegl. Anpassung) fuer bilaterale OTC-Derivate zwischen finanziellen Gegenparteien und NFC+.",
+      },
+      {
+        id: "faq",
+        heading: "Haufige Fragen",
+        body: "",
+        faq: [
+          { q: "Bin ich als Industrieunternehmen von EMIR betroffen?", a: "Ja, wenn Sie OTC-Derivate (auch Rohstoff-Forwards) nutzen. Als NFC- (unter Clearing-Schwelle) haben Sie vereinfachte Pflichten: Meldepflicht ja, Clearing-Pflicht nein, vereinfachte Risikominderung." },
+          { q: "Muss ich eine LEI-Nummer haben?", a: "Ja. Jede juristische Person, die unter EMIR Derivate handelt, benotigt eine LEI (Legal Entity Identifier). Kosten: ca. 65-100 EUR/Jahr. Ausstellung uber GLEIF-akkreditierte Stellen (z.B. WM Datenservice)." },
+          { q: "Ubernimmt EUCX die EMIR-Meldung fur mich?", a: "Ja. EUCX bietet als OTF delegated reporting an: EUCX meldet alle Transaktionen im Namen der Teilnehmer an das zugelassene Transaktionsregister. Sie behalten die rechtliche Verantwortung, EUCX ubernimmt die Ausfuhrung." },
+        ],
+      },
+    ],
+    related: ["mifid-ii-otf", "derivate-handel", "mar-marktmissbrauch"],
+  },
+  {
+    slug: "gwg-geldwaesche",
+    term: "GwG — Geldwaschegesetz",
+    shortDef: "Das deutsche Geldwaschegesetz (GwG) setzt die EU-Geldwascherichtlinien um und verpflichtet EUCX zu KYC, AML-Screening, Transaktionsuberwachung und Verdachtsmeldungen an die FIU.",
+    category: "Regulierung",
+    description: "Das deutsche Geldwaschegesetz (GwG) verpflichtet EUCX zu KYC, AML-Screening und Verdachtsmeldungen.",
+    published: "2026-03-25",
+    updated: "2026-03-25",
+    readMin: 7,
+    sections: [
+      {
+        id: "grundlagen",
+        heading: "Rechtsrahmen und Pflichtadressaten",
+        body: "Das Geldwaschegesetz (GwG) in der aktuellen Fassung setzt die 6. EU-Geldwascherichtlinie (AMLD6) in deutsches Recht um. Pflichtadressaten (Paragraph 2 GwG): Kreditinstitute, Finanzdienstleister, Versicherungen, Rechtsanwalte, Notare, Immobilienmakler und Guterhandler. EUCX als Finanzdienstleister und OTF-Betreiber ist Pflichtadressat nach Paragraph 2 Abs. 1 Nr. 5 GwG. Konsequenz fur Teilnehmer: Alle EUCX-Marktteilnehmer mussen KYC-Pruefung (Know Your Customer) und AML-Screening (Anti-Money Laundering) durchlaufen, bevor Handelszugang gewahrt wird.",
+      },
+      {
+        id: "kyc",
+        heading: "KYC — Sorgfaltspflichten",
+        body: "Allgemeine Sorgfaltspflichten (Paragraph 10 GwG): Identifizierung des Vertragspartners (Name, Geburtsdatum, Adresse, Identifikationsnummer). Bei juristischen Personen: Handelsregisterauszug, Gesellschaftsstruktur, Organe. Feststellung des wirtschaftlich Berechtigten (UBO — Ultimate Beneficial Owner): Alle natuerlichen Personen mit mehr als 25% Kontrolle oder Kapitalanteil mussen identifiziert und im Transparenzregister gepruft werden. Vereinfachte Sorgfalt: Fur niedrigrisikohafte Geschaftsbeziehungen (z.B. boersennotierte Unternehmen). Verstarkte Sorgfalt: Bei politisch exponierten Personen (PEPs), Hochrisikolaendern (FATF-Liste), ungewoehnlichen Transaktionsstrukturen. EUCX-Prozess: Digitale KYC-Strecke mit Dokument-Upload, Liveness-Check und automatisiertem Screening.",
+      },
+      {
+        id: "aml-monitoring",
+        heading: "AML-Monitoring und Verdachtsmeldungen",
+        body: "Transaktionsuberwachung: Kontinuierliche Uberwachung aller Transaktionen auf AML-Indikatoren. Red Flags: Ungewoehnlich hohe Transaktionsvolumina, Zahlungen uber Drittlander ohne wirtschaftlichen Grund, Zahlungen in bar oder via anonyme Zahlungswege, Preisniveaus weit ausserhalb des Marktstandards, hauffiger Partnerawechsel ohne erklarlichen Grund. Verdachtsmeldung (SAR — Suspicious Activity Report): EUCX ist nach Paragraph 43 GwG verpflichtet, bei Verdacht auf Geldwasche oder Terrorismusfinanzierung eine Verdachtsmeldung an die FIU (Financial Intelligence Unit) der deutschen Zollverwaltung zu erstatten. Tipping-Off-Verbot: Es ist verboten, den Verdachtigen uber die Meldung zu informieren.",
+      },
+      {
+        id: "sanktionen",
+        heading: "Sanktionen bei GwG-Verstossen",
+        body: "Bussgelder (Paragraph 56 GwG): Leichtere Verstoosse: bis 100.000 EUR. Schwerwiegende, systematische oder wiederholte Verstoosse: bis zu 1 Mio. EUR oder 2x den erlangten wirtschaftlichen Vorteil. Fur Kreditinstitute und Finanzdienstleister: bis zu 5 Mio. EUR oder 10% des jaehrlichen Gesamtumsatzes. Offentliche Bekanntmachung: BaFin kann GwG-Sanktionen veroeffentlichen. Strafrechtlich: Geldwasche (Paragraph 261 StGB): Freiheitsstrafe bis zu 10 Jahren. Teilnahme an Geldwasche: ebenso strafbar. EUCX-Konsequenz: Bei GwG-Verstoessen durch Marktteilnehmer wird Handelszugang sofort gesperrt und FIU informiert.",
+      },
+      {
+        id: "faq",
+        heading: "Haufige Fragen",
+        body: "",
+        faq: [
+          { q: "Was ist ein UBO und warum muss er erfasst werden?", a: "UBO (Ultimate Beneficial Owner) ist jede natuerliche Person, die mehr als 25% der Anteile oder Stimmrechte an einem Unternehmen halt oder auf andere Weise Kontrolle ausubt. Die Identifikation ist nach Paragraph 3 GwG Pflicht, da Geldwasche oft uber Firmengeflechte verschleiert wird." },
+          { q: "Wie lange dauert das KYC-Verfahren auf EUCX?", a: "Digitale KYC-Pruefung: Bei vollstandigen Unterlagen i.d.R. 1-2 Werktage. Bei komplexen Unternehmensstrukturen oder verstaerkter Sorgfaltspflicht (PEPs, Hochrisikolander): 3-5 Werktage." },
+          { q: "Muss ich als Kaufer auf EUCX selbst GwG-Pflichten erfullen?", a: "Nein, soweit Sie als Vertragspartner von EUCX handeln. EUCX ubernimmt als Pflichtadressat die Sorgfaltspflichten. Sie mussen jedoch wahrheitsgemasse Angaben machen und Unterlagen bereitstellen — falsche Angaben sind strafbar." },
+        ],
+      },
+    ],
+    related: ["mifid-ii-otf", "abwicklungsgarantie", "kontrahentenrisiko"],
+  },
 
 ];
 

@@ -161,21 +161,21 @@ export default function RegulatoriePage() {
                   name: "Verordnung (EU) 596/2014",
                   beschreibung: "Marktmissbrauchsverordnung. Verbietet Insiderhandel, Marktmanipulation und unzulässige Weitergabe von Insiderinformationen. EUCX überwacht alle Handelsaktivitäten in Echtzeit.",
                   farbe: "#7c3aed",
-                  href: null,
+                  href: "/insights/lexikon/mar-marktmissbrauch",
                 },
                 {
                   kuerzel: "EMIR",
                   name: "Verordnung (EU) 648/2012",
                   beschreibung: "Regulierung von OTC-Derivaten. Meldepflichten für Derivatgeschäfte, zentrale Clearing-Pflicht für standardisierte Kontrakte. Relevant für EUCX-Termingeschäfte.",
                   farbe: "#92400e",
-                  href: null,
+                  href: "/insights/lexikon/emir-derivate",
                 },
                 {
                   kuerzel: "GwG",
                   name: "Geldwäschegesetz (DE)",
                   beschreibung: "Sorgfaltspflichten zur Verhinderung von Geldwäsche. EUCX prüft alle Teilnehmer nach KYC/AML-Standards. Suspicious Activity Reports (SAR) werden automatisch generiert.",
                   farbe: "#44403c",
-                  href: null,
+                  href: "/insights/lexikon/gwg-geldwaesche",
                 },
               ].map(item => (
                 <div key={item.kuerzel} className="reg-card" style={{
