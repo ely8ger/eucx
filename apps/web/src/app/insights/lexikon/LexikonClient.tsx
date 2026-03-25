@@ -46,7 +46,7 @@ export function LexikonClient({ entries }: { entries: LexikonEntry[] }) {
   return (
     <div style={{ fontFamily: SANS }}>
       {/* Alphabet-Schnellnavigation */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 32 }}>
+      <div className="r-alpha-bar" style={{ marginBottom: 32 }}>
         {ALPHABET.map((letter) => {
           const hasEntries = !!byLetter[letter];
           return hasEntries ? (
@@ -80,7 +80,7 @@ export function LexikonClient({ entries }: { entries: LexikonEntry[] }) {
       </div>
 
       {/* Kategorien-Filter-Leiste */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 40 }}>
+      <div className="r-cat-bar" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 40 }}>
         <span style={{ fontSize: 11, color: "#888", fontWeight: 700, letterSpacing: "0.08em", alignSelf: "center", marginRight: 4 }}>
           KATEGORIEN:
         </span>

@@ -19,7 +19,7 @@ export default function LexikonPage() {
       <SiteNav activeHref="/insights" />
 
       {/* Hero */}
-      <div style={{ backgroundColor: "#0d1b2a", padding: "56px 24px 48px" }}>
+      <div className="r-lex-hero" style={{ backgroundColor: "#0d1b2a" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <p style={{ fontSize: 11, color: "#4a6fa1", marginBottom: 14, letterSpacing: "0.06em" }}>
             <Link href="/" style={{ color: "#4a6fa1", textDecoration: "none" }}>EUCX</Link>

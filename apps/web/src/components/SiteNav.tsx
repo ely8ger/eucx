@@ -21,6 +21,7 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [dropdown, setDropdown] = useState<string | null>(null);
+  const [mobileInsights, setMobileInsights] = useState(false);
 
   const prefix = rootPage ? "" : "/";
 
@@ -73,13 +74,38 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
           <span style={{ width: 7, height: 7, backgroundColor: "#22c55e", borderRadius: "50%", flexShrink: 0 }} />
           {t("nav_marktpreise")}
         </Link>
-        <Link href="/insights" onClick={() => setOpen(false)}
-          style={{
-            fontSize: 17, color: "rgba(255,255,255,.8)", textDecoration: "none",
-            padding: "15px 0", borderBottom: "1px solid rgba(255,255,255,.07)", display: "block",
-          }}>
-          Marktwissen & Insights
-        </Link>
+        <div style={{ borderBottom: "1px solid rgba(255,255,255,.07)" }}>
+          <button
+            onClick={() => setMobileInsights(v => !v)}
+            style={{
+              width: "100%", background: "none", border: "none", cursor: "pointer",
+              fontSize: 17, color: "rgba(255,255,255,.8)",
+              padding: "15px 0", display: "flex", alignItems: "center", justifyContent: "space-between",
+              fontFamily: SANS, fontWeight: 400,
+            }}>
+            Marktwissen & Insights
+            <span style={{ fontSize: 12, transition: "transform 200ms ease", transform: mobileInsights ? "rotate(180deg)" : "rotate(0deg)" }}>▾</span>
+          </button>
+          {mobileInsights && (
+            <div style={{ paddingBottom: 8, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 2 }}>
+              {[
+                { label: "Marktpreise LIVE",    href: "/marktpreise" },
+                { label: "Marktanalysen",       href: "/insights/analysen" },
+                { label: "Rohstoff-Lexikon",    href: "/insights/lexikon" },
+                { label: "Händler-Akademie",    href: "/insights/akademie" },
+                { label: "EU-Regulatorik",      href: "/insights/regulatorik" },
+              ].map(item => (
+                <Link key={item.href} href={item.href} onClick={() => setOpen(false)}
+                  style={{
+                    fontSize: 14, color: "rgba(255,255,255,.6)", textDecoration: "none",
+                    padding: "10px 0", borderTop: "1px solid rgba(255,255,255,.04)", display: "block",
+                  }}>
+                  → {item.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: 10 }}>
           <Link href="/login" onClick={() => setOpen(false)}
@@ -103,7 +129,7 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
       </div>
 
       {/* ── Topbar ──────────────────────────────────────────────────────── */}
-      <div style={{
+      <div className="r-topbar" style={{
         backgroundColor: "#0d1117", height: 42,
         display: "flex", alignItems: "center", fontFamily: SANS,
       }}>

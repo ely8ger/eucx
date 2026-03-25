@@ -96,7 +96,7 @@ export default function RegulatoriePage() {
             Rohstoffhandel auf EUCX formen. Kompakt erklärt, rechtlich fundiert.
           </p>
           {/* Regulierungs-Tags */}
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <div className="r-reg-tags" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {["MiFID II", "OTF § 72 WpHG", "CBAM (EU) 2023/956", "MAR (EU) 596/2014", "EMIR (EU) 648/2012", "GwG"].map(tag => (
               <span key={tag} className="reg-tag" style={{
                 fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
@@ -133,7 +133,7 @@ export default function RegulatoriePage() {
               Alle Regelwerke, denen EUCX als BaFin-lizenzierter OTF-Betreiber unterliegt.
             </p>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 24 }}>
+            <div className="r-reg-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 24 }}>
               {[
                 {
                   kuerzel: "MiFID II",
