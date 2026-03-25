@@ -16,6 +16,70 @@ export default function RegulatoriePage() {
 
   return (
     <div style={{ fontFamily: SANS, backgroundColor: "#fff", color: "#1a1a1a" }}>
+      <style>{`
+        .reg-card {
+          transition: transform 200ms ease, box-shadow 200ms ease, border-top-width 150ms ease;
+        }
+        .reg-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+          border-top-width: 4px !important;
+        }
+        .reg-lex-card {
+          transition: background-color 200ms ease, box-shadow 200ms ease, border-left-width 150ms ease;
+        }
+        .reg-lex-card:hover {
+          background-color: #f0f4ff !important;
+          box-shadow: 0 4px 16px rgba(21,65,148,0.10);
+          border-left: 4px solid #154194 !important;
+        }
+        .reg-lex-card:hover h3 { color: #154194; }
+        .reg-tag {
+          transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+          cursor: default;
+        }
+        .reg-tag:hover {
+          background-color: rgba(255,255,255,0.16) !important;
+          transform: translateY(-1px);
+        }
+        .reg-stat {
+          transition: transform 180ms ease, box-shadow 180ms ease;
+        }
+        .reg-stat:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(21,65,148,0.12);
+        }
+        .reg-check {
+          transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+        }
+        .reg-check:hover {
+          background-color: #f0f4ff !important;
+          box-shadow: 0 2px 8px rgba(21,65,148,0.08);
+          transform: translateX(3px);
+        }
+        .reg-faq {
+          transition: background-color 180ms ease;
+          cursor: default;
+        }
+        .reg-faq:hover {
+          background-color: #f8faff !important;
+        }
+        .reg-cta {
+          transition: background-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+        }
+        .reg-cta:hover {
+          background-color: #0f2d6b !important;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(21,65,148,0.30);
+        }
+        .reg-link {
+          transition: letter-spacing 150ms ease, opacity 150ms ease;
+        }
+        .reg-link:hover {
+          opacity: 0.75;
+          letter-spacing: 0.01em;
+        }
+      `}</style>
       <SiteNav activeHref="/insights/regulatorik" />
 
       {/* Hero */}
@@ -34,7 +98,7 @@ export default function RegulatoriePage() {
           {/* Regulierungs-Tags */}
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {["MiFID II", "OTF § 72 WpHG", "CBAM (EU) 2023/956", "MAR (EU) 596/2014", "EMIR (EU) 648/2012", "GwG"].map(tag => (
-              <span key={tag} style={{
+              <span key={tag} className="reg-tag" style={{
                 fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
                 color: "#c8d8ec", backgroundColor: "rgba(255,255,255,.08)",
                 border: "1px solid rgba(255,255,255,.12)",
@@ -114,7 +178,7 @@ export default function RegulatoriePage() {
                   href: null,
                 },
               ].map(item => (
-                <div key={item.kuerzel} style={{
+                <div key={item.kuerzel} className="reg-card" style={{
                   border: "1px solid #e8e8e8",
                   padding: "24px",
                   borderTop: `3px solid ${item.farbe}`,
@@ -130,7 +194,7 @@ export default function RegulatoriePage() {
                   <p style={{ fontSize: 12, color: "#888", margin: 0 }}>{item.name}</p>
                   <p style={{ fontSize: 13, color: "#505050", lineHeight: 1.7, margin: 0 }}>{item.beschreibung}</p>
                   {item.href && (
-                    <Link href={item.href} style={{ fontSize: 12, color: BLUE, fontWeight: 600, textDecoration: "none", marginTop: "auto" }}>
+                    <Link href={item.href} className="reg-link" style={{ fontSize: 12, color: BLUE, fontWeight: 600, textDecoration: "none", marginTop: "auto" }}>
                       Ausführlich erklärt &rarr;
                     </Link>
                   )}
@@ -148,6 +212,7 @@ export default function RegulatoriePage() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 20 }}>
                 {regulierung.map(entry => (
                   <Link key={entry.slug} href={`/insights/lexikon/${entry.slug}`}
+                    className="reg-lex-card"
                     style={{ textDecoration: "none", border: "1px solid #e8e8e8", padding: "20px 24px", display: "block", backgroundColor: "#fff" }}>
                     <div style={{ fontSize: 11, color: BLUE, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 6 }}>
                       {entry.category.toUpperCase()} · {entry.readMin} MIN
@@ -175,7 +240,7 @@ export default function RegulatoriePage() {
                     { label: "CBAM-Aufschlag", wert: "117,72 €/t" },
                     { label: "Importpreis + CBAM", wert: "737,72 €/t" },
                   ].map(row => (
-                    <div key={row.label} style={{ backgroundColor: "#fff", padding: "14px 16px", border: "1px solid #dbeafe" }}>
+                    <div key={row.label} className="reg-stat" style={{ backgroundColor: "#fff", padding: "14px 16px", border: "1px solid #dbeafe" }}>
                       <div style={{ fontSize: 11, color: "#666", marginBottom: 4 }}>{row.label}</div>
                       <div style={{ fontSize: 18, fontWeight: 700, color: BLUE }}>{row.wert}</div>
                     </div>
@@ -269,7 +334,7 @@ export default function RegulatoriePage() {
               ))}
             </div>
 
-            <Link href="/insights/lexikon/cbam" style={{ fontSize: 13, color: BLUE, fontWeight: 600, textDecoration: "none" }}>
+            <Link href="/insights/lexikon/cbam" className="reg-link" style={{ fontSize: 13, color: BLUE, fontWeight: 600, textDecoration: "none" }}>
               &rarr; Ausführliche CBAM-Erklärung im Lexikon
             </Link>
           </div>
@@ -385,7 +450,7 @@ export default function RegulatoriePage() {
                 { schritt: "Handelsvolumengrenze festlegen", status: "Durch Compliance-Team genehmigt", ok: true },
                 { schritt: "MiFID-II-Kategorisierung", status: "Geeigneter Gegenpart / Professioneller Kunde", ok: true },
               ].map(item => (
-                <div key={item.schritt} style={{
+                <div key={item.schritt} className="reg-check" style={{
                   display: "flex", alignItems: "flex-start", gap: 12,
                   padding: "12px 16px", backgroundColor: "#fafafa", border: "1px solid #f0f0f0",
                 }}>
@@ -398,7 +463,7 @@ export default function RegulatoriePage() {
               ))}
             </div>
             <div style={{ marginTop: 24, paddingTop: 20, borderTop: "1px solid #f0f0f0" }}>
-              <Link href="/register" style={{
+              <Link href="/register" className="reg-cta" style={{
                 display: "inline-flex", alignItems: "center", gap: 8,
                 fontSize: 13, fontWeight: 700, color: "#fff",
                 backgroundColor: BLUE, padding: "12px 24px", textDecoration: "none",
@@ -443,7 +508,7 @@ export default function RegulatoriePage() {
                 a: "Die Pflichten richten sich nach Unternehmensgröße und Kapitalmarktzugang. Große Unternehmen (>500 Mitarbeiter) unterliegen seit Geschäftsjahr 2024 der CSRD und müssen nach ESRS berichten. KMU folgen stufenweise ab 2026–2027. Auch ohne formelle Berichtspflicht sollten Händler Scope-3-Emissionen ihrer Transaktionen erfassen, da Geschäftspartner im Rahmen ihrer eigenen CSRD-Pflichten entsprechende Daten einfordern werden.",
               },
             ].map(({ q, a }, i) => (
-              <div key={i} style={{ backgroundColor: "#fff", padding: "24px 28px", borderBottom: "1px solid #f5f5f5" }}>
+              <div key={i} className="reg-faq" style={{ backgroundColor: "#fff", padding: "24px 28px", borderBottom: "1px solid #f5f5f5" }}>
                 <h3 style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a", margin: "0 0 10px", lineHeight: 1.4 }}>{q}</h3>
                 <p style={{ fontSize: 13, color: "#505050", lineHeight: 1.75, margin: 0 }}>{a}</p>
               </div>
