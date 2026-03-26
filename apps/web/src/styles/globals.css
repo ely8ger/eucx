@@ -539,3 +539,96 @@ body { overflow-x: hidden; }
 @media (min-width: 641px) {
   .r-table-cards { display: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/* ─── CLEAN MOBILE UI FIX (2026-03-26)                                   ─── */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Globale Silbentrennung & Wortumbruch ─────────────────────────────── */
+body, p, h1, h2, h3, h4, li, td, th, span, a, div {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+@media (max-width: 768px) {
+  body, p, h1, h2, h3, h4, li, td, th {
+    hyphens: auto;
+    -webkit-hyphens: auto;
+  }
+}
+
+/* ── 2. Inline-Container: Padding auf Mobile ──────────────────────────────── */
+.r-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+@media (max-width: 640px) {
+  .r-inner { padding: 0 16px; }
+}
+
+/* ── 3. Lexikon Detail: 3-Spalten → 1-Spalte Mobile ──────────────────────── */
+.r-detail-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr 260px;
+  gap: 32px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .r-detail-grid {
+    grid-template-columns: 1fr 260px;
+    gap: 24px;
+  }
+  .r-detail-toc { display: none !important; }
+}
+@media (max-width: 640px) {
+  .r-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 24px 16px !important;
+  }
+  .r-detail-sidebar { display: none !important; }
+}
+
+/* ── 4. Lexikon Detail Hero: H1 skaliert ─────────────────────────────────── */
+.r-detail-h1 { font-size: 38px; font-weight: 300; color: #fff; margin: 0 0 12px; line-height: 1.15; }
+@media (max-width: 768px) { .r-detail-h1 { font-size: 26px; } }
+@media (max-width: 480px) { .r-detail-h1 { font-size: 22px; } }
+
+/* ── 5. Detail Hero Header: flexbox stack auf Mobile ─────────────────────── */
+.r-detail-header-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+@media (max-width: 640px) {
+  .r-detail-header-inner { flex-direction: column; gap: 20px; }
+  .r-detail-meta { flex-direction: row !important; flex-wrap: wrap; gap: 8px !important; }
+  .r-detail-meta > div { min-width: 0 !important; flex: 1 1 120px; }
+}
+
+/* ── 6. Hero padding auf Mobile ──────────────────────────────────────────── */
+.r-detail-hero-wrap { padding: 48px 24px 44px; }
+@media (max-width: 640px) { .r-detail-hero-wrap { padding: 28px 16px 24px; } }
+
+/* ── 7. Lexikon Übersicht: Kacheln responsive ────────────────────────────── */
+.r-lex-main { max-width: 1240px; margin: 0 auto; padding: 32px 24px 64px; }
+@media (max-width: 640px) { .r-lex-main { padding: 20px 16px 48px; } }
+
+/* ── 8. Insights-Seite hero padding ─────────────────────────────────────── */
+@media (max-width: 640px) {
+  .r-insights-hero { padding: 32px 16px 28px !important; }
+  .r-insights-h1   { font-size: 26px !important; }
+}
+
+/* ── 9. Regulatorik: Abschnitt-Padding auf Mobile ───────────────────────── */
+@media (max-width: 640px) {
+  .r-reg-section { padding: 36px 16px 64px !important; }
+  .r-reg-h2 { font-size: 22px !important; }
+}
+
+/* ── 10. SiteFooter: Stack auf Mobile ────────────────────────────────────── */
+@media (max-width: 640px) {
+  .r-footer-inner { padding: 0 16px !important; }
+}

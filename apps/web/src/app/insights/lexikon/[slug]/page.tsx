@@ -71,25 +71,25 @@ export default async function LexikonEntryPage({ params }: { params: Promise<{ s
         <SiteNav activeHref="/insights" />
 
         {/* Article Header */}
-        <div style={{ backgroundColor: "#0d1b2a", padding: "48px 24px 44px" }}>
-          <div style={{ maxWidth: 1240, margin: "0 auto" }}>
+        <div className="r-detail-hero-wrap" style={{ backgroundColor: "#0d1b2a" }}>
+          <div className="r-inner">
             <p style={{ fontSize: 11, color: "#4a6fa1", marginBottom: 16, letterSpacing: "0.06em" }}>
               <Link href="/" style={{ color: "#4a6fa1", textDecoration: "none" }}>EUCX</Link>{" / "}
               <Link href="/insights" style={{ color: "#4a6fa1", textDecoration: "none" }}>Insights</Link>{" / "}
               <Link href="/insights/lexikon" style={{ color: "#4a6fa1", textDecoration: "none" }}>Lexikon</Link>{" / "}
               <span style={{ color: "#7aa4d4" }}>{entry.term}</span>
             </p>
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 40, flexWrap: "wrap" }}>
+            <div className="r-detail-header-inner">
               <div>
                 <span style={{ fontSize: 10, fontWeight: 700, color: "#4a9fd4", letterSpacing: "0.12em", textTransform: "uppercase" as const, marginBottom: 10, display: "block" }}>
                   {entry.category} · Lexikon-Eintrag
                 </span>
-                <h1 style={{ fontSize: 38, fontWeight: 300, color: "#fff", margin: "0 0 12px", lineHeight: 1.15 }}>
+                <h1 className="r-detail-h1">
                   <strong style={{ fontWeight: 700 }}>{entry.term}</strong>
                 </h1>
                 <p style={{ fontSize: 15, color: "#8aa8cc", maxWidth: 580, lineHeight: 1.7, margin: 0 }}>{entry.shortDef}</p>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4, flexShrink: 0 }}>
+              <div className="r-detail-meta" style={{ display: "flex", flexDirection: "column", gap: 4, flexShrink: 0 }}>
                 {[
                   { label: "Lesezeit",    value: `${entry.readMin} min` },
                   { label: "Aktualisiert", value: new Date(entry.updated).toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" }) },
@@ -107,10 +107,10 @@ export default async function LexikonEntryPage({ params }: { params: Promise<{ s
         </div>
 
         {/* 3-column layout */}
-        <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 24px", display: "grid", gridTemplateColumns: "220px 1fr 260px", gap: 32, alignItems: "start" }}>
+        <div className="r-detail-grid r-inner" style={{ padding: "40px 24px" }}>
 
           {/* LEFT: Sticky TOC */}
-          <aside style={{ position: "sticky", top: 88 }}>
+          <aside className="r-detail-toc" style={{ position: "sticky", top: 88 }}>
             <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "#888", marginBottom: 14 }}>Inhalt</p>
             <nav style={{ display: "flex", flexDirection: "column" }}>
               {toc.map(item => (
@@ -171,7 +171,7 @@ export default async function LexikonEntryPage({ params }: { params: Promise<{ s
           </article>
 
           {/* RIGHT: Sidebar */}
-          <aside style={{ display: "flex", flexDirection: "column", gap: 20, position: "sticky", top: 88 }}>
+          <aside className="r-detail-sidebar" style={{ display: "flex", flexDirection: "column", gap: 20, position: "sticky", top: 88 }}>
             {entry.hasPriceChart && entry.priceData && (
               <div style={{ backgroundColor: "#fff", border: "1px solid #e8e8e8", padding: "18px 20px" }}>
                 <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "#888", margin: "0 0 4px" }}>Preisentwicklung</p>

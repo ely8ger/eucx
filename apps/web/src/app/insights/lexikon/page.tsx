@@ -55,7 +55,7 @@ export default function LexikonPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1240, margin: "0 auto", padding: "32px 24px 64px" }}>
+      <div className="r-lex-main">
         <LexikonClient entries={LEXIKON} />
 
         {/* CTA */}

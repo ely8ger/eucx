@@ -121,8 +121,8 @@ export default function RegulatoriePage() {
       </div>
 
       {/* Hauptinhalt */}
-      <section style={{ padding: "64px 0 96px" }}>
-        <div style={{ maxWidth: 1180, margin: "0 auto", padding: "0 40px" }}>
+      <section className="r-reg-section" style={{ padding: "64px 0 96px" }}>
+        <div className="r-container">
 
           {/* Regelwerks-Übersicht */}
           <div style={{ marginBottom: 64 }}>
