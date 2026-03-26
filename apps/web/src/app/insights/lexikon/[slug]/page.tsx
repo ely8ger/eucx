@@ -14,12 +14,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const entry = LEXIKON.find(e => e.slug === slug);
   if (!entry) return {};
+  const title = `${entry.term}: Definition, EU-Regulierung & Marktpraxis | EUCX`;
   return {
-    title: `${entry.term} — Definition, Preis, Normen | EUCX Lexikon`,
+    title,
     description: entry.description,
+    keywords: `${entry.term}, ${entry.category}, Rohstoffhandel EU, OTF, EUCX, ${entry.norm ?? ""}`.replace(/, $/, ""),
     robots: { index: true, follow: true },
     alternates: { canonical: `https://eucx.eu/insights/lexikon/${slug}` },
-    openGraph: { title: entry.term, description: entry.shortDef, type: "article" },
+    openGraph: {
+      title,
+      description: entry.shortDef,
+      type: "article",
+      publishedTime: entry.published,
+      modifiedTime: entry.updated,
+      authors: ["EUCX Fachredaktion"],
+      section: entry.category,
+      url: `https://eucx.eu/insights/lexikon/${slug}`,
+    },
   };
 }
 
@@ -44,13 +55,38 @@ export default async function LexikonEntryPage({ params }: { params: Promise<{ s
   const jsonLdArticle = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: entry.term,
-    description: entry.shortDef,
+    headline: `${entry.term} — Definition, ${entry.category} & EU-Marktpraxis`,
+    description: entry.description,
     datePublished: entry.published,
     dateModified: entry.updated,
-    author: { "@type": "Organization", name: "EUCX", url: "https://eucx.eu" },
-    publisher: { "@type": "Organization", name: "EUCX", url: "https://eucx.eu" },
+    author: {
+      "@type": "Organization",
+      name: "EUCX Fachredaktion",
+      url: "https://eucx.eu",
+      description: "Redaktionsteam der European Union Commodity Exchange — spezialisiert auf EU-Rohstoffrecht, Handelsregulierung und institutionellen Warenbörsenhandel.",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "EUCX GmbH",
+      url: "https://eucx.eu",
+      logo: { "@type": "ImageObject", url: "https://eucx.eu/og-logo.png" },
+    },
     url: `https://eucx.eu/insights/lexikon/${entry.slug}`,
+    mainEntityOfPage: { "@type": "WebPage", "@id": `https://eucx.eu/insights/lexikon/${entry.slug}` },
+    about: { "@type": "Thing", name: entry.term },
+    keywords: `${entry.term}, ${entry.category}, Rohstoffhandel EU, EUCX`,
+    inLanguage: "de-DE",
+  };
+
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "EUCX",           item: "https://eucx.eu" },
+      { "@type": "ListItem", position: 2, name: "Insights",        item: "https://eucx.eu/insights" },
+      { "@type": "ListItem", position: 3, name: "Rohstoff-Lexikon",item: "https://eucx.eu/insights/lexikon" },
+      { "@type": "ListItem", position: 4, name: entry.term,        item: `https://eucx.eu/insights/lexikon/${entry.slug}` },
+    ],
   };
 
   const jsonLdFaq = entry.faq ? {
@@ -65,6 +101,7 @@ export default async function LexikonEntryPage({ params }: { params: Promise<{ s
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }} />
       {jsonLdFaq && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }} />}
 
       <div style={{ fontFamily: SANS, backgroundColor: "#fafafa", color: "#0d1b2a", minHeight: "100vh" }}>
@@ -133,7 +170,7 @@ export default async function LexikonEntryPage({ params }: { params: Promise<{ s
           </aside>
 
           {/* CENTER: Article */}
-          <article style={{ minWidth: 0 }}>
+          <article style={{ minWidth: 0 }} itemScope itemType="https://schema.org/Article">
             {entry.sections.map(section => (
               <section key={section.id} id={section.id} style={{ marginBottom: 52, scrollMarginTop: 100 }}>
                 <h2 style={{ fontSize: 22, fontWeight: 700, color: "#0d1b2a", margin: "0 0 16px", paddingBottom: 12, borderBottom: "2px solid #e8e8e8" }}>
@@ -168,6 +205,36 @@ export default async function LexikonEntryPage({ params }: { params: Promise<{ s
                 </div>
               </section>
             )}
+            {/* E-E-A-T Autoren-Box */}
+            <div style={{
+              border: "1px solid #e0e7f3",
+              backgroundColor: "#f5f8fd",
+              padding: "20px 24px",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 16,
+              marginTop: 8,
+            }}>
+              <div style={{
+                width: 44, height: 44, flexShrink: 0,
+                backgroundColor: "#154194",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 18, color: "#fff", fontWeight: 700,
+                fontFamily: "'IBM Plex Mono', monospace",
+              }}>E</div>
+              <div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: "#154194", margin: "0 0 4px", letterSpacing: "0.06em", textTransform: "uppercase" as const }}>
+                  Fachlich geprüft
+                </p>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 4px" }}>
+                  EUCX Fachredaktion · {entry.category}
+                </p>
+                <p style={{ fontSize: 12, color: "#666", margin: 0, lineHeight: 1.6 }}>
+                  Dieser Eintrag wurde durch das EUCX-Redaktionsteam fachlich geprüft. Spezialisierung: EU-Rohstoffrecht, institutioneller Warenbörsenhandel, MiFID II und OTF-Regulierung.
+                  {" "}Aktualisiert: {new Date(entry.updated).toLocaleDateString("de-DE", { day: "2-digit", month: "long", year: "numeric" })}.
+                </p>
+              </div>
+            </div>
           </article>
 
           {/* RIGHT: Sidebar */}

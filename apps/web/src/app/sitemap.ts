@@ -9,6 +9,7 @@
  */
 import type { MetadataRoute } from "next";
 import { db }                 from "@/lib/db/client";
+import { LEXIKON, AKADEMIE_ARTIKEL } from "@/app/insights/data";
 
 export const revalidate = 900; // 15 Minuten
 
@@ -71,7 +72,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority:        0.6,
     },
+    // ── Insights Hub ───────────────────────────────────────────────────────
+    { url: `${BASE}/insights`,             lastModified: new Date(), changeFrequency: "weekly",  priority: 0.85 },
+    { url: `${BASE}/insights/lexikon`,     lastModified: new Date(), changeFrequency: "weekly",  priority: 0.9  },
+    { url: `${BASE}/insights/akademie`,    lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8  },
+    { url: `${BASE}/insights/analysen`,    lastModified: new Date(), changeFrequency: "daily",   priority: 0.8  },
+    { url: `${BASE}/insights/regulatorik`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
+    { url: `${BASE}/marktpreise`,          lastModified: new Date(), changeFrequency: "hourly",  priority: 0.9  },
+    { url: `${BASE}/katalog`,              lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8  },
   ];
+
+  // ── Lexikon-Einträge (A–Z, alle Slugs) ─────────────────────────────────
+  const lexikonPages: MetadataRoute.Sitemap = LEXIKON.map((entry) => ({
+    url:             `${BASE}/insights/lexikon/${entry.slug}`,
+    lastModified:    new Date(entry.updated),
+    changeFrequency: "monthly" as const,
+    priority:        0.75,
+  }));
+
+  // ── Akademie-Artikel ────────────────────────────────────────────────────
+  const akademiePages: MetadataRoute.Sitemap = AKADEMIE_ARTIKEL.map((a) => ({
+    url:             `${BASE}/insights/akademie/${a.slug}`,
+    lastModified:    new Date(a.published),
+    changeFrequency: "monthly" as const,
+    priority:        0.7,
+  }));
 
   const productPages: MetadataRoute.Sitemap = products.map((p) => ({
     url:             `${BASE}/trading/${p.sku.toLowerCase()}`,
@@ -80,5 +105,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority:        0.85,
   }));
 
-  return [...staticPages, ...productPages];
+  return [...staticPages, ...lexikonPages, ...akademiePages, ...productPages];
 }
