@@ -88,7 +88,7 @@ async function sendLotState(lotId: string, send: (data: unknown) => void) {
         currentBest: true,
         auctionEnd:  true,
         updatedAt:   true,
-        _count: { select: { bids: true } },
+        _count: { select: { bids: true, registrations: true } },
       },
     });
 
@@ -97,12 +97,20 @@ async function sendLotState(lotId: string, send: (data: unknown) => void) {
       return;
     }
 
+    // Anzahl eindeutiger aktiver Bieter (Verkäufer die min. 1 Gebot abgegeben haben)
+    const activeBidders = await db.bid.groupBy({
+      by:    ["sellerId"],
+      where: { lotId },
+    });
+
     send({
-      phase:       lot.phase,
-      currentBest: lot.currentBest?.toString() ?? null,
-      auctionEnd:  lot.auctionEnd?.toISOString() ?? null,
-      bidCount:    lot._count.bids,
-      updatedAt:   lot.updatedAt.toISOString(),
+      phase:              lot.phase,
+      currentBest:        lot.currentBest?.toString() ?? null,
+      auctionEnd:         lot.auctionEnd?.toISOString() ?? null,
+      bidCount:           lot._count.bids,
+      registrationCount:  lot._count.registrations,
+      activeBidderCount:  activeBidders.length,
+      updatedAt:          lot.updatedAt.toISOString(),
     });
   } catch (err) {
     send({ error: "DB-Fehler", detail: String(err) });

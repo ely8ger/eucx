@@ -9,11 +9,13 @@
 import { useEffect, useState, useRef } from "react";
 
 export interface AuctionState {
-  phase:       "COLLECTION" | "PROPOSAL" | "REDUCTION" | "CONCLUSION";
-  currentBest: string | null;
-  auctionEnd:  string | null;
-  bidCount:    number;
-  updatedAt:   string;
+  phase:              "COLLECTION" | "PROPOSAL" | "REDUCTION" | "CONCLUSION";
+  currentBest:        string | null;
+  auctionEnd:         string | null;
+  bidCount:           number;
+  registrationCount:  number;
+  activeBidderCount:  number;
+  updatedAt:          string;
 }
 
 export function useAuctionStream(lotId: string, token: string) {
