@@ -101,6 +101,19 @@ enum DealStatus {
   DISPUTED
 }
 
+// ─── Reverse Auction (BUTB — Buyer-Takes-Best) ────────────────────────────────
+// 4-Phasen-State-Machine:
+//   COLLECTION → Käufer erstellt Lot, Verkäufer registrieren sich
+//   PROPOSAL   → 2h-Fenster startet, Verkäufer geben Erstgebote ab
+//   REDUCTION  → PriceEngine aktiv, jedes Gebot muss unter aktuellem Best liegen
+//   CONCLUSION → Fenster geschlossen, Sieger fixiert, Datensatz eingefroren
+enum AuctionPhase {
+  COLLECTION
+  PROPOSAL
+  REDUCTION
+  CONCLUSION
+}
+
 enum ContractStatus {
   PENDING_SIGNATURE  // PDF generiert, wartet auf EDS
   SIGNED             // Digital signiert, rechtsgültig
@@ -228,6 +241,10 @@ model User {
   writtenNotes   AdminNote[]      @relation("AuthorNotes")      // Notizen von diesem Admin
   disputesRaised TradeDispute[]   @relation("DisputeRaiser")    // Streitfälle eröffnet
   disputesReviewed TradeDispute[] @relation("DisputeReviewer")  // Als Admin bearbeitet
+  lotsAsBuyer    Lot[]            @relation("LotBuyer")
+  lotsAsWinner   Lot[]            @relation("LotWinner")
+  bids           Bid[]
+  lotRegistrations LotRegistration[]
 
   @@index([organizationId])
   @@index([verificationStatus])   // KYC-Queue: alle PENDING_VERIFICATION schnell abrufen
@@ -987,4 +1004,82 @@ model WebhookDelivery {
   @@index([endpointId, status])
   @@index([status, nextRetryAt])  // Retry-Queue: alle RETRYING mit nextRetryAt <= now()
   @@map("webhook_deliveries")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// REVERSE AUCTION (BUTB — Buyer-Takes-Best)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ─── Lot — Ausschreibung des Käufers ─────────────────────────────────────────
+// Der Käufer definiert Ware + Maximalpreis. Verkäufer bieten dann nach unten.
+// Phase-Übergänge sind unidirektional und servergesichert (kein Client-Trigger).
+//
+// State Machine:
+//   COLLECTION  → Lot erstellt, Verkäufer können sich registrieren
+//   PROPOSAL    → Käufer öffnet Auktion (auctionStart gesetzt), Erstgebote möglich
+//   REDUCTION   → Nur noch Gebote < currentBest erlaubt (PriceEngine prüft)
+//   CONCLUSION  → lockedAt gesetzt, winnerId fixiert, keine Änderungen mehr möglich
+model Lot {
+  id           String       @id @default(cuid())
+  buyerId      String
+  commodity    String       // z.B. "Betonstahl BST 500", "Kupferkathode Grade A"
+  quantity     Decimal      @db.Decimal(18, 4)
+  unit         CommodityUnit
+  phase        AuctionPhase @default(COLLECTION)
+  description  String?      @db.Text   // Käufer-Ausschreibungstext
+  startPrice   Decimal?     @db.Decimal(18, 2)  // Käufer-Maximalpreis (€/Einheit)
+  currentBest  Decimal?     @db.Decimal(18, 2)  // Aktuell niedrigstes Gebot
+  winnerId     String?
+  auctionStart DateTime?    // Wann PROPOSAL begann
+  auctionEnd   DateTime?    // Fester Schlusszeitpunkt (auctionStart + 2h)
+  lockedAt     DateTime?    // Zeitpunkt CONCLUSION (danach unveränderlich)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  buyer         User              @relation("LotBuyer",  fields: [buyerId],   references: [id])
+  winner        User?             @relation("LotWinner", fields: [winnerId],   references: [id])
+  bids          Bid[]
+  registrations LotRegistration[]
+
+  @@index([buyerId])
+  @@index([phase])               // Offene Auktionen schnell abrufen
+  @@index([auctionEnd, phase])   // AuctionTimer: fällige Übergänge finden
+  @@map("lots")
+}
+
+// ─── LotRegistration — Verkäufer-Anmeldung zur Auktion ───────────────────────
+// Nur registrierte Verkäufer können in PROPOSAL/REDUCTION Gebote abgeben.
+// Registrierung nur in Phase COLLECTION möglich.
+model LotRegistration {
+  id        String   @id @default(cuid())
+  lotId     String
+  sellerId  String
+  createdAt DateTime @default(now())
+
+  lot    Lot  @relation(fields: [lotId],    references: [id], onDelete: Cascade)
+  seller User @relation(fields: [sellerId], references: [id])
+
+  @@unique([lotId, sellerId])   // Jeder Verkäufer nur einmal pro Lot
+  @@index([sellerId])
+  @@map("lot_registrations")
+}
+
+// ─── Bid — Gebot eines Verkäufers ────────────────────────────────────────────
+// Jedes Gebot ist unveränderlich (append-only). Die History bleibt vollständig.
+// PriceEngine stellt sicher: price < Lot.currentBest (Row-Lock auf Lot).
+// isWinner wird nur bei CONCLUSION gesetzt, exakt einmal pro Lot.
+model Bid {
+  id        String   @id @default(cuid())
+  lotId     String
+  sellerId  String
+  price     Decimal  @db.Decimal(18, 2)  // €/Einheit
+  isWinner  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  lot    Lot  @relation(fields: [lotId],    references: [id], onDelete: Cascade)
+  seller User @relation(fields: [sellerId], references: [id])
+
+  @@index([lotId, price])       // Bestes Gebot schnell ermitteln
+  @@index([lotId, sellerId])    // Gebote eines Verkäufers für ein Lot
+  @@map("bids")
 }
