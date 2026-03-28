@@ -11,6 +11,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { placeBid } from "@/lib/auction/price-engine";
+import { checkBidEligibility } from "@/lib/auction/kyc-guard";
 import { db } from "@/lib/db/client";
 import { z } from "zod";
 
@@ -41,6 +42,15 @@ export async function POST(
   const parsed = bidSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Validierungsfehler", details: parsed.error.flatten().fieldErrors }, { status: 422 });
+  }
+
+  // ── KYC + Deposit-Check ───────────────────────────────────────────
+  const kycCheck = await checkBidEligibility(token.userId, params.lotId);
+  if (!kycCheck.ok) {
+    return NextResponse.json(
+      { error: kycCheck.error, code: kycCheck.code, kycRequired: kycCheck.kycRequired, depositRequired: kycCheck.depositRequired },
+      { status: kycCheck.code }
+    );
   }
 
   // ── PriceEngine ───────────────────────────────────────────────────

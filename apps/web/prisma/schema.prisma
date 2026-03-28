@@ -114,6 +114,12 @@ enum AuctionPhase {
   CONCLUSION
 }
 
+enum KycDocStatus {
+  PENDING    // Eingereicht, wartet auf Admin-Prüfung
+  APPROVED   // Akzeptiert
+  REJECTED   // Abgelehnt (mit Begründung)
+}
+
 enum ContractStatus {
   PENDING_SIGNATURE  // PDF generiert, wartet auf EDS
   SIGNED             // Digital signiert, rechtsgültig
@@ -228,6 +234,8 @@ model User {
   role                UserRole           @default(BUYER)
   status              UserStatus         @default(PENDING)
   verificationStatus  VerificationStatus @default(GUEST)
+  isYoungCompany      Boolean            @default(false)   // < 2 Jahre alt → 5%-Depot-Pflicht
+  companyFoundedAt    DateTime?                            // Gründungsdatum (aus Handelsregister)
   totpSecret          String?
   totpEnabled         Boolean            @default(false)
   createdAt           DateTime           @default(now())
@@ -241,10 +249,11 @@ model User {
   writtenNotes   AdminNote[]      @relation("AuthorNotes")      // Notizen von diesem Admin
   disputesRaised TradeDispute[]   @relation("DisputeRaiser")    // Streitfälle eröffnet
   disputesReviewed TradeDispute[] @relation("DisputeReviewer")  // Als Admin bearbeitet
-  lotsAsBuyer    Lot[]            @relation("LotBuyer")
-  lotsAsWinner   Lot[]            @relation("LotWinner")
-  bids           Bid[]
+  lotsAsBuyer      Lot[]            @relation("LotBuyer")
+  lotsAsWinner     Lot[]            @relation("LotWinner")
+  bids             Bid[]
   lotRegistrations LotRegistration[]
+  kycDocuments     KycDocument[]
 
   @@index([organizationId])
   @@index([verificationStatus])   // KYC-Queue: alle PENDING_VERIFICATION schnell abrufen
@@ -1082,4 +1091,29 @@ model Bid {
   @@index([lotId, price])       // Bestes Gebot schnell ermitteln
   @@index([lotId, sellerId])    // Gebote eines Verkäufers für ein Lot
   @@map("bids")
+}
+
+// ─── KycDocument — hochgeladene Verifizierungsdokumente ──────────────────────
+// Jeder User kann mehrere Dokumente hochladen (Handelsregisterauszug, USt-IdNr.).
+// Admin (COMPLIANCE_OFFICER) prüft und ändert status → APPROVED/REJECTED.
+// Wenn alle Dokumente APPROVED: verificationStatus → VERIFIED (via Admin-API).
+model KycDocument {
+  id         String       @id @default(cuid())
+  userId     String
+  name       String                    // Original-Dateiname
+  url        String?                   // Storage-URL (S3, Supabase Storage, etc.)
+  type       String                    // "TRADE_REGISTER" | "VAT_CONFIRMATION" | "ID_DOCUMENT" | "OTHER"
+  sizeMb     Float
+  notes      String?      @db.Text    // Optionale Notiz des Users
+  adminNote  String?      @db.Text    // Ablehnungsgrund (vom Admin)
+  status     KycDocStatus @default(PENDING)
+  reviewedAt DateTime?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])   // Admin-Queue: alle PENDING schnell abrufen
+  @@map("kyc_documents")
 }

@@ -57,9 +57,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Ihr Konto ist bereits verifiziert" }, { status: 409 });
   }
 
-  await db.user.update({
-    where: { id: tokenPayload.userId },
-    data:  { verificationStatus: "PENDING_VERIFICATION" },
+  await db.$transaction(async (tx) => {
+    await tx.user.update({
+      where: { id: tokenPayload.userId },
+      data:  { verificationStatus: "PENDING_VERIFICATION" },
+    });
+
+    // KYC-Dokumente persistieren
+    for (const doc of parsed.data.documents) {
+      await tx.kycDocument.create({
+        data: {
+          userId: tokenPayload.userId,
+          name:   doc.name,
+          url:    doc.url ?? null,
+          type:   doc.type,
+          sizeMb: doc.sizeMb,
+          notes:  parsed.data.notes ?? null,
+        },
+      });
+    }
   });
 
   await audit({

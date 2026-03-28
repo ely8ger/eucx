@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuctionStream } from "@/lib/auction/use-auction-stream";
+import { KycStatusBadge } from "@/components/KycStatusBadge";
+import Link from "next/link";
 import { toast } from "sonner";
 
 interface Lot {
@@ -11,6 +13,12 @@ interface Lot {
 }
 
 interface MyBid { price: string; rank: number; createdAt: string; }
+
+interface KycInfo {
+  verificationStatus: "GUEST" | "PENDING_VERIFICATION" | "VERIFIED" | "REJECTED" | "SUSPENDED";
+  isYoungCompany:     boolean;
+  walletBalance:      string;
+}
 
 function fmt(price: string | null | number): string {
   if (price === null || price === undefined || price === "") return "—";
@@ -45,10 +53,40 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   const [isLeading, setIsLeading] = useState(false);
   const prevBestRef = useRef<string | null>(lot.currentBest);
   const [flashState, setFlash]    = useState<"good" | "bad" | null>(null);
+  const [kyc, setKyc]             = useState<KycInfo | null>(null);
+  const [depositRequired, setDepositRequired] = useState<string | null>(null);
 
   useEffect(() => {
     setToken(localStorage.getItem("accessToken") ?? "");
   }, []);
+
+  // KYC-Status laden
+  const fetchKyc = useCallback(async (tkn: string) => {
+    if (!tkn) return;
+    try {
+      const res = await fetch("/api/auth/me", { headers: { Authorization: `Bearer ${tkn}` } });
+      if (!res.ok) return;
+      const data = await res.json();
+      setKyc({
+        verificationStatus: data.verificationStatus ?? "GUEST",
+        isYoungCompany:     data.isYoungCompany ?? false,
+        walletBalance:      data.walletBalance  ?? "0",
+      });
+      // Depot-Anforderung berechnen wenn junges Unternehmen
+      if (data.isYoungCompany) {
+        const price = lot.currentBest ?? lot.startPrice;
+        if (price) {
+          const required = Math.ceil(Number(lot.quantity) * Number(price) * 0.05 * 100) / 100;
+          const missing  = Math.max(0, required - Number(data.walletBalance ?? 0));
+          setDepositRequired(missing > 0 ? missing.toFixed(2) : null);
+        }
+      }
+    } catch { /* ignore */ }
+  }, [lot.quantity, lot.currentBest, lot.startPrice]);
+
+  useEffect(() => {
+    if (token) fetchKyc(token);
+  }, [token, fetchKyc]);
 
   const { state, connected } = useAuctionStream(lot.id, token);
 
@@ -109,13 +147,22 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error ?? "Gebot abgelehnt", {
-          description: `Fehler ${res.status}`,
-          style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" },
-        });
+        if (data.kycRequired) {
+          toast.error("Aktion verweigert: Bitte schließen Sie zuerst Ihr KYC-Profil ab.", {
+            description: "Zur Verifizierung →",
+            action: { label: "Jetzt verifizieren", onClick: () => { window.location.href = "/dashboard/settings/verification"; } },
+            style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" },
+            duration: 8000,
+          });
+        } else {
+          toast.error(data.error ?? "Gebot abgelehnt", {
+            description: `Fehler ${res.status}`,
+            style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" },
+          });
+        }
         setFlash("bad");
         setTimeout(() => setFlash(null), 1500);
-      } else {
+        } else {
         toast.success("Gebot erfolgreich abgegeben", {
           description: `Neues Bestgebot: ${fmt(data.newBest)}`,
         });
@@ -131,7 +178,9 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
     }
   };
 
-  const canBid = livePhase === "PROPOSAL" || livePhase === "REDUCTION";
+  const canBid    = livePhase === "PROPOSAL" || livePhase === "REDUCTION";
+  const isVerified = kyc?.verificationStatus === "VERIFIED";
+  const hasDeposit = !kyc?.isYoungCompany || !depositRequired;
   const currentBestNum = liveBest ? Number(liveBest) : null;
 
   // Quick-Bid-Schritte
@@ -176,7 +225,14 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         .sac-card-sub   { font-size: 12px; color: #6b7280; margin-top: 4px; }
 
         /* Bid-Area */
-        .sac-bid-area { background: #fff; border: 1px solid #e5e7eb; padding: 28px; margin-bottom: 24px; }
+        .sac-bid-area { background: #fff; border: 1px solid #e5e7eb; padding: 28px; margin-bottom: 24px; position: relative; overflow: hidden; }
+        .sac-kyc-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.94); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; z-index: 10; padding: 24px; text-align: center; }
+        .sac-kyc-overlay-title { font-size: 16px; font-weight: 700; color: #0d1b2a; }
+        .sac-kyc-overlay-desc { font-size: 13px; color: #6b7280; max-width: 340px; line-height: 1.6; }
+        .sac-kyc-overlay-btn { padding: 10px 24px; background: #154194; color: #fff; font-size: 13px; font-weight: 700; text-decoration: none; display: inline-block; transition: background 0.15s; }
+        .sac-kyc-overlay-btn:hover { background: #1a52c2; }
+        .sac-deposit-banner { background: #fffbeb; border: 1px solid #fcd34d; padding: 14px 20px; margin-bottom: 20px; font-size: 13px; color: #92400e; }
+        .sac-deposit-banner strong { color: #dc2626; }
         .sac-bid-title { font-size: 15px; font-weight: 700; margin-bottom: 20px; }
         .sac-bid-row { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; }
         .sac-bid-input { flex: 1; height: 48px; border: 1px solid #d1d5db; padding: 0 16px; font-size: 16px; font-family: 'IBM Plex Mono', monospace; outline: none; transition: border-color 0.15s; }
@@ -205,10 +261,20 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         {/* Header */}
         <div className="sac-header">
           <span className="sac-header-logo">EUCX — Verkäufer-Dashboard</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            {kyc && (
+              <KycStatusBadge
+                status={kyc.verificationStatus}
+                isYoungCompany={kyc.isYoungCompany}
+                walletBalance={kyc.walletBalance}
+                depositRequired={depositRequired ?? undefined}
+              />
+            )}
           <span className="sac-header-status">
             <span className={`sac-header-dot${connected ? "" : " offline"}`} />
             {connected ? "Echtzeit verbunden" : "Verbindung..."}
           </span>
+          </div>
         </div>
 
         <div className="sac-main">
@@ -280,8 +346,44 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
           </div>
 
           {/* Gebotsabgabe */}
+          {/* 5%-Depot-Banner (junges Unternehmen, fehlende Deckung) */}
+          {kyc?.isYoungCompany && depositRequired && canBid && (
+            <div className="sac-deposit-banner">
+              Sicherheitsleistung (5%) erforderlich — fehlend:{" "}
+              <strong>{Number(depositRequired).toLocaleString("de-DE", { minimumFractionDigits: 2 })} €</strong>
+              {" "}· Aktuelles Depot:{" "}
+              <strong>{Number(kyc.walletBalance).toLocaleString("de-DE", { minimumFractionDigits: 2 })} €</strong>
+              <br />
+              <span style={{ fontSize: 12, marginTop: 4, display: "block" }}>
+                Bitte zahlen Sie die Differenz auf Ihr EUCX-Konto ein, um an der Auktion teilnehmen zu können.
+              </span>
+            </div>
+          )}
+
           {canBid && (
             <div className="sac-bid-area">
+              {/* KYC-Overlay: nicht verifizierte Nutzer */}
+              {(!isVerified || !hasDeposit) && (
+                <div className="sac-kyc-overlay">
+                  <div className="sac-kyc-overlay-title">
+                    {!isVerified
+                      ? "Auktion nur für verifizierte Mitglieder"
+                      : "Sicherheitsleistung unvollständig"}
+                  </div>
+                  <div className="sac-kyc-overlay-desc">
+                    {!isVerified
+                      ? `Laden Sie Ihren Handelsregisterauszug und Ihre USt-IdNr.-Bestätigung hoch. Nach der Prüfung (in der Regel unter 24h) können Sie vollständig an Auktionen teilnehmen.`
+                      : `Als junges Unternehmen (< 2 Jahre) ist eine Sicherheitsleistung von 5% des Lot-Werts erforderlich. Fehlender Betrag: ${depositRequired ? Number(depositRequired).toLocaleString("de-DE", { minimumFractionDigits: 2 }) : "—"} €`}
+                  </div>
+                  <Link
+                    href="/dashboard/settings/verification"
+                    className="sac-kyc-overlay-btn"
+                  >
+                    {!isVerified ? "Jetzt Dokumente hochladen →" : "Depot aufladen →"}
+                  </Link>
+                </div>
+              )}
+
               <div className="sac-bid-title">Gebot abgeben</div>
 
               <div className="sac-bid-row">
