@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useMemo } from "react";
-import { EucxLogo } from "@/components/logo/EucxLogo";
 import { useI18n } from "@/lib/i18n/context";
+import { SiteNav } from "@/components/SiteNav";
 import {
   SIDEBAR,
   KATALOG,
@@ -42,6 +42,8 @@ const ALLE_LAENGEN    = [...new Set(ALLE_PRODUKTE.map(p => p.laenge))].sort((a, 
 
 function Sidebar({ aktiv }: { aktiv: string }) {
   const { t } = useI18n();
+  const [hovered, setHovered] = useState<string | null>(null);
+
   return (
     <nav style={{
       width: 226, flexShrink: 0, backgroundColor: "#fff",
@@ -59,16 +61,23 @@ function Sidebar({ aktiv }: { aktiv: string }) {
             {t(sektion.key as any)}
           </div>
           {sektion.kategorien.map(k => {
-            const isAktiv = k.id === aktiv;
+            const isAktiv   = k.id === aktiv;
+            const isHovered = hovered === k.id && !isAktiv;
             return (
-              <Link key={k.id} href={`/katalog/${k.id}`} style={{
-                display: "block", padding: "8px 14px",
-                fontSize: 12.5, color: isAktiv ? "#fff" : "#333",
-                backgroundColor: isAktiv ? BLUE : "transparent",
-                textDecoration: "none",
-                borderBottom: `1px solid ${isAktiv ? BLUE : BORDER}`,
-                fontWeight: isAktiv ? 600 : 400,
-              }}>
+              <Link key={k.id} href={`/katalog/${k.id}`}
+                onMouseEnter={() => setHovered(k.id)}
+                onMouseLeave={() => setHovered(null)}
+                style={{
+                  display: "block", padding: "8px 14px",
+                  fontSize: 12.5,
+                  color:           isAktiv ? "#fff"         : isHovered ? "#154194"  : "#333",
+                  backgroundColor: isAktiv ? BLUE           : isHovered ? "#eef1f7"  : "transparent",
+                  textDecoration: "none",
+                  borderBottom: `1px solid ${isAktiv ? BLUE : BORDER}`,
+                  fontWeight: isAktiv ? 600 : 400,
+                  transition: "background-color 150ms, color 150ms",
+                }}
+              >
                 {t(k.key as any)}
               </Link>
             );
@@ -185,7 +194,7 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
         {/* Reset */}
         <div style={{ flex: "0 0 auto" }}>
           <label style={LBL}>&nbsp;</label>
-          <button onClick={() => set(EMPTY_SEARCH)} style={{
+          <button onClick={() => set(EMPTY_SEARCH)} className="kat-reset" style={{
             height: H, padding: "0 14px", fontSize: 12, fontFamily: F,
             cursor: "pointer", backgroundColor: "#f0f3f8", color: "#555",
             border: `1px solid ${BORDER}`, whiteSpace: "nowrap", display: "flex",
@@ -269,32 +278,29 @@ export default function KatalogPage() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#f4f6f9", fontFamily: F }}>
+      <style>{`
+        .kat-nav-link:hover  { background-color: #eef1f7 !important; color: #154194 !important; }
+        .kat-hdr-link:hover  { color: #fff !important; }
+        .kat-bc-link:hover   { color: #154194 !important; }
+        .kat-row:hover td    { background-color: #f0f4fb !important; }
+        .kat-tab:hover:not(.kat-tab-aktiv) { border-color: #154194 !important; color: #154194 !important; background-color: #eef1f7 !important; }
+        .kat-reset:hover     { background-color: #e2e8f4 !important; border-color: #b0bdd6 !important; }
+        .kat-sel:hover       { border-color: #154194 !important; }
+        .kat-filter-link:hover { color: #154194 !important; text-decoration: underline !important; }
+        .kat-nav-link, .kat-hdr-link, .kat-bc-link, .kat-reset, .kat-sel, .kat-tab, .kat-filter-link {
+          transition: background-color 150ms, color 150ms, border-color 150ms !important;
+        }
+      `}</style>
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <header style={{ backgroundColor: DARK, borderBottom: "1px solid #1e3352" }}>
-        <div style={{
-          maxWidth: 1400, margin: "0 auto", padding: "0 24px",
-          height: 64, display: "flex", alignItems: "center", justifyContent: "space-between",
-        }}>
-          <Link href="/" style={{ textDecoration: "none" }}>
-            <EucxLogo variant="dark" size="md" />
-          </Link>
-          <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
-            <Link href="/metalle" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>{t("katalog_title")}</Link>
-            <Link href="/duenger" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>{t("duenger_title")}</Link>
-            <Link href="/trading" style={{ fontSize: 13, color: "#fff", textDecoration: "none", backgroundColor: BLUE, padding: "8px 16px", fontWeight: 600 }}>
-              {t("btn_trading_room")}
-            </Link>
-          </div>
-        </div>
-      </header>
+      <SiteNav />
 
       {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "12px 24px 0" }}>
         <div style={{ display: "flex", gap: 6, fontSize: 12, color: "#888" }}>
-          <Link href="/"        style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_home")}</Link>
+          <Link href="/"        className="kat-bc-link" style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_home")}</Link>
           <span>›</span>
-          <Link href="/katalog" style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_catalog")}</Link>
+          <Link href="/katalog" className="kat-bc-link" style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_catalog")}</Link>
           {!searchAktiv && kat && <><span>›</span><span style={{ color: "#333" }}>{t(KAT_KEY_MAP[katId] as any)}</span></>}
           {searchAktiv && <><span>›</span><span style={{ color: "#333" }}>{t("katalog_suchergebnisse")}</span></>}
         </div>
@@ -387,10 +393,11 @@ export default function KatalogPage() {
               </thead>
               <tbody>
                 {produkte.map((p, i) => (
-                  <tr key={p.id} style={{ borderBottom: "1px solid #f0f2f5", backgroundColor: i % 2 === 0 ? "#fff" : "#fafbfc" }}>
+                  <tr key={p.id} className="kat-row" style={{ borderBottom: "1px solid #f0f2f5", backgroundColor: i % 2 === 0 ? "#fff" : "#fafbfc" }}>
                     {showKatCol && (
                       <td style={TD}>
                         <Link href={`/katalog/${"katId" in p ? (p as ErweitertesProd).katId : katId}`}
+                          className="kat-filter-link"
                           style={{ fontSize: 11, color: BLUE, textDecoration: "none", fontWeight: 500 }}>
                           {"katId" in p ? t(KAT_KEY_MAP[(p as ErweitertesProd).katId] as any) : ""}
                         </Link>
@@ -444,13 +451,15 @@ export default function KatalogPage() {
 
 function Tab({ aktiv, onClick, children }: { aktiv: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
-    <button onClick={onClick} style={{
-      padding: "3px 12px", fontSize: 12,
-      border: `1px solid ${aktiv ? BLUE : BORDER}`,
-      backgroundColor: aktiv ? BLUE : "#fafbfc",
-      color: aktiv ? "#fff" : "#444",
-      cursor: "pointer", fontFamily: F,
-    }}>
+    <button onClick={onClick}
+      className={aktiv ? "kat-tab kat-tab-aktiv" : "kat-tab"}
+      style={{
+        padding: "3px 12px", fontSize: 12,
+        border: `1px solid ${aktiv ? BLUE : BORDER}`,
+        backgroundColor: aktiv ? BLUE : "#fafbfc",
+        color: aktiv ? "#fff" : "#444",
+        cursor: "pointer", fontFamily: F,
+      }}>
       {children}
     </button>
   );

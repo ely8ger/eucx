@@ -27,6 +27,7 @@ enum UserStatus {
   ACTIVE
   SUSPENDED
   PENDING
+  REJECTED   // Registrierung vom Admin abgelehnt
 }
 
 // KYC-Verifizierungsstatus — separater Lebenszyklus von UserStatus
@@ -238,6 +239,11 @@ model User {
   companyFoundedAt    DateTime?                            // Gründungsdatum (aus Handelsregister)
   totpSecret          String?
   totpEnabled         Boolean            @default(false)
+  emailVerified       Boolean            @default(false)   // E-Mail-Adresse bestätigt
+  phoneVerified       Boolean            @default(false)   // Telefonnummer verifiziert
+  failedLoginCount    Int                @default(0)       // Fehlversuche seit letztem Erfolg
+  lockedUntil         DateTime?                            // Account gesperrt bis (null = nicht gesperrt)
+  rejectionReason     String?                              // Grund der Ablehnung durch Admin
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt
 
@@ -249,14 +255,21 @@ model User {
   writtenNotes   AdminNote[]      @relation("AuthorNotes")      // Notizen von diesem Admin
   disputesRaised TradeDispute[]   @relation("DisputeRaiser")    // Streitfälle eröffnet
   disputesReviewed TradeDispute[] @relation("DisputeReviewer")  // Als Admin bearbeitet
-  lotsAsBuyer      Lot[]            @relation("LotBuyer")
-  lotsAsWinner     Lot[]            @relation("LotWinner")
-  bids             Bid[]
-  lotRegistrations LotRegistration[]
-  kycDocuments     KycDocument[]
+  lotsAsBuyer           Lot[]            @relation("LotBuyer")
+  lotsAsWinner          Lot[]            @relation("LotWinner")
+  bids                  Bid[]
+  lotRegistrations      LotRegistration[]
+  kycDocuments          KycDocument[]
+  lotContractsAsBuyer     LotContract[]            @relation("LotContractBuyer")
+  lotContractsAsSeller    LotContract[]            @relation("LotContractSeller")
+  notifications           Notification[]
+  notificationPreference  NotificationPreference?
+  emailVerifications      EmailVerification[]
+  passwordResetTokens     PasswordResetToken[]
 
   @@index([organizationId])
   @@index([verificationStatus])   // KYC-Queue: alle PENDING_VERIFICATION schnell abrufen
+  @@index([status])               // Registrierungs-Queue
   @@map("users")
 }
 
@@ -277,6 +290,45 @@ model AdminNote {
 
   @@index([subjectId])
   @@map("admin_notes")
+}
+
+// ─── EmailVerification — Bestätigungscode bei Registrierung ──────────────────
+// 6-stelliger numerischer Code, gültig 15 Minuten.
+// Nach Bestätigung: emailVerified=true, Token gelöscht.
+
+model EmailVerification {
+  id        String   @id @default(uuid())
+  userId    String
+  email     String
+  code      String   // 6-stelliger Hash-Code
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([email])
+  @@map("email_verifications")
+}
+
+// ─── PasswordResetToken — Token für Passwort-Zurücksetzen ─────────────────────
+// SHA-256-gehashter Token, gültig 1 Stunde.
+// Wird erstellt wenn: (a) Nutzer fordert Reset an, (b) Account nach 5 Fehlversuchen gesperrt.
+
+model PasswordResetToken {
+  id         String    @id @default(uuid())
+  userId     String
+  tokenHash  String    @unique  // SHA-256 des gesendeten Tokens
+  expiresAt  DateTime
+  usedAt     DateTime?
+  reason     String    @default("USER_REQUEST")  // "USER_REQUEST" | "BRUTE_FORCE_LOCK"
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
 }
 
 // ─── TradeDispute — Streitfall-Ticket ────────────────────────────────────────
@@ -1049,6 +1101,7 @@ model Lot {
   winner        User?             @relation("LotWinner", fields: [winnerId],   references: [id])
   bids          Bid[]
   registrations LotRegistration[]
+  lotContract   LotContract?
 
   @@index([buyerId])
   @@index([phase])               // Offene Auktionen schnell abrufen
@@ -1093,6 +1146,71 @@ model Bid {
   @@map("bids")
 }
 
+// ─── LotContract — Kaufvertrag nach Abschluss der Auktion ────────────────────
+// Wird automatisch bei CONCLUSION generiert (Post-Trade Engine).
+// PDF = pdf-lib generiertes A4-Dokument (gov-blue EUCX-Layout).
+// pdfHash = SHA-256 für Fälschungssicherheit.
+//
+// contractNumber Format: "EUCX-LOT-2026-000001" (sequentiell)
+//
+// LotFee: Plattformgebühr pro Partei
+//   Verkäufer: 0.8% Standard / 0.5% High-Volume (> 500.000 € Gesamtumsatz)
+//   Käufer:    0.3% Standard / 0.15% High-Volume
+//   Status UNPAID → PAID nach Wallet-Abbuchung
+
+enum LotFeeType {
+  SELLER_FEE
+  BUYER_FEE
+}
+
+enum LotFeeStatus {
+  UNPAID
+  PAID
+}
+
+model LotContract {
+  id             String    @id @default(cuid())
+  lotId          String    @unique
+  buyerId        String
+  sellerId       String
+  contractNumber String    @unique
+  finalPrice     Decimal   @db.Decimal(18, 2)   // €/Einheit — Siegergebot
+  totalValue     Decimal   @db.Decimal(18, 2)   // finalPrice × lot.quantity
+  pdfBase64      String    @db.Text
+  pdfHash        String
+  pdfSizeBytes   Int
+  signedAtBuyer  DateTime?
+  signedAtSeller DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  lot    Lot  @relation(fields: [lotId],    references: [id])
+  buyer  User @relation("LotContractBuyer",  fields: [buyerId],  references: [id])
+  seller User @relation("LotContractSeller", fields: [sellerId], references: [id])
+  fees   LotFee[]
+
+  @@index([buyerId])
+  @@index([sellerId])
+  @@map("lot_contracts")
+}
+
+model LotFee {
+  id         String       @id @default(cuid())
+  contractId String
+  userId     String
+  type       LotFeeType
+  rate       Decimal      @db.Decimal(5, 4)   // z.B. 0.0080 = 0.8%
+  amount     Decimal      @db.Decimal(18, 2)
+  status     LotFeeStatus @default(UNPAID)
+  createdAt  DateTime     @default(now())
+
+  contract LotContract @relation(fields: [contractId], references: [id])
+
+  @@index([contractId])
+  @@index([userId])
+  @@map("lot_fees")
+}
+
 // ─── KycDocument — hochgeladene Verifizierungsdokumente ──────────────────────
 // Jeder User kann mehrere Dokumente hochladen (Handelsregisterauszug, USt-IdNr.).
 // Admin (COMPLIANCE_OFFICER) prüft und ändert status → APPROVED/REJECTED.
@@ -1116,4 +1234,68 @@ model KycDocument {
   @@index([userId])
   @@index([status])   // Admin-Queue: alle PENDING schnell abrufen
   @@map("kyc_documents")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// NOTIFICATION ENGINE — Realtime-Benachrichtigungen (In-App + E-Mail)
+//
+// Ablauf:
+//   1. Event tritt auf (Gebot überboten, Auktion endet bald, Sieger fixiert)
+//   2. NotificationService erstellt Notification-Datensatz in DB
+//   3. SSE-Stream liefert `event: notification` Payload an verbundene Clients
+//   4. Frontend: Toast (sonner) + Vibration (navigator.vibrate) + Bell-Badge
+//   5. E-Mail (Resend) wird asynchron versendet wenn Präferenz aktiv
+//
+// NotifType-Semantik:
+//   OUTBID         → Verkäufer wurde von einem anderen überboten (Rang 1 verloren)
+//   LEADING        → Verkäufer ist jetzt das führende Gebot (Rang 1 gewonnen)
+//   URGENCY_10M    → 10 Minuten vor Auktionsende (alle registrierten Teilnehmer)
+//   URGENCY_5M     → 5 Minuten vor Auktionsende (alle registrierten Teilnehmer)
+//   WON            → Sieger nach CONCLUSION
+//   LOST           → Auktion vorbei, kein Sieger (Verkäufer)
+//   CLOSED_BUYER   → Auktion abgeschlossen (Käufer)
+//   DEPOSIT_WARN   → Wallet-Saldo gefährlich nahe an 5%-Schwelle
+// ═══════════════════════════════════════════════════════════════════════════════
+
+enum NotifType {
+  OUTBID
+  LEADING
+  URGENCY_10M
+  URGENCY_5M
+  WON
+  LOST
+  CLOSED_BUYER
+  DEPOSIT_WARN
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  lotId     String?                    // Zugeordnetes Lot (null für systemweite Alerts)
+  type      NotifType
+  title     String
+  message   String
+  isRead    Boolean   @default(false)  // true nach Klick im Bell-Dropdown
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([lotId])
+  @@map("notifications")
+}
+
+// ─── NotificationPreference — Nutzer-Präferenzen für E-Mail-Benachrichtigungen
+// Wird beim ersten GET/PATCH angelegt falls noch nicht vorhanden (upsert).
+model NotificationPreference {
+  id                  String  @id @default(cuid())
+  userId              String  @unique
+  emailOnOutbid       Boolean @default(true)
+  emailOnAuctionEnd   Boolean @default(true)
+  emailOnAuctionStart Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
 }

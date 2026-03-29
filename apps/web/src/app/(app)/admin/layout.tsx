@@ -27,7 +27,7 @@ function parseTokenRole(): JwtBasic | null {
     if (typeof document === "undefined") return null;
     const token =
       document.cookie.match(/access_token=([^;]+)/)?.[1] ??
-      localStorage.getItem("access_token");
+      localStorage.getItem("accessToken");
     if (!token) return null;
     const payload = token.split(".")[1];
     if (!payload) return null;
@@ -38,10 +38,13 @@ function parseTokenRole(): JwtBasic | null {
 }
 
 const NAV_ITEMS = [
-  { href: "/admin",           label: "Analytics",     icon: "▤", exact: true  },
-  { href: "/admin/kyc",       label: "KYC",           icon: "✓", exact: false },
-  { href: "/admin/markets",   label: "Live-Märkte",   icon: "⚡", exact: false },
-  { href: "/admin/emergency", label: "Notfall",       icon: "⚠", exact: false, danger: true },
+  { href: "/admin",                  label: "Analytics",        icon: "▤", exact: true  },
+  { href: "/admin/users",            label: "Nutzer",           icon: "◉", exact: false },
+  { href: "/admin/registrations",    label: "Registrierungen",  icon: "☑", exact: false },
+  { href: "/admin/kyc",              label: "KYC",              icon: "✓", exact: false },
+  { href: "/admin/markets",          label: "Live-Märkte",      icon: "⚡", exact: false },
+  { href: "/admin/api-docs",         label: "API Docs",         icon: "⎇", exact: false },
+  { href: "/admin/emergency",        label: "Notfall",          icon: "⚠", exact: false, danger: true },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -52,11 +55,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     const jwt = parseTokenRole();
-    if (!jwt?.role || !ADMIN_ROLES.includes(jwt.role)) {
+    if (!jwt) {
+      router.replace("/login");
+      return;
+    }
+    if (!ADMIN_ROLES.includes(jwt.role ?? "")) {
       router.replace("/dashboard?error=forbidden");
       return;
     }
-    setRole(jwt.role);
+    setRole(jwt.role ?? null);
     setReady(true);
   }, [router]);
 

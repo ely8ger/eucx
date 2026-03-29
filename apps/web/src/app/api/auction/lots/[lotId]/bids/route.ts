@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { placeBid } from "@/lib/auction/price-engine";
 import { checkBidEligibility } from "@/lib/auction/kyc-guard";
+import { notifyOutbid, notifyLeading } from "@/lib/notifications/notification-service";
 import { db } from "@/lib/db/client";
 import { z } from "zod";
 
@@ -54,11 +55,26 @@ export async function POST(
   }
 
   // ── PriceEngine ───────────────────────────────────────────────────
+  // Vor dem Gebot: wer ist aktuell Führender? (für OUTBID-Benachrichtigung)
+  const prevLeader = await db.bid.findFirst({
+    where:   { lotId: params.lotId },
+    orderBy: [{ price: "asc" }, { createdAt: "asc" }],
+    select:  { sellerId: true, price: true },
+  });
+
   const result = await placeBid(params.lotId, token.userId, parsed.data.price);
 
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: result.code });
   }
+
+  // ── Notifications (fire-and-forget) ──────────────────────────────
+  // Führender benachrichtigen: Neues Gebot ist besser → er wurde überboten
+  if (prevLeader && prevLeader.sellerId !== token.userId) {
+    notifyOutbid(prevLeader.sellerId, params.lotId, result.newBest, 1).catch(console.error);
+  }
+  // Neuer Bieter: er führt jetzt
+  notifyLeading(token.userId, params.lotId, result.newBest).catch(console.error);
 
   return NextResponse.json({ bidId: result.bidId, newBest: result.newBest }, { status: 201 });
 }

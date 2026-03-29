@@ -476,6 +476,201 @@ export const ARTICLES: Article[] = [
     ],
     cta: "Nachhaltiger Rohstoffhandel auf der EUCX"
   },
+
+  // ────────────────────────────────────────────────────────────────────────────
+  {
+    slug:        "kupfermarkt-eu",
+    title:       "Kupfermarkt: Globale Preisfaktoren, EU-Nachfrage und institutioneller Handel",
+    description: "Kupfer ist das Leitmetall der Energiewende. Dieser Artikel erklaert Preisbildung, Qualitaetsklassen und Handelsstrukturen fuer institutionelle Kaeufer und Verkaeufer.",
+    category:    "Markt",
+    readMin:     10,
+    published:   "2026-03-10",
+    sections: [
+      {
+        heading: "Kupfer als strategisches Industriemetall",
+        body: "Kupfer (Cu) ist nach Aluminium das weltweit meistgehandelte Nichteisenmetall. Mit einer globalen Jahresproduktion von ca. 22 Millionen Tonnen ist es unverzichtbar fuer Elektrotechnik, Energieinfrastruktur, Maschinenbau und Bauwesen. Die EU importiert rund 60% ihres Bedarfs, hauptsaechlich aus Chile, Peru und der Demokratischen Republik Kongo.",
+        sub: [
+          {
+            heading: "Einsatzbereiche und Nachfragetreiber",
+            body: "Etwa 65% des globalen Kupferverbrauchs entfallen auf elektrische Anwendungen: Leitungen, Transformatoren, Elektromotoren und Ladekabel fuer Elektrofahrzeuge. Die Energiewende ist der stärkste Nachfragetreiber: Eine Windkraftanlage (5 MW) benoetigt bis zu 6 Tonnen Kupfer, ein Elektrofahrzeug 3-5-mal mehr als ein Verbrenner. Bis 2030 erwartet die EU einen Mehrbedarf von 35% gegenueber 2023."
+          },
+          {
+            heading: "Preisbildung und Referenzmaerkte",
+            body: "Der globale Kupferpreis wird an der London Metal Exchange (LME) festgestellt und in USD/t notiert. Fuer EU-Kaeufer ist der EUR/USD-Wechselkurs damit ein wesentlicher Preisfaktor. Zusaetzliche Aufschlaege (Premia) entstehen durch Verarbeitungsqualitaet, regionale Lagerkosten und Raffinationsgebühren (TC/RC). Auf der EUCX werden Kupferprodukte in EUR/kg und EUR/t ohne Wechselkursrisiko fuer EU-interne Transaktionen gehandelt."
+          }
+        ]
+      },
+      {
+        heading: "Qualitaetsklassen und Normen",
+        body: "Kupfer wird nach Reinheitsgrad und Verarbeitungszustand klassifiziert. Elektrolyt-Kupfer (Cu-ETP, EN 1977) mit >= 99,9% Reinheit ist Standard fuer Leitungsanwendungen. Phosphordesoxidiertes Kupfer (Cu-DHP) wird bevorzugt fuer Rohre und Klimaanlagen eingesetzt. Alle EUCX-Produkte werden mit Werkspruefeugnis 3.1 nach EN 10204 geliefert.",
+        sub: [
+          {
+            heading: "Produktformen im Handel",
+            body: "Katheodenkupfer (Blechform, 99,99% Reinheit) ist das Basisprodukt fuer Schmelzbetriebe. Kupferdrahtbarren (8mm Walzdraht) sind Vorprodukt fuer die Kabelindustrie. Kupferrohre (nahtlos, EN 1057) und Kupferbaender (EN 1652) bedienen Sanitaer-, Kaelte- und Elektroindustrie."
+          }
+        ]
+      },
+      {
+        heading: "Handelsstrategien fuer institutionelle Teilnehmer",
+        body: "Grossabnehmer aus der Kabelindustrie oder dem Maschinenbau sichern typischerweise 3-6 Monate Bedarf auf Vorrat, um Preisspitzen zu vermeiden. Spot-Kaeufe ueber die EUCX ermoeglichen flexible Zukaeuf bei Kapazitaetsauslastung. Die transparente Preisfindung im Orderbuch vermeidet die branchenoeblichen Informationsasymmetrien des telefonischen OTC-Handels.",
+      }
+    ],
+    cta: "Kupfer und NE-Metalle auf der EUCX handeln"
+  },
+
+  // ────────────────────────────────────────────────────────────────────────────
+  {
+    slug:        "walzdraht-stabstahl",
+    title:       "Walzdraht und Stabstahl: Qualitaetsnormen, Einsatzbereiche und Handelsusancen",
+    description: "Von der Zieherei bis zur Automobilindustrie: Walzdraht und Stabstahl sind Schluessel-Halbzeuge. Dieser Leitfaden erklaert Normen, Haerteklassen und Handelsbedingungen.",
+    category:    "Produkte",
+    readMin:     8,
+    published:   "2026-03-12",
+    sections: [
+      {
+        heading: "Walzdraht: Einsatz und Spezifikation",
+        body: "Walzdraht ist ein warmgewalztes Langprodukt mit kreisrundem Querschnitt, das in Ringen (Coils) geliefert wird. Der Durchmesser liegt typischerweise zwischen 5,5 mm und 52 mm. Er ist Ausgangsprodukt fuer Kaltziehereien (Stahldraht, Naegel, Schrauben, Federn) und die Betonstahlproduktion. Die massgebliche Norm ist EN 10016/10017 fuer unlegierte Stahle und EN 10264 fuer Drahte.",
+        sub: [
+          {
+            heading: "Verguetungsstaehle und Sondergueten",
+            body: "Fuer die Automobilindustrie sind Verguetungsstaehle nach EN 10083 (z.B. 42CrMo4, 38MnB5) von zentraler Bedeutung. Sie erzielen nach Waermebehandlung Festigkeitswerte von 900-1400 N/mm2 und werden fuer Getriebewellen, Kurbelwellen und Fahrwerkskomponenten eingesetzt. Einkaufsabteilungen grosser OEMs schreiben diese Gueten mit strengen Werkstoffzertifikaten aus."
+          }
+        ]
+      },
+      {
+        heading: "Stabstahl: Toleranzen und Praxisanforderungen",
+        body: "Stabstahl wird als Einzelstab in Laengen von 6m, 9m oder 12m gehandelt. Rundstahl, Vierkantstahl und Sechskantstahl bedienen Maschinenbau, Landwirtschaftstechnik und allgemeinen Metallbau. Toleranzen richten sich nach EN 10060 (Rundstahl), EN 10058 (Flachstahl) und EN 10061 (Vierkantstahl). Auf der EUCX sind Staebe mit Pruefeugnis 3.1 handelbar, was Qualitaetssicherung fuer weiterverarbeitende Betriebe sicherstellt.",
+      },
+      {
+        heading: "Handelsbedingungen und Mindestmengen",
+        body: "Walzdraht wird in der Regel in Coils ab 2 Tonnen gehandelt; auf digitalen Plattformen wie der EUCX sind auch kleinere Lots ab 500 kg handelbar. Stabstahl wird buendelweise (ca. 2-3 t/Buendel) oder als Einzelpaket abgerufen. Lieferzeiten ab Lager betragen 2-5 Werktage, ab Werk 3-6 Wochen. Standardlieferkonditionen auf der EUCX: DAP (Delivered at Place) Empfaengerwerk, Zahlung T+2.",
+      }
+    ],
+    cta: "Walzdraht und Stabstahl auf der EUCX beschaffen"
+  },
+
+  // ────────────────────────────────────────────────────────────────────────────
+  {
+    slug:        "zahlungsabwicklung-rohstoffhandel",
+    title:       "Zahlungsabwicklung im B2B-Rohstoffhandel: Akkreditive, Bankgarantien und Settlement",
+    description: "Wie sichern Kaeufer und Verkaeufer ihre Zahlungsansprueche? Ein Praxisleitfaden zu Akkreditiven, Bankgarantien, Vorkasse und elektronischem Settlement auf regulierten Plattformen.",
+    category:    "Praxis",
+    readMin:     9,
+    published:   "2026-03-14",
+    sections: [
+      {
+        heading: "Zahlungsrisiken im Rohstoffhandel",
+        body: "Im internationalen und pan-europaeischen Rohstoffhandel ist das Zahlungsrisiko eines der zentralen operativen Risiken. Lieferant und Kaeufer befinden sich haeufig in verschiedenen Laendern, Rechtssystemen und Waehrungsraeumen. Ohne geeignete Absicherungsinstrumente drohen Zahlungsausfaelle nach erfolgter Lieferung oder Nichtlieferung trotz geleisteter Vorkasse.",
+        sub: [
+          {
+            heading: "Dokumentenakkreditiv (Letter of Credit, L/C)",
+            body: "Das Dokumentenakkreditiv ist das klassische Absicherungsinstrument im Aussenhandel. Die Bank des Kaefers verpflichtet sich zur Zahlung, sobald der Verkaeufer festgelegte Dokumente (Handelsrechnung, Packiste, Frachtdokument, Zertifikate) fristgerecht einreicht. Fuer den Stahlhandel typische Dokumente: Werkspruefeugnis 3.1, CMR-Frachtbrief, Ursprungszeugnis. Kosten: 0,1-0,3% des Warenwertes als Akkreditivprovision."
+          },
+          {
+            heading: "Bankgarantie und Anzahlungsgarantie",
+            body: "Bei Rahmenvertraegen oder Langzeitlieferbeziehungen werden Bankgarantien bevorzugt. Die Anzahlungsgarantie (Advance Payment Bond) sichert den Kaeufer bei geleisteter Vorkasse. Die Erfuellungsgarantie (Performance Bond, typisch 5-10% des Auftragswertes) sichert gegen Nichtlieferung ab. In Deutschland stellt die KfW fuer mittelstaendische Unternehmen Garantien mit vereinfachtem Verfahren bereit."
+          }
+        ]
+      },
+      {
+        heading: "Settlement auf der EUCX",
+        body: "Die EUCX nutzt ein zentrales Settlement-System, das als Treuhandstelle zwischen Kaeufer und Verkaeufer fungiert. Nach Trade-Confirmation wird die Kaufsumme auf ein Treuhandkonto der EUCX transferiert (T+2, SEPA Instant oder SWIFT). Nach beidseitiger Lieferbestaetigung und Dokumentenpruefung erfolgt die Auszahlung an den Verkaeufer. Dieses Verfahren eliminiert bilaterales Gegenparteirisiko und ersetzt in vielen Faellen teure Akkreditive.",
+        sub: [
+          {
+            heading: "Vorteile des zentralen Settlements",
+            body: "Eliminierung des Gegenparteirisikos durch Treuhandprinzip. Standardisierte Zahlungsfristen (T+2) fuer alle Transaktionen. Automatische Rechnungsstellung und Buchungsbeleg fuer beide Parteien. DSGVO-konforme Dokumentenarchivierung fuer 10 Jahre (Handelsrecht). Kostenersparnis gegenueber bankbasierten Akkreditiven von durchschnittlich 0,25% des Transaktionswertes."
+          }
+        ]
+      },
+      {
+        heading: "Umsatzsteuer und Reverse-Charge im EU-Handel",
+        body: "Bei grenzueberschreitenden B2B-Lieferungen innerhalb der EU gilt das Reverse-Charge-Verfahren: Der Empfaenger schuldet die Umsatzsteuer, nicht der Lieferant. Voraussetzung: Beide Parteien sind in der EU umsatzsteuerregistriert und die Lieferung ist innergemeinschaftlich. Auf der EUCX werden alle Rechnungen netto ausgestellt; Kaeufer melden die Umsatzsteuer in ihrer Steuererklarung selbst an.",
+      }
+    ],
+    cta: "Sicher und transparent handeln auf der EUCX"
+  },
+
+  // ────────────────────────────────────────────────────────────────────────────
+  {
+    slug:        "preisabsicherung-hedging",
+    title:       "Preisabsicherung im Rohstoffhandel: Hedging-Strategien fuer Einkauf und Verkauf",
+    description: "Rohstoffpreise schwanken stark. Dieser Artikel erklaert praktische Hedging-Methoden fuer B2B-Unternehmen: von Preisfixierungen ueber Rahmenvertraege bis zu strukturierten Absicherungen.",
+    category:    "Handel",
+    readMin:     11,
+    published:   "2026-03-16",
+    sections: [
+      {
+        heading: "Warum Rohstoffpreise absichern?",
+        body: "Stahlpreise koennen innerhalb eines Jahres um 30-60% schwanken. Kupfer und Aluminium sind noch volatiler, da sie an globalen Terminboersen gehandelt werden und stark auf geopolitische Ereignisse, Wechselkurse und chinesische Nachfragesignale reagieren. Fuer produzierende Unternehmen mit langen Lieferketten oder Festpreisvertraegen mit Endkunden ist unkontrollierte Rohstoffpreisvolatilitaet ein erhebliches Ergebnisrisiko.",
+        sub: [
+          {
+            heading: "Physische Preisfixierung und Rahmenvertraege",
+            body: "Die einfachste Form der Absicherung ist der Abschluss langfristiger Liefervertraege mit fixierten Preisen. Jahresrahmenvertraege mit Stahlhaendlern oder Erzeuger sichern den Preis fuer definierten Zeitraum und Menge. Nachteil: Keine Partizipation an Preisrueckgaengen, Poenalen bei Nichtabruf. Auf der EUCX koennen Kaeufer Forward-Orders aufgeben, die erst zu einem definierten zukuenftigen Lieferzeitpunkt abgerechnet werden."
+          },
+          {
+            heading: "Index-basierte Preisklauseln",
+            body: "Professionelle Einkaufsabteilungen vereinbaren index-basierte Preisanpassungsklauseln: Der Basispreis wird an einen offiziellen Marktindex (z.B. Steel Orbis Rebar EU, LME Cash Copper) gekoppelt. Bei Preisanstieg um mehr als X% wird der Vertragspreis automatisch angepasst, bei Rueckgang ebenso. Dies verteilt das Preisrisiko fair zwischen Kaeufer und Verkaeufer."
+          }
+        ]
+      },
+      {
+        heading: "Finanzielle Absicherungsinstrumente",
+        body: "Groessere Unternehmen nutzen Derivate zur Preisabsicherung. Commodity Swaps tauschen variablen Marktpreis gegen fixen Referenzpreis aus. Optionen (Calls und Puts) sichern gegen extreme Preisbewegungen ohne Pflicht zur Ausuebung. Diese Instrumente unterliegen EMIR-Meldepflichten; ab bestimmten Schwellenwerten ist ein zentrales Clearing ueber eine CCP (z.B. LCH, Eurex Clearing) vorgeschrieben.",
+        sub: [
+          {
+            heading: "Hedging fuer KMU: Praxisempfehlungen",
+            body: "Kleinere Unternehmen sollten zunaechst physische Absicherungsstrategien nutzen: Lageraufbau bei niedrigen Preisen, Rahmenvertraege mit guenstigen Preisklauseln, Diversifizierung der Lieferantenbasis. Fuer den Grossteil des deutschen Mittelstands genuegen diese Instrumente, um 80% des Preisrisikos abzufedern. Derivate erfordern Finanzexpertise, Bankkreditlinien und EMIR-Compliance und sind erst ab jaehrlichen Beschaffungsvolumina von ca. 5 Mio. EUR wirtschaftlich."
+          }
+        ]
+      },
+      {
+        heading: "Preisabsicherung mit der EUCX",
+        body: "Die EUCX unterstuetzt institutionelle Teilnehmer bei der Preisabsicherung durch transparente Spotpreise in Echtzeit, Forward-Ordertypen fuer definierte zukuenftige Lieferdaten, Preisalarme bei Erreichen von Zielwerten sowie historische Preisauswertungen als Grundlage fuer Beschaffungsentscheidungen. Im Gegensatz zu OTC-Maerkten ist die Preisfindung auf der EUCX vollstaendig transparent und auditierbar.",
+      }
+    ],
+    cta: "Rohstoffe planbar und transparent beschaffen"
+  },
+
+  // ────────────────────────────────────────────────────────────────────────────
+  {
+    slug:        "gruener-stahl",
+    title:       "Gruener Stahl: Wasserstoffreduktion, Elektrostahlwerke und EU-Klimaziele 2050",
+    description: "Die Stahlindustrie ist fuer 7% der globalen CO2-Emissionen verantwortlich. Dieser Artikel erklaert Technologiepfade, Marktentwicklung und Auswirkungen auf den Rohstoffhandel.",
+    category:    "ESG",
+    readMin:     11,
+    published:   "2026-03-18",
+    sections: [
+      {
+        heading: "Warum gruener Stahl entscheidend ist",
+        body: "Die EU-Stahlindustrie muss bis 2050 klimaneutral sein - so sieht es der European Green Deal vor. Das erfordert eine fundamentale Transformation der Produktionsprozesse. Hochoefen emittieren durchschnittlich 1,85 Tonnen CO2 pro Tonne Rohstahl; Elektrolichtbogenoefen auf Schrottbasis nur 0,4-0,6 t CO2/t. Wasserstoffbasierte Direktreduktion (H2-DRI + EAF) kann auf unter 0,05 t CO2/t sinken.",
+        sub: [
+          {
+            heading: "Technologiepfade zur Klimaneutralitaet",
+            body: "H2-DRI: Direktreduktion von Eisenerz mit gruenem Wasserstoff statt Kokskohle erzeugt Eisenschwamm (DRI/HBI), der anschliessend im EAF zu Stahl verarbeitet wird. Pilotanlagen: thyssenkrupp tkH2Steel, H2GS (SSAB), ArcelorMittal Sponge Iron. Schrottbasierter EAF-Stahl: Mit 100% Strom aus erneuerbaren Energien nahezu klimaneutral. Skalierbar mit vorhandenem Schrottaufkommen. Limitierung: Schrottqualitaet reicht fuer viele Flachstahlgueten noch nicht aus.\n\nCCS/CCU: Carbon Capture an Hochofengasen als Brueckentechnologie bis 2035. Technisch moeglich, aber energieintensiv und regulatorisch noch nicht vollstaendig geklart."
+          },
+          {
+            heading: "Preispremia fuer gruenen Stahl",
+            body: "Gruener Stahl kostet derzeit 150-300 EUR/t mehr als konventioneller Stahl. Automobilhersteller (Volvo, BMW, Mercedes-Benz) haben bereits langfristige Abnahmevertraege fuer gruenen Stahl unterzeichnet und kommunizieren die Mehrkosten als Marketingvorteil. Mit steigenden CO2-Zertifikatspreisen und fallendem Gruenstrrompreis wird die Preisuecke bis 2030 auf unter 80 EUR/t sinken, prognostizieren BloombergNEF und Wood Mackenzie."
+          }
+        ]
+      },
+      {
+        heading: "EU-Regulierung und CBAM als Treiber",
+        body: "Der Carbon Border Adjustment Mechanism (CBAM) macht Stahl mit hohem CO2-Fussabdruck aus Drittlaendern ab 2026 teurer. Gleichzeitig steigen EU-ETS-Zertifikatspreise auf prognostizierte 100-150 EUR/t CO2 bis 2030. Beide Mechanismen verteuern konventionellen Stahl relativ zum gruenen Stahl und beschleunigen die Transformation. Handelsteilnehmer, die Stahl mit EPD (Environmental Product Declaration) und CO2-Zertifikat liefern koennen, erzielen bereits heute Preispremia.",
+        sub: [
+          {
+            heading: "Praktische Schritte fuer Einkaufsabteilungen",
+            body: "CO2-Fussabdruck in Beschaffungsanfragen (RFQ) als Pflichtangabe aufnehmen. EPD (ISO 14025/EN 15804) als Lieferbedingung definieren. Stufenweise Erhoehung des gruenen Stahlanteils im Einkaufsmix (z.B. 20% bis 2027, 50% bis 2030). Preeimbereitschaft interner Stakeholder fruehzeitig klaeren. Foerderantrag bei BAFA (Dekarbonisierungsprogramme) und EU-Innovationsfonds pruefen."
+          }
+        ]
+      },
+      {
+        heading: "Gruener Stahl auf der EUCX",
+        body: "Die EUCX plant fuer 2026 die Einfuehrung eines separaten Handelssegments fuer zertifizierten gruenen Stahl mit EPD-Nachweis und verifizierten CO2-Emissionen unter 500 kg/t. Kaeufer erhalten damit Planungssicherheit fuer ihre eigenen ESG-Reportingpflichten (CSRD, ESRS E1). Das Segment wird mit dem europaeischen Gruenstahl-Register verknuepft und ist CBAM-konform dokumentiert.",
+      }
+    ],
+    cta: "Zukunftssichere Beschaffung auf der EUCX"
+  },
 ];
 
 export const CATEGORIES = [...new Set(ARTICLES.map((a) => a.category))];

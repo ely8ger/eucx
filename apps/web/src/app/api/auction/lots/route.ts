@@ -83,18 +83,25 @@ export async function GET(req: NextRequest) {
   if (!authHeader?.startsWith("Bearer ")) {
     return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
   }
-  try { await verifyAccessToken(authHeader.slice(7)); }
+  let tokenPayload: { userId: string };
+  try { tokenPayload = await verifyAccessToken(authHeader.slice(7)); }
   catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
 
+  const userId = tokenPayload.userId;
   const { searchParams } = new URL(req.url);
-  const phase = searchParams.get("phase");
+  const phase   = searchParams.get("phase");
+  const mine    = searchParams.get("mine") === "true";
 
   const lots = await db.lot.findMany({
-    where: phase
-      ? { phase: phase as never }
-      : { phase: { in: ["COLLECTION", "PROPOSAL", "REDUCTION"] } },
+    where: mine
+      // Käufer sieht nur eigene Lots — alle Phasen inkl. CONCLUSION
+      ? { buyerId: userId, ...(phase ? { phase: phase as never } : {}) }
+      // Alle anderen sehen offene Lots (COLLECTION/PROPOSAL/REDUCTION)
+      : phase
+        ? { phase: phase as never }
+        : { phase: { in: ["COLLECTION", "PROPOSAL", "REDUCTION"] } },
     orderBy: { createdAt: "desc" },
-    take: 50,
+    take:    100,
     select: {
       id:          true,
       commodity:   true,
@@ -105,14 +112,24 @@ export async function GET(req: NextRequest) {
       currentBest: true,
       auctionEnd:  true,
       createdAt:   true,
+      winnerId:    true,
       buyer: {
         select: { id: true, organizationId: true },
       },
       _count: {
         select: { bids: true, registrations: true },
       },
+      registrations: {
+        where:  { sellerId: userId },
+        select: { id: true },
+      },
     },
   });
 
-  return NextResponse.json({ lots });
+  const result = lots.map(({ registrations, ...lot }) => ({
+    ...lot,
+    isRegistered: registrations.length > 0,
+  }));
+
+  return NextResponse.json({ lots: result });
 }

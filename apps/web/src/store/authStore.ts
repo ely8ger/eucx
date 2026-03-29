@@ -71,10 +71,11 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         clearAuthCookies();
-        set({ user: null, tokenExpiresAt: null, totpRequired: false, pendingEmail: "" });
         if (typeof window !== "undefined") {
+          localStorage.removeItem("accessToken");
           window.location.href = "/login";
         }
+        set({ user: null, tokenExpiresAt: null, totpRequired: false, pendingEmail: "" });
       },
 
       isAuthenticated: () => {
@@ -147,10 +148,11 @@ export async function refreshAccessToken(): Promise<void> {
     user?:       AuthUser;
   };
 
-  // Neues Token ins Cookie schreiben
+  // Neues Token ins Cookie + localStorage schreiben
   document.cookie = `access_token=${data.accessToken}; path=/; max-age=900; samesite=lax${
     typeof window !== "undefined" && window.location.protocol === "https:" ? "; secure" : ""
   }`;
+  localStorage.setItem("accessToken", data.accessToken);
 
   if (data.user) {
     useAuthStore.getState().setAuth(data.user, data.expiresAt);

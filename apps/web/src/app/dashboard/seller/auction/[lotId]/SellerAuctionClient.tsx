@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuctionStream } from "@/lib/auction/use-auction-stream";
+import type { AuctionNotification } from "@/lib/auction/use-auction-stream";
 import { KycStatusBadge } from "@/components/KycStatusBadge";
+import { NotificationBell } from "@/components/NotificationBell";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -92,8 +94,17 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
 
   useEffect(() => { if (token) loadKyc(token); }, [token, loadKyc]);
 
-  // ── SSE ──────────────────────────────────────────────────────────
-  const { state, connected } = useAuctionStream(lot.id, token);
+  // ── SSE + Notifications ───────────────────────────────────────────
+  const { state, connected, notifications, clearNotifications } = useAuctionStream(lot.id, token);
+
+  // Notification-Queue verarbeiten → Toasts + Vibration
+  useEffect(() => {
+    if (!notifications.length) return;
+    for (const n of notifications) {
+      showNotificationToast(n);
+    }
+    clearNotifications();
+  }, [notifications, clearNotifications]);
   const livePhase = state?.phase       ?? lot.phase;
   const liveBest  = state?.currentBest ?? lot.currentBest;
   const liveEnd   = state?.auctionEnd  ?? lot.auctionEnd;
@@ -170,6 +181,67 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   const bestNum     = liveBest ? Number(liveBest) : null;
   const quickSteps  = [50, 100, 250, 500];
   const isLeading   = myRank === 1;
+
+  // ── Notification → Toast + Vibrate ──────────────────────────────
+  function showNotificationToast(n: AuctionNotification) {
+    const vibrate = (pattern: number[]) => {
+      if (typeof window !== "undefined" && "vibrate" in navigator) {
+        navigator.vibrate(pattern);
+      }
+    };
+
+    switch (n.type) {
+      case "OUTBID":
+        vibrate([200, 100, 200]);
+        toast.error(n.title, {
+          description: n.message,
+          duration:    8000,
+          style: { background: "#fef2f2", border: "2px solid #dc2626", color: "#7f1d1d" },
+        });
+        break;
+      case "LEADING":
+        toast.success(n.title, {
+          description: n.message,
+          duration:    4000,
+          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" },
+        });
+        break;
+      case "URGENCY_10M":
+        vibrate([100]);
+        toast(n.title, {
+          description: n.message,
+          duration:    10000,
+          style: { background: "#fffbeb", border: "1px solid #d97706", color: "#92400e" },
+        });
+        break;
+      case "URGENCY_5M":
+        vibrate([300, 100, 300, 100, 300]);
+        toast.error(n.title, {
+          description: n.message,
+          duration:    15000,
+          style: { background: "#fef2f2", border: "2px solid #dc2626", color: "#7f1d1d" },
+        });
+        break;
+      case "WON":
+        vibrate([100, 50, 100]);
+        toast.success(n.title, {
+          description: n.message,
+          duration:    10000,
+          style: { background: "#f0fdf4", border: "2px solid #16a34a", color: "#14532d" },
+        });
+        break;
+      case "DEPOSIT_WARN":
+        vibrate([100]);
+        toast(n.title, {
+          description: n.message,
+          duration:    10000,
+          style: { background: "#fffbeb", border: "1px solid #d97706", color: "#92400e" },
+        });
+        break;
+      default:
+        toast(n.title, { description: n.message, duration: 5000 });
+    }
+  }
 
   // Competitor-Analyse: alle Gebote sortiert nach Zeit DESC, mit Delta
   const competitorBids = [...allBids].sort(
@@ -311,6 +383,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                 depositRequired={depositReq ?? undefined}
               />
             )}
+            {token && <NotificationBell token={token} />}
             <span className="s-conn">
               <span className={`s-dot${connected ? "" : " off"}`} />{" "}
               {connected ? "Live" : "…"}
@@ -424,6 +497,43 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                   <div className="s-win-sub lead">
                     {isLeading ? `Ihr Siegergebot: ${fmtEur(myBids[0]?.price ?? null)}` : `Siegergebot: ${fmtEur(liveBest)}`}
                   </div>
+                  {isLeading && (
+                    <a
+                      href={`/api/auction/lots/${lot.id}/contract`}
+                      download
+                      style={{
+                        display: "inline-block",
+                        marginTop: 10,
+                        padding: "7px 16px",
+                        background: "#154194",
+                        color: "#fff",
+                        fontSize: 12,
+                        fontWeight: 600,
+                        letterSpacing: "0.04em",
+                        textDecoration: "none",
+                        cursor: "pointer",
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        fetch(`/api/auction/lots/${lot.id}/contract`, {
+                          headers: { Authorization: `Bearer ${token}` },
+                        })
+                          .then(async (r) => {
+                            if (!r.ok) { alert("Vertrag noch nicht verfügbar."); return; }
+                            const blob = await r.blob();
+                            const url  = URL.createObjectURL(blob);
+                            const a    = document.createElement("a");
+                            a.href     = url;
+                            a.download = `EUCX-Kaufvertrag-${lot.id.slice(0, 8)}.pdf`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                          })
+                          .catch(() => alert("Download fehlgeschlagen."));
+                      }}
+                    >
+                      Kaufvertrag herunterladen (PDF)
+                    </a>
+                  )}
                 </div>
                 <div className="s-win-price neutral">{fmtEur(liveBest)}</div>
               </div>

@@ -7,13 +7,26 @@
  * Response:
  *   { days: DailyStats[], totals: { volume, fees, dealCount } }
  */
-import { NextResponse } from "next/server";
-import { db }           from "@/lib/db/client";
-import Decimal          from "decimal.js";
+import { NextRequest, NextResponse } from "next/server";
+import { db }                        from "@/lib/db/client";
+import { verifyAccessToken }         from "@/lib/auth/jwt";
+import Decimal                       from "decimal.js";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+const ADMIN_ROLES = ["ADMIN", "COMPLIANCE_OFFICER", "SUPER_ADMIN"];
+
+export async function GET(req: NextRequest) {
+  // ── Auth ──────────────────────────────────────────────────────────
+  let token;
+  try {
+    token = await verifyAccessToken(req.headers.get("authorization")?.slice(7) ?? "");
+  } catch {
+    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
+  }
+  if (!ADMIN_ROLES.includes(token.role)) {
+    return NextResponse.json({ error: "Nur Administratoren" }, { status: 403 });
+  }
   try {
     const since = new Date();
     since.setDate(since.getDate() - 30);

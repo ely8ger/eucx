@@ -1,28 +1,22 @@
-/**
- * GET /api/docs/openapi.json
- * Skill #5: API-First Documentation (OpenAPI 3.0)
- * Copper-Entwickler können hier die komplette API-Referenz abrufen.
- */
-import { NextResponse } from "next/server";
+"use client";
 
-export const dynamic = "force-dynamic";
+import dynamic from "next/dynamic";
+import "swagger-ui-react/swagger-ui.css";
 
-const spec = {
+const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
+
+const SPEC = {
   openapi: "3.0.3",
   info: {
-    title:       "EUCX - European Commodity Exchange API",
-    description: "Digitale Warenbörse für Metallprodukte. Enterprise-Ready.",
+    title:       "EUCX — European Commodity Exchange API",
+    description: "Interne API-Referenz. Nur für autorisierte Administratoren.",
     version:     "1.0.0",
-    contact:     { name: "EUCX Support", url: "https://eucx.eu" },
+    contact:     { name: "EUCX Platform Team", url: "https://eucx.eu" },
   },
   servers: [{ url: "https://eucx.eu/api", description: "Production" }],
   components: {
     securitySchemes: {
-      bearerAuth: {
-        type:         "http",
-        scheme:       "bearer",
-        bearerFormat: "JWT",
-      },
+      bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" },
     },
     schemas: {
       Order: {
@@ -72,9 +66,9 @@ const spec = {
                 required: ["email", "password", "organizationName", "taxId", "country", "city", "role"],
                 properties: {
                   email:            { type: "string", format: "email" },
-                  password:         { type: "string", minLength: 10, description: "Mind. 10 Zeichen, Großbuchstabe, Zahl, Sonderzeichen" },
+                  password:         { type: "string", minLength: 10 },
                   organizationName: { type: "string" },
-                  taxId:            { type: "string", description: "USt-IdNr. oder Steuernummer" },
+                  taxId:            { type: "string" },
                   country:          { type: "string", minLength: 2, maxLength: 2, example: "DE" },
                   city:             { type: "string" },
                   role:             { type: "string", enum: ["SELLER", "BUYER"] },
@@ -86,13 +80,13 @@ const spec = {
         responses: {
           "201": { description: "Registrierung erfolgreich" },
           "409": { description: "E-Mail bereits vergeben" },
-          "422": { description: "Validierungsfehler", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          "422": { description: "Validierungsfehler" },
         },
       },
     },
     "/auth/login": {
       post: {
-        summary: "Einloggen - gibt JWT Access + Refresh Token zurück",
+        summary: "Einloggen — gibt JWT Access + Refresh Token zurück",
         tags: ["Auth"],
         requestBody: {
           required: true,
@@ -110,27 +104,7 @@ const spec = {
           },
         },
         responses: {
-          "200": {
-            description: "Login erfolgreich",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    accessToken:  { type: "string", description: "Gültig 15 Minuten" },
-                    refreshToken: { type: "string", description: "Gültig 7 Tage" },
-                    user: {
-                      type: "object",
-                      properties: {
-                        id:   { type: "string", format: "uuid" },
-                        role: { type: "string", enum: ["ADMIN", "SELLER", "BUYER", "OBSERVER"] },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+          "200": { description: "Login erfolgreich — accessToken + refreshToken" },
           "401": { description: "Ungültige Zugangsdaten" },
         },
       },
@@ -154,17 +128,16 @@ const spec = {
                   pricePerUnit:   { type: "number", minimum: 0, example: 545.00 },
                   quantityTons:   { type: "number", minimum: 0, example: 100 },
                   currency:       { type: "string", enum: ["EUR", "PLN", "USD"], default: "EUR" },
-                  idempotencyKey: { type: "string", format: "uuid", description: "UUID v4 - verhindert Doppel-Submissions" },
+                  idempotencyKey: { type: "string", format: "uuid" },
                 },
               },
             },
           },
         },
         responses: {
-          "201": { description: "Auftrag erfolgreich erteilt", content: { "application/json": { schema: { $ref: "#/components/schemas/Order" } } } },
+          "201": { description: "Auftrag erteilt" },
           "401": { description: "Nicht autorisiert" },
-          "409": { description: "Handelssitzung nicht aktiv" },
-          "422": { description: "Validierungsfehler" },
+          "409": { description: "Session nicht aktiv" },
         },
       },
       get: {
@@ -187,36 +160,19 @@ const spec = {
           { name: "sessionId", in: "query", required: true, schema: { type: "string", format: "uuid" } },
         ],
         responses: {
-          "200": {
-            description: "Asks, Bids und letzte Abschlüsse",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    asks:  { type: "array", items: { $ref: "#/components/schemas/OrderbookEntry" } },
-                    bids:  { type: "array", items: { $ref: "#/components/schemas/OrderbookEntry" } },
-                    deals: { type: "array" },
-                  },
-                },
-              },
-            },
-          },
+          "200": { description: "Asks, Bids und letzte Abschlüsse" },
         },
       },
     },
     "/orderbook/stream": {
       get: {
-        summary: "Live Orderbook via Server-Sent Events (< 50ms Latenz)",
+        summary: "Live Orderbook via Server-Sent Events",
         tags: ["Orderbook"],
         parameters: [
           { name: "sessionId", in: "query", required: true, schema: { type: "string", format: "uuid" } },
         ],
         responses: {
-          "200": {
-            description: "SSE Stream mit 'orderbook' Events alle 1,5s",
-            content: { "text/event-stream": {} },
-          },
+          "200": { description: "SSE Stream — orderbook Events alle 1,5s" },
         },
       },
     },
@@ -238,8 +194,10 @@ const spec = {
   ],
 };
 
-export function GET() {
-  return NextResponse.json(spec, {
-    headers: { "Access-Control-Allow-Origin": "*" },
-  });
+export default function AdminApiDocsPage() {
+  return (
+    <div style={{ margin: "-20px -24px" }}>
+      <SwaggerUI spec={SPEC} docExpansion="list" defaultModelsExpandDepth={-1} />
+    </div>
+  );
 }

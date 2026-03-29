@@ -1,6 +1,12 @@
-import type { Metadata } from "next";
-import { BASE_URL }      from "@/lib/seo/metadata";
-import { EucxLogo }      from "@/components/logo/EucxLogo";
+import type { Metadata }  from "next";
+import { BASE_URL }       from "@/lib/seo/metadata";
+import { EucxLogo }       from "@/components/logo/EucxLogo";
+import { SiteNav }        from "@/components/SiteNav";
+import {
+  Landmark, ClipboardList, BarChart3, Package,
+  ShieldCheck, Tag, Truck, Leaf, Server,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "FAQ – Häufig gestellte Fragen | EUCX European Union Commodity Exchange",
@@ -23,12 +29,12 @@ export const metadata: Metadata = {
 // ── Daten ──────────────────────────────────────────────────────────────────────
 
 interface Faq { q: string; a: string }
-interface Category { title: string; icon: string; items: Faq[] }
+interface Category { title: string; Icon: LucideIcon; items: Faq[] }
 
 const CATEGORIES: Category[] = [
   {
     title: "Allgemeines zur EUCX",
-    icon: "🏛️",
+    Icon: Landmark,
     items: [
       {
         q: "Was ist die EUCX – European Union Commodity Exchange?",
@@ -66,7 +72,7 @@ const CATEGORIES: Category[] = [
   },
   {
     title: "Registrierung & Zulassung",
-    icon: "📋",
+    Icon: ClipboardList,
     items: [
       {
         q: "Wie registriere ich mein Unternehmen auf der EUCX?",
@@ -104,7 +110,7 @@ const CATEGORIES: Category[] = [
   },
   {
     title: "Handel & Auftragsabwicklung",
-    icon: "📊",
+    Icon: BarChart3,
     items: [
       {
         q: "Wie funktioniert das Orderbuch der EUCX?",
@@ -150,7 +156,7 @@ const CATEGORIES: Category[] = [
   },
   {
     title: "Rohstoffe & Produkte",
-    icon: "⚙️",
+    Icon: Package,
     items: [
       {
         q: "Was ist Betonstahl (Rebar) und wie wird er gehandelt?",
@@ -184,7 +190,7 @@ const CATEGORIES: Category[] = [
   },
   {
     title: "Regulierung & Compliance",
-    icon: "⚖️",
+    Icon: ShieldCheck,
     items: [
       {
         q: "Wie ist die EUCX reguliert?",
@@ -222,7 +228,7 @@ const CATEGORIES: Category[] = [
   },
   {
     title: "Preise, Gebühren & Margin",
-    icon: "💰",
+    Icon: Tag,
     items: [
       {
         q: "Wie hoch sind die Transaktionsgebühren auf der EUCX?",
@@ -252,7 +258,7 @@ const CATEGORIES: Category[] = [
   },
   {
     title: "Incoterms & Lieferung",
-    icon: "🚚",
+    Icon: Truck,
     items: [
       {
         q: "Welche Incoterms werden auf der EUCX verwendet?",
@@ -278,7 +284,7 @@ const CATEGORIES: Category[] = [
   },
   {
     title: "Nachhaltigkeit & ESG",
-    icon: "🌱",
+    Icon: Leaf,
     items: [
       {
         q: "Unterstützt die EUCX nachhaltige Rohstoffbeschaffung?",
@@ -300,7 +306,7 @@ const CATEGORIES: Category[] = [
   },
   {
     title: "Technik & Plattform",
-    icon: "💻",
+    Icon: Server,
     items: [
       {
         q: "Welche technischen Anforderungen gibt es für die Nutzung der EUCX?",
@@ -357,19 +363,8 @@ export default function FaqPage() {
 
       <div style={{ backgroundColor: "#f7f9fc", minHeight: "100vh", fontFamily: F }}>
 
-        {/* ── Topbar ── */}
-        <div style={{ backgroundColor: "#0b1e36", borderBottom: "3px solid #154194", padding: "0 40px", height: 56, display: "flex", alignItems: "center" }}>
-          <a href="/" style={{ textDecoration: "none" }}>
-            <EucxLogo variant="dark" size="sm" />
-          </a>
-          <div style={{ marginLeft: "auto", display: "flex", gap: 24 }}>
-            <a href="/wissen" style={{ fontSize: 13, color: "rgba(255,255,255,.6)", textDecoration: "none" }}>Wissen</a>
-            <a href="/login"  style={{ fontSize: 13, color: "rgba(255,255,255,.6)", textDecoration: "none" }}>Anmelden</a>
-            <a href="/register" style={{ fontSize: 13, color: "#fff", fontWeight: 600, textDecoration: "none", backgroundColor: BLUE, padding: "5px 14px" }}>
-              Registrieren
-            </a>
-          </div>
-        </div>
+        {/* ── Header — Standard SiteNav ── */}
+        <SiteNav />
 
         {/* ── Hero ── */}
         <div style={{ backgroundColor: "#0b1e36", padding: "52px 40px 48px", borderBottom: "1px solid rgba(255,255,255,.08)" }}>
@@ -390,12 +385,16 @@ export default function FaqPage() {
                 <a
                   key={c.title}
                   href={`#${c.title.replace(/\s+/g, "-").toLowerCase()}`}
+                  className="faq-pill"
                   style={{
                     fontSize: 12, color: "rgba(255,255,255,.7)", border: "1px solid rgba(255,255,255,.2)",
-                    padding: "4px 12px", textDecoration: "none", letterSpacing: "0.01em",
+                    padding: "6px 14px", textDecoration: "none", letterSpacing: "0.01em",
+                    display: "inline-flex", alignItems: "center", gap: 7,
+                    transition: "background 200ms, border-color 200ms, color 200ms",
                   }}
                 >
-                  {c.icon} {c.title}
+                  <c.Icon size={14} color="rgba(255,255,255,0.65)" strokeWidth={1.5} />
+                  {c.title}
                 </a>
               ))}
             </div>
@@ -413,7 +412,7 @@ export default function FaqPage() {
             >
               {/* Kategorie-Kopf */}
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20, paddingBottom: 12, borderBottom: `2px solid ${BLUE}` }}>
-                <span style={{ fontSize: 22 }}>{cat.icon}</span>
+                <cat.Icon size={22} color="#154194" strokeWidth={1.5} />
                 <h2 style={{ fontSize: 20, fontWeight: 600, color: "#0d1b2a", margin: 0, fontFamily: F }}>
                   {cat.title}
                 </h2>
@@ -552,8 +551,23 @@ export default function FaqPage() {
         }
         details > summary::-webkit-details-marker { display: none; }
         details > summary::marker { display: none; }
+        details { transition: border-color 150ms; }
+        details:hover { border-color: #154194 !important; }
         details[open] { border-color: #154194 !important; }
+        details > summary { transition: background 150ms, color 150ms; }
+        details > summary:hover { background: #f0f4ff !important; color: #154194 !important; }
         details[open] > summary { color: #154194 !important; }
+        details > summary:hover > span:last-child { background: #dce6fb !important; }
+        details > summary > span:last-child { transition: background 150ms; }
+
+        .faq-pill:hover {
+          background: rgba(255,255,255,0.12) !important;
+          border-color: rgba(255,255,255,0.5) !important;
+          color: #fff !important;
+        }
+        .faq-pill:hover svg {
+          opacity: 1;
+        }
       `}</style>
     </>
   );

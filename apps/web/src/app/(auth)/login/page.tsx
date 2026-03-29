@@ -168,16 +168,20 @@ export default function LoginPage() {
           setErrors({ password: remaining > 0
             ? t("login_attempts").replace("{n}", String(remaining))
             : t("login_locked_desc") });
+        } else if (res.status === 403 && (data as { code?: string }).code === "ACCOUNT_INACTIVE") {
+          setPendingAccount(true);
         } else {
           setErrors({ email: data.message ?? t("login_err_conn") });
         }
         return;
       }
+      setPendingAccount(false);
       if (data.totpRequired) { setStep("totp"); return; }
       if (data.data?.accessToken) {
         const expiresAt = data.data.expiresAt ?? Date.now() + 15 * 60 * 1000;
         document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=900; samesite=lax${
           typeof window !== "undefined" && window.location.protocol === "https:" ? "; secure" : ""}`;
+        localStorage.setItem("accessToken", data.data.accessToken);
         if (data.data.user) setAuth(data.data.user, expiresAt);
         scheduleAutoLogout(expiresAt);
         if (typeof window !== "undefined") localStorage.setItem("eucx_prev_login", new Date().toISOString());
@@ -206,6 +210,7 @@ export default function LoginPage() {
         const expiresAt = data.data.expiresAt ?? Date.now() + 15 * 60 * 1000;
         document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=900; samesite=lax${
           typeof window !== "undefined" && window.location.protocol === "https:" ? "; secure" : ""}`;
+        localStorage.setItem("accessToken", data.data.accessToken);
         if (data.data.user) setAuth(data.data.user, expiresAt);
         scheduleAutoLogout(expiresAt);
         if (typeof window !== "undefined") localStorage.setItem("eucx_prev_login", new Date().toISOString());
@@ -215,6 +220,7 @@ export default function LoginPage() {
     finally  { setLoading(false); }
   }
 
+  const [pendingAccount, setPendingAccount] = useState(false);
   const locked = attempts >= 5;
 
   return (
@@ -302,6 +308,21 @@ export default function LoginPage() {
                       {t("login_2fa_desc")}
                     </p>
                   </div>
+
+                  {/* PENDING-Konto */}
+                  {pendingAccount && (
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", backgroundColor: "#fffbeb", borderLeft: `3px solid #d97706` }}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, marginTop: 2, color: "#d97706" }} aria-hidden="true">
+                        <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.3"/>
+                        <line x1="7" y1="4" x2="7" y2="8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                        <circle cx="7" cy="10" r="0.7" fill="currentColor"/>
+                      </svg>
+                      <p style={{ fontSize: 12, color: "#92400e", margin: 0, lineHeight: 1.6, fontFamily: F }}>
+                        Ihr Konto wird noch geprüft. Nach der Freischaltung durch EUCX erhalten Sie Zugang.
+                        Fragen: <a href="mailto:support@eucx.eu" style={{ color: "#92400e", fontWeight: 600 }}>support@eucx.eu</a>
+                      </p>
+                    </div>
+                  )}
 
                   {/* Lockout-Warnung */}
                   {locked && (

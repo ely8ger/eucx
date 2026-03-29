@@ -10,14 +10,26 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
+import { verifyAccessToken }         from "@/lib/auth/jwt";
 import Decimal                       from "decimal.js";
 
 export const dynamic = "force-dynamic";
 
-const LARGE_ORDER_QTY  = 10_000;
-const FLOOD_THRESHOLD  = 5;
+const ADMIN_ROLES     = ["ADMIN", "COMPLIANCE_OFFICER", "SUPER_ADMIN"];
+const LARGE_ORDER_QTY = 10_000;
+const FLOOD_THRESHOLD = 5;
 
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
+  // ── Auth ──────────────────────────────────────────────────────────
+  let token;
+  try {
+    token = await verifyAccessToken(req.headers.get("authorization")?.slice(7) ?? "");
+  } catch {
+    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
+  }
+  if (!ADMIN_ROLES.includes(token.role)) {
+    return NextResponse.json({ error: "Nur Administratoren" }, { status: 403 });
+  }
   try {
     const orders = await db.order.findMany({
       where:   { status: { in: ["ACTIVE", "PARTIALLY_FILLED"] } },

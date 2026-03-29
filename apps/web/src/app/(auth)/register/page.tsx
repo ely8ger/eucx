@@ -54,8 +54,36 @@ const EU_COUNTRIES: { code: string; name: string }[] = [
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type VatStatus = "idle" | "loading" | "valid" | "invalid";
+type HrbStatus = "idle" | "loading" | "found" | "notfound";
+
+interface CompanyData {
+  name?:       string | null;
+  street?:     string | null;
+  postalCode?: string | null;
+  city?:       string | null;
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+function toTitleCase(s: string): string {
+  return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+/** Parst VIES-Adressstring z.B. "MUSTERSTR. 42\n10115 BERLIN" in Felder */
+function parseViesAddress(raw: string): { street?: string; postalCode?: string; city?: string } {
+  const lines = raw.split(/[\n,]/).map((s) => s.trim()).filter(Boolean);
+  if (lines.length < 1) return {};
+  const firstLine = lines[0];
+  if (!firstLine) return {};
+  const street = toTitleCase(firstLine);
+  if (lines.length >= 2) {
+    const last  = lines[lines.length - 1] ?? "";
+    const match = last.match(/^(\d{4,5})\s+(.+)$/);
+    if (match?.[1] && match[2]) return { street, postalCode: match[1], city: toTitleCase(match[2]) };
+    return { street, city: toTitleCase(last) };
+  }
+  return { street };
+}
+
 function isFreeEmail(email: string): boolean {
   const domain = email.split("@")[1]?.toLowerCase() ?? "";
   return FREE_DOMAINS.includes(domain);
@@ -193,7 +221,7 @@ function VatField({
   country, onValidated,
 }: {
   country:     string;
-  onValidated: (name: string | null) => void;
+  onValidated: (data: CompanyData | null) => void;
 }) {
   const [value,    setValue]    = useState("");
   const [status,   setStatus]   = useState<VatStatus>("idle");
@@ -206,11 +234,12 @@ function VatField({
     setStatus("loading");
     try {
       const res  = await fetch(`/api/validate-vat?country=${country}&vat=${encodeURIComponent(val)}`);
-      const data = await res.json() as { valid: boolean; name?: string | null };
+      const data = await res.json() as { valid: boolean; name?: string | null; address?: string | null };
       if (data.valid) {
         setStatus("valid");
         setVerified(data.name ?? null);
-        onValidated(data.name ?? null);
+        const addrParsed = data.address ? parseViesAddress(data.address) : {};
+        onValidated({ name: data.name ?? null, ...addrParsed });
       } else {
         setStatus("invalid");
         setVerified(null);
@@ -307,6 +336,76 @@ function VatField({
   );
 }
 
+// ── HRB Field with Handelsregister Lookup ─────────────────────────────────────
+function HrbField({ onFound }: { onFound: (data: CompanyData) => void }) {
+  const [value,  setValue]  = useState("");
+  const [status, setStatus] = useState<HrbStatus>("idle");
+
+  async function lookup() {
+    const val = value.trim();
+    if (!val) return;
+    setStatus("loading");
+    try {
+      const res  = await fetch(`/api/lookup-hrb?hrb=${encodeURIComponent(val)}`);
+      const data = await res.json() as { found: boolean } & CompanyData;
+      if (data.found) {
+        setStatus("found");
+        onFound({ name: data.name, street: data.street, postalCode: data.postalCode, city: data.city });
+      } else {
+        setStatus("notfound");
+      }
+    } catch {
+      setStatus("notfound");
+    }
+  }
+
+  const borderColor = status === "found" ? GREEN : status === "notfound" ? RED : BORDER;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+      <label htmlFor="hrb" style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: F }}>
+        HRB-Nummer
+      </label>
+      <div style={{ display: "flex", gap: 8 }}>
+        <input
+          id="hrb" name="hrb" type="text"
+          placeholder="HRB 123456 Frankfurt"
+          value={value}
+          onChange={(e) => { setValue(e.target.value); if (status !== "idle") setStatus("idle"); }}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void lookup(); } }}
+          style={{
+            flex: 1, height: 42, borderRadius: 0,
+            border: `1px solid ${borderColor}`,
+            backgroundColor: "#fff", padding: "0 12px",
+            fontSize: 14, color: TEXT, fontFamily: F,
+            outline: "none", boxSizing: "border-box",
+            transition: "border-color 150ms",
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => void lookup()}
+          disabled={status === "loading" || !value.trim()}
+          style={{
+            height: 42, padding: "0 16px", borderRadius: 0, flexShrink: 0,
+            border: `1px solid ${BLUE}`,
+            backgroundColor: status === "loading" || !value.trim() ? "#93a3be" : BLUE,
+            color: "#fff", fontSize: 13, fontWeight: 600, fontFamily: F,
+            cursor: status === "loading" ? "wait" : !value.trim() ? "default" : "pointer",
+            transition: "background-color 150ms",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {status === "loading" ? "Wird geprüft…" : "Prüfen"}
+        </button>
+      </div>
+      {status === "found"    && <p style={{ fontSize: 11, color: GREEN, fontFamily: F, margin: 0 }}>Unternehmen gefunden — Daten wurden übernommen.</p>}
+      {status === "notfound" && <p style={{ fontSize: 11, color: RED,   fontFamily: F, margin: 0 }}>Kein Eintrag gefunden. Bitte manuell ausfüllen.</p>}
+      {status === "idle"     && <p style={{ fontSize: 11, color: MUTED, fontFamily: F, margin: 0 }}>Optional — automatische Datenübernahme aus dem Handelsregister.</p>}
+    </div>
+  );
+}
+
 // ── Checkbox ──────────────────────────────────────────────────────────────────
 function ConsentBox({
   name, checked, onChange, error, children,
@@ -338,15 +437,31 @@ export default function RegisterPage() {
 
   const [loading,  setLoading]  = useState(false);
   const [error,    setError]    = useState("");
-  const [success,  setSuccess]  = useState(false);
+  const [step,     setStep]     = useState<"form" | "verify" | "done">("form");
+  const [userId,   setUserId]   = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [verifyCode,      setVerifyCode]      = useState("");
+  const [verifyLoading,   setVerifyLoading]   = useState(false);
+  const [verifyError,     setVerifyError]     = useState("");
+  const [resendCooldown,  setResendCooldown]  = useState(false);
   const [btnHover, setBtnHover] = useState(false);
   const [role,     setRole]     = useState("");
 
   // Country state - needed for VAT field
   const [country, setCountry] = useState("DE");
 
-  // Company name auto-fill from VIES
-  const [orgName, setOrgName] = useState("");
+  // Company data auto-fill from VIES / HRB
+  const [orgName,    setOrgName]    = useState("");
+  const [street,     setStreet]     = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [city,       setCity]       = useState("");
+
+  function applyCompanyData(data: CompanyData) {
+    if (data.name       && !orgName)    setOrgName(data.name);
+    if (data.street     && !street)     setStreet(data.street);
+    if (data.postalCode && !postalCode) setPostalCode(data.postalCode);
+    if (data.city       && !city)       setCity(data.city);
+  }
 
   // Field-level errors
   const [emailError, setEmailError] = useState("");
@@ -415,9 +530,13 @@ export default function RegisterPage() {
           consentAgb:       true,
         }),
       });
-      const data = await res.json() as { message?: string };
-      if (!res.ok) { setError(data.message ?? t("register_err_conn")); return; }
-      setSuccess(true);
+      const data = await res.json() as { data?: { userId?: string; message?: string }; message?: string };
+      if (!res.ok) { setError((data as { message?: string }).message ?? t("register_err_conn")); return; }
+      const uid = data.data?.userId ?? "";
+      const em  = (fd.get("email") as string) ?? "";
+      setUserId(uid);
+      setRegEmail(em);
+      setStep("verify");
     } catch {
       setError(t("register_err_conn"));
     } finally {
@@ -425,8 +544,118 @@ export default function RegisterPage() {
     }
   }
 
-  // ── Success State ────────────────────────────────────────────────────────────
-  if (success) {
+  async function handleVerify() {
+    setVerifyError("");
+    if (verifyCode.length !== 6) { setVerifyError("Bitte den 6-stelligen Code eingeben."); return; }
+    setVerifyLoading(true);
+    try {
+      const res  = await fetch("/api/auth/verify-email", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ userId, code: verifyCode }),
+      });
+      const data = await res.json() as { code?: string; message?: string };
+      if (!res.ok) { setVerifyError(data.message ?? "Ungültiger Code."); return; }
+      setStep("done");
+    } catch {
+      setVerifyError("Verbindungsfehler. Bitte erneut versuchen.");
+    } finally {
+      setVerifyLoading(false);
+    }
+  }
+
+  async function handleResend() {
+    setResendCooldown(true);
+    await fetch("/api/auth/verify-email", {
+      method:  "PUT",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ userId }),
+    });
+    setTimeout(() => setResendCooldown(false), 60_000);
+  }
+
+  // ── Schritt 2: E-Mail-Bestätigung ────────────────────────────────────────────
+  if (step === "verify") {
+    return (
+      <div style={{ width: "100%", maxWidth: 520, margin: "0 auto" }}>
+        <div style={{ backgroundColor: "#fff", border: `1px solid ${BORDER}` }}>
+          <div style={{ backgroundColor: BLUE, padding: "20px 32px" }}>
+            <h2 style={{ fontSize: 17, fontWeight: 700, color: "#fff", fontFamily: F, margin: 0 }}>
+              E-Mail-Adresse bestätigen
+            </h2>
+          </div>
+          <div style={{ height: 3, backgroundColor: "#e8b400" }} />
+          <div style={{ padding: "28px 32px", display: "flex", flexDirection: "column", gap: 20 }}>
+            <p style={{ fontSize: 14, color: "#444", fontFamily: F, lineHeight: 1.6, margin: 0 }}>
+              Wir haben einen 6-stelligen Bestätigungscode an <strong>{regEmail}</strong> gesendet.
+              Bitte geben Sie ihn hier ein. Der Code ist 15 Minuten gültig.
+            </p>
+
+            {/* Code-Eingabe */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <label style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: F }}>
+                Bestätigungscode <span style={{ color: RED }}>*</span>
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]{6}"
+                maxLength={6}
+                placeholder="000000"
+                value={verifyCode}
+                onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                style={{
+                  height: 52, borderRadius: 0, textAlign: "center",
+                  border: `2px solid ${verifyError ? RED : BORDER}`,
+                  fontSize: 28, fontWeight: 700, letterSpacing: "0.3em",
+                  color: TEXT, fontFamily: "'Courier New', monospace",
+                  outline: "none", width: "100%", boxSizing: "border-box",
+                }}
+              />
+              {verifyError && (
+                <p style={{ fontSize: 12, color: RED, fontFamily: F, margin: 0 }}>{verifyError}</p>
+              )}
+            </div>
+
+            {/* Bestätigen-Button */}
+            <button
+              onClick={() => void handleVerify()}
+              disabled={verifyLoading || verifyCode.length !== 6}
+              style={{
+                height: 44, borderRadius: 0, border: "none",
+                backgroundColor: verifyLoading || verifyCode.length !== 6 ? "#93a3be" : BLUE,
+                color: "#fff", fontSize: 14, fontWeight: 600,
+                fontFamily: F, cursor: verifyLoading ? "wait" : "pointer",
+                transition: "background-color 150ms",
+              }}
+            >
+              {verifyLoading ? "Wird geprüft…" : "E-Mail bestätigen"}
+            </button>
+
+            {/* Neuen Code anfordern */}
+            <p style={{ fontSize: 12, color: MUTED, fontFamily: F, margin: 0, textAlign: "center" }}>
+              Keinen Code erhalten?{" "}
+              <button
+                onClick={() => void handleResend()}
+                disabled={resendCooldown}
+                style={{
+                  background: "none", border: "none", padding: 0,
+                  color: resendCooldown ? MUTED : BLUE,
+                  fontSize: 12, fontFamily: F, cursor: resendCooldown ? "default" : "pointer",
+                  textDecoration: "underline",
+                }}
+              >
+                {resendCooldown ? "Code wurde erneut gesendet" : "Neuen Code senden"}
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Schritt 3: Abgeschlossen ──────────────────────────────────────────────────
+  if (step === "done") {
     return (
       <div style={{ width: "100%", maxWidth: 520, margin: "0 auto" }}>
         <div style={{ backgroundColor: "#fff", border: `1px solid ${BORDER}` }}>
@@ -451,7 +680,8 @@ export default function RegisterPage() {
           </div>
           <div style={{ padding: "28px 32px" }}>
             <p style={{ fontSize: 14, color: "#444", fontFamily: F, lineHeight: 1.6, marginBottom: 24 }}>
-              {t("register_success_desc")}
+              Ihre E-Mail-Adresse wurde bestätigt. Ihr Konto wird nun von unserem Team geprüft.
+              Sie erhalten eine E-Mail sobald Ihr Zugang freigeschaltet wurde.
             </p>
             <button
               onClick={() => router.push("/login")}
@@ -542,12 +772,10 @@ export default function RegisterPage() {
                   {/* Land zuerst - beeinflusst VAT-Format */}
                   <CountrySelect value={country} onChange={setCountry} />
 
-                  {/* VAT-ID mit VIES-Prufung */}
+                  {/* VAT-ID mit VIES-Prüfung + Auto-Fill */}
                   <VatField
                     country={country}
-                    onValidated={(name) => {
-                      if (name && !orgName) setOrgName(name);
-                    }}
+                    onValidated={(data) => { if (data) applyCompanyData(data); }}
                   />
 
                   <Field
@@ -558,26 +786,29 @@ export default function RegisterPage() {
                     hint={t("register_org_hint")}
                   />
 
-                  <Field
-                    label={t("register_hrb")} name="hrb"
-                    placeholder="HRB 123456 Frankfurt"
-                    hint={t("register_hrb_hint")}
-                  />
+                  {/* HRB mit Handelsregister-Prüfung + Auto-Fill */}
+                  <HrbField onFound={(data) => applyCompanyData(data)} />
 
-                  {/* Anschrift */}
+                  {/* Anschrift — auto-fill aus VIES oder HRB */}
                   <Field
                     label={t("register_street")} name="street" required
                     placeholder="Musterstraße 42"
+                    value={street}
+                    onChange={setStreet}
                   />
 
                   <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: 16 }}>
                     <Field
                       label={t("register_postal")} name="postalCode" required
                       placeholder="10115" maxLength={10}
+                      value={postalCode}
+                      onChange={setPostalCode}
                     />
                     <Field
                       label={t("register_city")} name="city" required
                       placeholder="Berlin"
+                      value={city}
+                      onChange={setCity}
                     />
                   </div>
 

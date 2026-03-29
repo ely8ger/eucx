@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ARTICLES, CATEGORIES } from "./articles";
-import { EucxLogo } from "@/components/logo/EucxLogo";
+import { SiteNav } from "@/components/SiteNav";
 
 export const metadata: Metadata = {
   title: "Wissen - Rohstoffhandel, Stahl und Marktstrukturen",
@@ -30,12 +30,12 @@ export default function WissenPage() {
   return (
     <main style={{ fontFamily: F, backgroundColor: BG, minHeight: "100vh" }}>
 
+      {/* ── Header — Standard SiteNav ──────────────────────────────────────── */}
+      <SiteNav />
+
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <div style={{ backgroundColor: BLUE, paddingTop: 64, paddingBottom: 56 }}>
+      <div style={{ backgroundColor: BLUE, paddingTop: 56, paddingBottom: 56 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px" }}>
-          <Link href="/" style={{ textDecoration: "none", display: "inline-block", marginBottom: 20 }}>
-            <EucxLogo variant="dark" size="sm" />
-          </Link>
           <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "rgba(255,255,255,.55)", fontFamily: F, marginBottom: 14 }}>
             EUCX Wissenszentrum
           </p>

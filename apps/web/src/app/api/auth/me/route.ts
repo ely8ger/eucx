@@ -29,6 +29,8 @@ export async function GET(req: NextRequest) {
       isYoungCompany:     true,
       companyFoundedAt:   true,
       organizationId:     true,
+      totpEnabled:        true,
+      phoneVerified:      true,
       organization: {
         select: {
           id:         true,
@@ -54,6 +56,8 @@ export async function GET(req: NextRequest) {
     verificationStatus: user.verificationStatus,
     isYoungCompany:     user.isYoungCompany,
     companyFoundedAt:   user.companyFoundedAt?.toISOString() ?? null,
+    totpEnabled:        user.totpEnabled,
+    phoneVerified:      user.phoneVerified,
     organization: {
       id:         user.organization.id,
       name:       user.organization.name,

@@ -2,7 +2,10 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuctionStream } from "@/lib/auction/use-auction-stream";
+import type { AuctionNotification } from "@/lib/auction/use-auction-stream";
 import { KycStatusBadge } from "@/components/KycStatusBadge";
+import { NotificationBell } from "@/components/NotificationBell";
+import { toast } from "sonner";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -90,8 +93,45 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
       .catch(() => {});
   }, [token]);
 
-  // ── SSE ──────────────────────────────────────────────────────────
-  const { state, connected } = useAuctionStream(lot.id, token);
+  // ── SSE + Notifications ───────────────────────────────────────────
+  const { state, connected, notifications, clearNotifications } = useAuctionStream(lot.id, token);
+
+  // Notification-Queue → Toasts für Käufer
+  useEffect(() => {
+    if (!notifications.length) return;
+    for (const n of notifications) {
+      showBuyerNotificationToast(n);
+    }
+    clearNotifications();
+  }, [notifications, clearNotifications]);
+
+  function showBuyerNotificationToast(n: AuctionNotification) {
+    switch (n.type) {
+      case "URGENCY_10M":
+        toast(n.title, {
+          description: n.message,
+          duration:    10000,
+          style: { background: "#fffbeb", border: "1px solid #d97706", color: "#92400e" },
+        });
+        break;
+      case "URGENCY_5M":
+        toast.error(n.title, {
+          description: n.message,
+          duration:    15000,
+          style: { background: "#fef2f2", border: "2px solid #dc2626", color: "#7f1d1d" },
+        });
+        break;
+      case "CLOSED_BUYER":
+        toast.success(n.title, {
+          description: n.message,
+          duration:    12000,
+          style: { background: "#f0f4ff", border: "2px solid #154194", color: "#1e3a8a" },
+        });
+        break;
+      default:
+        toast(n.title, { description: n.message, duration: 5000 });
+    }
+  }
   const livePhase = state?.phase              ?? lot.phase;
   const liveBest  = state?.currentBest        ?? lot.currentBest;
   const liveEnd   = state?.auctionEnd         ?? lot.auctionEnd;
@@ -162,6 +202,8 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
         .b-hdr { background:#0d1b2a; height:56px; padding:0 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:0; z-index:50; }
         .b-hdr-logo { font-size:14px; font-weight:700; color:#fff; letter-spacing:.04em; white-space:nowrap; }
         .b-hdr-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+        .b-hdr-link { font-size:12px; color:rgba(255,255,255,.75); text-decoration:none; padding:4px 10px; border:1px solid rgba(255,255,255,.25); transition:background .15s; white-space:nowrap; }
+        .b-hdr-link:hover { background:rgba(255,255,255,.12); }
         .b-dot { width:8px; height:8px; border-radius:50%; background:#16a34a; display:inline-block; animation:bdot 2s infinite; }
         .b-dot.off { background:#6b7280; animation:none; }
         @keyframes bdot { 0%,100%{opacity:1} 50%{opacity:.4} }
@@ -247,11 +289,13 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
 
         {/* ── Header ── */}
         <div className="b-hdr">
-          <span className="b-hdr-logo">EUCX — Käufer-Dashboard</span>
+          <a href="/dashboard/buyer" className="b-hdr-logo" style={{ textDecoration: "none" }}>← EUCX Käufer</a>
           <div className="b-hdr-right">
             {kyc && (
               <KycStatusBadge status={kyc.verificationStatus} isYoungCompany={kyc.isYoungCompany} walletBalance={kyc.walletBalance} />
             )}
+            <a href="/dashboard/contracts" className="b-hdr-link">Verträge</a>
+            {token && <NotificationBell token={token} />}
             <span className="b-conn">
               <span className={`b-dot${connected ? "" : " off"}`} />{" "}
               {connected ? "Live" : "…"}
@@ -443,6 +487,56 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
                 </table>
               )}
             </div>
+
+            {/* ── Kaufvertrag Download (nur nach CONCLUSION) ── */}
+            {livePhase === "CONCLUSION" && (
+              <div style={{
+                margin: "20px 0 0",
+                padding: "20px 24px",
+                background: "#f0f4ff",
+                borderLeft: "4px solid #154194",
+              }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#154194", marginBottom: 6, letterSpacing: "0.04em" }}>
+                  AUKTION ABGESCHLOSSEN
+                </div>
+                <div style={{ fontSize: 13, color: "#374151", marginBottom: 14 }}>
+                  Der Kaufvertrag wurde automatisch generiert. Laden Sie das signierbare PDF herunter.
+                </div>
+                <button
+                  style={{
+                    padding: "9px 20px",
+                    background: "#154194",
+                    color: "#fff",
+                    border: "none",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    letterSpacing: "0.04em",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    fetch(`/api/auction/lots/${lot.id}/contract`, {
+                      headers: { Authorization: `Bearer ${token}` },
+                    })
+                      .then(async (r) => {
+                        if (!r.ok) { alert("Kaufvertrag noch nicht verfügbar. Bitte in wenigen Sekunden erneut versuchen."); return; }
+                        const blob = await r.blob();
+                        const url  = URL.createObjectURL(blob);
+                        const a    = document.createElement("a");
+                        a.href     = url;
+                        a.download = `EUCX-Kaufvertrag-${lot.id.slice(0, 8)}.pdf`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      })
+                      .catch(() => alert("Download fehlgeschlagen."));
+                  }}
+                >
+                  Kaufvertrag herunterladen (PDF)
+                </button>
+                <span style={{ marginLeft: 16, fontSize: 11, color: "#9ca3af" }}>
+                  SHA-256 gesichert · EUCX EDS
+                </span>
+              </div>
+            )}
 
           </main>
         </div>
