@@ -13,10 +13,11 @@ export const dynamic = "force-dynamic";
 export default async function SellerAuctionPage({
   params,
 }: {
-  params: { lotId: string };
+  params: Promise<{ lotId: string }>;
 }) {
+  const { lotId } = await params;
   const lot = await db.lot.findUnique({
-    where:  { id: params.lotId },
+    where:  { id: lotId },
     select: {
       id:          true,
       commodity:   true,

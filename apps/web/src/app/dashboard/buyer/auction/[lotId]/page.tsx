@@ -13,10 +13,11 @@ export const dynamic = "force-dynamic";
 export default async function BuyerAuctionPage({
   params,
 }: {
-  params: { lotId: string };
+  params: Promise<{ lotId: string }>;
 }) {
+  const { lotId } = await params;
   const lot = await db.lot.findUnique({
-    where:  { id: params.lotId },
+    where:  { id: lotId },
     select: {
       id:          true,
       commodity:   true,
@@ -34,7 +35,7 @@ export default async function BuyerAuctionPage({
   if (!lot) notFound();
 
   const bids = await db.bid.findMany({
-    where:   { lotId: params.lotId },
+    where:   { lotId },
     orderBy: [{ price: "asc" }, { createdAt: "asc" }],
     select:  { id: true, sellerId: true, price: true, isWinner: true, createdAt: true },
   });
