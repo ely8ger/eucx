@@ -206,13 +206,21 @@ model Category {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 model Organization {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   name       String
-  taxId      String   @unique
-  country    String   @db.Char(2)
+  taxId      String    @unique
+  lei        String?   @unique
+  country    String    @db.Char(2)
   city       String
-  isVerified Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  street     String?
+  postalCode String?
+  phone      String?
+  hrb        String?
+  legalForm  String?
+  foundedAt  DateTime?
+  naceCode   String?
+  isVerified Boolean   @default(false)
+  createdAt  DateTime  @default(now())
 
   users         User[]
   products      Product[]

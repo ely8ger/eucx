@@ -25,12 +25,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { email, password, organizationName, taxId, country, city, role } = parsed.data;
+    const { email, password, organizationName, taxId, lei, country, city, street, postalCode, phone, hrb, legalForm, foundedAt, naceCode, role } = parsed.data;
 
     // Duplikat-Prüfung
     const existing = await db.user.findUnique({ where: { email } });
     if (existing) {
-      // Immer 201 zurückgeben um E-Mail-Enumeration zu vermeiden
       return NextResponse.json(
         { data: { message: "Falls diese E-Mail noch nicht registriert ist, erhalten Sie in Kürze einen Bestätigungscode.", userId: null } },
         { status: 201 },
@@ -40,7 +39,13 @@ export async function POST(req: NextRequest) {
     const passwordHash = await hashPassword(password);
 
     // Organisation + Nutzer anlegen (PENDING, emailVerified=false)
-    const org  = await db.organization.create({ data: { name: organizationName, taxId, country, city } });
+    const org  = await db.organization.create({
+      data: {
+        name: organizationName, taxId, lei, country, city,
+        street, postalCode, phone, hrb, legalForm, naceCode,
+        foundedAt: foundedAt ? new Date(foundedAt) : undefined,
+      },
+    });
     const user = await db.user.create({
       data: { email, passwordHash, role, organizationId: org.id, status: "PENDING", emailVerified: false },
     });

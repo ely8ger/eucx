@@ -7,6 +7,9 @@ const PUBLIC_PATHS = [
   "/register",
   "/api/auth/login",
   "/api/auth/register",
+  "/api/validate-vat",
+  "/api/validate-lei",
+  "/api/lookup-hrb",
 ];
 
 const ADMIN_ROLES = ["ADMIN", "COMPLIANCE", "SUPER_ADMIN"] as const;

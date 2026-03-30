@@ -53,7 +53,7 @@ const EU_COUNTRIES: { code: string; name: string }[] = [
 ];
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-type VatStatus = "idle" | "loading" | "valid" | "invalid";
+type VatStatus = "idle" | "loading" | "valid" | "invalid" | "unavailable";
 type HrbStatus = "idle" | "loading" | "found" | "notfound";
 
 interface CompanyData {
@@ -61,6 +61,10 @@ interface CompanyData {
   street?:     string | null;
   postalCode?: string | null;
   city?:       string | null;
+  lei?:        string | null;
+  hrb?:        string | null;
+  legalForm?:  string | null;
+  foundedAt?:  string | null;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -234,25 +238,29 @@ function VatField({
     setStatus("loading");
     try {
       const res  = await fetch(`/api/validate-vat?country=${country}&vat=${encodeURIComponent(val)}`);
-      const data = await res.json() as { valid: boolean; name?: string | null; address?: string | null };
+      const data = await res.json() as { valid: boolean; unavailable?: boolean; name?: string | null; address?: string | null; source?: string; lei?: string | null; hrb?: string | null; legalForm?: string | null; foundedAt?: string | null; naceCode?: string | null };
       if (data.valid) {
         setStatus("valid");
         setVerified(data.name ?? null);
         const addrParsed = data.address ? parseViesAddress(data.address) : {};
-        onValidated({ name: data.name ?? null, ...addrParsed });
+        onValidated({ name: data.name ?? null, ...addrParsed, lei: data.lei, hrb: data.hrb, legalForm: data.legalForm, foundedAt: data.foundedAt });
+      } else if (data.unavailable) {
+        setStatus("unavailable");
       } else {
         setStatus("invalid");
         setVerified(null);
         onValidated(null);
       }
     } catch {
-      setStatus("idle");
+      setStatus("unavailable");
     }
   }
 
-  const borderColor = status === "valid" ? GREEN : status === "invalid" ? RED : BORDER;
-  const shadow = status === "valid"   ? "0 0 0 3px rgba(22,163,74,.1)"
-    : status === "invalid" ? "0 0 0 3px rgba(220,38,38,.1)"
+  const AMBER = "#b45309";
+  const borderColor = status === "valid" ? GREEN : status === "invalid" ? RED : status === "unavailable" ? AMBER : BORDER;
+  const shadow = status === "valid"       ? "0 0 0 3px rgba(22,163,74,.1)"
+    : status === "invalid"               ? "0 0 0 3px rgba(220,38,38,.1)"
+    : status === "unavailable"           ? "0 0 0 3px rgba(180,83,9,.1)"
     : "none";
 
   return (
@@ -325,6 +333,11 @@ function VatField({
       {status === "invalid" && (
         <p style={{ fontSize: 11, color: RED, fontFamily: F, margin: 0 }}>
           {t("register_vies_invalid")}
+        </p>
+      )}
+      {status === "unavailable" && (
+        <p style={{ fontSize: 11, color: "#b45309", fontFamily: F, margin: 0 }}>
+          Alle Prüfdienste vorübergehend nicht erreichbar — Nummer wird manuell geprüft.
         </p>
       )}
       {status === "idle" && (
@@ -450,17 +463,49 @@ export default function RegisterPage() {
   // Country state - needed for VAT field
   const [country, setCountry] = useState("DE");
 
-  // Company data auto-fill from VIES / HRB
+  // Company data auto-fill from VIES / HRB / LEI
   const [orgName,    setOrgName]    = useState("");
   const [street,     setStreet]     = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [city,       setCity]       = useState("");
+  const [lei,        setLei]        = useState("");
+  const [hrb,        setHrb]        = useState("");
+  const [legalForm,  setLegalForm]  = useState("");
+  const [foundedAt,  setFoundedAt]  = useState("");
+  const [leiError,   setLeiError]   = useState("");
+  const [leiStatus,  setLeiStatus]  = useState<"idle"|"loading"|"valid"|"invalid"|"unavailable">("idle");
 
-  function applyCompanyData(data: CompanyData) {
-    if (data.name       && !orgName)    setOrgName(data.name);
-    if (data.street     && !street)     setStreet(data.street);
+  function applyCompanyData(data: CompanyData & { hrb?: string | null; legalForm?: string | null; foundedAt?: string | null; lei?: string | null }) {
+    if (data.name       && !orgName)   setOrgName(data.name);
+    if (data.street     && !street)    setStreet(data.street);
     if (data.postalCode && !postalCode) setPostalCode(data.postalCode);
-    if (data.city       && !city)       setCity(data.city);
+    if (data.city       && !city)      setCity(data.city);
+    if (data.hrb        && !hrb)       setHrb(data.hrb);
+    if (data.legalForm  && !legalForm) setLegalForm(data.legalForm);
+    if (data.foundedAt  && !foundedAt) setFoundedAt(data.foundedAt);
+    if (data.lei        && !lei)       setLei(data.lei);
+  }
+
+  async function validateLei(value: string) {
+    const v = value.trim().toUpperCase();
+    if (v.length !== 20) { setLeiError("LEI muss genau 20 Zeichen lang sein."); return; }
+    setLeiStatus("loading"); setLeiError("");
+    try {
+      const res  = await fetch(`/api/validate-lei?lei=${encodeURIComponent(v)}`);
+      const data = await res.json() as { valid: boolean; unavailable?: boolean; inactive?: boolean; name?: string | null; street?: string | null; postalCode?: string | null; city?: string | null; legalForm?: string | null; foundedAt?: string | null };
+      if (data.valid) {
+        setLeiStatus("valid");
+        applyCompanyData({ name: data.name, street: data.street, postalCode: data.postalCode, city: data.city, legalForm: data.legalForm, foundedAt: data.foundedAt });
+      } else if (data.unavailable) {
+        setLeiStatus("unavailable");
+      } else if (data.inactive) {
+        setLeiStatus("invalid"); setLeiError("LEI ist inaktiv — bitte erneuern Sie Ihre LEI.");
+      } else {
+        setLeiStatus("invalid"); setLeiError("LEI nicht im GLEIF-Register gefunden.");
+      }
+    } catch {
+      setLeiStatus("unavailable");
+    }
   }
 
   // Field-level errors
@@ -523,7 +568,10 @@ export default function RegisterPage() {
           city:             fd.get("city"),
           country:          fd.get("country"),
           taxId:            fd.get("taxId"),
+          lei:              fd.get("lei"),
           hrb:              fd.get("hrb"),
+          legalForm:        fd.get("legalForm"),
+          foundedAt:        fd.get("foundedAt") || undefined,
           phone:            fd.get("phone"),
           role:             fd.get("role"),
           consentDsgvo:     true,
@@ -778,6 +826,54 @@ export default function RegisterPage() {
                     onValidated={(data) => { if (data) applyCompanyData(data); }}
                   />
 
+                  {/* LEI — MiFID II Pflichtfeld */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                    <label htmlFor="lei" style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: F }}>
+                      LEI-Nummer (Legal Entity Identifier)<span style={{ color: RED, marginLeft: 3 }}>*</span>
+                    </label>
+                    <div style={{ position: "relative" }}>
+                      <input
+                        id="lei" name="lei" type="text" required maxLength={20}
+                        placeholder="5299000J2N45DDNE4Y28"
+                        value={lei}
+                        onChange={(e) => { setLei(e.target.value.toUpperCase()); setLeiStatus("idle"); setLeiError(""); }}
+                        onBlur={() => { if (lei.trim().length === 20) void validateLei(lei); }}
+                        style={{
+                          height: 42, borderRadius: 0, width: "100%", boxSizing: "border-box",
+                          border: `1px solid ${leiStatus === "valid" ? GREEN : leiStatus === "invalid" ? RED : leiStatus === "unavailable" ? "#b45309" : BORDER}`,
+                          boxShadow: leiStatus === "valid" ? "0 0 0 3px rgba(22,163,74,.1)" : leiStatus === "invalid" ? "0 0 0 3px rgba(220,38,38,.1)" : "none",
+                          backgroundColor: "#fff", padding: "0 38px 0 12px",
+                          fontSize: 14, color: TEXT, fontFamily: F, outline: "none",
+                          letterSpacing: "0.04em", textTransform: "uppercase" as const,
+                          transition: "border-color 150ms, box-shadow 150ms",
+                        }}
+                      />
+                      {leiStatus === "loading" && (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ position: "absolute", right: 11, top: 13, animation: "spin 1s linear infinite", color: BLUE, pointerEvents: "none" }}>
+                          <circle cx="12" cy="12" r="10" stroke="rgba(21,65,148,.25)" strokeWidth="3"/>
+                          <path fill={BLUE} d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                      )}
+                      {leiStatus === "valid" && (
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ position: "absolute", right: 11, top: 13, color: GREEN, pointerEvents: "none" }}>
+                          <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.4"/>
+                          <path d="M5 8l2 2 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                      {leiStatus === "invalid" && (
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ position: "absolute", right: 11, top: 13, color: RED, pointerEvents: "none" }}>
+                          <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.4"/>
+                          <line x1="8" y1="5" x2="8" y2="9.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                          <circle cx="8" cy="11.5" r="0.8" fill="currentColor"/>
+                        </svg>
+                      )}
+                    </div>
+                    {leiStatus === "valid"       && <p style={{ fontSize: 11, color: GREEN,    fontFamily: F, margin: 0 }}>Aktive LEI verifiziert via GLEIF.</p>}
+                    {leiStatus === "unavailable" && <p style={{ fontSize: 11, color: "#b45309", fontFamily: F, margin: 0 }}>GLEIF vorübergehend nicht erreichbar — wird manuell geprüft.</p>}
+                    {leiError                   && <p style={{ fontSize: 11, color: RED,      fontFamily: F, margin: 0 }}>{leiError}</p>}
+                    {leiStatus === "idle"        && <p style={{ fontSize: 11, color: MUTED,    fontFamily: F, margin: 0 }}>MiFID II Pflicht — 20-stellige Kennnummer. Noch keine LEI? lei.info/register</p>}
+                  </div>
+
                   <Field
                     label={t("register_org")} name="organizationName" required
                     placeholder="Muster Handels GmbH"
@@ -786,8 +882,33 @@ export default function RegisterPage() {
                     hint={t("register_org_hint")}
                   />
 
+                  {/* Rechtsform + Gründungsdatum — auto-fill */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                    <Field
+                      label="Rechtsform" name="legalForm"
+                      placeholder="GmbH"
+                      value={legalForm}
+                      onChange={setLegalForm}
+                      hint="Wird automatisch befüllt"
+                    />
+                    <Field
+                      label="Gründungsdatum" name="foundedAt"
+                      type="date"
+                      placeholder=""
+                      value={foundedAt}
+                      onChange={setFoundedAt}
+                      hint="Wird automatisch befüllt"
+                    />
+                  </div>
+
                   {/* HRB mit Handelsregister-Prüfung + Auto-Fill */}
-                  <HrbField onFound={(data) => applyCompanyData(data)} />
+                  <Field
+                    label="Handelsregisternummer (HRB)" name="hrb"
+                    placeholder="HRB 123456 Frankfurt"
+                    value={hrb}
+                    onChange={setHrb}
+                    hint="Optional — wird automatisch aus dem Handelsregister befüllt"
+                  />
 
                   {/* Anschrift — auto-fill aus VIES oder HRB */}
                   <Field

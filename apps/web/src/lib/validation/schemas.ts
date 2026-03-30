@@ -17,8 +17,16 @@ export const registerSchema = z.object({
     .regex(/[^A-Za-z0-9]/, "Mindestens ein Sonderzeichen"),
   organizationName: z.string().min(2).max(100),
   taxId:            z.string().min(5).max(30),
+  lei:              z.string().length(20, "LEI muss genau 20 Zeichen lang sein").regex(/^[A-Z0-9]{20}$/, "Ungültiges LEI-Format"),
   country:          z.string().length(2, "2-Buchstaben Ländercode (z.B. DE, PL)"),
   city:             z.string().min(2).max(100),
+  street:           z.string().min(2).max(200).optional(),
+  postalCode:       z.string().max(10).optional(),
+  phone:            z.string().min(5).max(30).optional(),
+  hrb:              z.string().max(50).optional(),
+  legalForm:        z.string().max(100).optional(),
+  foundedAt:        z.string().optional(),
+  naceCode:         z.string().max(10).optional(),
   role:             z.enum(["SELLER", "BUYER"]),
 });
 
