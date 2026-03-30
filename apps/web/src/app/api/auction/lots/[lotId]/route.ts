@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { lotId: string } }
+  { params }: { params: Promise<{ lotId: string }> }
 ) {
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
@@ -25,9 +25,10 @@ export async function GET(
   catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
 
   const userId = tokenPayload.userId;
+  const { lotId } = await params;
 
   const lot = await db.lot.findUnique({
-    where:  { id: params.lotId },
+    where:  { id: lotId },
     select: {
       id:          true,
       commodity:   true,

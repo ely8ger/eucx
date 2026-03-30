@@ -17,7 +17,7 @@ const POLL_INTERVAL_MS = 2000;
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { lotId: string } }
+  { params }: { params: Promise<{ lotId: string }> }
 ) {
   // Auth via URL-Parameter (SSE-Limitation — kein Authorization-Header möglich)
   const rawToken = req.nextUrl.searchParams.get("token");
@@ -31,7 +31,7 @@ export async function GET(
     return new Response("Token ungültig", { status: 401 });
   }
 
-  const { lotId } = params;
+  const { lotId } = await params;
   const userId = tokenPayload.userId;
 
   // SSE-Stream aufbauen

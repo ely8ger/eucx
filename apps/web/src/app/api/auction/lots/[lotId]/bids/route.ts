@@ -24,8 +24,9 @@ const bidSchema = z.object({
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { lotId: string } }
+  { params }: { params: Promise<{ lotId: string }> }
 ) {
+  const { lotId } = await params;
   // ── Auth ──────────────────────────────────────────────────────────
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
@@ -46,7 +47,7 @@ export async function POST(
   }
 
   // ── KYC + Deposit-Check ───────────────────────────────────────────
-  const kycCheck = await checkBidEligibility(token.userId, params.lotId);
+  const kycCheck = await checkBidEligibility(token.userId, lotId);
   if (!kycCheck.ok) {
     return NextResponse.json(
       { error: kycCheck.error, code: kycCheck.code, kycRequired: kycCheck.kycRequired, depositRequired: kycCheck.depositRequired },
@@ -57,12 +58,12 @@ export async function POST(
   // ── PriceEngine ───────────────────────────────────────────────────
   // Vor dem Gebot: wer ist aktuell Führender? (für OUTBID-Benachrichtigung)
   const prevLeader = await db.bid.findFirst({
-    where:   { lotId: params.lotId },
+    where:   { lotId: lotId },
     orderBy: [{ price: "asc" }, { createdAt: "asc" }],
     select:  { sellerId: true, price: true },
   });
 
-  const result = await placeBid(params.lotId, token.userId, parsed.data.price);
+  const result = await placeBid(lotId, token.userId, parsed.data.price);
 
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: result.code });
@@ -71,10 +72,10 @@ export async function POST(
   // ── Notifications (fire-and-forget) ──────────────────────────────
   // Führender benachrichtigen: Neues Gebot ist besser → er wurde überboten
   if (prevLeader && prevLeader.sellerId !== token.userId) {
-    notifyOutbid(prevLeader.sellerId, params.lotId, result.newBest, 1).catch(console.error);
+    notifyOutbid(prevLeader.sellerId, lotId, result.newBest, 1).catch(console.error);
   }
   // Neuer Bieter: er führt jetzt
-  notifyLeading(token.userId, params.lotId, result.newBest).catch(console.error);
+  notifyLeading(token.userId, lotId, result.newBest).catch(console.error);
 
   return NextResponse.json({ bidId: result.bidId, newBest: result.newBest }, { status: 201 });
 }
@@ -88,8 +89,9 @@ export async function POST(
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { lotId: string } }
+  { params }: { params: Promise<{ lotId: string }> }
 ) {
+  const { lotId } = await params;
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
     return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
@@ -99,7 +101,7 @@ export async function GET(
   catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
 
   const lot = await db.lot.findUnique({
-    where:  { id: params.lotId },
+    where:  { id: lotId },
     select: { id: true, buyerId: true, phase: true, currentBest: true, auctionEnd: true, winnerId: true },
   });
   if (!lot) {
@@ -107,7 +109,7 @@ export async function GET(
   }
 
   const bids = await db.bid.findMany({
-    where:   { lotId: params.lotId },
+    where:   { lotId: lotId },
     orderBy: [{ price: "asc" }, { createdAt: "asc" }],
     select:  { id: true, sellerId: true, price: true, isWinner: true, createdAt: true },
   });

@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { lotId: string } },
+  { params }: { params: Promise<{ lotId: string }> },
 ) {
   // Auth
   let token;
@@ -28,7 +28,7 @@ export async function GET(
     return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
   }
 
-  const { lotId } = params;
+  const { lotId } = await params;
 
   // Vertrag laden
   const contract = await db.lotContract.findUnique({

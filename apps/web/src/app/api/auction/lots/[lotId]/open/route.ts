@@ -24,8 +24,9 @@ const MAX_DURATION_MS     = 14 * 24 * 60 * 60 * 1000; // 14 Tage
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { lotId: string } }
+  { params }: { params: Promise<{ lotId: string }> }
 ) {
+  const { lotId } = await params;
   // ── Auth ──────────────────────────────────────────────────────────
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
@@ -44,7 +45,7 @@ export async function POST(
 
   // ── Lot laden ─────────────────────────────────────────────────────
   const lot = await db.lot.findUnique({
-    where:  { id: params.lotId },
+    where:  { id: lotId },
     select: { id: true, buyerId: true, phase: true },
   });
   if (!lot) {
@@ -58,7 +59,7 @@ export async function POST(
   }
 
   // Mindestens einen registrierten Verkäufer verlangen
-  const regCount = await db.lotRegistration.count({ where: { lotId: params.lotId } });
+  const regCount = await db.lotRegistration.count({ where: { lotId: lotId } });
   if (regCount === 0) {
     return NextResponse.json(
       { error: "Keine Verkäufer registriert. Die Auktion kann erst gestartet werden, wenn sich mindestens ein Verkäufer registriert hat." },
@@ -88,7 +89,7 @@ export async function POST(
 
   // ── Phase-Übergang ────────────────────────────────────────────────
   const updated = await db.lot.update({
-    where: { id: params.lotId },
+    where: { id: lotId },
     data: {
       phase:        "PROPOSAL",
       auctionStart: now,

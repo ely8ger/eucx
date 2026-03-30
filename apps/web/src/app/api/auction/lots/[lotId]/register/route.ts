@@ -14,8 +14,9 @@ export const dynamic = "force-dynamic";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { lotId: string } }
+  { params }: { params: Promise<{ lotId: string }> }
 ) {
+  const { lotId } = await params;
   // ── Auth ──────────────────────────────────────────────────────────
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
@@ -32,7 +33,7 @@ export async function POST(
       select: { id: true, role: true, status: true, verificationStatus: true },
     }),
     db.lot.findUnique({
-      where:  { id: params.lotId },
+      where:  { id: lotId },
       select: { id: true, phase: true, buyerId: true },
     }),
   ]);
@@ -58,8 +59,8 @@ export async function POST(
 
   // ── Registrierung (idempotent) ────────────────────────────────────
   const reg = await db.lotRegistration.upsert({
-    where:  { lotId_sellerId: { lotId: params.lotId, sellerId: token.userId } },
-    create: { lotId: params.lotId, sellerId: token.userId },
+    where:  { lotId_sellerId: { lotId: lotId, sellerId: token.userId } },
+    create: { lotId: lotId, sellerId: token.userId },
     update: {},
     select: { id: true, createdAt: true },
   });
