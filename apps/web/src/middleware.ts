@@ -10,6 +10,7 @@ const PUBLIC_PATHS = [
   "/api/validate-vat",
   "/api/validate-lei",
   "/api/lookup-hrb",
+  "/api/enrich-company",
 ];
 
 const ADMIN_ROLES = ["ADMIN", "COMPLIANCE", "SUPER_ADMIN"] as const;

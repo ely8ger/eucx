@@ -157,15 +157,26 @@ export async function GET(req: NextRequest) {
   // Bestes Ergebnis: erstes "valid: true"
   const valid = results.find((r) => r.valid);
   if (valid) {
-    // Parallel: GLEIF + OpenCorporates nach Firmenname
-    const [gleif, oc] = valid.name
-      ? await Promise.all([queryGleif(valid.name), queryOpenCorporates(valid.name, country)])
-      : [null, null];
+    // OC: zuerst nach VAT-Nummer suchen, dann nach Name (falls DE nichts gibt)
+    const ocByVat  = await queryOpenCorporates(vatNumber, country);
+    const ocByName = (!ocByVat?.name && valid.name)
+      ? await queryOpenCorporates(valid.name, country)
+      : null;
+    const oc = ocByVat?.name ? ocByVat : (ocByName ?? ocByVat);
+
+    // GLEIF nach bestem bekannten Namen
+    const bestName = valid.name ?? oc?.name ?? null;
+    const gleif    = bestName ? await queryGleif(bestName) : null;
+
+    // Adresse: VIES → OC
+    const addrParsed = valid.address ? parseAddress(valid.address) : {};
 
     return NextResponse.json({
       valid:     true,
-      name:      valid.name    ?? null,
-      address:   valid.address ?? null,
+      name:      valid.name ?? oc?.name ?? null,
+      street:    addrParsed.street     ?? null,
+      postalCode: addrParsed.postalCode ?? null,
+      city:      addrParsed.city       ?? null,
       source:    valid.source,
       lei:       gleif?.lei    ?? null,
       hrb:       oc?.hrb       ?? null,

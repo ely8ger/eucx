@@ -238,12 +238,11 @@ function VatField({
     setStatus("loading");
     try {
       const res  = await fetch(`/api/validate-vat?country=${country}&vat=${encodeURIComponent(val)}`);
-      const data = await res.json() as { valid: boolean; unavailable?: boolean; name?: string | null; address?: string | null; source?: string; lei?: string | null; hrb?: string | null; legalForm?: string | null; foundedAt?: string | null; naceCode?: string | null };
+      const data = await res.json() as { valid: boolean; unavailable?: boolean; name?: string | null; street?: string | null; postalCode?: string | null; city?: string | null; source?: string; lei?: string | null; hrb?: string | null; legalForm?: string | null; foundedAt?: string | null; naceCode?: string | null };
       if (data.valid) {
         setStatus("valid");
         setVerified(data.name ?? null);
-        const addrParsed = data.address ? parseViesAddress(data.address) : {};
-        onValidated({ name: data.name ?? null, ...addrParsed, lei: data.lei, hrb: data.hrb, legalForm: data.legalForm, foundedAt: data.foundedAt });
+        onValidated({ name: data.name ?? null, street: data.street ?? null, postalCode: data.postalCode ?? null, city: data.city ?? null, lei: data.lei, hrb: data.hrb, legalForm: data.legalForm, foundedAt: data.foundedAt });
       } else if (data.unavailable) {
         setStatus("unavailable");
       } else {
