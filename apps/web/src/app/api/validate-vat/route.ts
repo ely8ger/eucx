@@ -108,6 +108,7 @@ async function queryGleif(companyName: string): Promise<{ lei?: string } | null>
 
 // ── OpenCorporates (HRB, Rechtsform, Gründungsdatum) ─────────────────────────
 interface OcEnrichment {
+  name?:      string;
   hrb?:       string;
   legalForm?: string;
   foundedAt?: string;
@@ -120,11 +121,12 @@ async function queryOpenCorporates(companyName: string, country: string): Promis
     const res  = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(6000), headers: { Accept: "application/json" } });
     if (!res.ok) return null;
 
-    const data = await res.json() as { results?: { companies?: Array<{ company?: { company_number?: string; company_type?: string; incorporation_date?: string; industry_codes?: Array<{ code?: string }> } }> } };
+    const data = await res.json() as { results?: { companies?: Array<{ company?: { name?: string; company_number?: string; company_type?: string; incorporation_date?: string; industry_codes?: Array<{ code?: string }> } }> } };
     const co   = data.results?.companies?.[0]?.company;
     if (!co) return null;
 
     return {
+      name:      co.name                ?? undefined,
       hrb:       co.company_number      ?? undefined,
       legalForm: co.company_type        ?? undefined,
       foundedAt: co.incorporation_date  ?? undefined,
