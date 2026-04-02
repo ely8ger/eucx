@@ -137,6 +137,24 @@ async function queryOpenCorporates(companyName: string, country: string): Promis
   }
 }
 
+// ── Adress-Parser (VIES: "MUSTERSTR. 42\n10115 BERLIN") ──────────────────────
+function parseAddress(raw: string): { street?: string; postalCode?: string; city?: string } {
+  const lines = raw.split(/[\n,]/).map((s) => s.trim()).filter(Boolean);
+  if (!lines.length) return {};
+  const street = lines[0] ? toTitleCase(lines[0]) : undefined;
+  if (lines.length >= 2) {
+    const last  = lines[lines.length - 1] ?? "";
+    const match = last.match(/^(\d{4,5})\s+(.+)$/);
+    if (match?.[1] && match[2]) return { street, postalCode: match[1], city: toTitleCase(match[2]) };
+    return { street, city: toTitleCase(last) };
+  }
+  return { street };
+}
+
+function toTitleCase(s: string): string {
+  return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 // ── Handler ───────────────────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
