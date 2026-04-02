@@ -137,6 +137,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // 2FA erforderlich?
+    if (user.totpEnabled) {
+      return NextResponse.json({ totpRequired: true }, { status: 200 });
+    }
+
     // Tokens erstellen
     const accessToken  = await signAccessToken({
       userId: user.id,
