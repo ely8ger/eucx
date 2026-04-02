@@ -5,6 +5,8 @@ import { useAuctionStream } from "@/lib/auction/use-auction-stream";
 import type { AuctionNotification } from "@/lib/auction/use-auction-stream";
 import { KycStatusBadge } from "@/components/KycStatusBadge";
 import { NotificationBell } from "@/components/NotificationBell";
+import { EucxLogo } from "@/components/logo/EucxLogo";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { toast } from "sonner";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -289,11 +291,17 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
 
         {/* ── Header ── */}
         <div className="b-hdr">
-          <a href="/dashboard/buyer" className="b-hdr-logo" style={{ textDecoration: "none" }}>← EUCX Käufer</a>
+          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+            <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
+              <EucxLogo variant="dark" size="md" />
+            </a>
+            <a href="/dashboard/buyer" className="b-hdr-link" style={{ fontSize: 12 }}>← Ausschreibungen</a>
+          </div>
           <div className="b-hdr-right">
             {kyc && (
               <KycStatusBadge status={kyc.verificationStatus} isYoungCompany={kyc.isYoungCompany} walletBalance={kyc.walletBalance} />
             )}
+            <LanguageSwitcher dark />
             <a href="/dashboard/contracts" className="b-hdr-link">Verträge</a>
             {token && <NotificationBell token={token} />}
             <span className="b-conn">
