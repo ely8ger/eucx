@@ -9,6 +9,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { NotificationBell } from "@/components/NotificationBell";
+import { EucxLogo } from "@/components/logo/EucxLogo";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { toast } from "sonner";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -341,11 +343,11 @@ export function BuyerLotsClient() {
       <div className="bl-root">
         {/* Header */}
         <header className="bl-hdr">
-          <div>
-            <span className="bl-logo">EUCX</span>
-            <span className="bl-logo-sub">European Union Commodity Exchange</span>
-          </div>
+          <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
+            <EucxLogo variant="dark" size="md" />
+          </a>
           <div className="bl-hdr-right">
+            <LanguageSwitcher dark />
             {token && <NotificationBell token={token} />}
             <a href="/dashboard/contracts" className="bl-hdr-link">Verträge</a>
             <a href="/dashboard/settings/verification" className="bl-hdr-link">KYC</a>

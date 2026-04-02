@@ -11,6 +11,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Bell } from "lucide-react";
 
 interface NotifItem {
   id:        string;
@@ -127,14 +128,16 @@ export function NotificationBell({ token }: Props) {
           position:     "relative",
           display:      "flex",
           alignItems:   "center",
-          color:        "#fff",
-          fontSize:     20,
+          color:        "rgba(255,255,255,0.85)",
           lineHeight:   1,
+          transition:   "color .15s",
         }}
+        onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+        onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.85)")}
         aria-label="Benachrichtigungen"
         title="Benachrichtigungen"
       >
-        🔔
+        <Bell size={18} strokeWidth={1.75} />
         {unreadCount > 0 && (
           <span style={{
             position:       "absolute",
