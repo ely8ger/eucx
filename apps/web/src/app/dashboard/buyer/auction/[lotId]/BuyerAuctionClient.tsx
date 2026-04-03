@@ -4,9 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuctionStream } from "@/lib/auction/use-auction-stream";
 import type { AuctionNotification } from "@/lib/auction/use-auction-stream";
 import { KycStatusBadge } from "@/components/KycStatusBadge";
-import { NotificationBell } from "@/components/NotificationBell";
-import { EucxLogo } from "@/components/logo/EucxLogo";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { EucxHeader }     from "@/components/layout/EucxHeader";
 import { toast } from "sonner";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -201,7 +199,7 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
         .b-root { font-family:'IBM Plex Sans',Arial,sans-serif; background:#f0f2f5; min-height:100vh; color:#0d1b2a; }
 
         /* Header */
-        .b-hdr { background:#0d1b2a; height:56px; padding:0 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:0; z-index:50; }
+        .b-hdr { display:none; }
         .b-hdr-logo { font-size:14px; font-weight:700; color:#fff; letter-spacing:.04em; white-space:nowrap; }
         .b-hdr-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
         .b-hdr-link { font-size:12px; color:rgba(255,255,255,.75); text-decoration:none; padding:4px 10px; border:1px solid rgba(255,255,255,.25); transition:background .15s; white-space:nowrap; }
@@ -288,22 +286,23 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
       `}</style>
 
       <div className="b-root">
+        <EucxHeader />
 
-        {/* ── Header ── */}
-        <div className="b-hdr">
-          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-            <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-              <EucxLogo variant="dark" size="md" />
-            </a>
-            <a href="/dashboard/buyer" className="b-hdr-link" style={{ fontSize: 12 }}>← Ausschreibungen</a>
-          </div>
-          <div className="b-hdr-right">
+        {/* ── Sub-header: KYC badge + connection indicator ── */}
+        <div style={{
+          background: "#0d1b2a", padding: "8px 20px",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          fontFamily: "'IBM Plex Sans', Arial, sans-serif",
+        }}>
+          <a href="/dashboard/buyer" style={{ fontSize: 12, color: "rgba(255,255,255,.6)", textDecoration: "none" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+            onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,.6)")}>
+            ← Zurück zu den Ausschreibungen
+          </a>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {kyc && (
               <KycStatusBadge status={kyc.verificationStatus} isYoungCompany={kyc.isYoungCompany} walletBalance={kyc.walletBalance} />
             )}
-            <LanguageSwitcher dark />
-            <a href="/dashboard/contracts" className="b-hdr-link">Verträge</a>
-            {token && <NotificationBell token={token} />}
             <span className="b-conn">
               <span className={`b-dot${connected ? "" : " off"}`} />{" "}
               {connected ? "Live" : "…"}

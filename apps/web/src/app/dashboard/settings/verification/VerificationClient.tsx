@@ -19,7 +19,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { KycStatusBadge } from "@/components/KycStatusBadge";
-import Link from "next/link";
+import { EucxHeader } from "@/components/layout/EucxHeader";
 
 type DocType = "TRADE_REGISTER" | "VAT_CONFIRMATION" | "ID_DOCUMENT" | "OTHER";
 
@@ -213,10 +213,7 @@ export function VerificationClient() {
 
       <div className="ver-root">
         {/* Header */}
-        <div className="ver-header">
-          <span className="ver-header-logo">EUCX — Identitätsprüfung</span>
-          <Link href="/dashboard" className="ver-header-back">← Zurück zum Dashboard</Link>
-        </div>
+        <EucxHeader />
 
         <div className="ver-main">
           <h1 className="ver-title">Identitäts-<strong>prüfung</strong></h1>

@@ -8,10 +8,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { NotificationBell } from "@/components/NotificationBell";
-import { EucxLogo } from "@/components/logo/EucxLogo";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { TopInfoBar } from "@/components/TopInfoBar";
+import { EucxHeader } from "@/components/layout/EucxHeader";
 import { toast } from "sonner";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -227,7 +224,7 @@ export function BuyerLotsClient() {
         .bl-root { font-family:"IBM Plex Sans",Helvetica Neue,Arial,sans-serif; min-height:100vh; background:#f9fafb; color:#1a1a1a; }
 
         /* Header */
-        .bl-hdr { background:#154194; height:56px; padding:0 28px; display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:36px; z-index:49; }
+        .bl-hdr { display:none; }
         .bl-logo { font-size:15px; font-weight:700; color:#fff; letter-spacing:.06em; }
         .bl-logo-sub { font-size:11px; font-weight:300; color:rgba(255,255,255,.6); margin-left:8px; }
         .bl-hdr-right { display:flex; align-items:center; gap:10px; }
@@ -342,20 +339,8 @@ export function BuyerLotsClient() {
       `}</style>
 
       <div className="bl-root">
-        <TopInfoBar />
-        {/* Header */}
-        <header className="bl-hdr">
-          <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <EucxLogo variant="dark" size="md" />
-          </a>
-          <div className="bl-hdr-right">
-            <LanguageSwitcher dark />
-            {token && <NotificationBell token={token} />}
-            <a href="/dashboard/contracts" className="bl-hdr-link">Verträge</a>
-            <a href="/dashboard/settings/verification" className="bl-hdr-link">KYC</a>
-            <a href="/dashboard/settings/notifications" className="bl-hdr-link">Einstellungen</a>
-          </div>
-        </header>
+        <EucxHeader />
+        {/* ── Seiteninhalt ── */}
 
         <div className="bl-page">
 

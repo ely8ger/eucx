@@ -1,10 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { EucxLogo }            from "@/components/logo/EucxLogo";
-import { LanguageSwitcher }    from "@/components/LanguageSwitcher";
-import { NotificationBell }   from "@/components/NotificationBell";
-import { TopInfoBar }          from "@/components/TopInfoBar";
+import { EucxHeader }          from "@/components/layout/EucxHeader";
 import { QRCodeSVG }           from "qrcode.react";
 
 const F      = "'IBM Plex Sans', Arial, sans-serif";
@@ -469,27 +466,7 @@ export function SecuritySettingsClient() {
 
   return (
     <>
-      <TopInfoBar />
-      {/* ── Header ────────────────────────────────────────────────────────── */}
-      <header style={{
-        background: "#154194", height: 56, padding: "0 28px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        position: "sticky", top: 36, zIndex: 49, fontFamily: F,
-      }}>
-        <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-          <EucxLogo variant="dark" size="md" />
-        </a>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <LanguageSwitcher dark />
-          {token && <NotificationBell token={token} />}
-          <a href="/dashboard/buyer"
-            style={{ fontSize: 12, color: "rgba(255,255,255,.8)", textDecoration: "none", padding: "5px 10px", border: "1px solid rgba(255,255,255,.3)", transition: "background .15s" }}
-            onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,.15)")}
-            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-            ← Dashboard
-          </a>
-        </div>
-      </header>
+      <EucxHeader />
 
       {/* ── Seiteninhalt ──────────────────────────────────────────────────── */}
       <div style={{ minHeight: "calc(100vh - 56px)", background: BG }}>

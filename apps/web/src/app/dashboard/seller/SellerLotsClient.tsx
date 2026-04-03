@@ -9,7 +9,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { NotificationBell } from "@/components/NotificationBell";
+import { EucxHeader } from "@/components/layout/EucxHeader";
 import { toast } from "sonner";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -194,19 +194,7 @@ export function SellerLotsClient() {
       `}</style>
 
       <div className="sl-root">
-        {/* Header */}
-        <header className="sl-hdr">
-          <div>
-            <span className="sl-logo">EUCX</span>
-            <span className="sl-logo-sub">European Union Commodity Exchange</span>
-          </div>
-          <div className="sl-hdr-right">
-            {token && <NotificationBell token={token} />}
-            <a href="/dashboard/contracts" className="sl-hdr-link">Verträge</a>
-            <a href="/dashboard/settings/verification" className="sl-hdr-link">KYC</a>
-            <a href="/dashboard/settings/notifications" className="sl-hdr-link">Einstellungen</a>
-          </div>
-        </header>
+        <EucxHeader />
 
         <div className="sl-page">
 

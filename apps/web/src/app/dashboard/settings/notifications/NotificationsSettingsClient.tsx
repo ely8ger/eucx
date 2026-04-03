@@ -9,6 +9,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { EucxHeader } from "@/components/layout/EucxHeader";
 
 interface Prefs {
   emailOnOutbid:       boolean;
@@ -179,10 +180,7 @@ export function NotificationsSettingsClient() {
       `}</style>
 
       <div className="ns-root">
-        <header className="ns-hdr">
-          <span className="ns-logo">EUCX</span>
-          <span className="ns-logo-sub">European Union Commodity Exchange</span>
-        </header>
+        <EucxHeader />
 
         <div className="ns-page">
           <button className="ns-back" onClick={() => window.history.back()}>← Zurück</button>

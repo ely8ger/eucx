@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { TopInfoBar } from "@/components/TopInfoBar";
+import { EucxHeader } from "@/components/layout/EucxHeader";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -206,11 +206,7 @@ export function ContractsClient() {
       `}</style>
 
       <div className="cx-root">
-        <TopInfoBar />
-        <header className="cx-header">
-          <span className="cx-logo">EUCX</span>
-          <span className="cx-logo-sub">European Union Commodity Exchange</span>
-        </header>
+        <EucxHeader />
 
         <div className="cx-page">
           <button className="cx-back" onClick={() => window.history.back()}>
