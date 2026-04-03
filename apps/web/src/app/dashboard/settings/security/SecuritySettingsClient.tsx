@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { EucxLogo }            from "@/components/logo/EucxLogo";
 import { LanguageSwitcher }    from "@/components/LanguageSwitcher";
 import { NotificationBell }   from "@/components/NotificationBell";
+import { TopInfoBar }          from "@/components/TopInfoBar";
 import { QRCodeSVG }           from "qrcode.react";
 
 const F      = "'IBM Plex Sans', Arial, sans-serif";
@@ -468,11 +469,12 @@ export function SecuritySettingsClient() {
 
   return (
     <>
+      <TopInfoBar />
       {/* ── Header ────────────────────────────────────────────────────────── */}
       <header style={{
         background: "#154194", height: 56, padding: "0 28px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        position: "sticky", top: 0, zIndex: 50, fontFamily: F,
+        position: "sticky", top: 36, zIndex: 49, fontFamily: F,
       }}>
         <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
           <EucxLogo variant="dark" size="md" />
