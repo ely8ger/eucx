@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.errors[0]?.message ?? "Ungültige Eingabe" }, { status: 422 });
+    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Ungültige Eingabe" }, { status: 422 });
   }
 
   const user = await db.user.findUnique({ where: { id: payload.userId }, select: { passwordHash: true } });
