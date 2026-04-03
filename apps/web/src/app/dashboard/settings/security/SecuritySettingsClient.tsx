@@ -36,8 +36,8 @@ function SectionCard({ title, subtitle, children }: {
   title: string; subtitle?: string; children: React.ReactNode;
 }) {
   return (
-    <div style={{ background: "#fff", border: `1px solid ${BORDER}`, marginBottom: 16 }}>
-      <div style={{ borderBottom: `2px solid ${BLUE}`, padding: "16px 24px" }}>
+    <div style={{ background: "#fff", border: `1px solid ${BORDER}`, borderTop: `3px solid ${BLUE}`, marginBottom: 16 }}>
+      <div style={{ borderBottom: `1px solid ${BORDER}`, padding: "16px 24px" }}>
         <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F }}>{title}</p>
         {subtitle && <p style={{ margin: "3px 0 0", fontSize: 12, color: MUTED, fontFamily: F }}>{subtitle}</p>}
       </div>
@@ -84,7 +84,7 @@ function Btn({ label, onClick, variant = "primary", disabled }: {
     cursor: disabled ? "not-allowed" : "pointer",
     fontSize: 13, fontWeight: 600, fontFamily: F,
     opacity: disabled ? 0.5 : 1,
-    transition: "background 150ms, color 150ms, border-color 150ms",
+    transition: "background 150ms, color 150ms, border-color 150ms, transform 150ms, box-shadow 150ms",
   };
   const styles: Record<string, React.CSSProperties> = {
     primary: { background: BLUE,  color: "#fff", border: "none" },
@@ -92,9 +92,9 @@ function Btn({ label, onClick, variant = "primary", disabled }: {
     danger:  { background: "#fff", color: RED,   border: `1px solid #fecaca` },
   };
   const hover: Record<string, Partial<React.CSSProperties>> = {
-    primary: { background: BLUE2 },
-    outline: { background: BG },
-    danger:  { background: "#fef2f2", borderColor: RED },
+    primary: { background: BLUE2, transform: "translateY(-2px)", boxShadow: "0 4px 12px rgba(21,65,148,.25)" },
+    outline: { background: BG,    transform: "translateY(-2px)", boxShadow: "0 2px 8px rgba(0,0,0,.08)" },
+    danger:  { background: "#fef2f2", borderColor: RED, transform: "translateY(-2px)", boxShadow: "0 2px 8px rgba(220,38,38,.15)" },
   };
 
   const [hovered, setHovered] = useState(false);
@@ -346,6 +346,7 @@ export function SecuritySettingsClient() {
       </header>
 
       {/* ── Seiteninhalt ──────────────────────────────────────────────────── */}
+      <div style={{ minHeight: "calc(100vh - 56px)", background: BG }}>
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "32px 24px 80px", fontFamily: F }}>
 
         {/* Titel */}
@@ -579,6 +580,7 @@ export function SecuritySettingsClient() {
             © 2026 EUCX GmbH · Frankfurt am Main · Reguliert durch die BaFin · MiFID II OTF-Zulassung
           </p>
         </footer>
+      </div>
       </div>
     </>
   );
