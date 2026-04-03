@@ -30,6 +30,22 @@ interface MeData {
   totpEnabled?:       boolean;
 }
 
+interface Session {
+  id:        string;
+  ipAddress: string;
+  userAgent: string;
+  createdAt: string;
+}
+
+interface SecurityLogEntry {
+  id:        string;
+  action:    string;
+  ipAddress: string;
+  userAgent: string;
+  createdAt: string;
+  meta?:     Record<string, unknown>;
+}
+
 // ─── Sub-Komponenten ──────────────────────────────────────────────────────────
 
 function SectionCard({ title, subtitle, children }: {
@@ -119,7 +135,7 @@ function Btn({ label, onClick, variant = "primary", disabled }: {
 
 // ─── 2FA Setup Inline ─────────────────────────────────────────────────────────
 
-function TotpSetup({ token, onActivated }: { token: string; onActivated: () => void }) {
+function TotpSetup({ token, onActivated }: { token: string; onActivated: (generatedCodes: string[]) => void }) {
   const [step,      setStep]      = useState<"loading" | "scan" | "verify" | "done">("loading");
   const [qrUrl,     setQrUrl]     = useState("");
   const [secret,    setSecret]    = useState("");
@@ -153,8 +169,20 @@ function TotpSetup({ token, onActivated }: { token: string; onActivated: () => v
       });
       const data = await res.json() as { ok?: boolean; error?: string };
       if (!res.ok) { setError(data.error ?? "Code ungültig."); return; }
+
+      // Auto-generate backup codes on first 2FA activation
+      let generatedCodes: string[] = [];
+      try {
+        const bcRes  = await fetch("/api/auth/backup-codes", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const bcData = await bcRes.json() as { codes?: string[] };
+        generatedCodes = bcData.codes ?? [];
+      } catch { /* ignore */ }
+
       setStep("done");
-      setTimeout(onActivated, 1200);
+      setTimeout(() => onActivated(generatedCodes), 800);
     } catch {
       setError("Verbindungsfehler.");
     } finally {
@@ -249,6 +277,22 @@ export function SecuritySettingsClient() {
   const [pwMsg,          setPwMsg]          = useState("");
   const [resetMsg,       setResetMsg]       = useState("");
 
+  // Backup Codes
+  const [backupCount,   setBackupCount]   = useState<number | null>(null);
+  const [backupCodes,   setBackupCodes]   = useState<string[]>([]);
+  const [backupLoading, setBackupLoading] = useState(false);
+  const [backupCopied,  setBackupCopied]  = useState(false);
+
+  // Sessions
+  const [sessions,        setSessions]        = useState<Session[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [revokeLoading,   setRevokeLoading]   = useState(false);
+  const [revokeMsg,       setRevokeMsg]       = useState("");
+
+  // Security Log
+  const [secLog,        setSecLog]        = useState<SecurityLogEntry[]>([]);
+  const [secLogLoading, setSecLogLoading] = useState(false);
+
   useEffect(() => {
     const tkn = getToken();
     setToken(tkn);
@@ -257,7 +301,32 @@ export function SecuritySettingsClient() {
       .then((r) => r.json() as Promise<MeData & { totpEnabled?: boolean }>)
       .then((d) => { setMe(d); setTotpEnabled(d.totpEnabled ?? false); })
       .catch(() => {});
+
+    // Load sessions
+    setSessionsLoading(true);
+    fetch("/api/auth/sessions", { headers: { Authorization: `Bearer ${tkn}` } })
+      .then((r) => r.json() as Promise<{ sessions?: Session[] }>)
+      .then((d) => setSessions(d.sessions ?? []))
+      .catch(() => {})
+      .finally(() => setSessionsLoading(false));
+
+    // Load security log
+    setSecLogLoading(true);
+    fetch("/api/security/log", { headers: { Authorization: `Bearer ${tkn}` } })
+      .then((r) => r.json() as Promise<{ logs?: SecurityLogEntry[] }>)
+      .then((d) => setSecLog(d.logs ?? []))
+      .catch(() => {})
+      .finally(() => setSecLogLoading(false));
   }, []);
+
+  // Load backup code count when totpEnabled changes
+  useEffect(() => {
+    if (!token || !totpEnabled) return;
+    fetch("/api/auth/backup-codes", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json() as Promise<{ remaining?: number }>)
+      .then((d) => setBackupCount(d.remaining ?? 0))
+      .catch(() => {});
+  }, [token, totpEnabled]);
 
   async function handleDisable2fa() {
     if (disableCode.length !== 6) { setDisableError("Bitte 6-stelligen Code eingeben."); return; }
@@ -273,6 +342,8 @@ export function SecuritySettingsClient() {
       setTotpEnabled(false);
       setDisableConfirm(false);
       setDisableCode("");
+      setBackupCount(null);
+      setBackupCodes([]);
     } catch {
       setDisableError("Verbindungsfehler.");
     } finally {
@@ -321,6 +392,79 @@ export function SecuritySettingsClient() {
       setResetMsg("Verbindungsfehler.");
     }
   }
+
+  async function handleGenerateBackupCodes() {
+    setBackupLoading(true); setBackupCopied(false);
+    try {
+      const res  = await fetch("/api/auth/backup-codes", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json() as { codes?: string[] };
+      if (data.codes) {
+        setBackupCodes(data.codes);
+        setBackupCount(data.codes.length);
+      }
+    } catch { /* ignore */ }
+    finally { setBackupLoading(false); }
+  }
+
+  function handleCopyBackupCodes() {
+    void navigator.clipboard.writeText(backupCodes.join("\n")).then(() => {
+      setBackupCopied(true);
+      setTimeout(() => setBackupCopied(false), 2000);
+    });
+  }
+
+  async function handleRevokeSessions() {
+    setRevokeLoading(true); setRevokeMsg("");
+    try {
+      const res = await fetch("/api/auth/sessions", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        setRevokeMsg("✓ Alle anderen Sitzungen wurden beendet.");
+        setSessions([]);
+      } else {
+        setRevokeMsg("Fehler beim Beenden der Sitzungen.");
+      }
+    } catch {
+      setRevokeMsg("Verbindungsfehler.");
+    } finally {
+      setRevokeLoading(false);
+    }
+  }
+
+  function formatDate(iso: string) {
+    return new Date(iso).toLocaleString("de-DE", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit",
+    });
+  }
+
+  function parseUA(ua: string): string {
+    if (!ua || ua === "unbekannt") return "Unbekanntes Gerät";
+    if (/iPhone|iPad/.test(ua))    return "iPhone / iPad";
+    if (/Android/.test(ua))        return "Android";
+    if (/Windows/.test(ua))        return "Windows";
+    if (/Macintosh|Mac OS/.test(ua)) return "Mac";
+    if (/Linux/.test(ua))          return "Linux";
+    return "Browser";
+  }
+
+  const ACTION_LABELS: Record<string, string> = {
+    LOGIN:                   "Anmeldung",
+    LOGOUT:                  "Abmeldung",
+    PASSWORD_CHANGED:        "Passwort geändert",
+    PASSWORD_RESET:          "Passwort zurückgesetzt",
+    "2FA_ENABLED":           "2FA aktiviert",
+    "2FA_DISABLED":          "2FA deaktiviert",
+    BACKUP_CODES_GENERATED:  "Backup-Codes generiert",
+    SESSION_REVOKED:         "Sitzung beendet",
+    ADMIN_ACTION:            "Admin-Aktion",
+    ACCOUNT_LOCKED:          "Konto gesperrt",
+  };
 
   return (
     <>
@@ -471,7 +615,17 @@ export function SecuritySettingsClient() {
 
           {/* 2FA Setup Inline */}
           {showSetup && token && (
-            <TotpSetup token={token} onActivated={() => { setTotpEnabled(true); setShowSetup(false); }} />
+            <TotpSetup
+              token={token}
+              onActivated={(codes) => {
+                setTotpEnabled(true);
+                setShowSetup(false);
+                if (codes.length > 0) {
+                  setBackupCodes(codes);
+                  setBackupCount(codes.length);
+                }
+              }}
+            />
           )}
 
           {/* Deaktivierungs-Formular */}
@@ -502,6 +656,64 @@ export function SecuritySettingsClient() {
           )}
         </SectionCard>
 
+        {/* Backup-Codes (nur wenn 2FA aktiv) */}
+        {totpEnabled && (
+          <SectionCard
+            title="Backup-Codes"
+            subtitle="Einmalcodes für den Notfallzugang wenn Ihre Authenticator-App nicht verfügbar ist."
+          >
+            <Row
+              label="Verbleibende Codes"
+              value={
+                <span style={{ fontSize: 12, color: MUTED }}>
+                  {backupCount === null ? "Wird geladen…" : `${backupCount} von 8 Codes noch verfügbar`}
+                </span>
+              }
+              action={
+                <Btn
+                  label={backupLoading ? "Generiert…" : "Neue Codes generieren"}
+                  variant="outline"
+                  onClick={() => void handleGenerateBackupCodes()}
+                  disabled={backupLoading}
+                />
+              }
+            />
+
+            {backupCodes.length > 0 && (
+              <div style={{ marginTop: 16 }}>
+                <div style={{ background: BG, border: `1px solid ${BORDER}`, borderLeft: `3px solid #d97706`, padding: "14px 16px", marginBottom: 12 }}>
+                  <p style={{ margin: "0 0 4px", fontSize: 12, fontWeight: 700, color: "#92400e" }}>
+                    Wichtig: Speichern Sie diese Codes sicher
+                  </p>
+                  <p style={{ margin: 0, fontSize: 12, color: MUTED, lineHeight: 1.6 }}>
+                    Diese Codes werden nur einmal angezeigt. Speichern Sie sie an einem sicheren Ort — z. B. in einem Passwort-Manager.
+                  </p>
+                </div>
+                <div style={{
+                  display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8,
+                  background: "#fff", border: `1px solid ${BORDER}`, padding: "16px",
+                  marginBottom: 12,
+                }}>
+                  {backupCodes.map((c) => (
+                    <code key={c} style={{
+                      fontSize: 14, fontWeight: 700, letterSpacing: "0.15em",
+                      fontFamily: "monospace", color: TEXT, padding: "6px 8px",
+                      background: BG, border: `1px solid ${BORDER}`, textAlign: "center",
+                    }}>
+                      {c}
+                    </code>
+                  ))}
+                </div>
+                <Btn
+                  label={backupCopied ? "✓ Kopiert" : "Alle Codes kopieren"}
+                  variant="outline"
+                  onClick={handleCopyBackupCodes}
+                />
+              </div>
+            )}
+          </SectionCard>
+        )}
+
         {/* Passwort */}
         <SectionCard title="Passwort" subtitle="Ändern Sie regelmäßig Ihr Passwort für mehr Sicherheit.">
           <Row
@@ -511,6 +723,16 @@ export function SecuritySettingsClient() {
           />
           {pwMsg && !pwSection && (
             <p style={{ margin: "8px 0 0", fontSize: 12, color: pwMsg.startsWith("✓") ? GREEN : RED, fontFamily: F }}>{pwMsg}</p>
+          )}
+          <Row
+            label="Passwort vergessen?"
+            value={<span style={{ fontSize: 12, color: MUTED }}>Eine Reset-E-Mail an Ihre registrierte Adresse senden.</span>}
+            action={<Btn label="Reset-E-Mail anfordern" variant="outline" onClick={() => void handleResetEmail()} />}
+          />
+          {resetMsg && (
+            <p style={{ margin: "4px 0 0", fontSize: 12, color: resetMsg.startsWith("✓") ? GREEN : RED, fontFamily: F }}>
+              {resetMsg}
+            </p>
           )}
           {pwSection && (
             <form onSubmit={(e) => { void handleChangePw(e); }} style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>
@@ -545,17 +767,94 @@ export function SecuritySettingsClient() {
           )}
         </SectionCard>
 
-        {/* Passwort vergessen / Reset */}
-        <SectionCard title="Konto gesperrt?" subtitle="Wenn Sie Ihr Passwort vergessen haben oder Ihr Konto gesperrt ist.">
-          <Row
-            label="Passwort zurücksetzen"
-            value={<span style={{ fontSize: 12, color: MUTED }}>Eine E-Mail mit Reset-Link wird an Ihre registrierte Adresse gesendet.</span>}
-            action={<Btn label="Reset-E-Mail anfordern" variant="outline" onClick={() => void handleResetEmail()} />}
-          />
-          {resetMsg && (
-            <p style={{ margin: "8px 0 0", fontSize: 12, color: resetMsg.startsWith("✓") ? GREEN : RED, fontFamily: F }}>
-              {resetMsg}
-            </p>
+        {/* Sitzungsmanagement */}
+        <SectionCard
+          title="Aktive Sitzungen"
+          subtitle="Alle Geräte und Browser, auf denen Sie aktuell angemeldet sind."
+        >
+          {sessionsLoading ? (
+            <p style={{ margin: 0, fontSize: 13, color: MUTED }}>Wird geladen…</p>
+          ) : sessions.length === 0 ? (
+            <p style={{ margin: 0, fontSize: 13, color: MUTED }}>Keine weiteren aktiven Sitzungen gefunden.</p>
+          ) : (
+            <div style={{ marginBottom: 16 }}>
+              {sessions.map((s, i) => (
+                <div key={s.id} style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  padding: "11px 0",
+                  borderBottom: i < sessions.length - 1 ? `1px solid ${BORDER}` : "none",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{
+                      width: 36, height: 36, background: BG, border: `1px solid ${BORDER}`,
+                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                    }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={MUTED} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: TEXT }}>{parseUA(s.userAgent)}</p>
+                      <p style={{ margin: "2px 0 0", fontSize: 11, color: MUTED }}>
+                        {s.ipAddress} · {formatDate(s.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+            <Btn
+              label={revokeLoading ? "Wird beendet…" : "Alle anderen Sitzungen beenden"}
+              variant="danger"
+              onClick={() => void handleRevokeSessions()}
+              disabled={revokeLoading || sessions.length === 0}
+            />
+            {revokeMsg && (
+              <p style={{ margin: 0, fontSize: 12, color: revokeMsg.startsWith("✓") ? GREEN : RED }}>{revokeMsg}</p>
+            )}
+          </div>
+        </SectionCard>
+
+        {/* Sicherheitsprotokoll */}
+        <SectionCard
+          title="Sicherheitsprotokoll"
+          subtitle="Die letzten 15 sicherheitsrelevanten Aktionen auf Ihrem Konto."
+        >
+          {secLogLoading ? (
+            <p style={{ margin: 0, fontSize: 13, color: MUTED }}>Wird geladen…</p>
+          ) : secLog.length === 0 ? (
+            <p style={{ margin: 0, fontSize: 13, color: MUTED }}>Noch keine Sicherheitsereignisse vorhanden.</p>
+          ) : (
+            <div>
+              {secLog.map((entry, i) => (
+                <div key={entry.id} style={{
+                  display: "flex", alignItems: "flex-start", justifyContent: "space-between",
+                  padding: "11px 0",
+                  borderBottom: i < secLog.length - 1 ? `1px solid ${BORDER}` : "none",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{
+                      width: 8, height: 8, borderRadius: "50%", flexShrink: 0, marginTop: 3,
+                      background: entry.action.includes("DISABLED") || entry.action === "ACCOUNT_LOCKED"
+                        ? RED : entry.action === "LOGIN" ? GREEN : BLUE,
+                    }} />
+                    <div>
+                      <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: TEXT }}>
+                        {ACTION_LABELS[entry.action] ?? entry.action}
+                      </p>
+                      <p style={{ margin: "2px 0 0", fontSize: 11, color: MUTED }}>
+                        {entry.ipAddress} · {parseUA(entry.userAgent)}
+                      </p>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 11, color: MUTED, flexShrink: 0, marginLeft: 12, marginTop: 1 }}>
+                    {formatDate(entry.createdAt)}
+                  </span>
+                </div>
+              ))}
+            </div>
           )}
         </SectionCard>
 
@@ -563,10 +862,11 @@ export function SecuritySettingsClient() {
         <footer style={{ marginTop: 32, paddingTop: 20, borderTop: `1px solid ${BORDER}` }}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 20px", marginBottom: 8 }}>
             {[
-              { label: "Impressum",   href: "/impressum" },
-              { label: "Datenschutz", href: "/datenschutz" },
-              { label: "AGB",         href: "/agb" },
-              { label: "Compliance",  href: "/insights/regulatorik" },
+              { label: "Impressum",         href: "/impressum" },
+              { label: "Datenschutz",       href: "/datenschutz" },
+              { label: "AGB",               href: "/agb" },
+              { label: "Compliance",        href: "/insights/regulatorik" },
+              { label: "Passwort vergessen", href: "/login?reset=1" },
             ].map(({ label, href }) => (
               <a key={label} href={href}
                 style={{ fontSize: 11, color: MUTED, textDecoration: "none", fontFamily: F }}
