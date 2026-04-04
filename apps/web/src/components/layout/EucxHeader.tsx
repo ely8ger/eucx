@@ -45,7 +45,7 @@ interface BreadcrumbConfig {
 const NAV: Record<string, NavItem[]> = {
   buyer: [
     { label: "Übersicht",      href: "/dashboard/buyer",         activePrefix: "/dashboard/buyer" },
-    { label: "Handelssitzung", href: "/dashboard/buyer/auction", activePrefix: "/dashboard/buyer/auction" },
+    { label: "Handelssitzung", href: "/dashboard/buyer",         activePrefix: "/dashboard/buyer/auction" },
     { label: "Aufträge",       href: "/dashboard/contracts",     activePrefix: "/dashboard/contracts" },
     { label: "Portfolio",      href: "#", disabled: true },
     { label: "Abschlüsse",     href: "#", disabled: true },
@@ -53,7 +53,7 @@ const NAV: Record<string, NavItem[]> = {
   seller: [
     { label: "Verkaufs-Dashboard", href: "/dashboard/seller",         activePrefix: "/dashboard/seller" },
     { label: "Meine Angebote",     href: "/dashboard/seller",         activePrefix: "/dashboard/seller" },
-    { label: "Aktive Gebote",      href: "/dashboard/seller/auction", activePrefix: "/dashboard/seller/auction" },
+    { label: "Aktive Gebote",      href: "/dashboard/seller",         activePrefix: "/dashboard/seller/auction" },
     { label: "Lieferungen",        href: "#", disabled: true },
     { label: "Abrechnung",         href: "/dashboard/contracts",      activePrefix: "/dashboard/contracts" },
   ],
