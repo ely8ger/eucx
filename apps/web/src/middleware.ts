@@ -62,6 +62,20 @@ export async function middleware(req: NextRequest) {
       }
     }
 
+    // /dashboard/buyer/** - nur BUYER (und Admins zur Überwachung)
+    if (pathname.startsWith("/dashboard/buyer")) {
+      if (payload.role !== "BUYER" && !ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
+        return NextResponse.redirect(new URL("/dashboard/seller", req.url));
+      }
+    }
+
+    // /dashboard/seller/** - nur SELLER (und Admins zur Überwachung)
+    if (pathname.startsWith("/dashboard/seller")) {
+      if (payload.role !== "SELLER" && !ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
+        return NextResponse.redirect(new URL("/dashboard/buyer", req.url));
+      }
+    }
+
     return NextResponse.next();
   } catch {
     const loginUrl = new URL("/login", req.url);

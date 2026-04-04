@@ -24,9 +24,12 @@ interface NavItem {
 }
 
 interface MeUser {
-  email:         string;
-  role:          string;
-  organization?: { name?: string };
+  email:              string;
+  role:               string;
+  verificationStatus?: string;
+  walletBalance?:     string;
+  walletReserved?:    string;
+  organization?:      { name?: string; isVerified?: boolean };
 }
 
 interface BreadcrumbConfig {
@@ -190,13 +193,24 @@ async function handleLogout() {
   window.location.href = "/login";
 }
 
-const ROLE_LABELS: Record<string, string> = {
-  BUYER:       "Käufer",
-  SELLER:      "Verkäufer",
-  ADMIN:       "Admin",
-  COMPLIANCE:  "Compliance",
-  SUPER_ADMIN: "Super Admin",
+const ROLE_META: Record<string, { label: string; color: string; bg: string }> = {
+  BUYER:       { label: "Käufer",     color: "#154194", bg: "#e8edf8" },
+  SELLER:      { label: "Verkäufer",  color: "#92400e", bg: "#fef3c7" },
+  ADMIN:       { label: "Admin",      color: "#065f46", bg: "#d1fae5" },
+  COMPLIANCE:  { label: "Compliance", color: "#6b21a8", bg: "#f3e8ff" },
+  SUPER_ADMIN: { label: "Super Admin",color: "#991b1b", bg: "#fee2e2" },
 };
+
+const KYC_META: Record<string, { label: string; color: string }> = {
+  GUEST:                { label: "Nicht verifiziert", color: "#9ca3af" },
+  PENDING_VERIFICATION: { label: "Prüfung läuft",    color: "#d97706" },
+  VERIFIED:             { label: "Verifiziert",       color: "#059669" },
+  REJECTED:             { label: "Abgelehnt",         color: "#dc2626" },
+  SUSPENDED:            { label: "Gesperrt",          color: "#dc2626" },
+};
+
+const fmtEur = (v: string) =>
+  new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
 
 // ─── NavLink ──────────────────────────────────────────────────────────────────
 function NavLink({ item, active }: { item: NavItem; active: boolean }) {
@@ -296,65 +310,139 @@ function BreadcrumbBar({ pathname }: { pathname: string }) {
 
 // ─── User Avatar ──────────────────────────────────────────────────────────────
 function UserAvatar({ me }: { me: MeUser | null }) {
-  const [hovered, setHovered] = useState(false);
-  const initial   = me?.email?.slice(0, 1).toUpperCase() ?? "?";
-  const dispName  = me?.organization?.name ?? me?.email ?? "Benutzer";
-  const roleLabel = ROLE_LABELS[me?.role ?? ""] ?? me?.role ?? "";
+  const [open, setOpen] = useState(false);
+
+  const initial  = me?.email?.slice(0, 1).toUpperCase() ?? "?";
+  const orgName  = me?.organization?.name ?? me?.email ?? "Benutzer";
+  const roleMeta = ROLE_META[me?.role ?? ""] ?? { label: me?.role ?? "", color: MUTED, bg: "#f3f4f6" };
+  const kycMeta  = KYC_META[me?.verificationStatus ?? ""] ?? { label: "Unbekannt", color: MUTED };
+
+  // Links je nach Rolle
+  const dashboardLink = me?.role === "SELLER"
+    ? { label: "Verkaufs-Dashboard", href: "/dashboard/seller" }
+    : { label: "Meine Ausschreibungen", href: "/dashboard/buyer" };
+
+  const navLinks = [
+    dashboardLink,
+    { label: "Meine Verträge",          href: "/dashboard/contracts" },
+    { label: "KYC-Verifikation",        href: "/dashboard/settings/verification" },
+    { label: "Benachrichtigungen",      href: "/dashboard/settings/notifications" },
+    { label: "Sicherheitseinstellungen",href: "/dashboard/settings/security" },
+  ];
 
   return (
-    <div
-      style={{ position: "relative" }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <div style={{
-        width: 32, height: 32,
-        background: hovered ? BLUE2 : BLUE,
-        color: "#fff", cursor: "pointer",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 13, fontWeight: 700, fontFamily: F,
-        transition: "background .15s",
-        userSelect: "none",
-        flexShrink: 0,
-      }}>
+    <div style={{ position: "relative" }}>
+      {/* Avatar-Button */}
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          width: 32, height: 32,
+          background: open ? BLUE2 : BLUE,
+          color: "#fff", cursor: "pointer", border: "none",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 13, fontWeight: 700, fontFamily: F,
+          transition: "background .15s",
+          userSelect: "none", flexShrink: 0,
+        }}
+      >
         {initial}
-      </div>
+      </button>
 
-      {hovered && me && (
-        <div style={{
-          position: "absolute", top: 38, right: 0,
-          background: "#fff", border: "1px solid #e0e4ea",
-          boxShadow: "0 6px 24px rgba(0,0,0,.12)",
-          padding: "14px 16px", minWidth: 200, zIndex: 200,
-          fontFamily: F,
-        }}>
-          <p style={{ margin: "0 0 3px", fontSize: 13, fontWeight: 700, color: DARK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 200 }}>
-            {dispName}
-          </p>
-          <p style={{ margin: "0 0 10px", fontSize: 11, color: MUTED, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 200 }}>
-            {me.email}
-          </p>
-          <span style={{
-            display: "inline-block", padding: "2px 8px", fontSize: 11,
-            background: "#e8edf8", color: BLUE, fontWeight: 600,
+      {/* Dropdown */}
+      {open && (
+        <>
+          {/* Overlay zum Schließen */}
+          <div
+            style={{ position: "fixed", inset: 0, zIndex: 190 }}
+            onClick={() => setOpen(false)}
+          />
+          <div style={{
+            position: "absolute", top: 40, right: 0,
+            background: "#fff", border: "1px solid #e0e4ea",
+            boxShadow: "0 8px 28px rgba(0,0,0,.14)",
+            minWidth: 240, zIndex: 200, fontFamily: F,
           }}>
-            {roleLabel}
-          </span>
+            {/* Kopf: Organisation + Email + Rollen-Badge */}
+            <div style={{ padding: "16px 18px", borderBottom: "1px solid #f0f2f5" }}>
+              <p style={{
+                margin: "0 0 2px", fontSize: 13, fontWeight: 700, color: DARK,
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 220,
+              }}>
+                {orgName}
+              </p>
+              <p style={{
+                margin: "0 0 10px", fontSize: 11, color: MUTED,
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 220,
+              }}>
+                {me?.email}
+              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                {/* Rollen-Badge */}
+                <span style={{
+                  padding: "3px 10px", fontSize: 11, fontWeight: 700,
+                  background: roleMeta.bg, color: roleMeta.color,
+                  letterSpacing: "0.04em",
+                }}>
+                  {roleMeta.label}
+                </span>
+                {/* KYC-Status */}
+                <span style={{ fontSize: 11, color: kycMeta.color, fontWeight: 600 }}>
+                  · {kycMeta.label}
+                </span>
+              </div>
+            </div>
 
-          <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #f0f2f5", display: "flex", flexDirection: "column", gap: 6 }}>
-            {[
-              { label: "Sicherheitseinstellungen", href: "/dashboard/settings/security" },
-              { label: "Benachrichtigungen",        href: "/dashboard/settings/notifications" },
-            ].map(({ label, href }) => (
-              <a key={href} href={href}
-                style={{ fontSize: 12, color: MUTED, textDecoration: "none", display: "block", transition: "color .15s" }}
-                onMouseEnter={e => (e.currentTarget.style.color = BLUE)}
-                onMouseLeave={e => (e.currentTarget.style.color = MUTED)}>
-                {label} →
-              </a>
-            ))}
+            {/* Wallet (nur wenn vorhanden) */}
+            {me?.walletBalance !== undefined && (
+              <div style={{
+                padding: "10px 18px", borderBottom: "1px solid #f0f2f5",
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+              }}>
+                <span style={{ fontSize: 11, color: MUTED }}>Guthaben</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: DARK, fontVariantNumeric: "tabular-nums" }}>
+                  {fmtEur(me.walletBalance ?? "0")}
+                </span>
+              </div>
+            )}
+
+            {/* Nav-Links */}
+            <div style={{ padding: "8px 0" }}>
+              {navLinks.map(({ label, href }) => (
+                <a
+                  key={href}
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  style={{
+                    display: "block", padding: "8px 18px",
+                    fontSize: 13, color: DARK, textDecoration: "none",
+                    transition: "background .12s, color .12s",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "#f5f7fb"; e.currentTarget.style.color = BLUE; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = DARK; }}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+
+            {/* Abmelden */}
+            <div style={{ borderTop: "1px solid #f0f2f5", padding: "8px 0" }}>
+              <button
+                onClick={() => { setOpen(false); void handleLogout(); }}
+                style={{
+                  display: "block", width: "100%", textAlign: "left",
+                  padding: "8px 18px", fontSize: 13, fontFamily: F,
+                  background: "none", border: "none", cursor: "pointer",
+                  color: "#dc2626", transition: "background .12s",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = "#fef2f2")}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+              >
+                Abmelden
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
@@ -414,6 +502,22 @@ export function EucxHeader() {
               </div>
               <div style={{ width: 1, height: 12, background: "rgba(255,255,255,.1)" }} />
               <LanguageSwitcher dark />
+              {/* Rollen-Badge in TopBar — sofort sichtbar ohne Dropdown */}
+              {me && (() => {
+                const rm = ROLE_META[me.role] ?? { label: me.role, color: "#fff", bg: "transparent" };
+                return (
+                  <>
+                    <div style={{ width: 1, height: 12, background: "rgba(255,255,255,.1)" }} />
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
+                      padding: "2px 8px",
+                      background: rm.bg, color: rm.color,
+                    }}>
+                      {rm.label.toUpperCase()}
+                    </span>
+                  </>
+                );
+              })()}
               <div style={{ width: 1, height: 12, background: "rgba(255,255,255,.1)" }} />
               <button
                 onClick={() => void handleLogout()}
