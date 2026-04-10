@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard, TrendingUp, FileText, Briefcase,
   CheckSquare, User, Shield, LogOut, Bell,
@@ -10,9 +11,35 @@ import { EucxLogo } from "@/components/logo/EucxLogo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n/context";
 
+const ROLE_LABEL: Record<string, string> = {
+  BUYER:              "Käufer",
+  SELLER:             "Verkäufer",
+  ADMIN:              "Admin",
+  SUPER_ADMIN:        "Super Admin",
+  COMPLIANCE_OFFICER: "Compliance",
+  BROKER:             "Broker",
+  OBSERVER:           "Beobachter",
+};
+
 export function Navbar() {
   const pathname = usePathname();
   const { t } = useI18n();
+  const [userInitial, setUserInitial] = useState("?");
+  const [userLabel,   setUserLabel]   = useState("");
+
+  useEffect(() => {
+    try {
+      const token =
+        document.cookie.match(/access_token=([^;]+)/)?.[1] ??
+        localStorage.getItem("accessToken") ?? "";
+      if (!token) return;
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const email: string = payload.email ?? "";
+      const role: string  = payload.role  ?? "";
+      setUserInitial(email.slice(0, 1).toUpperCase() || "?");
+      setUserLabel(ROLE_LABEL[role] ?? role);
+    } catch { /* ignore */ }
+  }, []);
 
   const NAV_LINKS = [
     { href: "/dashboard", label: t("app_nav_overview"),   Icon: LayoutDashboard },
@@ -124,9 +151,11 @@ export function Navbar() {
               onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f5f5f5")}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
               <div style={{ width: 28, height: 28, backgroundColor: "#154194", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 0, color: "#ffffff", fontSize: 12, fontWeight: 700 }}>
-                A
+                {userInitial}
               </div>
-              <span className="hidden lg:block" style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a" }}>Admin</span>
+              {userLabel && (
+                <span className="hidden lg:block" style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a" }}>{userLabel}</span>
+              )}
             </button>
           </div>
         </div>
