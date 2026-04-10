@@ -336,16 +336,25 @@ function UserAvatar({ me }: { me: MeUser | null }) {
       <button
         onClick={() => setOpen((v) => !v)}
         style={{
+          display: "flex", alignItems: "center", gap: 8,
+          background: "none", border: "none", cursor: "pointer", padding: "4px 6px",
+          fontFamily: F, transition: "background .15s", userSelect: "none",
+        }}
+        onMouseEnter={e => (e.currentTarget.style.background = "#f5f7fb")}
+        onMouseLeave={e => (e.currentTarget.style.background = "none")}
+      >
+        <div style={{
           width: 32, height: 32,
           background: open ? BLUE2 : BLUE,
-          color: "#fff", cursor: "pointer", border: "none",
+          color: "#fff",
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 13, fontWeight: 700, fontFamily: F,
-          transition: "background .15s",
-          userSelect: "none", flexShrink: 0,
-        }}
-      >
-        {initial}
+          fontSize: 13, fontWeight: 700, flexShrink: 0,
+        }}>
+          {initial}
+        </div>
+        <span style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a", whiteSpace: "nowrap" }}>
+          {roleMeta.label}
+        </span>
       </button>
 
       {/* Dropdown */}
