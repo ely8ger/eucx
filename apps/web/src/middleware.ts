@@ -76,6 +76,23 @@ export async function middleware(req: NextRequest) {
       }
     }
 
+    // Alte /(app)/ Routen → rollenbasierter Redirect auf neue Struktur
+    // /dashboard (exakt) und Legacy-Seiten ohne Rollentrennung
+    const OLD_ROUTES = ["/orders", "/trading", "/portfolio", "/deals", "/reports", "/products", "/personal", "/kyc"];
+    const isOldDashboard = pathname === "/dashboard";
+    const isOldRoute     = OLD_ROUTES.some((p) => pathname === p || pathname.startsWith(p + "/"));
+
+    if (isOldDashboard || isOldRoute) {
+      if (ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
+        return NextResponse.redirect(new URL("/admin", req.url));
+      }
+      if (payload.role === "SELLER") {
+        return NextResponse.redirect(new URL("/dashboard/seller", req.url));
+      }
+      // BUYER und alle anderen → Käufer-Dashboard
+      return NextResponse.redirect(new URL("/dashboard/buyer", req.url));
+    }
+
     return NextResponse.next();
   } catch {
     const loginUrl = new URL("/login", req.url);

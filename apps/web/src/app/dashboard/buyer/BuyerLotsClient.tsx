@@ -76,6 +76,7 @@ export function BuyerLotsClient() {
   // Zeitwähler-State: welches Lot wird geöffnet + ausgewählter Endzeitpunkt
   const [openingLotId,  setOpeningLotId]  = useState<string | null>(null);
   const [pickedEnd,     setPickedEnd]     = useState("");
+  const [activeTab,     setActiveTab]     = useState<"all" | "collection" | "active" | "conclusion">("all");
 
   // Form state
   const [commodity,   setCommodity]   = useState("");
@@ -336,6 +337,19 @@ export function BuyerLotsClient() {
 
         /* Loading */
         .bl-loading { color:#9ca3af; font-size:13px; padding:40px 24px; text-align:center; }
+
+        /* Status-Tabs */
+        .bl-tabs { display:flex; gap:0; border-bottom:2px solid #e5e7eb; margin-bottom:20px; overflow-x:auto; scrollbar-width:none; }
+        .bl-tabs::-webkit-scrollbar { display:none; }
+        .bl-tab { padding:9px 18px; font-size:12.5px; font-weight:600; color:#6b7280; background:none; border:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap; transition:color .15s, border-color .15s; font-family:inherit; }
+        .bl-tab:hover { color:#154194; }
+        .bl-tab.active { color:#154194; border-bottom-color:#154194; }
+        .bl-tab-count { display:inline-block; margin-left:6px; padding:1px 6px; font-size:10px; font-weight:700; background:#f3f4f6; color:#6b7280; border-radius:10px; }
+        .bl-tab.active .bl-tab-count { background:#e8edf8; color:#154194; }
+
+        /* Gewinner-Zeile */
+        .bl-winner { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; background:#f0fdf4; border:1px solid #bbf7d0; font-size:11px; font-weight:700; color:#14532d; }
+        .bl-no-winner { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; background:#f9fafb; border:1px solid #e5e7eb; font-size:11px; color:#6b7280; }
       `}</style>
 
       <div className="bl-root">
@@ -396,6 +410,27 @@ export function BuyerLotsClient() {
               </button>
             </div>
           </div>
+
+          {/* Status-Tabs */}
+          {!showForm && !showPreflight && (
+            <div className="bl-tabs">
+              {([
+                { key: "all",        label: "Alle",            count: stats.total      },
+                { key: "active",     label: "Auktionen aktiv", count: stats.active     },
+                { key: "collection", label: "In Vorbereitung", count: stats.collection },
+                { key: "conclusion", label: "Abgeschlossen",   count: stats.concluded  },
+              ] as const).map((t) => (
+                <button
+                  key={t.key}
+                  className={`bl-tab${activeTab === t.key ? " active" : ""}`}
+                  onClick={() => setActiveTab(t.key)}
+                >
+                  {t.label}
+                  <span className="bl-tab-count">{t.count}</span>
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Pre-Flight-Check */}
           {showPreflight && !showForm && (
@@ -553,28 +588,41 @@ export function BuyerLotsClient() {
           {/* Lots Table */}
           {loading ? (
             <div className="bl-loading">Wird geladen…</div>
-          ) : lots.length === 0 ? (
-            <div className="bl-empty">
-              Noch keine Ausschreibungen.
-              <div className="bl-empty-hint">Klicken Sie auf „+ Neue Ausschreibung" um Ihre erste Auktion zu starten.</div>
-            </div>
-          ) : (
+          ) : (() => {
+            const filtered = lots.filter((l) => {
+              if (activeTab === "all")        return true;
+              if (activeTab === "active")     return l.phase === "PROPOSAL" || l.phase === "REDUCTION";
+              if (activeTab === "collection") return l.phase === "COLLECTION";
+              if (activeTab === "conclusion") return l.phase === "CONCLUSION";
+              return true;
+            });
+            if (filtered.length === 0) return (
+              <div className="bl-empty">
+                {lots.length === 0
+                  ? "Noch keine Ausschreibungen."
+                  : "Keine Ausschreibungen in dieser Kategorie."}
+                {lots.length === 0 && (
+                  <div className="bl-empty-hint">Klicken Sie auf „+ Neue Ausschreibung" um Ihre erste Auktion zu starten.</div>
+                )}
+              </div>
+            );
+            return (
             <div className="bl-table-wrap">
               <table className="bl-table">
                 <thead>
                   <tr>
                     <th>Ware</th>
                     <th>Menge</th>
-                    <th>Phase</th>
+                    <th>Status</th>
                     <th>Max-Preis</th>
-                    <th>Bestes Gebot</th>
+                    <th>Bestes Gebot / Ergebnis</th>
                     <th>Auktionsende</th>
                     <th>Bieter</th>
                     <th>Aktion</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {lots.map((lot) => {
+                  {filtered.map((lot) => {
                     const savings = lot.startPrice && lot.currentBest
                       ? Number(lot.startPrice) - Number(lot.currentBest)
                       : null;
@@ -598,7 +646,25 @@ export function BuyerLotsClient() {
                           {fmtEur(lot.startPrice)}
                         </td>
                         <td style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12.5 }}>
-                          {lot.currentBest ? (
+                          {lot.phase === "CONCLUSION" ? (
+                            lot.winnerId ? (
+                              <div>
+                                <span className="bl-winner">✓ Zuschlag erteilt</span>
+                                {lot.currentBest && (
+                                  <div style={{ marginTop: 4, color: "#14532d", fontWeight: 700 }}>
+                                    {fmtEur(lot.currentBest)}
+                                    {savings !== null && savings > 0 && (
+                                      <span style={{ fontSize: 10, color: "#16a34a", marginLeft: 6 }}>
+                                        −{fmtEur(String(savings))}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="bl-no-winner">Kein Gewinner</span>
+                            )
+                          ) : lot.currentBest ? (
                             <div>
                               <strong style={{ color: "#16a34a" }}>{fmtEur(lot.currentBest)}</strong>
                               {savings !== null && savings > 0 && (
@@ -681,7 +747,8 @@ export function BuyerLotsClient() {
                 </tbody>
               </table>
             </div>
-          )}
+            );
+          })()}
         </div>
       </div>
     </>
