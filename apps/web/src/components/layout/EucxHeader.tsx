@@ -511,22 +511,6 @@ export function EucxHeader() {
               </div>
               <div style={{ width: 1, height: 12, background: "rgba(255,255,255,.1)" }} />
               <LanguageSwitcher dark />
-              {/* Rollen-Badge in TopBar — sofort sichtbar ohne Dropdown */}
-              {me && (() => {
-                const rm = ROLE_META[me.role] ?? { label: me.role, color: "#fff", bg: "transparent" };
-                return (
-                  <>
-                    <div style={{ width: 1, height: 12, background: "rgba(255,255,255,.1)" }} />
-                    <span style={{
-                      fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
-                      padding: "2px 8px",
-                      background: rm.bg, color: rm.color,
-                    }}>
-                      {rm.label.toUpperCase()}
-                    </span>
-                  </>
-                );
-              })()}
               <div style={{ width: 1, height: 12, background: "rgba(255,255,255,.1)" }} />
               <button
                 onClick={() => void handleLogout()}
