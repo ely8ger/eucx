@@ -21,7 +21,7 @@ export default function DashboardRedirect() {
         document.cookie.match(/access_token=([^;]+)/)?.[1] ??
         localStorage.getItem("accessToken") ?? "";
       if (token) {
-        const payload = JSON.parse(atob(token.split(".")[1]));
+        const payload = JSON.parse(atob(token.split(".")[1] ?? ""));
         role = payload.role ?? "";
       }
     } catch { /* ignore */ }

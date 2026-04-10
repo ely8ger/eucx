@@ -33,7 +33,7 @@ export function Navbar() {
         document.cookie.match(/access_token=([^;]+)/)?.[1] ??
         localStorage.getItem("accessToken") ?? "";
       if (!token) return;
-      const payload = JSON.parse(atob(token.split(".")[1]));
+      const payload = JSON.parse(atob(token.split(".")[1] ?? ""));
       const email: string = payload.email ?? "";
       const role: string  = payload.role  ?? "";
       setUserInitial(email.slice(0, 1).toUpperCase() || "?");
