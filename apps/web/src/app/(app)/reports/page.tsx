@@ -1,30 +1,16 @@
 "use client";
-
-import { useI18n } from "@/lib/i18n/context";
-
-export const dynamic = "force-dynamic";
-
-const F = "'IBM Plex Sans', Arial, sans-serif";
-
-export default function ReportsPage() {
-  const { t } = useI18n();
-
-  return (
-    <div style={{ fontFamily: F, display: "flex", flexDirection: "column", gap: 24 }}>
-      <div>
-        <h1 style={{ fontSize: 22, fontWeight: 300, color: "#0d1b2a", margin: 0 }}>{t("reports_title")}</h1>
-        <p style={{ fontSize: 13, color: "#888", marginTop: 4 }}>{t("reports_subtitle")}</p>
-      </div>
-      <div style={{ backgroundColor: "#fff", padding: "32px 24px", boxShadow: "0 1px 3px rgba(0,0,0,.08)", textAlign: "center" }}>
-        <div style={{ width: 48, height: 48, backgroundColor: "#f0f4fb", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#154194" strokeWidth="1.5" strokeLinecap="round">
-            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
-            <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
-          </svg>
-        </div>
-        <p style={{ fontSize: 14, fontWeight: 600, color: "#0d1b2a", margin: "0 0 6px" }}>{t("reports_wip_title")}</p>
-        <p style={{ fontSize: 13, color: "#888", margin: 0 }}>{t("reports_wip_desc")}</p>
-      </div>
-    </div>
-  );
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+export default function Redirect() {
+  const router = useRouter();
+  useEffect(() => {
+    try {
+      const token = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? localStorage.getItem("accessToken") ?? "";
+      const role = token ? (JSON.parse(atob(token.split(".")[1])).role ?? "") : "";
+      if (role === "SELLER") router.replace("/dashboard/seller");
+      else if (["ADMIN","COMPLIANCE_OFFICER","SUPER_ADMIN"].includes(role)) router.replace("/admin");
+      else router.replace("/dashboard/buyer");
+    } catch { router.replace("/dashboard/buyer"); }
+  }, [router]);
+  return null;
 }

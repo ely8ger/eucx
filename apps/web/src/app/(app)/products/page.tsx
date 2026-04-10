@@ -1,11 +1,16 @@
-import type { Metadata } from "next";
-export const metadata: Metadata = { title: "EUCX" };
-export const dynamic = "force-dynamic";
-export default function Page() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-cb-petrol mb-2">Wird entwickelt</h1>
-      <p className="text-cb-gray-500">Diese Seite ist in Bearbeitung.</p>
-    </div>
-  );
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+export default function Redirect() {
+  const router = useRouter();
+  useEffect(() => {
+    try {
+      const token = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? localStorage.getItem("accessToken") ?? "";
+      const role = token ? (JSON.parse(atob(token.split(".")[1])).role ?? "") : "";
+      if (role === "SELLER") router.replace("/dashboard/seller");
+      else if (["ADMIN","COMPLIANCE_OFFICER","SUPER_ADMIN"].includes(role)) router.replace("/admin");
+      else router.replace("/dashboard/buyer");
+    } catch { router.replace("/dashboard/buyer"); }
+  }, [router]);
+  return null;
 }
