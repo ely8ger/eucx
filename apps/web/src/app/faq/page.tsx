@@ -9,9 +9,9 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "FAQ – Häufig gestellte Fragen | EUCX European Union Commodity Exchange",
+  title: "FAQ – Häufig gestellte Fragen",
   description:
-    "Antworten auf alle Fragen zur EUCX-Handelsplattform: Registrierung, KYC, Rohstoffhandel, Orderbuch, Regulierung, Incoterms, Margin, ESG und mehr. Über 60 Fragen und Antworten.",
+    "Antworten auf alle Fragen zur EUCX: Registrierung, KYC, Rohstoffhandel, Orderbuch, Regulierung, Incoterms und ESG. Über 60 Fragen und Antworten.",
   keywords: [
     "FAQ Rohstoffbörse", "Fragen EUCX", "B2B Rohstoffhandel Fragen", "Commodity Exchange FAQ",
     "Stahlhandel FAQ", "OTF MiFID II Fragen", "KYC Börse", "Incoterms Handel",

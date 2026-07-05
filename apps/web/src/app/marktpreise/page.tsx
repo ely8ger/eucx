@@ -8,9 +8,9 @@ import { SiteFooter } from "@/components/SiteFooter";
 
 /* ── SEO Metadata ─────────────────────────────────────────────────────────── */
 export const metadata: Metadata = {
-  title: "Aktuelle Rohstoffpreise 2026 — Stahl, Schrott, Dünger, Holz | EUCX",
+  title: "Aktuelle Rohstoffpreise 2026 — Stahl, Schrott, Dünger",
   description:
-    "Tagesaktuelle Marktpreise für Betonstahl, Walzdraht, Schrott, Harnstoff, NPK-Dünger und Holz. Direkt an der EUCX — European Union Commodity Exchange handeln. BaFin-reguliert, Frankfurt am Main.",
+    "Tagesaktuelle Marktpreise für Betonstahl, Walzdraht, Schrott, Harnstoff und NPK-Dünger. Direkt an der EUCX institutionell handeln. BaFin-reguliert.",
   keywords: [
     "Stahlpreis aktuell 2026",
     "Betonstahl Preis",
