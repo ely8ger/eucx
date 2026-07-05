@@ -60,6 +60,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Benutzer inaktiv oder nicht gefunden" }, { status: 403 });
     }
 
+    // ── Role-Direction-Check ───────────────────────────────────────
+    if (user.role === "BUYER" && input.direction !== "BUY") {
+      return NextResponse.json({ error: "Käufer können nur Kaufaufträge (BUY) platzieren" }, { status: 403 });
+    }
+    if (user.role === "SELLER" && input.direction !== "SELL") {
+      return NextResponse.json({ error: "Verkäufer können nur Verkaufsaufträge (SELL) platzieren" }, { status: 403 });
+    }
+
     // Validate session is in tradeable state
     const session = await db.tradingSession.findUnique({
       where: { id: input.sessionId },

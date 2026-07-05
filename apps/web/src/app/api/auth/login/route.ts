@@ -153,7 +153,13 @@ export async function POST(req: NextRequest) {
     const tokenHash    = createHash("sha256").update(refreshToken).digest("hex");
 
     await db.refreshToken.create({
-      data: { userId: user.id, tokenHash, expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) },
+      data: {
+        userId:    user.id,
+        tokenHash,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        ipAddress: req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? "unbekannt",
+        userAgent: req.headers.get("user-agent") ?? "unbekannt",
+      },
     });
 
     await db.auditLog.create({

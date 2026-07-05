@@ -272,6 +272,7 @@ model User {
   lotContractsAsSeller    LotContract[]            @relation("LotContractSeller")
   notifications           Notification[]
   notificationPreference  NotificationPreference?
+  backupCodes             BackupCode[]
   emailVerifications      EmailVerification[]
   passwordResetTokens     PasswordResetToken[]
 
@@ -566,12 +567,27 @@ model RefreshToken {
   tokenHash String   @unique
   expiresAt DateTime
   revoked   Boolean  @default(false)
+  ipAddress String?
+  userAgent String?
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("refresh_tokens")
+}
+
+model BackupCode {
+  id        String   @id @default(uuid())
+  userId    String
+  codeHash  String
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("backup_codes")
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

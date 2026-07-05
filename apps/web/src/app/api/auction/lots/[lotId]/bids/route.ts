@@ -46,6 +46,12 @@ export async function POST(
     return NextResponse.json({ error: "Validierungsfehler", details: parsed.error.flatten().fieldErrors }, { status: 422 });
   }
 
+  // ── Role-Check: nur SELLER darf Gebote abgeben ───────────────────
+  const BIDDER_ROLES = ["SELLER", "BROKER", "ADMIN", "SUPER_ADMIN"] as const;
+  if (!BIDDER_ROLES.includes(token.role as typeof BIDDER_ROLES[number])) {
+    return NextResponse.json({ error: "Nur Verkäufer können Gebote abgeben" }, { status: 403 });
+  }
+
   // ── KYC + Deposit-Check ───────────────────────────────────────────
   const kycCheck = await checkBidEligibility(token.userId, lotId);
   if (!kycCheck.ok) {

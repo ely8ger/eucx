@@ -59,5 +59,17 @@ export async function POST(req: NextRequest) {
     data:  { totpEnabled: true },
   });
 
+  // Audit-Log
+  await db.auditLog.create({
+    data: {
+      userId:     tokenPayload.userId,
+      action:     "2FA_ENABLED",
+      entityType: "User",
+      entityId:   tokenPayload.userId,
+      ipAddress:  req.headers.get("x-forwarded-for") ?? "unbekannt",
+      userAgent:  req.headers.get("user-agent") ?? "unbekannt",
+    },
+  });
+
   return NextResponse.json({ ok: true, message: "2FA erfolgreich aktiviert" });
 }

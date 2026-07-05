@@ -123,4 +123,79 @@ curl -sf https://api.eucx.exchange/health | jq .
 
 ---
 
-*Zuletzt aktualisiert: 2026-03-17 · EUCX Release v1.0*
+---
+
+## Deployment-Architektur (Hybrid)
+
+```
+eucx.eu          → Vercel (Next.js Frontend + API Routes)
+api.eucx.eu      → Docker/SSH (NestJS Matching Engine + WebSocket)
+db               → Neon PostgreSQL (managed, EU-Central)
+cache            → Redis (Docker, selber Server wie NestJS)
+monitoring       → Grafana + Prometheus (Docker)
+```
+
+### Vercel-Deploy (Frontend)
+
+```bash
+# Einmaliges Setup:
+vercel link --project eucx-web
+vercel env pull apps/web/.env.local   # lokale Kopie ziehen
+
+# Deploy auf Production:
+vercel --prod --cwd apps/web
+
+# Erforderliche Vercel Environment Variables (im Dashboard setzen):
+# DATABASE_URL, DIRECT_URL       → Neon Connection String
+# JWT_SECRET                      → min. 32 Zeichen
+# NEXT_PUBLIC_API_URL             → https://api.eucx.eu
+# NEXT_PUBLIC_WS_URL              → wss://api.eucx.eu
+# SMTP_HOST / SMTP_USER / SMTP_PASS
+# WEBHOOK_SECRET, INTERNAL_API_KEY
+```
+
+### Docker/SSH-Deploy (Backend API)
+
+```bash
+# Auf dem Server (SSH):
+cd /opt/eucx
+git pull origin main
+docker compose -f docker-compose.prod.yml build api
+docker compose -f docker-compose.prod.yml up -d api redis
+docker compose -f docker-compose.prod.yml exec api npx prisma migrate deploy
+
+# GitHub Actions CI/CD: .github/workflows/deploy.yml
+# → baut api-Image, pusht zu GHCR, SSH-Deploy via appleboy/ssh-action
+```
+
+---
+
+## API-Sicherheit (RBAC — Stand 2026-07)
+
+Alle geschützten Endpunkte erfordern Bearer JWT. Die Rolle ist im Token codiert.
+
+| Endpunkt | Erlaubte Rollen | Prüfmethode |
+|---|---|---|
+| `POST /api/auction/lots` | BUYER, BROKER, ADMIN | DB-Check (user.role) |
+| `POST /api/auction/lots/[id]/register` | SELLER, BROKER, ADMIN | DB-Check (user.role) |
+| `POST /api/auction/lots/[id]/open` | Nur Lot-Besitzer (BUYER) | `lot.buyerId === userId` |
+| `POST /api/auction/lots/[id]/bids` | SELLER, BROKER, ADMIN | **JWT-Check (token.role)** — kein DB-Call |
+| `POST /api/orders` | BUYER→BUY, SELLER→SELL | DB-Check + Direction-Guard |
+| `GET /api/auction/lots/[id]/contract` | Vertragsparteien, Admin | `buyerId/sellerId === userId` |
+| `PATCH /api/orders/[id]` | Nur Order-Eigentümer | `order.userId === userId` |
+| `GET /api/admin/**` | ADMIN, COMPLIANCE, SUPER_ADMIN | Next.js Middleware (JWT) |
+| `POST /api/admin/**` | ADMIN, COMPLIANCE, SUPER_ADMIN | Next.js Middleware (JWT) |
+
+**Drei Sicherheitsschichten:**
+1. **Datenbank** — `UserRole` enum, in JWT-Payload codiert bei Login
+2. **Next.js Middleware** (`middleware.ts`) — prüft Rolle vor jedem Request, Redirect bei Verstoß
+3. **Route Handler** — explizite Rolle-/Ownership-Prüfung in jedem `/api/`-Endpunkt
+
+**Rollentrennung Frontend:**
+- URL-Guard: `/dashboard/buyer/**` → nur BUYER; `/dashboard/seller/**` → nur SELLER
+- Navigation: `EucxHeader` zeigt rollenspezifische Menüs (NAV["buyer"] vs. NAV["seller"])
+- Badge: Käufer (blau `#154194`) / Verkäufer (gelb `#92400e`)
+
+---
+
+*Zuletzt aktualisiert: 2026-07-05 · EUCX Release v1.1 — API Guards + Hybrid Deployment*
