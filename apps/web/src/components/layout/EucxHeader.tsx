@@ -56,11 +56,11 @@ const NAV: Record<string, NavItem[]> = {
     { label: "Abschlüsse",     href: "#", disabled: true },
   ],
   seller: [
-    { label: "Verkaufs-Dashboard", href: "/dashboard/seller",         activePrefix: "/dashboard/seller" },
-    { label: "Meine Angebote",     href: "/dashboard/seller",         activePrefix: "/dashboard/seller" },
-    { label: "Aktive Gebote",      href: "/dashboard/seller",         activePrefix: "/dashboard/seller/auction" },
-    { label: "Lieferungen",        href: "#", disabled: true },
-    { label: "Abrechnung",         href: "/dashboard/contracts",      activePrefix: "/dashboard/contracts" },
+    { label: "Verkaufs-Dashboard", href: "/dashboard/seller",            activePrefix: "/dashboard/seller" },
+    { label: "Meine Angebote",     href: "/dashboard/seller/auctions",   activePrefix: "/dashboard/seller/auctions" },
+    { label: "Aktive Gebote",      href: "/dashboard/seller/auctions",   activePrefix: "/dashboard/seller/auction" },
+    { label: "Lieferungen",        href: "/dashboard/seller/logistics",  activePrefix: "/dashboard/seller/logistics" },
+    { label: "Abrechnung",         href: "/dashboard/seller/billing",    activePrefix: "/dashboard/seller/billing" },
   ],
   settings: [
     { label: "Profil",             href: "#", disabled: true },

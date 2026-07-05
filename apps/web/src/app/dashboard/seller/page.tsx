@@ -1,8 +1,8 @@
-import { SellerLotsClient } from "./SellerLotsClient";
+import { SellerControlCenter } from "./SellerControlCenter";
 
-export const metadata = { title: "Ausschreibungen | EUCX Verkäufer", robots: { index: false, follow: false } };
+export const metadata = { title: "Verkäufer Control Center | EUCX", robots: { index: false, follow: false } };
 export const dynamic  = "force-dynamic";
 
 export default function SellerDashboardPage() {
-  return <SellerLotsClient />;
+  return <SellerControlCenter />;
 }
