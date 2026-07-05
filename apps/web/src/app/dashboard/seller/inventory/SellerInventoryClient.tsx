@@ -1,88 +1,63 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
 
-const A = "#d97706";
+const A  = "#d97706";
 const A2 = "#b45309";
 
-// Lokale Demo-Daten — wird später durch echte API ersetzt
-const DEMO_CHARGES = [
-  {
-    id: "CH-2026-001",
-    schmelzNr: "SM-DE-4421-A",
-    material: "Betonstahl BST 500S",
-    spec: "12mm Rebar, EN 10080",
-    qty: 450,
-    unit: "TON",
-    lager: "Lager Hamburg Nord",
-    co2: 1.82,
-    land: "DE",
-    registryId: "CBAM-DE-88812345",
-    incoterms: "DAP",
-    zertifikat: "Werkszeugnis_SM4421A.pdf",
-    status: "verfügbar",
-    eingelagert: "2026-06-12",
-  },
-  {
-    id: "CH-2026-002",
-    schmelzNr: "SM-TR-9981-B",
-    material: "Betonstahl BST 500S",
-    spec: "16mm Rebar, EN 10080",
-    qty: 320,
-    unit: "TON",
-    lager: "Lager Duisburg",
-    co2: 1.95,
-    land: "TR",
-    registryId: "CBAM-TR-44190001",
-    incoterms: "FCA",
-    zertifikat: "Werkszeugnis_SM9981B.pdf",
-    status: "reserviert",
-    eingelagert: "2026-06-28",
-  },
-  {
-    id: "CH-2026-003",
-    schmelzNr: "SM-DE-5530-C",
-    material: "Walzdraht",
-    spec: "6,5mm, EN 10016",
-    qty: 200,
-    unit: "TON",
-    lager: "Lager Hamburg Nord",
-    co2: 1.71,
-    land: "DE",
-    registryId: "CBAM-DE-88865432",
-    incoterms: "DAP",
-    zertifikat: null,
-    status: "verfügbar",
-    eingelagert: "2026-07-01",
-  },
-];
-
-type Charge = typeof DEMO_CHARGES[number];
+interface Charge {
+  id:                string;
+  schmelzNr:         string | null;
+  material:          string;
+  spec:              string | null;
+  quantity:          string;
+  unit:              string;
+  warehouseLocation: string | null;
+  co2PerTonne:       string | null;
+  countryOfOrigin:   string | null;
+  productionSiteId:  string | null;
+  incoterms:         string | null;
+  status:            "AVAILABLE" | "RESERVED" | "SOLD" | "CANCELLED";
+  certificate31:     string | null;
+  createdAt:         string;
+  lot?:              { id: string; commodity: string; phase: string } | null;
+}
 
 const STATUS_COLOR: Record<string, string> = {
-  verfügbar:  "#16a34a",
-  reserviert: "#d97706",
-  verkauft:   "#6b7280",
+  AVAILABLE:  "#16a34a",
+  RESERVED:   "#d97706",
+  SOLD:       "#6b7280",
+  CANCELLED:  "#dc2626",
+};
+
+const STATUS_LABEL: Record<string, string> = {
+  AVAILABLE:  "Verfügbar",
+  RESERVED:   "Reserviert",
+  SOLD:       "Verkauft",
+  CANCELLED:  "Storniert",
 };
 
 export function SellerInventoryClient() {
   const router = useRouter();
-  const [token, setToken] = useState("");
-  const [charges, setCharges] = useState<Charge[]>(DEMO_CHARGES);
+  const [token,    setToken]    = useState("");
+  const [charges,  setCharges]  = useState<Charge[]>([]);
+  const [loading,  setLoading]  = useState(true);
+  const [saving,   setSaving]   = useState(false);
+  const [error,    setError]    = useState("");
   const [showForm, setShowForm] = useState(false);
 
   // Formular-State
-  const [fMaterial,    setFMaterial]    = useState("");
-  const [fSpec,        setFSpec]        = useState("");
-  const [fQty,         setFQty]         = useState("");
-  const [fLager,       setFLager]       = useState("");
-  const [fCo2,         setFCo2]         = useState("");
-  const [fLand,        setFLand]        = useState("DE");
-  const [fRegistryId,  setFRegistryId]  = useState("");
-  const [fIncoterms,   setFIncoterms]   = useState("DAP");
-  const [fSchmelzNr,   setFSchmelzNr]   = useState("");
+  const [fMaterial,   setFMaterial]   = useState("");
+  const [fSpec,       setFSpec]       = useState("");
+  const [fQty,        setFQty]        = useState("");
+  const [fLager,      setFLager]      = useState("");
+  const [fCo2,        setFCo2]        = useState("");
+  const [fLand,       setFLand]       = useState("DE");
+  const [fRegistryId, setFRegistryId] = useState("");
+  const [fIncoterms,  setFIncoterms]  = useState("DAP");
+  const [fSchmelzNr,  setFSchmelzNr]  = useState("");
 
   useEffect(() => {
     const tkn = localStorage.getItem("accessToken") ?? "";
@@ -90,35 +65,89 @@ export function SellerInventoryClient() {
     if (!tkn) router.replace("/login");
   }, [router]);
 
-  function addCharge(e: React.FormEvent) {
+  const load = useCallback(async () => {
+    if (!token) return;
+    setLoading(true);
+    setError("");
+    try {
+      const r = await fetch("/api/seller/inventory", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (r.ok) {
+        const data = await r.json() as Charge[];
+        setCharges(data);
+      } else {
+        setError("Fehler beim Laden der Chargen.");
+      }
+    } catch {
+      setError("Netzwerkfehler.");
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => { void load(); }, [load]);
+
+  async function addCharge(e: React.FormEvent) {
     e.preventDefault();
-    const newCharge: Charge = {
-      id:          `CH-2026-${String(charges.length + 1).padStart(3, "0")}`,
-      schmelzNr:   fSchmelzNr || `SM-${fLand}-${Math.floor(Math.random() * 9999)}-X`,
-      material:    fMaterial,
-      spec:        fSpec,
-      qty:         parseFloat(fQty) || 0,
-      unit:        "TON",
-      lager:       fLager,
-      co2:         parseFloat(fCo2) || 0,
-      land:        fLand,
-      registryId:  fRegistryId,
-      incoterms:   fIncoterms,
-      zertifikat:  null,
-      status:      "verfügbar",
-      eingelagert: new Date().toISOString().slice(0, 10),
-    };
-    setCharges((prev) => [newCharge, ...prev]);
-    setShowForm(false);
-    setFMaterial(""); setFSpec(""); setFQty(""); setFLager("");
-    setFCo2(""); setFRegistryId(""); setFSchmelzNr("");
+    setSaving(true);
+    setError("");
+    try {
+      const body = {
+        material:          fMaterial,
+        spec:              fSpec || undefined,
+        quantity:          parseFloat(fQty),
+        unit:              "TON",
+        schmelzNr:         fSchmelzNr || undefined,
+        warehouseLocation: fLager || undefined,
+        co2PerTonne:       fCo2 ? parseFloat(fCo2) : undefined,
+        countryOfOrigin:   fLand || undefined,
+        productionSiteId:  fRegistryId || undefined,
+        incoterms:         fIncoterms,
+      };
+      const r = await fetch("/api/seller/inventory", {
+        method:  "POST",
+        headers: {
+          Authorization:  `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      if (r.ok) {
+        setShowForm(false);
+        setFMaterial(""); setFSpec(""); setFQty(""); setFLager("");
+        setFCo2(""); setFRegistryId(""); setFSchmelzNr("");
+        await load();
+      } else {
+        const d = await r.json() as { error?: string };
+        setError(d.error ?? "Fehler beim Anlegen.");
+      }
+    } catch {
+      setError("Netzwerkfehler.");
+    } finally {
+      setSaving(false);
+    }
   }
 
-  const totalQty     = charges.filter((c) => c.status === "verfügbar").reduce((s, c) => s + c.qty, 0);
-  const avgCo2       = charges.length > 0
-    ? charges.reduce((s, c) => s + c.co2, 0) / charges.length
-    : 0;
-  const noCbam       = charges.filter((c) => !c.registryId).length;
+  async function deleteCharge(id: string) {
+    if (!confirm("Charge unwiderruflich löschen?")) return;
+    const r = await fetch(`/api/seller/inventory/${id}`, {
+      method:  "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (r.ok || r.status === 204) {
+      setCharges((prev) => prev.filter((c) => c.id !== id));
+    } else {
+      const d = await r.json() as { error?: string };
+      alert(d.error ?? "Löschen nicht möglich.");
+    }
+  }
+
+  const available = charges.filter((c) => c.status === "AVAILABLE");
+  const totalQty  = available.reduce((s, c) => s + parseFloat(c.quantity), 0);
+  const co2Vals   = charges.filter((c) => c.co2PerTonne !== null).map((c) => parseFloat(c.co2PerTonne!));
+  const avgCo2    = co2Vals.length > 0 ? co2Vals.reduce((s, v) => s + v, 0) / co2Vals.length : 0;
+  const noCbam    = charges.filter((c) => !c.productionSiteId).length;
 
   return (
     <>
@@ -133,6 +162,7 @@ export function SellerInventoryClient() {
         .inv-sub { font-size:12.5px; color:#6b7280; margin-top:2px; }
         .inv-btn { padding:10px 20px; background:${A}; color:#fff; font-size:13px; font-weight:700; border:none; cursor:pointer; transition:background .15s; }
         .inv-btn:hover { background:${A2}; }
+        .inv-btn:disabled { background:#d1d5db; cursor:not-allowed; }
         .inv-kpi { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px; }
         @media(max-width:640px){.inv-kpi{grid-template-columns:1fr;}}
         .inv-kpi-card { background:#fff; border:1px solid #e5e7eb; border-top:3px solid ${A}; padding:16px 18px; }
@@ -162,6 +192,11 @@ export function SellerInventoryClient() {
         .inv-warn { display:inline-flex; align-items:center; gap:4px; font-size:10.5px; color:#dc2626; font-weight:600; }
         .inv-action { font-size:12px; font-weight:700; color:${A}; text-decoration:none; cursor:pointer; background:none; border:none; padding:0; }
         .inv-action:hover { text-decoration:underline; }
+        .inv-del { font-size:12px; font-weight:700; color:#dc2626; cursor:pointer; background:none; border:none; padding:0; margin-left:10px; }
+        .inv-del:hover { text-decoration:underline; }
+        .inv-err { background:#fef2f2; border:1px solid #fecaca; border-left:4px solid #dc2626; padding:12px 16px; margin-bottom:16px; font-size:13px; color:#dc2626; }
+        .inv-empty { padding:40px; text-align:center; color:#9ca3af; font-size:13px; background:#fff; border:1px solid #e5e7eb; }
+        .inv-loading { padding:40px; text-align:center; color:#9ca3af; font-size:13px; }
       `}</style>
 
       <div className="inv">
@@ -186,10 +221,12 @@ export function SellerInventoryClient() {
             </button>
           </div>
 
+          {error && <div className="inv-err">{error}</div>}
+
           {/* KPIs */}
           <div className="inv-kpi">
             <div className="inv-kpi-card">
-              <div className="inv-kpi-num">{totalQty.toLocaleString("de-DE")}</div>
+              <div className="inv-kpi-num">{totalQty.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</div>
               <div className="inv-kpi-label">Tonnen verfügbar</div>
             </div>
             <div className="inv-kpi-card">
@@ -210,7 +247,7 @@ export function SellerInventoryClient() {
           {showForm && (
             <div className="inv-form">
               <div className="inv-form-title">Neue Charge erfassen</div>
-              <form onSubmit={addCharge}>
+              <form onSubmit={(e) => void addCharge(e)}>
                 <div className="inv-form-grid">
                   <div>
                     <label className="inv-label">Material / Produkt *</label>
@@ -235,7 +272,7 @@ export function SellerInventoryClient() {
                   <div>
                     <label className="inv-label">Herkunftsland (ISO)</label>
                     <select className="inv-select" value={fLand} onChange={(e) => setFLand(e.target.value)}>
-                      {[["DE","Deutschland"],["TR","Türkei"],["UA","Ukraine"],["CN","China"],["PL","Polen"],["AT","Österreich"]].map(([c,n]) => (
+                      {[["DE","Deutschland"],["TR","Türkei"],["UA","Ukraine"],["CN","China"],["PL","Polen"],["AT","Österreich"],["FR","Frankreich"],["IT","Italien"]].map(([c,n]) => (
                         <option key={c} value={c}>{c} — {n}</option>
                       ))}
                     </select>
@@ -266,7 +303,9 @@ export function SellerInventoryClient() {
                 </div>
 
                 <div className="inv-form-actions">
-                  <button className="inv-btn" type="submit">Charge speichern</button>
+                  <button className="inv-btn" type="submit" disabled={saving}>
+                    {saving ? "Speichern..." : "Charge speichern"}
+                  </button>
                   <button className="inv-btn-cancel" type="button" onClick={() => setShowForm(false)}>Abbrechen</button>
                 </div>
               </form>
@@ -274,68 +313,92 @@ export function SellerInventoryClient() {
           )}
 
           {/* Tabelle */}
-          <div className="inv-table-wrap">
-            <table className="inv-table">
-              <thead>
-                <tr>
-                  <th>Charge-ID</th>
-                  <th>Material / Spezifikation</th>
-                  <th>Menge</th>
-                  <th>Lager</th>
-                  <th>CBAM — CO₂/t</th>
-                  <th>Herkunft</th>
-                  <th>Incoterms</th>
-                  <th>Status</th>
-                  <th>Zertifikat</th>
-                </tr>
-              </thead>
-              <tbody>
-                {charges.map((c) => (
-                  <tr key={c.id}>
-                    <td>
-                      <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: 12, color: "#374151" }}>{c.id}</div>
-                      <div style={{ fontSize: 10.5, color: "#9ca3af" }}>{c.schmelzNr}</div>
-                    </td>
-                    <td>
-                      <div style={{ fontWeight: 600, color: "#111827" }}>{c.material}</div>
-                      <div style={{ fontSize: 11.5, color: "#6b7280" }}>{c.spec}</div>
-                    </td>
-                    <td style={{ fontFamily: "'IBM Plex Mono',monospace" }}>
-                      {c.qty.toLocaleString("de-DE")} {c.unit}
-                    </td>
-                    <td style={{ fontSize: 12.5, color: "#374151" }}>{c.lager || "—"}</td>
-                    <td>
-                      {c.co2 > 0 ? (
-                        <div>
-                          <span className="inv-co2-val">{c.co2.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
-                          <span style={{ fontSize: 10.5, color: "#6b7280" }}> kg/t</span>
-                          {c.registryId && (
-                            <div style={{ fontSize: 10, color: "#9ca3af", fontFamily: "'IBM Plex Mono',monospace" }}>{c.registryId}</div>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="inv-warn">⚠ Fehlt</span>
-                      )}
-                    </td>
-                    <td style={{ fontSize: 12.5 }}>{c.land}</td>
-                    <td style={{ fontSize: 12, fontFamily: "'IBM Plex Mono',monospace" }}>{c.incoterms}</td>
-                    <td>
-                      <span className="inv-status" style={{ background: STATUS_COLOR[c.status] ?? "#6b7280" }}>
-                        {c.status}
-                      </span>
-                    </td>
-                    <td>
-                      {c.zertifikat ? (
-                        <button className="inv-action">{c.zertifikat}</button>
-                      ) : (
-                        <button className="inv-action" style={{ color: "#9ca3af" }}>+ Hochladen</button>
-                      )}
-                    </td>
+          {loading ? (
+            <div className="inv-loading">Chargen werden geladen…</div>
+          ) : charges.length === 0 ? (
+            <div className="inv-empty">
+              Noch keine Chargen erfasst. Klicken Sie auf „+ Neue Charge melden" um Ihre erste Lagercharge anzulegen.
+            </div>
+          ) : (
+            <div className="inv-table-wrap">
+              <table className="inv-table">
+                <thead>
+                  <tr>
+                    <th>Charge-ID</th>
+                    <th>Material / Spezifikation</th>
+                    <th>Menge</th>
+                    <th>Lager</th>
+                    <th>CBAM — CO₂/t</th>
+                    <th>Herkunft</th>
+                    <th>Incoterms</th>
+                    <th>Status</th>
+                    <th>Aktionen</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {charges.map((c) => (
+                    <tr key={c.id}>
+                      <td>
+                        <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: 11, color: "#374151" }}>
+                          {c.id.slice(0, 14)}…
+                        </div>
+                        {c.schmelzNr && (
+                          <div style={{ fontSize: 10.5, color: "#9ca3af" }}>{c.schmelzNr}</div>
+                        )}
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 600, color: "#111827" }}>{c.material}</div>
+                        {c.spec && <div style={{ fontSize: 11.5, color: "#6b7280" }}>{c.spec}</div>}
+                      </td>
+                      <td style={{ fontFamily: "'IBM Plex Mono',monospace" }}>
+                        {parseFloat(c.quantity).toLocaleString("de-DE")} {c.unit}
+                      </td>
+                      <td style={{ fontSize: 12.5, color: "#374151" }}>{c.warehouseLocation || "—"}</td>
+                      <td>
+                        {c.co2PerTonne ? (
+                          <div>
+                            <span className="inv-co2-val">
+                              {parseFloat(c.co2PerTonne).toLocaleString("de-DE", { maximumFractionDigits: 2 })}
+                            </span>
+                            <span style={{ fontSize: 10.5, color: "#6b7280" }}> kg/t</span>
+                            {c.productionSiteId && (
+                              <div style={{ fontSize: 10, color: "#9ca3af", fontFamily: "'IBM Plex Mono',monospace" }}>
+                                {c.productionSiteId}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="inv-warn">⚠ Fehlt</span>
+                        )}
+                      </td>
+                      <td style={{ fontSize: 12.5 }}>{c.countryOfOrigin || "—"}</td>
+                      <td style={{ fontSize: 12, fontFamily: "'IBM Plex Mono',monospace" }}>{c.incoterms || "—"}</td>
+                      <td>
+                        <span className="inv-status" style={{ background: STATUS_COLOR[c.status] ?? "#6b7280" }}>
+                          {STATUS_LABEL[c.status] ?? c.status}
+                        </span>
+                        {c.lot && (
+                          <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 3 }}>
+                            {c.lot.commodity.slice(0, 20)}
+                          </div>
+                        )}
+                      </td>
+                      <td>
+                        {c.certificate31 ? (
+                          <button className="inv-action">3.1-Zeugnis</button>
+                        ) : (
+                          <button className="inv-action" style={{ color: "#9ca3af" }}>+ Hochladen</button>
+                        )}
+                        {c.status === "AVAILABLE" && (
+                          <button className="inv-del" onClick={() => void deleteCharge(c.id)}>Löschen</button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -15,11 +15,13 @@ import { checkBidEligibility } from "@/lib/auction/kyc-guard";
 import { notifyOutbid, notifyLeading } from "@/lib/notifications/notification-service";
 import { db } from "@/lib/db/client";
 import { z } from "zod";
+import Decimal from "decimal.js";
 
 export const dynamic = "force-dynamic";
 
 const bidSchema = z.object({
-  price: z.number().positive(),
+  price:    z.number().positive(),
+  chargeId: z.string().optional(), // Optionale Verknüpfung mit SellerCharge
 });
 
 export async function POST(
@@ -58,6 +60,64 @@ export async function POST(
     return NextResponse.json(
       { error: kycCheck.error, code: kycCheck.code, kycRequired: kycCheck.kycRequired, depositRequired: kycCheck.depositRequired },
       { status: kycCheck.code }
+    );
+  }
+
+  // ── Lot laden (für CBAM + Deal-Limit Checks) ─────────────────────
+  const lot = await db.lot.findUnique({
+    where:  { id: lotId },
+    select: { quantity: true, co2PerTonne: true, phase: true },
+  });
+  if (!lot) return NextResponse.json({ error: "Lot nicht gefunden" }, { status: 404 });
+
+  // ── CBAM-Precheck ─────────────────────────────────────────────────
+  // Wenn das Lot einen CO₂-Grenzwert hat, muss der Verkäufer eine
+  // verfügbare Charge mit co2PerTonne ≤ Lot-Limit nachweisen können.
+  if (lot.co2PerTonne !== null) {
+    const validCharge = await db.sellerCharge.findFirst({
+      where: {
+        sellerId:    token.userId,
+        status:      "AVAILABLE",
+        co2PerTonne: { lte: lot.co2PerTonne },
+      },
+      select: { id: true },
+    });
+    if (!validCharge) {
+      return NextResponse.json(
+        {
+          error: `CBAM-Voraussetzung nicht erfüllt: Dieses Lot verlangt eine Charge mit CO₂ ≤ ${lot.co2PerTonne} kg/t. Bitte legen Sie zuerst eine konforme Lagercharge unter Chargen-Verwaltung an.`,
+          code:  422,
+          cbamRequired: true,
+        },
+        { status: 422 }
+      );
+    }
+  }
+
+  // ── Deal-Limit nach KYC-Tier ──────────────────────────────────────
+  // Transaktionsgröße = Angebotspreis × Lot-Menge
+  // Standard (VERIFIED):    max. 5.000.000 € pro Transaktion
+  // Wallet-gestützt:        max. Wallet-Balance × 20
+  const dealValue   = new Decimal(parsed.data.price).times(lot.quantity.toString());
+  const HARD_LIMIT  = new Decimal("5000000"); // 5 Mio. € absolutes Limit
+
+  const userWallet = await db.wallet.findFirst({
+    where: { organization: { users: { some: { id: token.userId } } } },
+    select: { balance: true },
+  });
+  const walletBalance  = new Decimal(userWallet?.balance?.toString() ?? "0");
+  const walletMaxDeal  = walletBalance.times(20);
+  const effectiveLimit = Decimal.min(HARD_LIMIT, walletMaxDeal.gt(0) ? walletMaxDeal : HARD_LIMIT);
+
+  if (dealValue.gt(effectiveLimit)) {
+    return NextResponse.json(
+      {
+        error:       `Deal-Volumen (${dealValue.toFixed(0)} €) übersteigt Ihr Transaktionslimit (${effectiveLimit.toFixed(0)} €). Bitte erhöhen Sie Ihr Wallet-Depot oder bieten Sie einen niedrigeren Preis.`,
+        code:        403,
+        dealLimit:   effectiveLimit.toFixed(0),
+        dealValue:   dealValue.toFixed(0),
+      },
+      { status: 403 }
     );
   }
 

@@ -127,6 +127,26 @@ enum ContractStatus {
   EXPIRED            // Token abgelaufen, neu signieren erforderlich
 }
 
+enum ChargeStatus {
+  AVAILABLE   // Lagercharge verfügbar zum Verkauf
+  RESERVED    // Für ein Lot reserviert (Auktion läuft)
+  SOLD        // Verkauft — Lieferung abgeschlossen
+  CANCELLED   // Storniert (Auktion abgebrochen)
+
+  @@map("charge_status")
+}
+
+enum DeliveryStatus {
+  MATCHED           // Auktion abgeschlossen, Vertrag generiert
+  PAYMENT_ESCROW    // Zahlung im Treuhandkonto
+  READY_FOR_PICKUP  // Ware bereit, Abholcode ausgegeben
+  IN_TRANSIT        // CMR hochgeladen, Transport läuft
+  DELIVERED         // Empfangsbestätigung beim Käufer
+  COMPLETED         // CBAM-Zollquittung erhalten, vollständig abgeschlossen
+
+  @@map("delivery_status")
+}
+
 // ─── Asset (physische Ware / Charge) ─────────────────────────────────────────
 //
 // State Machine:
@@ -275,6 +295,7 @@ model User {
   backupCodes             BackupCode[]
   emailVerifications      EmailVerification[]
   passwordResetTokens     PasswordResetToken[]
+  sellerCharges           SellerCharge[]           @relation("SellerCharges")
 
   @@index([organizationId])
   @@index([verificationStatus])   // KYC-Queue: alle PENDING_VERIFICATION schnell abrufen
@@ -1137,6 +1158,7 @@ model Lot {
   bids          Bid[]
   registrations LotRegistration[]
   lotContract   LotContract?
+  charges       SellerCharge[]   @relation("ChargeReservation")
 
   @@index([buyerId])
   @@index([phase])               // Offene Auktionen schnell abrufen
@@ -1216,6 +1238,12 @@ model LotContract {
   pdfSizeBytes   Int
   signedAtBuyer  DateTime?
   signedAtSeller DateTime?
+  // ── Lieferstatus-Tracking ──────────────────────────────────────────────────
+  deliveryStatus DeliveryStatus @default(MATCHED)
+  pickupCode     String?        // 6-stelliger PIN — generiert bei READY_FOR_PICKUP
+  cmrDocument    String?        @db.Text  // Base64-codiertes CMR-Dokument
+  cmrUploadedAt  DateTime?
+  deliveredAt    DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
@@ -1244,6 +1272,41 @@ model LotFee {
   @@index([contractId])
   @@index([userId])
   @@map("lot_fees")
+}
+
+// ─── SellerCharge — physische Lagercharge eines Verkäufers ───────────────────
+// Verknüpft CBAM-Daten direkt mit einer konkreten Produktionscharge.
+// Kann einem Lot reserviert werden (reservedForLotId → status RESERVED).
+// Schmelznummer (schmelzNr) = eindeutige Produktions-ID des Stahlwerks.
+// certificate31: EN 10204 3.1-Zeugnis als Base64-codierter Text.
+// cbamCertificate: CBAM-Registrierungsdokument der Produktionsstätte.
+model SellerCharge {
+  id                String       @id @default(cuid())
+  sellerId          String
+  schmelzNr         String?      // Werksinterne Schmelznummer (Stahlwerk-Chargen-ID)
+  material          String       // z.B. "Betonstahl BST 500S"
+  spec              String?      // Norm/Spezifikation z.B. "EN 10080 — Ø12mm"
+  quantity          Decimal      @db.Decimal(12, 4)
+  unit              String       @default("TON")
+  warehouseLocation String?      // Lagerort / Werk-Adresse
+  co2PerTonne       Decimal?     @db.Decimal(10, 4)  // kg CO₂-Äq. pro Einheit
+  countryOfOrigin   String?      @db.Char(2)         // ISO 3166-1 alpha-2
+  productionSiteId  String?      // EU-CBAM-Registry-ID der Produktionsstätte
+  incoterms         String?      @default("DAP")     // INCOTERMS® 2020
+  status            ChargeStatus @default(AVAILABLE)
+  certificate31     String?      @db.Text  // EN 10204 3.1 Werkszeugnis (Base64)
+  cbamCertificate   String?      @db.Text  // CBAM-Registrierungsdokument (Base64)
+  reservedForLotId  String?
+  notes             String?      @db.Text
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  seller User  @relation("SellerCharges",    fields: [sellerId],         references: [id])
+  lot    Lot?  @relation("ChargeReservation", fields: [reservedForLotId], references: [id])
+
+  @@index([sellerId])
+  @@index([reservedForLotId])
+  @@map("seller_charges")
 }
 
 // ─── KycDocument — hochgeladene Verifizierungsdokumente ──────────────────────

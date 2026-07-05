@@ -1,80 +1,54 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
 
 const A = "#d97706";
 
-// Status-Stufen (Incoterms-basiert)
-type DeliveryStatus = "VERTRAG_SIGNIERT" | "BEREIT_ABHOLUNG" | "IN_TRANSPORT" | "GELIEFERT" | "ABGESCHLOSSEN";
+type DeliveryStatus = "MATCHED" | "PAYMENT_ESCROW" | "READY_FOR_PICKUP" | "IN_TRANSIT" | "DELIVERED" | "COMPLETED";
 
 interface Delivery {
-  id:              string;
-  contractNumber:  string;
-  commodity:       string;
-  quantity:        string;
-  unit:            string;
-  incoterms:       string;
-  buyerOrg:        string;
-  destination:     string;
-  status:          DeliveryStatus;
-  updatedAt:       string;
-  totalValue:      string;
+  id:             string;
+  lotId:          string;
+  contractNumber: string;
+  totalValue:     string;
+  deliveryStatus: DeliveryStatus;
+  pickupCode:     string | null;
+  cmrUploadedAt:  string | null;
+  deliveredAt:    string | null;
+  updatedAt:      string;
+  buyer: {
+    organization: { name: string; city: string } | null;
+  } | null;
+  lot: {
+    commodity:  string;
+    quantity:   string;
+    unit:       string;
+    incoterms:  string | null;
+  } | null;
 }
 
-const DEMO_DELIVERIES: Delivery[] = [
-  {
-    id: "DEL-001",
-    contractNumber: "EUCX-LOT-2026-000001",
-    commodity: "Betonstahl BST 500S — 12mm",
-    quantity: "250",
-    unit: "TON",
-    incoterms: "DAP",
-    buyerOrg: "Musterbau AG",
-    destination: "Frankfurt am Main",
-    status: "IN_TRANSPORT",
-    updatedAt: "2026-07-04T10:30:00Z",
-    totalValue: "2375000",
-  },
-  {
-    id: "DEL-002",
-    contractNumber: "EUCX-LOT-2026-000002",
-    commodity: "Walzdraht 6,5mm",
-    quantity: "150",
-    unit: "TON",
-    incoterms: "FCA",
-    buyerOrg: "DrahtTech GmbH",
-    destination: "Hamburg",
-    status: "BEREIT_ABHOLUNG",
-    updatedAt: "2026-07-03T14:00:00Z",
-    totalValue: "1230000",
-  },
-  {
-    id: "DEL-003",
-    contractNumber: "EUCX-LOT-2026-000003",
-    commodity: "Betonstahl BST 500S — 16mm",
-    quantity: "320",
-    unit: "TON",
-    incoterms: "DAP",
-    buyerOrg: "Stadtwerke Köln",
-    destination: "Köln",
-    status: "ABGESCHLOSSEN",
-    updatedAt: "2026-06-28T09:00:00Z",
-    totalValue: "3040000",
-  },
-];
-
 const STEPS: { key: DeliveryStatus; label: string; hint: string }[] = [
-  { key: "VERTRAG_SIGNIERT",  label: "Vertrag signiert",      hint: "Kaufvertrag beidseitig unterzeichnet" },
-  { key: "BEREIT_ABHOLUNG",  label: "Bereit zur Abholung",   hint: "Ware bereit im Lager / am Werk" },
-  { key: "IN_TRANSPORT",     label: "In Transport",           hint: "Ware unterwegs — Lieferschein aktiv" },
-  { key: "GELIEFERT",        label: "Geliefert",              hint: "Empfangsbestätigung beim Käufer" },
-  { key: "ABGESCHLOSSEN",    label: "Abgeschlossen",          hint: "CBAM-Zollquittung erhalten, Rechnung bezahlt" },
+  { key: "MATCHED",          label: "Vertrag generiert",    hint: "Kaufvertrag nach Auktionsabschluss" },
+  { key: "PAYMENT_ESCROW",   label: "Zahlung Treuhand",     hint: "Kaufpreis im Escrow-Konto" },
+  { key: "READY_FOR_PICKUP", label: "Bereit zur Abholung",  hint: "Ware bereit, Abholcode aktiv" },
+  { key: "IN_TRANSIT",       label: "In Transport",          hint: "CMR hochgeladen, Ware unterwegs" },
+  { key: "DELIVERED",        label: "Geliefert",             hint: "Empfangsbestätigung beim Käufer" },
+  { key: "COMPLETED",        label: "Abgeschlossen",         hint: "CBAM-Zollquittung erhalten" },
 ];
 
 const STATUS_IDX: Record<DeliveryStatus, number> = {
-  VERTRAG_SIGNIERT: 0, BEREIT_ABHOLUNG: 1, IN_TRANSPORT: 2, GELIEFERT: 3, ABGESCHLOSSEN: 4,
+  MATCHED: 0, PAYMENT_ESCROW: 1, READY_FOR_PICKUP: 2, IN_TRANSIT: 3, DELIVERED: 4, COMPLETED: 5,
+};
+
+const NEXT_STATUS: Record<DeliveryStatus, DeliveryStatus | null> = {
+  MATCHED:          "PAYMENT_ESCROW",
+  PAYMENT_ESCROW:   "READY_FOR_PICKUP",
+  READY_FOR_PICKUP: "IN_TRANSIT",
+  IN_TRANSIT:       "DELIVERED",
+  DELIVERED:        "COMPLETED",
+  COMPLETED:        null,
 };
 
 const fmtEur = (v: string) =>
@@ -84,14 +58,96 @@ const fmtDate = (iso: string) =>
   new Date(iso).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 
 export function SellerLogisticsClient() {
-  const router = useRouter();
-  const [selected, setSelected] = useState<string | null>(null);
+  const router   = useRouter();
+  const [token,     setToken]     = useState("");
+  const [deliveries, setDeliveries] = useState<Delivery[]>([]);
+  const [loading,   setLoading]   = useState(true);
+  const [selected,  setSelected]  = useState<string | null>(null);
+  const [advancing, setAdvancing] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [error,     setError]     = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!localStorage.getItem("accessToken")) router.replace("/login");
+    const tkn = localStorage.getItem("accessToken") ?? "";
+    setToken(tkn);
+    if (!tkn) router.replace("/login");
   }, [router]);
 
-  const sel = DEMO_DELIVERIES.find((d) => d.id === selected);
+  const load = useCallback(async () => {
+    if (!token) return;
+    setLoading(true);
+    try {
+      const r = await fetch("/api/seller/deliveries", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (r.ok) {
+        const data = await r.json() as Delivery[];
+        setDeliveries(data);
+      }
+    } catch { /* ignore */ }
+    finally { setLoading(false); }
+  }, [token]);
+
+  useEffect(() => { void load(); }, [load]);
+
+  const sel = deliveries.find((d) => d.id === selected);
+
+  async function advanceStatus(delivery: Delivery) {
+    const next = NEXT_STATUS[delivery.deliveryStatus];
+    if (!next) return;
+    // CMR-Upload wird über separaten Button gemacht
+    if (next === "IN_TRANSIT") return;
+    setAdvancing(true);
+    setError("");
+    try {
+      const r = await fetch(`/api/auction/lots/${delivery.lotId}/delivery`, {
+        method:  "PATCH",
+        headers: {
+          Authorization:  `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: next }),
+      });
+      if (r.ok) {
+        await load();
+      } else {
+        const d = await r.json() as { error?: string };
+        setError(d.error ?? "Fehler beim Statuswechsel.");
+      }
+    } catch {
+      setError("Netzwerkfehler.");
+    } finally {
+      setAdvancing(false);
+    }
+  }
+
+  async function uploadCmr(lotId: string) {
+    const file = fileRef.current?.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError("");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const r = await fetch(`/api/auction/lots/${lotId}/cmr-upload`, {
+        method:  "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body:    formData,
+      });
+      if (r.ok) {
+        if (fileRef.current) fileRef.current.value = "";
+        await load();
+      } else {
+        const d = await r.json() as { error?: string };
+        setError(d.error ?? "Fehler beim CMR-Upload.");
+      }
+    } catch {
+      setError("Netzwerkfehler.");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   return (
     <>
@@ -103,7 +159,7 @@ export function SellerLogisticsClient() {
         .log-page { max-width:1100px; margin:0 auto; padding:28px 24px 80px; }
         .log-title { font-size:20px; font-weight:700; color:#111827; margin-bottom:4px; }
         .log-sub { font-size:12.5px; color:#6b7280; margin-bottom:24px; }
-        .log-layout { display:grid; grid-template-columns:1fr 340px; gap:20px; }
+        .log-layout { display:grid; grid-template-columns:1fr 360px; gap:20px; }
         @media(max-width:768px){ .log-layout { grid-template-columns:1fr; } }
         .log-table-wrap { overflow-x:auto; }
         .log-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e5e7eb; font-size:13px; }
@@ -117,23 +173,36 @@ export function SellerLogisticsClient() {
         .log-detail-title { font-size:13px; font-weight:700; color:#111827; margin-bottom:16px; }
         .log-step { display:flex; align-items:flex-start; gap:12px; margin-bottom:14px; }
         .log-step-dot { width:20px; height:20px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; margin-top:1px; }
-        .log-step-dot.done { background:${A}; color:#fff; }
+        .log-step-dot.done    { background:${A}; color:#fff; }
         .log-step-dot.current { background:#154194; color:#fff; }
-        .log-step-dot.future { background:#e5e7eb; color:#9ca3af; }
+        .log-step-dot.future  { background:#e5e7eb; color:#9ca3af; }
         .log-step-body { flex:1; }
         .log-step-label { font-size:13px; font-weight:600; color:#111827; }
         .log-step-label.future { color:#9ca3af; font-weight:400; }
         .log-step-hint { font-size:11px; color:#6b7280; margin-top:2px; }
         .log-connector { width:2px; height:14px; margin-left:9px; }
-        .log-connector.done { background:${A}; }
+        .log-connector.done   { background:${A}; }
         .log-connector.future { background:#e5e7eb; }
         .log-meta { margin-top:16px; padding-top:16px; border-top:1px solid #f3f4f6; }
         .log-meta-row { display:flex; justify-content:space-between; padding:6px 0; font-size:12.5px; }
         .log-meta-label { color:#6b7280; }
         .log-meta-val { font-weight:600; color:#111827; }
-        .log-cbam-btn { display:block; text-align:center; margin-top:14px; padding:9px; background:${A}; color:#fff; font-size:12.5px; font-weight:700; border:none; cursor:pointer; width:100%; transition:background .15s; }
-        .log-cbam-btn:hover { background:#b45309; }
+        .log-btn { display:block; text-align:center; margin-top:12px; padding:9px; font-size:12.5px; font-weight:700; border:none; cursor:pointer; width:100%; transition:background .15s; }
+        .log-btn-primary { background:${A}; color:#fff; }
+        .log-btn-primary:hover { background:#b45309; }
+        .log-btn-primary:disabled { background:#d1d5db; cursor:not-allowed; }
+        .log-btn-outline { background:#fff; color:#374151; border:1px solid #d1d5db; margin-top:8px; }
+        .log-btn-outline:hover { background:#f9fafb; }
         .log-empty-detail { color:#9ca3af; font-size:12.5px; padding:20px; text-align:center; }
+        .log-pickup-box { background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; margin-top:12px; text-align:center; }
+        .log-pickup-code { font-family:"IBM Plex Mono",monospace; font-size:28px; font-weight:700; color:#16a34a; letter-spacing:.15em; }
+        .log-pickup-label { font-size:10.5px; color:#6b7280; margin-top:4px; font-weight:600; text-transform:uppercase; }
+        .log-cmr-section { margin-top:14px; padding:14px; background:#f8f9fa; border:1px solid #e5e7eb; }
+        .log-cmr-title { font-size:12px; font-weight:700; color:#374151; margin-bottom:8px; }
+        .log-file-input { width:100%; font-size:12px; margin-bottom:8px; }
+        .log-err { background:#fef2f2; border:1px solid #fecaca; padding:10px 14px; margin-bottom:14px; font-size:12.5px; color:#dc2626; }
+        .log-empty { padding:40px; text-align:center; color:#9ca3af; font-size:13px; background:#fff; border:1px solid #e5e7eb; }
+        .log-loading { padding:40px; text-align:center; color:#9ca3af; font-size:13px; }
       `}</style>
 
       <div className="log">
@@ -142,7 +211,7 @@ export function SellerLogisticsClient() {
           <div className="log-stripe-inner">
             <span className="log-badge">LOGISTIK</span>
             <span style={{ fontSize: 11, color: "rgba(253,230,138,.7)" }}>
-              Lieferungen verfolgen · Incoterms · CBAM-Zollquittung
+              Lieferungen verfolgen · Incoterms · CBAM-Zollquittung · CMR-Upload
             </span>
           </div>
         </div>
@@ -150,62 +219,72 @@ export function SellerLogisticsClient() {
         <div className="log-page">
           <div className="log-title">Liefer-Cockpit</div>
           <div className="log-sub">
-            Vertrag signiert → Abholung → Transport → Lieferung → Zollabschluss
+            Vertrag generiert → Zahlung → Abholung → Transport → Lieferung → Abschluss
           </div>
+
+          {error && <div className="log-err">{error}</div>}
 
           <div className="log-layout">
             {/* Tabelle */}
             <div>
-              <div className="log-table-wrap">
-                <table className="log-table">
-                  <thead>
-                    <tr>
-                      <th>Kontrakt</th>
-                      <th>Ware</th>
-                      <th>Käufer / Ziel</th>
-                      <th>Wert</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {DEMO_DELIVERIES.map((d) => {
-                      const idx = STATUS_IDX[d.status];
-                      const colors = ["#6b7280", "#d97706", "#2563eb", "#16a34a", "#154194"];
-                      return (
-                        <tr
-                          key={d.id}
-                          className={selected === d.id ? "selected" : ""}
-                          onClick={() => setSelected(d.id === selected ? null : d.id)}
-                        >
-                          <td>
-                            <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: 11, color: "#9ca3af" }}>
-                              {d.contractNumber}
-                            </div>
-                          </td>
-                          <td>
-                            <div style={{ fontWeight: 600 }}>{d.commodity}</div>
-                            <div style={{ fontSize: 11.5, color: "#6b7280" }}>
-                              {d.quantity} {d.unit} · {d.incoterms}
-                            </div>
-                          </td>
-                          <td>
-                            <div style={{ fontSize: 12.5 }}>{d.buyerOrg}</div>
-                            <div style={{ fontSize: 11, color: "#9ca3af" }}>{d.destination}</div>
-                          </td>
-                          <td style={{ fontFamily: "'IBM Plex Mono',monospace", fontWeight: 700 }}>
-                            {fmtEur(d.totalValue)}
-                          </td>
-                          <td>
-                            <span className="log-status" style={{ background: colors[idx] ?? "#6b7280" }}>
-                              {STEPS[idx]?.label ?? d.status}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+              {loading ? (
+                <div className="log-loading">Lieferungen werden geladen…</div>
+              ) : deliveries.length === 0 ? (
+                <div className="log-empty">
+                  Noch keine abgeschlossenen Kontrakte. Sobald eine Auktion endet und Sie gewonnen haben, erscheinen die Lieferungen hier.
+                </div>
+              ) : (
+                <div className="log-table-wrap">
+                  <table className="log-table">
+                    <thead>
+                      <tr>
+                        <th>Kontrakt</th>
+                        <th>Ware</th>
+                        <th>Käufer / Ort</th>
+                        <th>Wert</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {deliveries.map((d) => {
+                        const idx    = STATUS_IDX[d.deliveryStatus];
+                        const colors = ["#6b7280", "#154194", "#d97706", "#2563eb", "#16a34a", "#9333ea"];
+                        return (
+                          <tr
+                            key={d.id}
+                            className={selected === d.id ? "selected" : ""}
+                            onClick={() => setSelected(d.id === selected ? null : d.id)}
+                          >
+                            <td>
+                              <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: 11, color: "#9ca3af" }}>
+                                {d.contractNumber}
+                              </div>
+                            </td>
+                            <td>
+                              <div style={{ fontWeight: 600 }}>{d.lot?.commodity ?? "—"}</div>
+                              <div style={{ fontSize: 11.5, color: "#6b7280" }}>
+                                {d.lot?.quantity ? parseFloat(d.lot.quantity).toLocaleString("de-DE") : "—"} {d.lot?.unit ?? ""} · {d.lot?.incoterms ?? "—"}
+                              </div>
+                            </td>
+                            <td>
+                              <div style={{ fontSize: 12.5 }}>{d.buyer?.organization?.name ?? "—"}</div>
+                              <div style={{ fontSize: 11, color: "#9ca3af" }}>{d.buyer?.organization?.city ?? "—"}</div>
+                            </td>
+                            <td style={{ fontFamily: "'IBM Plex Mono',monospace", fontWeight: 700 }}>
+                              {fmtEur(d.totalValue)}
+                            </td>
+                            <td>
+                              <span className="log-status" style={{ background: colors[idx] ?? "#6b7280" }}>
+                                {STEPS[idx]?.label ?? d.deliveryStatus}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
 
             {/* Detail-Panel */}
@@ -216,11 +295,11 @@ export function SellerLogisticsClient() {
                 </div>
               ) : (
                 <>
-                  <div className="log-detail-title">{sel.commodity}</div>
+                  <div className="log-detail-title">{sel.lot?.commodity ?? "Lieferung"}</div>
 
                   {/* Stepper */}
                   {STEPS.map((step, i) => {
-                    const current = STATUS_IDX[sel.status];
+                    const current   = STATUS_IDX[sel.deliveryStatus];
                     const isDone    = i < current;
                     const isCurrent = i === current;
                     const isFuture  = i > current;
@@ -242,31 +321,84 @@ export function SellerLogisticsClient() {
                     );
                   })}
 
+                  {/* Abholcode-Box */}
+                  {sel.pickupCode && (
+                    <div className="log-pickup-box">
+                      <div className="log-pickup-code">{sel.pickupCode}</div>
+                      <div className="log-pickup-label">Abholcode — für Käufer sichtbar</div>
+                    </div>
+                  )}
+
+                  {/* CMR-Upload-Bereich */}
+                  {(sel.deliveryStatus === "READY_FOR_PICKUP" || sel.deliveryStatus === "IN_TRANSIT") && (
+                    <div className="log-cmr-section">
+                      <div className="log-cmr-title">
+                        {sel.cmrUploadedAt ? `CMR hochgeladen (${fmtDate(sel.cmrUploadedAt)})` : "CMR-Frachtbrief hochladen"}
+                      </div>
+                      {!sel.cmrUploadedAt && (
+                        <>
+                          <input
+                            ref={fileRef}
+                            type="file"
+                            accept=".pdf,image/jpeg,image/png"
+                            className="log-file-input"
+                          />
+                          <button
+                            className="log-btn log-btn-primary"
+                            disabled={uploading}
+                            onClick={() => void uploadCmr(sel.lotId)}
+                          >
+                            {uploading ? "Wird hochgeladen…" : "CMR hochladen → IN_TRANSIT"}
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Nächster Status Button */}
+                  {(() => {
+                    const next = NEXT_STATUS[sel.deliveryStatus];
+                    if (!next || next === "IN_TRANSIT") return null; // IN_TRANSIT via CMR-Upload
+                    return (
+                      <button
+                        className="log-btn log-btn-primary"
+                        disabled={advancing}
+                        onClick={() => void advanceStatus(sel)}
+                        style={{ marginTop: 14 }}
+                      >
+                        {advancing ? "Wird aktualisiert…" : `→ ${STEPS[STATUS_IDX[next]]?.label ?? next}`}
+                      </button>
+                    );
+                  })()}
+
                   {/* Meta */}
                   <div className="log-meta">
                     {[
-                      ["Kontrakt", sel.contractNumber],
-                      ["Käufer", sel.buyerOrg],
-                      ["Lieferziel", sel.destination],
-                      ["Incoterms", sel.incoterms],
-                      ["Menge", `${sel.quantity} ${sel.unit}`],
-                      ["Gesamtwert", fmtEur(sel.totalValue)],
+                      ["Kontrakt",    sel.contractNumber],
+                      ["Käufer",      sel.buyer?.organization?.name ?? "—"],
+                      ["Lieferort",   sel.buyer?.organization?.city ?? "—"],
+                      ["Incoterms",   sel.lot?.incoterms ?? "—"],
+                      ["Menge",       sel.lot ? `${parseFloat(sel.lot.quantity).toLocaleString("de-DE")} ${sel.lot.unit}` : "—"],
+                      ["Gesamtwert",  fmtEur(sel.totalValue)],
                       ["Aktualisiert", fmtDate(sel.updatedAt)],
                     ].map(([l, v]) => (
                       <div className="log-meta-row" key={l}>
                         <span className="log-meta-label">{l}</span>
-                        <span className="log-meta-val" style={{ fontFamily: l === "Kontrakt" || l === "Incoterms" ? "'IBM Plex Mono',monospace" : "inherit", fontSize: l === "Kontrakt" ? 11 : 13 }}>
+                        <span className="log-meta-val" style={{
+                          fontFamily: l === "Kontrakt" || l === "Incoterms" ? "'IBM Plex Mono',monospace" : "inherit",
+                          fontSize:   l === "Kontrakt" ? 11 : 13,
+                        }}>
                           {v}
                         </span>
                       </div>
                     ))}
                   </div>
 
-                  {sel.status === "GELIEFERT" || sel.status === "ABGESCHLOSSEN" ? (
-                    <button className="log-cbam-btn">
+                  {(sel.deliveryStatus === "DELIVERED" || sel.deliveryStatus === "COMPLETED") && (
+                    <button className="log-btn log-btn-outline">
                       CBAM-Zollquittung exportieren →
                     </button>
-                  ) : null}
+                  )}
                 </>
               )}
             </div>
