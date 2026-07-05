@@ -1,45 +1,155 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://eucx.eu/</loc><lastmod>2026-03-26T20:36:08.829Z</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
-  <url><loc>https://eucx.eu/trading</loc><lastmod>2026-03-26T20:36:08.829Z</lastmod><changefreq>hourly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://eucx.eu/katalog</loc><lastmod>2026-03-26T20:36:08.829Z</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://eucx.eu/marktpreise</loc><lastmod>2026-03-26T20:36:08.829Z</lastmod><changefreq>hourly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://eucx.eu/insights</loc><lastmod>2026-03-26T20:36:08.829Z</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon</loc><lastmod>2026-03-26T20:36:08.829Z</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://eucx.eu/insights/akademie</loc><lastmod>2026-03-26T20:36:08.829Z</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://eucx.eu/insights/analysen</loc><lastmod>2026-03-26T20:36:08.829Z</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://eucx.eu/insights/regulatorik</loc><lastmod>2026-03-26T20:36:08.829Z</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/betonstahl</loc><lastmod>2026-03-23T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/otf-eucx</loc><lastmod>2026-03-23T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/cbam</loc><lastmod>2026-03-23T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/lme-notierung</loc><lastmod>2026-03-23T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/incoterms-2020</loc><lastmod>2026-03-23T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/abwicklungsgarantie</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/cbam-detail</loc><lastmod>2026-03-23T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/mifid-ii-otf</loc><lastmod>2026-03-23T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/basismetalle</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/derivate-handel</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/esg-kriterien</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/force-majeure</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/gemeinsamer-zolltarif</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/hedging</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/just-in-time-logistik</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/kontrahentenrisiko</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/ne-metalle</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/preisbildung</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/qualitaetszertifikate</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/reach-verordnung</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/spot-markt</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/termingeschaefte</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/ursprungszeugnis</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/volatilitaet</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/warenterminboerse</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/xetra-gold</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/yield-management</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/zahlungsbedingungen</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/mar-marktmissbrauch</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/emir-derivate</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/lexikon/gwg-geldwaesche</loc><lastmod>2026-03-25T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://eucx.eu/insights/akademie/digitaler-rohstoffhandel-eu</loc><lastmod>2026-03-15T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://eucx.eu/insights/akademie/erste-schritte-eucx</loc><lastmod>2026-03-23T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <!-- ── Hauptseiten ── -->
+  <url><loc>https://eucx.eu/</loc><lastmod>2026-07-05</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://eucx.eu/marktpreise</loc><lastmod>2026-07-05</lastmod><changefreq>hourly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://eucx.eu/faq</loc><lastmod>2026-07-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://eucx.eu/agb</loc><lastmod>2026-07-05</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://eucx.eu/impressum</loc><lastmod>2026-07-05</lastmod><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://eucx.eu/datenschutz</loc><lastmod>2026-07-05</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+
+  <!-- ── Metalle / Stahlformen ── -->
+  <url><loc>https://eucx.eu/metalle</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://eucx.eu/metalle/rundprofile</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/metalle/vierkantprofile</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/metalle/sechskantprofile</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/metalle/flachprofile</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/metalle/rundrohre</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/metalle/vierkantrohre</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/metalle/rohrzubehoer</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/metalle/winkelprofile</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/metalle/u-profile</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/metalle/t-profile</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/metalle/traeger</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/metalle/sonderprofile</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/metalle/bleche</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/metalle/lochbleche</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+
+  <!-- ── Katalog (Stabstahl) ── -->
+  <url><loc>https://eucx.eu/katalog/betonstahl</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://eucx.eu/katalog/rundstahl</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.78</priority></url>
+  <url><loc>https://eucx.eu/katalog/vierkant</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/katalog/sechskant</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/katalog/flachstahl</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/katalog/walzdraht</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+
+  <!-- ── Katalog (Träger & Profile) ── -->
+  <url><loc>https://eucx.eu/katalog/traeger</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.78</priority></url>
+  <url><loc>https://eucx.eu/katalog/t-traeger</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/katalog/winkelstahl</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/katalog/u-profile</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/katalog/leichtstahlprofile</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.72</priority></url>
+  <url><loc>https://eucx.eu/katalog/trockenbauprofile</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+
+  <!-- ── Katalog (Rohre) ── -->
+  <url><loc>https://eucx.eu/katalog/nahtlosrohr</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.78</priority></url>
+  <url><loc>https://eucx.eu/katalog/geschweisstes-rohr</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/katalog/quadratrohr</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/katalog/rechteckrohr</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/katalog/ovalrohr</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/katalog/sonderrohre</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+
+  <!-- ── Katalog (Bleche & Band) ── -->
+  <url><loc>https://eucx.eu/katalog/blech-warmgewalzt</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.78</priority></url>
+  <url><loc>https://eucx.eu/katalog/blech-kaltgewalzt</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/katalog/blech-verzinkt</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/katalog/blech-lackiert</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.72</priority></url>
+  <url><loc>https://eucx.eu/katalog/lochblech</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/katalog/riffelblech</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/katalog/band-streifen</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+
+  <!-- ── Katalog (Dach & Fassade) ── -->
+  <url><loc>https://eucx.eu/katalog/trapezblech</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/katalog/metallziegel</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.72</priority></url>
+  <url><loc>https://eucx.eu/katalog/sandwichpaneele</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.72</priority></url>
+
+  <!-- ── Katalog (Draht & Seil) ── -->
+  <url><loc>https://eucx.eu/katalog/stahldraht</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/katalog/schweissdraht</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.73</priority></url>
+  <url><loc>https://eucx.eu/katalog/stahlseil</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.72</priority></url>
+
+  <!-- ── Katalog (Befestigungstechnik) ── -->
+  <url><loc>https://eucx.eu/katalog/schrauben-muttern</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.73</priority></url>
+  <url><loc>https://eucx.eu/katalog/anker</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.72</priority></url>
+  <url><loc>https://eucx.eu/katalog/naegel-duebel</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/katalog/sonder-verbinder</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.68</priority></url>
+
+  <!-- ── Katalog (Spezial) ── -->
+  <url><loc>https://eucx.eu/katalog/schienen</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.72</priority></url>
+  <url><loc>https://eucx.eu/katalog/stahlnetze</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/katalog/schmiedeteile</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/katalog/spundwand</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/katalog/knueppel</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.68</priority></url>
+  <url><loc>https://eucx.eu/katalog/verbrauchsmaterial</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.68</priority></url>
+  <url><loc>https://eucx.eu/katalog/schrott</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.68</priority></url>
+
+  <!-- ── Dünger ── -->
+  <url><loc>https://eucx.eu/duenger</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://eucx.eu/duenger/kaliumduenger</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.72</priority></url>
+  <url><loc>https://eucx.eu/duenger/npk-duenger</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.72</priority></url>
+  <url><loc>https://eucx.eu/duenger/stickstoffduenger</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.72</priority></url>
+  <url><loc>https://eucx.eu/duenger/phosphorduenger</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.72</priority></url>
+
+  <!-- ── Insights ── -->
+  <url><loc>https://eucx.eu/insights</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://eucx.eu/insights/akademie</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.78</priority></url>
+  <url><loc>https://eucx.eu/insights/analysen</loc><lastmod>2026-07-05</lastmod><changefreq>daily</changefreq><priority>0.78</priority></url>
+  <url><loc>https://eucx.eu/insights/regulatorik</loc><lastmod>2026-07-05</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+
+  <!-- ── Insights / Lexikon-Einträge ── -->
+  <url><loc>https://eucx.eu/insights/lexikon/betonstahl</loc><lastmod>2026-03-23</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/otf-eucx</loc><lastmod>2026-03-23</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/cbam</loc><lastmod>2026-03-23</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/lme-notierung</loc><lastmod>2026-03-23</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/incoterms-2020</loc><lastmod>2026-03-23</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/abwicklungsgarantie</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/cbam-detail</loc><lastmod>2026-03-23</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/mifid-ii-otf</loc><lastmod>2026-03-23</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/basismetalle</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/derivate-handel</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/esg-kriterien</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/force-majeure</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/gemeinsamer-zolltarif</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/hedging</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/just-in-time-logistik</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/kontrahentenrisiko</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/ne-metalle</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/preisbildung</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/qualitaetszertifikate</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/reach-verordnung</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/spot-markt</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/termingeschaefte</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/ursprungszeugnis</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/volatilitaet</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/warenterminboerse</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/xetra-gold</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/yield-management</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/zahlungsbedingungen</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/mar-marktmissbrauch</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/emir-derivate</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://eucx.eu/insights/lexikon/gwg-geldwaesche</loc><lastmod>2026-03-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+
+  <!-- ── Insights / Akademie-Artikel ── -->
+  <url><loc>https://eucx.eu/insights/akademie/digitaler-rohstoffhandel-eu</loc><lastmod>2026-03-15</lastmod><changefreq>monthly</changefreq><priority>0.72</priority></url>
+  <url><loc>https://eucx.eu/insights/akademie/erste-schritte-eucx</loc><lastmod>2026-03-23</lastmod><changefreq>monthly</changefreq><priority>0.72</priority></url>
+
+  <!-- ── Wissen / Artikel ── -->
+  <url><loc>https://eucx.eu/wissen</loc><lastmod>2026-07-05</lastmod><changefreq>weekly</changefreq><priority>0.78</priority></url>
+  <url><loc>https://eucx.eu/wissen/stahlhandel-b2b</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/wissen/rohstoffmarkt-eu</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/wissen/otf-regulierung-mifid</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/wissen/betonstahl-rebar</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/wissen/incoterms-rohstoffhandel</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/wissen/kyc-aml-b2b-handel</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/wissen/orderbuch-preisfindung</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/wissen/margin-sicherheitsleistungen</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/wissen/nachhaltigkeit-rohstoffhandel</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/wissen/kupfermarkt-eu</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/wissen/walzdraht-stabstahl</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/wissen/zahlungsabwicklung-rohstoffhandel</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/wissen/preisabsicherung-hedging</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://eucx.eu/wissen/gruener-stahl</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.70</priority></url>
+
 </urlset>
