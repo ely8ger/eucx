@@ -8,12 +8,14 @@ import { LanguageSwitcher }    from "@/components/LanguageSwitcher";
 import { NotificationBell }    from "@/components/NotificationBell";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
-const BLUE   = "#154194";
-const BLUE2  = "#0f3070";
-const ACTIVE = "#002D72";
-const F      = "'IBM Plex Sans', Arial, sans-serif";
-const DARK   = "#0d1b2a";
-const MUTED  = "#6b7280";
+const BLUE        = "#154194";
+const BLUE2       = "#0f3070";
+const ACTIVE      = "#002D72";
+const SELLER_CLR  = "#d97706";
+const SELLER_CLR2 = "#b45309";
+const F           = "'IBM Plex Sans', Arial, sans-serif";
+const DARK        = "#0d1b2a";
+const MUTED       = "#6b7280";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface NavItem {
@@ -213,7 +215,7 @@ const fmtEur = (v: string) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
 
 // ─── NavLink ──────────────────────────────────────────────────────────────────
-function NavLink({ item, active }: { item: NavItem; active: boolean }) {
+function NavLink({ item, active, accentColor }: { item: NavItem; active: boolean; accentColor: string }) {
   const [hovered, setHovered] = useState(false);
 
   if (item.disabled) {
@@ -238,9 +240,9 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
         display: "inline-flex", alignItems: "center",
         fontSize: 13, fontFamily: F,
         fontWeight: active ? 600 : 400,
-        color: active ? ACTIVE : (hovered ? BLUE : MUTED),
+        color: active ? DARK : (hovered ? accentColor : MUTED),
         textDecoration: "none",
-        borderBottom: `3px solid ${(active || hovered) ? (active ? ACTIVE : BLUE) : "transparent"}`,
+        borderBottom: `3px solid ${(active || hovered) ? accentColor : "transparent"}`,
         transition: "color .15s, border-color .15s",
         whiteSpace: "nowrap",
       }}
@@ -475,8 +477,9 @@ export function EucxHeader() {
       .catch(() => {});
   }, []);
 
-  const context  = resolveContext(pathname);
+  const context     = resolveContext(pathname);
   const navItems: NavItem[] = context ? (NAV[context] ?? []) : [];
+  const accentColor = context === "seller" ? SELLER_CLR : BLUE;
 
   function isActive(item: NavItem): boolean {
     if (item.disabled || item.href === "#") return false;
@@ -534,7 +537,7 @@ export function EucxHeader() {
         {/* MainBar — Logo | Dynamische Nav | Profil-Icons */}
         <div style={{
           backgroundColor: "#fff",
-          borderTop: `3px solid ${BLUE}`,
+          borderTop: `3px solid ${accentColor}`,
           boxShadow: "0 1px 4px rgba(0,0,0,.14)",
           height: 56,
         }}>
@@ -549,7 +552,7 @@ export function EucxHeader() {
             {/* Dynamische Nav — Mitte, kontextabhängig */}
             <nav style={{ flex: 1, display: "flex", alignItems: "center", height: 56, overflowX: "auto", overflowY: "hidden", scrollbarWidth: "none" }}>
               {navItems.map((item) => (
-                <NavLink key={item.label} item={item} active={isActive(item)} />
+                <NavLink key={item.label} item={item} active={isActive(item)} accentColor={accentColor} />
               ))}
             </nav>
 

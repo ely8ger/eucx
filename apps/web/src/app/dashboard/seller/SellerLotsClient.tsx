@@ -153,8 +153,8 @@ export function SellerLotsClient() {
         /* KYC Banner */
         .sl-kyc-warn { background:#fffbeb; border:1px solid #fcd34d; padding:14px 20px; margin-bottom:24px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
         .sl-kyc-warn-text { font-size:13px; color:#92400e; flex:1; }
-        .sl-kyc-warn-link { padding:8px 16px; background:#154194; color:#fff; font-size:12px; font-weight:700; text-decoration:none; white-space:nowrap; transition:background .15s; }
-        .sl-kyc-warn-link:hover { background:#1a52c2; }
+        .sl-kyc-warn-link { padding:8px 16px; background:#d97706; color:#fff; font-size:12px; font-weight:700; text-decoration:none; white-space:nowrap; transition:background .15s; }
+        .sl-kyc-warn-link:hover { background:#b45309; }
 
         /* Heading */
         .sl-heading { font-size:22px; font-weight:700; color:#111827; margin-bottom:4px; }
@@ -163,27 +163,27 @@ export function SellerLotsClient() {
         /* Filters */
         .sl-filters { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
         .sl-ftab { padding:7px 16px; border:1px solid #d1d5db; background:#fff; font-size:12.5px; color:#374151; cursor:pointer; font-weight:500; transition:all .15s; }
-        .sl-ftab.active { background:#154194; color:#fff; border-color:#154194; }
-        .sl-ftab:hover:not(.active) { background:#f3f4f6; }
+        .sl-ftab.active { background:#d97706; color:#fff; border-color:#d97706; }
+        .sl-ftab:hover:not(.active) { background:#fff7ed; }
 
         /* Table */
         .sl-table-wrap { overflow-x:auto; }
         .sl-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e5e7eb; font-size:13px; }
-        .sl-table th { padding:11px 14px; text-align:left; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#9ca3af; border-bottom:2px solid #154194; background:#fff; white-space:nowrap; }
+        .sl-table th { padding:11px 14px; text-align:left; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#9ca3af; border-bottom:2px solid #d97706; background:#fff; white-space:nowrap; }
         .sl-table td { padding:14px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
         .sl-table tr:last-child td { border-bottom:none; }
-        .sl-table tr:hover td { background:#fafafa; }
+        .sl-table tr:hover td { background:#fffbf5; }
 
         /* Phase badge */
         .sl-phase { display:inline-block; padding:3px 9px; font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#fff; }
 
         /* Action button */
-        .sl-btn-reg { padding:7px 14px; background:#154194; color:#fff; font-size:12px; font-weight:700; border:none; cursor:pointer; white-space:nowrap; transition:background .15s,transform .1s; }
-        .sl-btn-reg:hover:not(:disabled) { background:#1a52c2; }
+        .sl-btn-reg { padding:7px 14px; background:#d97706; color:#fff; font-size:12px; font-weight:700; border:none; cursor:pointer; white-space:nowrap; transition:background .15s,transform .1s; }
+        .sl-btn-reg:hover:not(:disabled) { background:#b45309; }
         .sl-btn-reg:active:not(:disabled) { transform:scale(.97); }
         .sl-btn-reg:disabled { opacity:.4; cursor:not-allowed; }
-        .sl-btn-goto { padding:7px 14px; background:#fff; color:#154194; font-size:12px; font-weight:700; border:1.5px solid #154194; text-decoration:none; display:inline-block; white-space:nowrap; transition:all .15s; }
-        .sl-btn-goto:hover { background:#154194; color:#fff; }
+        .sl-btn-goto { padding:7px 14px; background:#fff; color:#d97706; font-size:12px; font-weight:700; border:1.5px solid #d97706; text-decoration:none; display:inline-block; white-space:nowrap; transition:all .15s; }
+        .sl-btn-goto:hover { background:#d97706; color:#fff; }
         .sl-badge-reg { display:inline-flex; align-items:center; gap:5px; padding:5px 10px; background:#f0fdf4; border:1px solid #bbf7d0; color:#15803d; font-size:11.5px; font-weight:600; }
 
         /* Empty */
@@ -195,6 +195,28 @@ export function SellerLotsClient() {
 
       <div className="sl-root">
         <EucxHeader />
+
+        {/* Verkäufer-Identitätsstreifen */}
+        <div style={{
+          background: "linear-gradient(90deg, #78350f 0%, #92400e 100%)",
+          borderBottom: "1px solid #b45309",
+          padding: "0 28px", height: 36,
+          display: "flex", alignItems: "center",
+          fontFamily: "'IBM Plex Sans', Arial, sans-serif",
+        }}>
+          <div style={{ maxWidth: 1080, margin: "0 auto", width: "100%", display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{
+              fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
+              color: "#fde68a", background: "rgba(255,255,255,.12)",
+              padding: "3px 10px",
+            }}>
+              VERKÄUFER-PORTAL
+            </span>
+            <span style={{ fontSize: 11, color: "rgba(253,230,138,.7)", letterSpacing: "0.02em" }}>
+              Ausschreibungen einsehen · Gebote abgeben · Umsatz generieren
+            </span>
+          </div>
+        </div>
 
         <div className="sl-page">
 
@@ -234,7 +256,7 @@ export function SellerLotsClient() {
             <button
               className="sl-ftab"
               onClick={loadLots}
-              style={{ marginLeft: "auto", color: "#154194", borderColor: "#154194" }}
+              style={{ marginLeft: "auto", color: "#d97706", borderColor: "#d97706" }}
             >
               ↻ Aktualisieren
             </button>

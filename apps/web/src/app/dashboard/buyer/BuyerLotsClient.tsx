@@ -354,7 +354,28 @@ export function BuyerLotsClient() {
 
       <div className="bl-root">
         <EucxHeader />
-        {/* ── Seiteninhalt ── */}
+
+        {/* Käufer-Identitätsstreifen */}
+        <div style={{
+          background: "linear-gradient(90deg, #0f2d6e 0%, #154194 100%)",
+          borderBottom: "1px solid #1a52c2",
+          padding: "0 28px", height: 36,
+          display: "flex", alignItems: "center",
+          fontFamily: "'IBM Plex Sans', Arial, sans-serif",
+        }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto", width: "100%", display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{
+              fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
+              color: "#bfdbfe", background: "rgba(255,255,255,.12)",
+              padding: "3px 10px",
+            }}>
+              KÄUFER-PORTAL
+            </span>
+            <span style={{ fontSize: 11, color: "rgba(191,219,254,.7)", letterSpacing: "0.02em" }}>
+              Ausschreibungen erstellen · Angebote vergleichen · Einkauf abschließen
+            </span>
+          </div>
+        </div>
 
         <div className="bl-page">
 
