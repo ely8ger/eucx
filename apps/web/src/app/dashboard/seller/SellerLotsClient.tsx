@@ -15,17 +15,20 @@ import { toast } from "sonner";
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 interface LotRow {
-  id:          string;
-  commodity:   string;
-  quantity:    string;
-  unit:        string;
-  phase:       "COLLECTION" | "PROPOSAL" | "REDUCTION" | "CONCLUSION";
-  startPrice:  string | null;
-  currentBest: string | null;
-  auctionEnd:  string | null;
-  createdAt:   string;
-  isRegistered: boolean;
-  _count: { bids: number; registrations: number };
+  id:               string;
+  commodity:        string;
+  quantity:         string;
+  unit:             string;
+  phase:            "COLLECTION" | "PROPOSAL" | "REDUCTION" | "CONCLUSION";
+  startPrice:       string | null;
+  currentBest:      string | null;
+  auctionEnd:       string | null;
+  createdAt:        string;
+  isRegistered:     boolean;
+  _count:           { bids: number; registrations: number };
+  co2PerTonne?:     string | null;
+  countryOfOrigin?: string | null;
+  incoterms?:       string | null;
 }
 
 interface KycInfo {
@@ -282,6 +285,7 @@ export function SellerLotsClient() {
                     <th>Menge</th>
                     <th>Phase</th>
                     <th>Limit / Bestes</th>
+                    <th>CBAM</th>
                     <th>Auktionsende</th>
                     <th>Bieter</th>
                     <th>Aktion</th>
@@ -311,6 +315,21 @@ export function SellerLotsClient() {
                             <span style={{ color: "#6b7280" }}>{fmtEur(lot.startPrice)}</span>
                           ) : (
                             <span style={{ color: "#9ca3af" }}>—</span>
+                          )}
+                        </td>
+                        <td style={{ fontSize: 11.5, color: "#374151", whiteSpace: "nowrap" }}>
+                          {lot.co2PerTonne ? (
+                            <div>
+                              <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 600, color: "#15803d" }}>
+                                {parseFloat(lot.co2PerTonne).toLocaleString("de-DE", { maximumFractionDigits: 1 })}
+                              </span>
+                              <span style={{ color: "#6b7280", fontSize: 10.5 }}> kg/t</span>
+                              {lot.countryOfOrigin && (
+                                <div style={{ fontSize: 10.5, color: "#9ca3af" }}>{lot.countryOfOrigin} · {lot.incoterms ?? "DAP"}</div>
+                              )}
+                            </div>
+                          ) : (
+                            <span style={{ color: "#d1d5db", fontSize: 11 }}>—</span>
                           )}
                         </td>
                         <td style={{ fontSize: 12, color: "#6b7280", whiteSpace: "nowrap" }}>

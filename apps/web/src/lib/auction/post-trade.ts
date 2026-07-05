@@ -66,13 +66,17 @@ export async function processLotConclusion(lotId: string): Promise<void> {
   const lot = await db.lot.findUnique({
     where:  { id: lotId },
     select: {
-      id:          true,
-      commodity:   true,
-      quantity:    true,
-      unit:        true,
-      currentBest: true,
-      lockedAt:    true,
-      winnerId:    true,
+      id:               true,
+      commodity:        true,
+      quantity:         true,
+      unit:             true,
+      currentBest:      true,
+      lockedAt:         true,
+      winnerId:         true,
+      co2PerTonne:      true,
+      countryOfOrigin:  true,
+      productionSiteId: true,
+      incoterms:        true,
       buyer: {
         select: {
           id:    true,
@@ -150,6 +154,11 @@ export async function processLotConclusion(lotId: string): Promise<void> {
     sellerFeeAmount: sellerFee.amount.toString(),
     buyerFeeRate:    buyerFee.rate.times(100).toFixed(2),
     buyerFeeAmount:  buyerFee.amount.toString(),
+    // CBAM-Felder (nullable — undefined wenn nicht gesetzt)
+    co2PerTonne:      lot.co2PerTonne?.toString(),
+    countryOfOrigin:  lot.countryOfOrigin ?? undefined,
+    productionSiteId: lot.productionSiteId ?? undefined,
+    incoterms:        lot.incoterms ?? undefined,
   });
 
   // DB schreiben: LotContract + LotFees in einer Transaktion

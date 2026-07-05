@@ -1121,6 +1121,17 @@ model Lot {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
+  // ── CBAM-Daten (Carbon Border Adjustment Mechanism — EU-Verordnung 2023/956) ─
+  // Pflichtangaben für grenzüberschreitenden Handel ab 2026.
+  // co2PerTonne:      kg CO₂-Äquivalent pro Tonne Ware (Verkäufer-Angabe)
+  // countryOfOrigin:  ISO 3166-1 alpha-2 Herkunftsland der Produktion (z.B. "TR", "CN", "UA")
+  // productionSiteId: EU-CBAM-Registriernummer der Produktionsstätte (CBAM-Registry-ID)
+  // incoterms:        Lieferbedingungen nach INCOTERMS® 2020 (DDP, FCA, DAP, FOB, CIF, EXW)
+  co2PerTonne      Decimal? @db.Decimal(10, 4)  // kg CO₂-Äq./Einheit
+  countryOfOrigin  String?                       // ISO 3166-1 alpha-2
+  productionSiteId String?                       // CBAM-Registry-ID der Produktionsstätte
+  incoterms        String?  @default("DAP")      // INCOTERMS® 2020
+
   buyer         User              @relation("LotBuyer",  fields: [buyerId],   references: [id])
   winner        User?             @relation("LotWinner", fields: [winnerId],   references: [id])
   bids          Bid[]

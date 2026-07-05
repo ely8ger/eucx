@@ -19,7 +19,8 @@
  *  [§2]         Auktionsdaten (Ware, Menge, Siegerpreis, Gesamtwert)
  *  [§3]         Plattformgebühren
  *  [§4]         Rechtliche Bestimmungen
- *  [§5]         Signatur-Abschnitt
+ *  [§5]         CBAM-Angaben (CO₂, Herkunftsland, Produktionsstätte, Incoterms)
+ *  [§6]         Signatur-Abschnitt
  *  [Footer]     SHA-256 Fingerprint
  */
 
@@ -52,6 +53,11 @@ export interface LotContractData {
   sellerFeeAmount: string;
   buyerFeeRate:    string;
   buyerFeeAmount:  string;
+  // CBAM-Daten (Carbon Border Adjustment Mechanism — EU-Verordnung 2023/956)
+  co2PerTonne?:      string;   // kg CO₂-Äq./Tonne
+  countryOfOrigin?:  string;   // ISO 3166-1 alpha-2
+  productionSiteId?: string;   // EU-CBAM-Registry-ID
+  incoterms?:        string;   // INCOTERMS® 2020, z.B. "DAP"
 }
 
 export interface GeneratedLotContract {
@@ -259,8 +265,44 @@ export async function generateLotContract(data: LotContractData): Promise<Genera
 
   y -= 10;
 
-  // ── §5 Signaturen ────────────────────────────────────────────────────────────
-  sectionHeader(page, bold, "§ 5  Elektronische Signatur (EDS)", M, y, CW, C);
+  // ── §5 CBAM-Angaben ──────────────────────────────────────────────────────────
+  sectionHeader(page, bold, "§ 5  CBAM — Carbon Border Adjustment Mechanism (EU-Verordnung 2023/956)", M, y, CW, C);
+  y -= 16;
+
+  const hasCbam = data.co2PerTonne || data.countryOfOrigin || data.productionSiteId;
+
+  if (hasCbam) {
+    // Grüner Hinweis-Balken
+    page.drawRectangle({ x: M, y: y - 14, width: CW, height: 14, color: rgb(0.9, 1, 0.93), borderColor: rgb(0, 0.65, 0.3), borderWidth: 0.5 });
+    txt(page, "CBAM-Angaben gemäß Art. 35 Abs. 2 EU-Verordnung 2023/956 — Deklarationspflichtige Ware", M + 8, y - 10, bold, 7, rgb(0, 0.5, 0.2));
+    y -= 22;
+
+    const cbamRows: [string, string][] = [];
+    if (data.countryOfOrigin)  cbamRows.push(["Herkunftsland:", `${data.countryOfOrigin}`]);
+    if (data.co2PerTonne)      cbamRows.push(["CO₂-Emissionen:", `${parseFloat(data.co2PerTonne).toLocaleString("de-DE", { maximumFractionDigits: 4 })} kg CO₂-Äq. / t`]);
+    if (data.productionSiteId) cbamRows.push(["CBAM-Registry-ID (Werk):", data.productionSiteId]);
+    cbamRows.push(["Lieferbedingung (Incoterms):", data.incoterms ?? "DAP"]);
+
+    for (const [label, value] of cbamRows) {
+      txt(page, label, M,       y, bold,   7.5, C.gray);
+      txt(page, value, M + 160, y, normal, 8,   C.black);
+      y -= 13;
+    }
+
+    y -= 5;
+    txt(page, "Der Verkäufer bestätigt die Richtigkeit der CBAM-Angaben. Der Käufer ist verantwortlich für die", M, y, normal, 6.5, C.gray);
+    y -= 10;
+    txt(page, "CBAM-Deklaration beim zuständigen EU-Zollbeauftragten gemäß DVO (EU) 2023/1773.", M, y, normal, 6.5, C.gray);
+  } else {
+    // Grauer Hinweis
+    page.drawRectangle({ x: M, y: y - 14, width: CW, height: 14, color: C.lightGray });
+    txt(page, "Keine CBAM-Angaben eingetragen. Bei grenzüberschreitendem Handel innerhalb der EU ggf. nachzureichen.", M + 8, y - 10, normal, 7, C.gray);
+  }
+
+  y -= 24;
+
+  // ── §6 Signaturen ────────────────────────────────────────────────────────────
+  sectionHeader(page, bold, "§ 6  Elektronische Signatur (EDS)", M, y, CW, C);
   y -= 20;
 
   const sigW = CW / 2 - 15;

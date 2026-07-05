@@ -198,4 +198,56 @@ Alle geschützten Endpunkte erfordern Bearer JWT. Die Rolle ist im Token codiert
 
 ---
 
-*Zuletzt aktualisiert: 2026-07-05 · EUCX Release v1.1 — API Guards + Hybrid Deployment*
+---
+
+## Regulatory Compliance — CBAM 2026
+
+> EU-Verordnung 2023/956 + Durchführungsverordnung (EU) 2023/1773  
+> **Pflicht ab 2026** für alle in die EU eingeführten CBAM-Waren: Stahl, Aluminium, Zement, Düngemittel, Strom, Wasserstoff.
+
+### Pflichtprüfung vor Production-Launch
+
+- [ ] CBAM-Pflichtfelder in Lot-Erstellungsformular sichtbar und validiert
+- [ ] `countryOfOrigin` + `co2PerTonne` + `productionSiteId` + `incoterms` in Datenbank gespeichert
+- [ ] PDF-Kaufvertrag enthält §5 CBAM-Deklarationssektion
+- [ ] `GET /api/auction/lots/[lotId]/cbam-export` liefert valides XML gemäß DVO 2023/1773
+- [ ] Käufer-Dashboard zeigt CO₂-Fußabdruck-Widget
+- [ ] Verkäufer-Tabelle zeigt CBAM-Informationsspalte
+
+### CBAM-Felder im Prisma-Schema (Lot-Modell)
+
+```prisma
+co2PerTonne      Decimal? @db.Decimal(10, 4)  // kg CO₂-Äq./Einheit
+countryOfOrigin  String?                       // ISO 3166-1 alpha-2 (z.B. "TR", "CN")
+productionSiteId String?                       // EU-CBAM-Registry-ID der Produktionsstätte
+incoterms        String?  @default("DAP")      // INCOTERMS® 2020
+```
+
+### CBAM-XML-Export
+
+```
+GET /api/auction/lots/[lotId]/cbam-export
+Authorization: Bearer <JWT>
+Response: application/xml — EUCX-CBAM-<LOTID>.xml
+```
+
+### Empfohlene nächste Schritte (Post-Launch)
+
+1. **Pflichtvalidierung**: `countryOfOrigin` + `co2PerTonne` als Pflichtfelder sobald regulatorisch erzwungen
+2. **Standardwert-Datenbank**: Bei fehlenden CO₂-Angaben → EU-Transitwerte aus CBAM-Datenbank (TAXUD)
+3. **CBAM-Registry-API**: Direkt-Abfrage der EU-CBAM-Registry zur Prüfung von `productionSiteId`
+4. **Quarterly Reporting**: Automatische CBAM-Quartalsmeldung per Bulk-XML-Export
+5. **Zertifikats-Hinterlegung**: Produktionsstätten-Zertifikate als Dokument anhängen
+
+### Wichtige Rechtsquellen
+
+| Dokument | Fundstelle |
+|----------|-----------|
+| CBAM-Verordnung | EUR-Lex: 32023R0956 |
+| Durchführungsverordnung | EUR-Lex: 32023R1773 |
+| CBAM-Transitwerte (Stahl) | Europäische Kommission, TAXUD |
+| CBAM-Registry | cbam.ec.europa.eu |
+
+---
+
+*Zuletzt aktualisiert: 2026-07-05 · EUCX Release v1.2 — CBAM-Integration vollständig*

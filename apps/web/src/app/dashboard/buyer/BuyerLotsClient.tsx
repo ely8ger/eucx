@@ -16,18 +16,32 @@ import { toast } from "sonner";
 type Phase = "COLLECTION" | "PROPOSAL" | "REDUCTION" | "CONCLUSION";
 
 interface LotRow {
-  id:          string;
-  commodity:   string;
-  quantity:    string;
-  unit:        string;
-  phase:       Phase;
-  startPrice:  string | null;
-  currentBest: string | null;
-  auctionEnd:  string | null;
-  createdAt:   string;
-  winnerId:    string | null;
-  _count:      { bids: number; registrations: number };
+  id:               string;
+  commodity:        string;
+  quantity:         string;
+  unit:             string;
+  phase:            Phase;
+  startPrice:       string | null;
+  currentBest:      string | null;
+  auctionEnd:       string | null;
+  createdAt:        string;
+  winnerId:         string | null;
+  _count:           { bids: number; registrations: number };
+  co2PerTonne?:     string | null;
+  countryOfOrigin?: string | null;
+  incoterms?:       string | null;
 }
+
+const EU_COUNTRIES: [string, string][] = [
+  ["DE", "Deutschland"], ["AT", "Österreich"], ["CH", "Schweiz (nicht EU)"],
+  ["TR", "Türkei"], ["UA", "Ukraine"], ["CN", "China"], ["IN", "Indien"],
+  ["RU", "Russland"], ["BR", "Brasilien"], ["MX", "Mexiko"],
+  ["US", "USA"], ["GB", "Vereinigtes Königreich"],
+  ["PL", "Polen"], ["CZ", "Tschechien"], ["SK", "Slowakei"],
+  ["RO", "Rumänien"], ["HU", "Ungarn"], ["BG", "Bulgarien"],
+];
+
+const INCOTERMS_LIST = ["EXW", "FCA", "FAS", "FOB", "CFR", "CIF", "CPT", "CIP", "DAP", "DPU", "DDP"] as const;
 
 interface KycInfo {
   verificationStatus: "GUEST" | "PENDING_VERIFICATION" | "VERIFIED" | "REJECTED" | "SUSPENDED";
@@ -79,12 +93,17 @@ export function BuyerLotsClient() {
   const [activeTab,     setActiveTab]     = useState<"all" | "collection" | "active" | "conclusion">("all");
 
   // Form state
-  const [commodity,   setCommodity]   = useState("");
-  const [quantity,    setQuantity]    = useState("");
-  const [unit,        setUnit]        = useState<typeof UNITS[number]>("TON");
-  const [startPrice,  setStartPrice]  = useState("");
-  const [description, setDescription] = useState("");
-  const [formError,   setFormError]   = useState<string | null>(null);
+  const [commodity,        setCommodity]        = useState("");
+  const [quantity,         setQuantity]         = useState("");
+  const [unit,             setUnit]             = useState<typeof UNITS[number]>("TON");
+  const [startPrice,       setStartPrice]       = useState("");
+  const [description,      setDescription]      = useState("");
+  const [formError,        setFormError]        = useState<string | null>(null);
+  // CBAM form state
+  const [co2PerTonne,      setCo2PerTonne]      = useState("");
+  const [countryOfOrigin,  setCountryOfOrigin]  = useState("");
+  const [productionSiteId, setProductionSiteId] = useState("");
+  const [incoterms,        setIncoterms]        = useState("DAP");
 
   // ── Token + Auth-Redirect ──────────────────────────────────────────
   useEffect(() => {
@@ -132,6 +151,11 @@ export function BuyerLotsClient() {
       const body: Record<string, unknown> = { commodity: commodity.trim(), quantity: qty, unit };
       if (startPrice) body.startPrice = parseFloat(startPrice);
       if (description.trim()) body.description = description.trim();
+      // CBAM-Felder (optional)
+      if (co2PerTonne)      body.co2PerTonne      = parseFloat(co2PerTonne);
+      if (countryOfOrigin)  body.countryOfOrigin  = countryOfOrigin;
+      if (productionSiteId) body.productionSiteId = productionSiteId.trim();
+      if (incoterms)        body.incoterms        = incoterms;
 
       const r = await fetch("/api/auction/lots", {
         method:  "POST",
@@ -147,6 +171,7 @@ export function BuyerLotsClient() {
           style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" },
         });
         setCommodity(""); setQuantity(""); setUnit("TON"); setStartPrice(""); setDescription("");
+        setCo2PerTonne(""); setCountryOfOrigin(""); setProductionSiteId(""); setIncoterms("DAP");
         setShowForm(false);
         await loadLots();
       }
@@ -218,6 +243,16 @@ export function BuyerLotsClient() {
     collection: lots.filter((l) => l.phase === "COLLECTION").length,
     concluded:  lots.filter((l) => l.phase === "CONCLUSION").length,
   };
+
+  // CO₂-Fußabdruck aus abgeschlossenen Lots (nur wenn co2PerTonne vorhanden)
+  const co2Lots = lots.filter((l) => l.co2PerTonne && l.phase === "CONCLUSION");
+  const totalCo2Tonnes = co2Lots.reduce((sum, l) => {
+    const qty  = parseFloat(l.quantity);
+    const co2  = parseFloat(l.co2PerTonne!);
+    // co2PerTonne ist kg/t → ×qty ergibt kg → /1000 ergibt Tonnen CO₂
+    return sum + (qty * co2) / 1000;
+  }, 0);
+  const lotsWithCbam = lots.filter((l) => l.co2PerTonne).length;
 
   return (
     <>
@@ -338,6 +373,25 @@ export function BuyerLotsClient() {
         /* Loading */
         .bl-loading { color:#9ca3af; font-size:13px; padding:40px 24px; text-align:center; }
 
+        /* CBAM section */
+        .bl-cbam-header { display:flex; align-items:center; gap:10px; margin-top:24px; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #e5e7eb; }
+        .bl-cbam-title { font-size:12.5px; font-weight:700; color:#154194; letter-spacing:.04em; text-transform:uppercase; }
+        .bl-cbam-badge { font-size:10px; font-weight:700; padding:2px 8px; background:#dbeafe; color:#1d4ed8; letter-spacing:.05em; }
+        .bl-cbam-hint { font-size:11.5px; color:#6b7280; margin-bottom:16px; }
+
+        /* CO₂-Widget */
+        .bl-co2-widget { background:#fff; border:1px solid #e5e7eb; border-top:3px solid #16a34a; padding:16px 20px; margin-bottom:20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+        .bl-co2-main { flex:1; min-width:160px; }
+        .bl-co2-num  { font-size:28px; font-weight:700; font-family:"IBM Plex Mono",monospace; color:#16a34a; line-height:1; }
+        .bl-co2-unit { font-size:11px; color:#6b7280; font-weight:600; letter-spacing:.04em; margin-top:3px; }
+        .bl-co2-label { font-size:11px; color:#9ca3af; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
+        .bl-co2-breakdown { display:flex; gap:16px; flex-wrap:wrap; }
+        .bl-co2-item { text-align:center; padding:8px 14px; border:1px solid #f3f4f6; }
+        .bl-co2-item-num { font-size:15px; font-weight:700; font-family:"IBM Plex Mono",monospace; color:#374151; }
+        .bl-co2-item-label { font-size:10px; color:#9ca3af; font-weight:600; text-transform:uppercase; margin-top:2px; }
+        .bl-co2-export { padding:8px 16px; background:#16a34a; color:#fff; font-size:11.5px; font-weight:700; border:none; cursor:pointer; white-space:nowrap; transition:background .15s; align-self:flex-start; }
+        .bl-co2-export:hover { background:#15803d; }
+
         /* Status-Tabs */
         .bl-tabs { display:flex; gap:0; border-bottom:2px solid #e5e7eb; margin-bottom:20px; overflow-x:auto; scrollbar-width:none; }
         .bl-tabs::-webkit-scrollbar { display:none; }
@@ -408,6 +462,45 @@ export function BuyerLotsClient() {
               </div>
             ))}
           </div>
+
+          {/* CO₂-Widget */}
+          {lotsWithCbam > 0 && (
+            <div className="bl-co2-widget">
+              <div className="bl-co2-main">
+                <div className="bl-co2-label">CBAM — CO₂-Fußabdruck</div>
+                <div className="bl-co2-num">
+                  {totalCo2Tonnes.toLocaleString("de-DE", { maximumFractionDigits: 2 })}
+                </div>
+                <div className="bl-co2-unit">Tonnen CO₂-Äq. (abgeschlossene Lots)</div>
+              </div>
+              <div className="bl-co2-breakdown">
+                <div className="bl-co2-item">
+                  <div className="bl-co2-item-num">{lotsWithCbam}</div>
+                  <div className="bl-co2-item-label">Lots mit CBAM-Daten</div>
+                </div>
+                <div className="bl-co2-item">
+                  <div className="bl-co2-item-num">
+                    {co2Lots.length > 0
+                      ? (totalCo2Tonnes / co2Lots.length).toLocaleString("de-DE", { maximumFractionDigits: 1 })
+                      : "—"}
+                  </div>
+                  <div className="bl-co2-item-label">Ø t CO₂ / Lot</div>
+                </div>
+              </div>
+              <button
+                className="bl-co2-export"
+                onClick={() => {
+                  const lotsWithCo2 = lots.filter((l) => l.co2PerTonne);
+                  if (lotsWithCo2.length === 0) return;
+                  // CBAM-Export für erstes Lot mit CBAM-Daten (Demo-Aufruf)
+                  const token = localStorage.getItem("accessToken") ?? "";
+                  window.open(`/api/auction/lots/${lotsWithCo2[0]!.id}/cbam-export?token=${encodeURIComponent(token)}`);
+                }}
+              >
+                CBAM-Zollbericht exportieren →
+              </button>
+            </div>
+          )}
 
           {/* Heading + New Button */}
           <div className="bl-heading-row">
@@ -585,6 +678,67 @@ export function BuyerLotsClient() {
                       onChange={(e) => setDescription(e.target.value)}
                       maxLength={2000}
                     />
+                  </div>
+                </div>
+
+                {/* CBAM-Sektion */}
+                <div className="bl-cbam-header">
+                  <span className="bl-cbam-title">CBAM — Carbon Border Adjustment Mechanism</span>
+                  <span className="bl-cbam-badge">EU-Verordnung 2023/956</span>
+                </div>
+                <div className="bl-cbam-hint">
+                  Angaben für grenzüberschreitenden Handel — Pflicht ab 2026. Bei inländischer Ware empfohlen.
+                </div>
+                <div className="bl-form-grid">
+                  <div className="bl-form-group">
+                    <label className="bl-label">CO₂-Emissionen <span>(optional, kg CO₂-Äq./t)</span></label>
+                    <input
+                      className="bl-input"
+                      type="number"
+                      step="0.0001"
+                      min="0"
+                      placeholder="1850.0000"
+                      value={co2PerTonne}
+                      onChange={(e) => setCo2PerTonne(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="bl-form-group">
+                    <label className="bl-label">Herkunftsland <span>(optional, ISO)</span></label>
+                    <select
+                      className="bl-select"
+                      value={countryOfOrigin}
+                      onChange={(e) => setCountryOfOrigin(e.target.value)}
+                    >
+                      <option value="">— nicht angegeben —</option>
+                      {EU_COUNTRIES.map(([code, name]) => (
+                        <option key={code} value={code}>{code} — {name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="bl-form-group">
+                    <label className="bl-label">CBAM-Registry-ID (Produktionsstätte) <span>(optional)</span></label>
+                    <input
+                      className="bl-input"
+                      type="text"
+                      placeholder="CBAM-DE-12345678"
+                      value={productionSiteId}
+                      onChange={(e) => setProductionSiteId(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="bl-form-group">
+                    <label className="bl-label">Lieferbedingung <span>(INCOTERMS® 2020)</span></label>
+                    <select
+                      className="bl-select"
+                      value={incoterms}
+                      onChange={(e) => setIncoterms(e.target.value)}
+                    >
+                      {INCOTERMS_LIST.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 

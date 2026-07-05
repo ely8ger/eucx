@@ -13,12 +13,19 @@ import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
+const INCOTERMS_VALUES = ["EXW", "FCA", "FAS", "FOB", "CFR", "CIF", "CPT", "CIP", "DAP", "DPU", "DDP"] as const;
+
 const createLotSchema = z.object({
-  commodity:   z.string().min(3).max(120),
-  quantity:    z.number().positive(),
-  unit:        z.enum(["TON", "KG", "CBM", "LITER", "PIECE", "SQM", "MWH"]),
-  startPrice:  z.number().positive().optional(),
-  description: z.string().max(2000).optional(),
+  commodity:        z.string().min(3).max(120),
+  quantity:         z.number().positive(),
+  unit:             z.enum(["TON", "KG", "CBM", "LITER", "PIECE", "SQM", "MWH"]),
+  startPrice:       z.number().positive().optional(),
+  description:      z.string().max(2000).optional(),
+  // CBAM-Felder (optional, aber empfohlen ab 2026 für grenzüberschreitenden Handel)
+  co2PerTonne:      z.number().positive().optional(),
+  countryOfOrigin:  z.string().length(2).toUpperCase().optional(),
+  productionSiteId: z.string().max(50).optional(),
+  incoterms:        z.enum(INCOTERMS_VALUES).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -57,15 +64,20 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Lot anlegen ───────────────────────────────────────────────────
-  const { commodity, quantity, unit, startPrice, description } = parsed.data;
+  const { commodity, quantity, unit, startPrice, description,
+          co2PerTonne, countryOfOrigin, productionSiteId, incoterms } = parsed.data;
   const lot = await db.lot.create({
     data: {
-      buyerId:    user.id,
+      buyerId:         user.id,
       commodity,
-      quantity:   quantity.toString(),
+      quantity:        quantity.toString(),
       unit,
-      startPrice: startPrice?.toString(),
+      startPrice:      startPrice?.toString(),
       description,
+      co2PerTonne:     co2PerTonne?.toString(),
+      countryOfOrigin,
+      productionSiteId,
+      incoterms,
     },
   });
 
@@ -103,16 +115,20 @@ export async function GET(req: NextRequest) {
     orderBy: { createdAt: "desc" },
     take:    100,
     select: {
-      id:          true,
-      commodity:   true,
-      quantity:    true,
-      unit:        true,
-      phase:       true,
-      startPrice:  true,
-      currentBest: true,
-      auctionEnd:  true,
-      createdAt:   true,
-      winnerId:    true,
+      id:               true,
+      commodity:        true,
+      quantity:         true,
+      unit:             true,
+      phase:            true,
+      startPrice:       true,
+      currentBest:      true,
+      auctionEnd:       true,
+      createdAt:        true,
+      winnerId:         true,
+      co2PerTonne:      true,
+      countryOfOrigin:  true,
+      productionSiteId: true,
+      incoterms:        true,
       buyer: {
         select: { id: true, organizationId: true },
       },
