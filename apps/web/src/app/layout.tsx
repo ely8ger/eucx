@@ -26,8 +26,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   manifest:     "/manifest.webmanifest",
 
-  // Standard: kein Crawling außer bei explizit freigegebenen Seiten
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
 
   openGraph: {
     type:     "website",
@@ -49,15 +48,6 @@ export const metadata: Metadata = {
     site: "@eucx_exchange",
   },
 
-  // Canonical-URL (überschrieben in Unterseiten)
-  alternates: {
-    canonical: BASE_URL,
-    languages: {
-      "de-DE":   `${BASE_URL}/`,
-      "en-EU":   `${BASE_URL}/en/`,
-      "x-default": BASE_URL,
-    },
-  },
 };
 
 export const viewport: Viewport = {

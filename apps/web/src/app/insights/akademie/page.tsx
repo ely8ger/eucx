@@ -7,6 +7,8 @@ export const metadata = {
   title: "Händler-Akademie | EUCX",
   description:
     "Das vollständige Onboarding-Manual für neue EUCX-Teilnehmer: Registrierung & KYC, Sicherheitenhinterlegung, Auktionsverfahren, Logistik & Abwicklung.",
+  alternates: { canonical: "https://eucx.eu/insights/akademie" },
+  robots: { index: true, follow: true },
 };
 
 const BLUE = "#154194";

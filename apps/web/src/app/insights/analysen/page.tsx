@@ -6,6 +6,8 @@ export const metadata = {
   title: "Marktanalysen – Wöchentliche Rohstoffpreisberichte | EUCX",
   description:
     "Aktuelle Preisentwicklungen für Betonstahl, Walzdraht, Kupfer, Aluminium, Weizen und Energie. Wöchentliche Marktkommentare für institutionelle Händler auf EUCX.",
+  alternates: { canonical: "https://eucx.eu/insights/analysen" },
+  robots: { index: true, follow: true },
 };
 
 const SANS = "'IBM Plex Sans', Arial, sans-serif";

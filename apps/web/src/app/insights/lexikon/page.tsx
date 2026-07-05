@@ -8,6 +8,8 @@ export const metadata = {
   title: "Rohstoff-Lexikon A–Z | EUCX",
   description:
     "Das umfassende Rohstoff-Lexikon der EUCX: LME-Notierung, Incoterms 2020, CBAM, MiFID II OTF, Abwicklungsgarantie, Betonstahl und mehr. Definitionen für den institutionellen EU-Rohstoffhandel.",
+  alternates: { canonical: "https://eucx.eu/insights/lexikon" },
+  robots: { index: true, follow: true },
 };
 
 const BLUE = "#154194";

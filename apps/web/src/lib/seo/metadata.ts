@@ -192,16 +192,10 @@ export function buildAlternateLanguages(path: string): Metadata["alternates"] {
   return {
     canonical: `${BASE_URL}${path}`,
     languages: {
-      "de-DE": `${BASE_URL}${path}`,
-      "de-AT": `${BASE_URL}${path}`,
-      "de-CH": `${BASE_URL}${path}`,
-      "en-EU": `${BASE_URL}${path}`,       // EU-weiter EN-Fallback
-      "fr-FR": `${BASE_URL}${path}`,       // Aktuell gleiche URL - für späteres i18n
-      "pl-PL": `${BASE_URL}${path}`,
-      "it-IT": `${BASE_URL}${path}`,
-      "es-ES": `${BASE_URL}${path}`,
-      "nl-NL": `${BASE_URL}${path}`,
-      "x-default": `${BASE_URL}${path}`,   // Fallback für unbekannte Sprachen
+      "de-DE":     `${BASE_URL}${path}`,
+      "de-AT":     `${BASE_URL}${path}`,
+      "de-CH":     `${BASE_URL}${path}`,
+      "x-default": `${BASE_URL}${path}`,
     },
   };
 }

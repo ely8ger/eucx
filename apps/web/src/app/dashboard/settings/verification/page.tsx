@@ -9,7 +9,7 @@
  */
 import { VerificationClient } from "./VerificationClient";
 
-export const metadata = { title: "Identitätsprüfung | EUCX" };
+export const metadata = { title: "Identitätsprüfung | EUCX", robots: { index: false, follow: false } };
 
 export default function VerificationPage() {
   return <VerificationClient />;

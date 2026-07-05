@@ -9,6 +9,8 @@ const SANS = "'IBM Plex Sans', Arial, sans-serif";
 export const metadata = {
   title: "EU-Regulatorik: MiFID II, CBAM, MAR, EMIR | EUCX",
   description: "Vollständiger Regulatorik-Guide für institutionellen Rohstoffhandel: MiFID II OTF, CBAM ab 2026, Marktmissbrauch MAR, EMIR-Derivate. BaFin-lizenziert.",
+  alternates: { canonical: "https://eucx.eu/insights/regulatorik" },
+  robots: { index: true, follow: true },
 };
 
 export default function RegulatoriePage() {

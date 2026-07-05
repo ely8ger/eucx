@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db/client";
 import { BuyerAuctionClient } from "./BuyerAuctionClient";
 
+export const metadata = { title: "Auktion | EUCX", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function BuyerAuctionPage({
