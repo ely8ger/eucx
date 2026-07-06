@@ -2,13 +2,8 @@
  * POST /api/auction/lots/[lotId]/open
  *
  * Käufer öffnet das Auktionsfenster (COLLECTION → PROPOSAL).
- * auctionStart = jetzt
- * auctionEnd   = Body.auctionEnd (ISO-String) falls angegeben,
- *                sonst jetzt + 2h (Default).
- *
- * Constraints:
- *   - auctionEnd muss mindestens 15 Minuten in der Zukunft liegen
- *   - auctionEnd darf höchstens 14 Tage in der Zukunft liegen
+ * auctionEnd wird server-seitig auf das Ende der nächsten Handelssitzung gesetzt:
+ *   Mo–Fr 14:00–16:00 Europe/Berlin
  *
  * Auth: Bearer JWT (muss Lot-Besitzer sein)
  */
@@ -18,15 +13,81 @@ import { verifyAccessToken } from "@/lib/auth/jwt";
 
 export const dynamic = "force-dynamic";
 
-const DEFAULT_DURATION_MS = 2 * 60 * 60 * 1000;   // 2 Stunden
-const MIN_DURATION_MS     = 15 * 60 * 1000;         // 15 Minuten
-const MAX_DURATION_MS     = 14 * 24 * 60 * 60 * 1000; // 14 Tage
+const SLOT_END_HOUR   = 16; // 16:00 Berlin
+const SLOT_START_HOUR = 14; // 14:00 Berlin
+
+/** UTC-Zeitpunkt für 16:00 Europe/Berlin an einem bestimmten Berliner Kalendertag */
+function berlinSlotEnd(year: number, month: number, day: number): Date {
+  // Offset: wie viele Stunden ist Berlin vor UTC (1 = CET, 2 = CEST)?
+  const midnightUTC = new Date(Date.UTC(year, month, day, 0, 0, 0));
+  const berlinHourAtMidnight = parseInt(
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Europe/Berlin", hour: "2-digit", hour12: false,
+    }).format(midnightUTC),
+    10,
+  );
+  const utcHour = SLOT_END_HOUR - berlinHourAtMidnight;
+  return new Date(Date.UTC(year, month, day, utcHour, 0, 0));
+}
+
+/** Gibt das UTC-Ende der nächsten offenen Handelssitzung zurück */
+function getNextSlotEnd(now: Date): Date {
+  for (let d = 0; d < 7; d++) {
+    const candidate = new Date(now.getTime() + d * 24 * 60 * 60 * 1000);
+
+    const fmt = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Europe/Berlin",
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", hour12: false,
+      weekday: "long",
+    });
+    const parts = fmt.formatToParts(candidate);
+    const get   = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+
+    const weekday = get("weekday");
+    if (weekday === "Saturday" || weekday === "Sunday") continue;
+
+    const year  = parseInt(get("year"),  10);
+    const month = parseInt(get("month"), 10) - 1;
+    const day   = parseInt(get("day"),   10);
+    const berlinHour = parseInt(get("hour"), 10);
+
+    // Slot noch nicht beendet heute?
+    const isToday = d === 0;
+    if (isToday && berlinHour >= SLOT_END_HOUR) continue; // Sitzung vorbei
+
+    const slotEnd = berlinSlotEnd(year, month, day);
+    if (slotEnd.getTime() > now.getTime() + 60_000) return slotEnd;
+  }
+
+  // Fallback (sollte nie eintreten)
+  return new Date(now.getTime() + 2 * 60 * 60 * 1000);
+}
+
+/** Gibt true zurück wenn jetzt eine Handelssitzung aktiv ist */
+function isSessionActive(now: Date): boolean {
+  const fmt = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Berlin",
+    hour: "2-digit", minute: "2-digit", hour12: false,
+    weekday: "long",
+  });
+  const parts  = fmt.formatToParts(now);
+  const get    = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+  const wd     = get("weekday");
+  const hour   = parseInt(get("hour"), 10);
+  const minute = parseInt(get("minute"), 10);
+  const mins   = hour * 60 + minute;
+
+  if (wd === "Saturday" || wd === "Sunday") return false;
+  return mins >= SLOT_START_HOUR * 60 && mins < SLOT_END_HOUR * 60;
+}
 
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> }
 ) {
   const { lotId } = await params;
+
   // ── Auth ──────────────────────────────────────────────────────────
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
@@ -36,30 +97,18 @@ export async function POST(
   try { token = await verifyAccessToken(authHeader.slice(7)); }
   catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
 
-  // ── Body (optional) ───────────────────────────────────────────────
-  let bodyAuctionEnd: string | null = null;
-  try {
-    const body = await req.json() as { auctionEnd?: string };
-    bodyAuctionEnd = body.auctionEnd ?? null;
-  } catch { /* kein Body → Default verwenden */ }
-
   // ── Lot laden ─────────────────────────────────────────────────────
   const lot = await db.lot.findUnique({
     where:  { id: lotId },
     select: { id: true, buyerId: true, phase: true },
   });
-  if (!lot) {
-    return NextResponse.json({ error: "Lot nicht gefunden" }, { status: 404 });
-  }
-  if (lot.buyerId !== token.userId) {
-    return NextResponse.json({ error: "Nicht Ihr Lot" }, { status: 403 });
-  }
+  if (!lot) return NextResponse.json({ error: "Lot nicht gefunden" }, { status: 404 });
+  if (lot.buyerId !== token.userId) return NextResponse.json({ error: "Nicht Ihr Lot" }, { status: 403 });
   if (lot.phase !== "COLLECTION") {
     return NextResponse.json({ error: "Auktion bereits gestartet oder abgeschlossen" }, { status: 409 });
   }
 
-  // Mindestens einen registrierten Verkäufer verlangen
-  const regCount = await db.lotRegistration.count({ where: { lotId: lotId } });
+  const regCount = await db.lotRegistration.count({ where: { lotId } });
   if (regCount === 0) {
     return NextResponse.json(
       { error: "Keine Verkäufer registriert. Die Auktion kann erst gestartet werden, wenn sich mindestens ein Verkäufer registriert hat." },
@@ -67,36 +116,17 @@ export async function POST(
     );
   }
 
-  // ── Endzeitpunkt berechnen & validieren ───────────────────────────
-  const now = new Date();
-
-  let auctionEnd: Date;
-  if (bodyAuctionEnd) {
-    auctionEnd = new Date(bodyAuctionEnd);
-    if (isNaN(auctionEnd.getTime())) {
-      return NextResponse.json({ error: "Ungültiges Datum für auctionEnd" }, { status: 422 });
-    }
-    const diff = auctionEnd.getTime() - now.getTime();
-    if (diff < MIN_DURATION_MS) {
-      return NextResponse.json({ error: "Auktionsende muss mindestens 15 Minuten in der Zukunft liegen" }, { status: 422 });
-    }
-    if (diff > MAX_DURATION_MS) {
-      return NextResponse.json({ error: "Auktionsende darf höchstens 14 Tage in der Zukunft liegen" }, { status: 422 });
-    }
-  } else {
-    auctionEnd = new Date(now.getTime() + DEFAULT_DURATION_MS);
-  }
+  // ── Slot-Ende berechnen ───────────────────────────────────────────
+  const now        = new Date();
+  const auctionEnd = getNextSlotEnd(now);
+  const sessionNow = isSessionActive(now);
 
   // ── Phase-Übergang ────────────────────────────────────────────────
   const updated = await db.lot.update({
-    where: { id: lotId },
-    data: {
-      phase:        "PROPOSAL",
-      auctionStart: now,
-      auctionEnd,
-    },
+    where:  { id: lotId },
+    data:   { phase: "PROPOSAL", auctionStart: now, auctionEnd },
     select: { id: true, phase: true, auctionStart: true, auctionEnd: true },
   });
 
-  return NextResponse.json(updated);
+  return NextResponse.json({ ...updated, sessionActive: sessionNow });
 }

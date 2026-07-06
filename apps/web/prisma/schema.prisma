@@ -1290,7 +1290,7 @@ model SellerCharge {
   unit              String       @default("TON")
   warehouseLocation String?      // Lagerort / Werk-Adresse
   co2PerTonne       Decimal?     @db.Decimal(10, 4)  // kg CO₂-Äq. pro Einheit
-  countryOfOrigin   String?      @db.Char(2)         // ISO 3166-1 alpha-2
+  countryOfOrigin   String?      @db.VarChar(100)    // ISO 3166-1 oder freier Ländertext
   productionSiteId  String?      // EU-CBAM-Registry-ID der Produktionsstätte
   incoterms         String?      @default("DAP")     // INCOTERMS® 2020
   status            ChargeStatus @default(AVAILABLE)

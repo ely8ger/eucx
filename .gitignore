@@ -48,3 +48,4 @@ redis_data/
 .vercel
 .git_temp
 apps/api-go-backup/
+.env*

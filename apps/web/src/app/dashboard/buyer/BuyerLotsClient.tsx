@@ -91,9 +91,7 @@ export function BuyerLotsClient() {
   const [showPreflight, setShowPreflight] = useState(false);
   const [opening,       setOpening]       = useState<string | null>(null);
   const [submitting,    setSubmitting]    = useState(false);
-  // Zeitwähler-State: welches Lot wird geöffnet + ausgewählter Endzeitpunkt
   const [openingLotId,  setOpeningLotId]  = useState<string | null>(null);
-  const [pickedEnd,     setPickedEnd]     = useState("");
   const [activeTab,     setActiveTab]     = useState<"all" | "collection" | "active" | "conclusion">("all");
 
   // Form state
@@ -187,33 +185,20 @@ export function BuyerLotsClient() {
   }
 
   // ── Auktion starten (COLLECTION → PROPOSAL) ───────────────────────
-  // Schritt 1: Zeitwähler anzeigen
+  // Schritt 1: Bestätigungs-Modal zeigen
   function requestOpenLot(lotId: string) {
-    // Default: heute um 15:00 (oder in 2h, je nachdem was später ist)
-    const now    = new Date();
-    const at15   = new Date(now);
-    at15.setHours(15, 0, 0, 0);
-    const at2h   = new Date(now.getTime() + 2 * 60 * 60 * 1000);
-    const def    = at15 > now ? at15 : at2h;
-    // Format für datetime-local input: "YYYY-MM-DDTHH:MM"
-    const pad    = (n: number) => String(n).padStart(2, "0");
-    const local  = `${def.getFullYear()}-${pad(def.getMonth()+1)}-${pad(def.getDate())}T${pad(def.getHours())}:${pad(def.getMinutes())}`;
-    setPickedEnd(local);
     setOpeningLotId(lotId);
   }
 
-  // Schritt 2: Bestätigung → API-Call
+  // Schritt 2: API-Call — Server berechnet Slot-Ende
   async function confirmOpenLot() {
     if (!token || !openingLotId || opening) return;
     setOpening(openingLotId);
     try {
-      const body: Record<string, string> = {};
-      if (pickedEnd) body.auctionEnd = new Date(pickedEnd).toISOString();
-
       const r = await fetch(`/api/auction/lots/${openingLotId}/open`, {
         method:  "POST",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body:    JSON.stringify(body),
+        body:    "{}",
       });
       const d = await r.json();
       if (r.ok) {
@@ -233,6 +218,29 @@ export function BuyerLotsClient() {
     } finally {
       setOpening(null);
     }
+  }
+
+  /** Nächste Handelssitzung als lesbarer String */
+  function nextSlotLabel(): string {
+    const now = new Date();
+    const fmt = (d: Date) => d.toLocaleDateString("de-DE", {
+      weekday: "short", day: "2-digit", month: "2-digit",
+      timeZone: "Europe/Berlin",
+    });
+    const berlinHour = parseInt(new Intl.DateTimeFormat("de-DE", {
+      timeZone: "Europe/Berlin", hour: "2-digit", hour12: false,
+    }).format(now), 10);
+    const day = now.getDay();
+    const isWeekday = day >= 1 && day <= 5;
+    const inSlot = isWeekday && berlinHour >= 14 && berlinHour < 16;
+    if (inSlot) return `heute bis 16:00 MEZ`;
+    // Nächsten Werktag finden
+    for (let i = 1; i <= 7; i++) {
+      const d = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
+      const wd = d.getDay();
+      if (wd >= 1 && wd <= 5) return `${fmt(d)} · 14:00–16:00 MEZ`;
+    }
+    return "nächste Handelssitzung";
   }
 
   const isVerified    = kyc?.verificationStatus === "VERIFIED";
@@ -335,16 +343,16 @@ export function BuyerLotsClient() {
 
         /* Zeitwähler-Popover */
         .bl-timepick-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:300; display:flex; align-items:center; justify-content:center; }
-        .bl-timepick { background:#fff; border-top:3px solid #154194; padding:28px 28px 24px; width:360px; box-shadow:0 12px 40px rgba(0,0,0,.18); }
+        .bl-timepick { background:#fff; border-top:3px solid #154194; padding:28px 28px 24px; width:380px; box-shadow:0 12px 40px rgba(0,0,0,.18); }
         .bl-timepick-label { font-size:16px; font-weight:700; color:#0d1b2a; margin-bottom:6px; }
-        .bl-timepick-hint { font-size:12px; color:#9ca3af; margin-bottom:18px; line-height:1.6; }
-        .bl-timepick-input { width:100%; height:42px; border:1px solid #d1d5db; padding:0 12px; font-size:14px; font-family:inherit; outline:none; box-sizing:border-box; }
-        .bl-timepick-input:focus { border-color:#154194; }
-        .bl-timepick-actions { display:flex; gap:10px; margin-top:18px; }
-        .bl-timepick-confirm { flex:1; height:42px; background:#154194; color:#fff; font-size:13px; font-weight:700; border:none; cursor:pointer; letter-spacing:.04em; transition:background .15s; }
+        .bl-timepick-hint { font-size:12px; color:#6b7280; margin-bottom:18px; line-height:1.6; }
+        .bl-timepick-slot { background:#f0f4ff; border:1px solid #c7d7fc; padding:12px 16px; margin-bottom:18px; font-size:13px; font-weight:600; color:#1e3a8a; }
+        .bl-timepick-slot span { display:block; font-size:11px; font-weight:400; color:#6b7280; margin-top:2px; }
+        .bl-timepick-actions { display:flex; gap:10px; }
+        .bl-timepick-confirm { flex:1; height:44px; background:#154194; color:#fff; font-size:13px; font-weight:700; border:none; cursor:pointer; letter-spacing:.04em; transition:background .15s; }
         .bl-timepick-confirm:hover:not(:disabled) { background:#1a52c2; }
         .bl-timepick-confirm:disabled { opacity:.4; cursor:not-allowed; }
-        .bl-timepick-cancel { height:42px; padding:0 16px; background:#fff; color:#6b7280; font-size:13px; font-weight:600; border:1px solid #d1d5db; cursor:pointer; transition:background .15s; }
+        .bl-timepick-cancel { height:44px; padding:0 16px; background:#fff; color:#6b7280; font-size:13px; font-weight:600; border:1px solid #d1d5db; cursor:pointer; transition:background .15s; }
         .bl-timepick-cancel:hover { background:#f9fafb; }
         .bl-btn-watch { padding:7px 14px; background:#fff; color:#154194; font-size:12px; font-weight:700; border:1.5px solid #154194; text-decoration:none; display:inline-block; transition:all .15s; white-space:nowrap; }
         .bl-btn-watch:hover { background:#154194; color:#fff; }
@@ -897,33 +905,25 @@ export function BuyerLotsClient() {
         </div>
       </div>
 
-      {/* Auktionsende-Modal */}
+      {/* Auktionsstart-Bestätigung */}
       {openingLotId && (
         <div className="bl-timepick-overlay" onClick={() => setOpeningLotId(null)}>
           <div className="bl-timepick" onClick={(e) => e.stopPropagation()}>
-            <div className="bl-timepick-label">Auktionsende festlegen</div>
+            <div className="bl-timepick-label">Auktion starten</div>
             <div className="bl-timepick-hint">
-              Gebote werden bis zu diesem Zeitpunkt angenommen.<br />
-              Mindestens 15 Min. - Höchstens 14 Tage.
+              Die Auktion läuft in der nächsten Handelssitzung. Alle registrierten Verkäufer können ab sofort Gebote abgeben.
             </div>
-            <input
-              className="bl-timepick-input"
-              type="datetime-local"
-              value={pickedEnd}
-              onChange={(e) => setPickedEnd(e.target.value)}
-              min={(() => {
-                const m = new Date(Date.now() + 15 * 60 * 1000);
-                const p = (n: number) => String(n).padStart(2, "0");
-                return `${m.getFullYear()}-${p(m.getMonth()+1)}-${p(m.getDate())}T${p(m.getHours())}:${p(m.getMinutes())}`;
-              })()}
-            />
+            <div className="bl-timepick-slot">
+              Gebote werden angenommen bis:
+              <span>{nextSlotLabel()}</span>
+            </div>
             <div className="bl-timepick-actions">
               <button
                 className="bl-timepick-confirm"
-                disabled={!pickedEnd || !!opening}
+                disabled={!!opening}
                 onClick={() => { void confirmOpenLot(); }}
               >
-                Jetzt starten →
+                {opening ? "…" : "Jetzt starten →"}
               </button>
               <button className="bl-timepick-cancel" onClick={() => setOpeningLotId(null)}>
                 Abbrechen

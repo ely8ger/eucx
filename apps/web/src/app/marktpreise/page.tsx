@@ -67,7 +67,7 @@ const faqJsonLd = {
     { "@type": "Question", name: "Wie entwickeln sich die Stahlpreise 2026?", acceptedAnswer: { "@type": "Answer", text: "Stahlpreise stehen 2026 unter strukturellem Druck durch Importe und schwache Baukonjunktur. CO₂-Grenzausgleich (CBAM) und EU-Antidumping-Maßnahmen wirken stützend. Analysten erwarten Seitwärtsbewegung im Q2 2026." } },
     { "@type": "Question", name: "Welche Faktoren beeinflussen den Schrottpreis?", acceptedAnswer: { "@type": "Answer", text: "Schrottpreise hängen direkt von der Stahlproduktion, Elektrizitätspreisen, Schrottexporten (v.a. Türkei) und saisonalen Sammelmengen ab." } },
     { "@type": "Question", name: "Warum ist Harnstoff so teuer geworden?", acceptedAnswer: { "@type": "Answer", text: "Harnstoff-Preise stiegen seit 2021 stark, weil Erdgas den größten Produktionskostenanteil ausmacht. Nach der Energiekrise 2022 blieb Gas in Europa dauerhaft teurer als in Konkurrenzregionen." } },
-    { "@type": "Question", name: "Kann ich an der EUCX als kleines Unternehmen handeln?", acceptedAnswer: { "@type": "Answer", text: "Ja. Die EUCX ist für alle geprüften gewerblichen Teilnehmer (B2B) zugänglich. Nach kostenfreier Registrierung und Unternehmensverifikation ist der Handel in täglichen Sitzungen (Mo–Fr, 10–13 Uhr) möglich." } },
+    { "@type": "Question", name: "Kann ich an der EUCX als kleines Unternehmen handeln?", acceptedAnswer: { "@type": "Answer", text: "Ja. Die EUCX ist für alle geprüften gewerblichen Teilnehmer (B2B) zugänglich. Nach kostenfreier Registrierung und Unternehmensverifikation ist der Handel in täglichen Sitzungen (Mo–Fr, 14–16 Uhr) möglich." } },
   ],
 };
 
@@ -167,7 +167,7 @@ export default function MarktpreisePage() {
                   { label: "Fallend",    value: `${fallingCount} ↓`,          color: "#f87171" },
                   { label: "Stand",      value: today,                        color: "#7aa4d4" },
                   { label: "Letztes Update", value: "08:00 Uhr",             color: "#7aa4d4" },
-                  { label: "Sitzungen",  value: "tägl. 10–13 Uhr",          color: "#7aa4d4" },
+                  { label: "Sitzungen",  value: "tägl. 14–16 Uhr",          color: "#7aa4d4" },
                 ].map(k => (
                   <div key={k.label} style={{ backgroundColor: "#162b46", padding: "16px 20px" }}>
                     <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#4a6fa1", margin: "0 0 6px" }}>{k.label}</p>
@@ -702,7 +702,7 @@ export default function MarktpreisePage() {
                 },
                 {
                   q: "Kann ich an der EUCX als kleines Unternehmen handeln?",
-                  a: "Ja. Die EUCX ist für gewerbliche Teilnehmer (B2B) aller Größenklassen zugänglich. Nach einer kostenfreien Registrierung und Unternehmensverifikation können Sie direkt an täglichen Handelssitzungen (Mo–Fr, 10–13 Uhr) teilnehmen. Mindestlosgröße, Gebührenstruktur und Zahlungsbedingungen entnehmen Sie den AGB und dem Handelsreglement.",
+                  a: "Ja. Die EUCX ist für gewerbliche Teilnehmer (B2B) aller Größenklassen zugänglich. Nach einer kostenfreien Registrierung und Unternehmensverifikation können Sie direkt an täglichen Handelssitzungen (Mo–Fr, 14–16 Uhr) teilnehmen. Mindestlosgröße, Gebührenstruktur und Zahlungsbedingungen entnehmen Sie den AGB und dem Handelsreglement.",
                 },
                 {
                   q: "Wie werden EUCX-Preise berechnet?",

@@ -18,7 +18,7 @@ const createSchema = z.object({
   unit:              z.string().max(10).default("TON"),
   warehouseLocation: z.string().max(200).optional(),
   co2PerTonne:       z.number().nonnegative().optional(),
-  countryOfOrigin:   z.string().length(2).toUpperCase().optional(),
+  countryOfOrigin:   z.string().max(100).optional(),
   productionSiteId:  z.string().max(100).optional(),
   incoterms:         z.string().max(10).optional(),
   certificate31:     z.string().optional(),
@@ -48,18 +48,23 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const statusFilter = searchParams.get("status") as ChargeStatus | null;
 
-  const charges = await db.sellerCharge.findMany({
-    where: {
-      sellerId: token.userId,
-      ...(statusFilter ? { status: statusFilter } : {}),
-    },
-    orderBy: { createdAt: "desc" },
-    include: {
-      lot: { select: { id: true, commodity: true, phase: true } },
-    },
-  });
-
-  return NextResponse.json(charges);
+  try {
+    const charges = await db.sellerCharge.findMany({
+      where: {
+        sellerId: token.userId,
+        ...(statusFilter ? { status: statusFilter } : {}),
+      },
+      orderBy: { createdAt: "desc" },
+      include: {
+        lot: { select: { id: true, commodity: true, phase: true } },
+      },
+    });
+    return NextResponse.json(charges);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[seller/inventory GET]", msg);
+    return NextResponse.json({ error: "Datenbankfehler", details: msg }, { status: 500 });
+  }
 }
 
 // ── POST ───────────────────────────────────────────────────────────────────────
@@ -80,24 +85,29 @@ export async function POST(req: NextRequest) {
   }
 
   const d = parsed.data;
-  const charge = await db.sellerCharge.create({
-    data: {
-      sellerId:          token.userId,
-      schmelzNr:         d.schmelzNr,
-      material:          d.material,
-      spec:              d.spec,
-      quantity:          d.quantity,
-      unit:              d.unit,
-      warehouseLocation: d.warehouseLocation,
-      co2PerTonne:       d.co2PerTonne,
-      countryOfOrigin:   d.countryOfOrigin,
-      productionSiteId:  d.productionSiteId,
-      incoterms:         d.incoterms,
-      certificate31:     d.certificate31,
-      cbamCertificate:   d.cbamCertificate,
-      notes:             d.notes,
-    },
-  });
-
-  return NextResponse.json(charge, { status: 201 });
+  try {
+    const charge = await db.sellerCharge.create({
+      data: {
+        sellerId:          token.userId,
+        schmelzNr:         d.schmelzNr,
+        material:          d.material,
+        spec:              d.spec,
+        quantity:          d.quantity,
+        unit:              d.unit,
+        warehouseLocation: d.warehouseLocation,
+        co2PerTonne:       d.co2PerTonne,
+        countryOfOrigin:   d.countryOfOrigin,
+        productionSiteId:  d.productionSiteId,
+        incoterms:         d.incoterms,
+        certificate31:     d.certificate31,
+        cbamCertificate:   d.cbamCertificate,
+        notes:             d.notes,
+      },
+    });
+    return NextResponse.json(charge, { status: 201 });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[seller/inventory POST]", msg);
+    return NextResponse.json({ error: "Datenbankfehler", details: msg }, { status: 500 });
+  }
 }

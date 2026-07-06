@@ -1,16 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 
-const PUBLIC_PATHS = [
-  "/",
-  "/login",
-  "/register",
+const PUBLIC_EXACT = new Set(["/", "/login", "/register"]);
+
+const PUBLIC_PREFIXES = [
+  // Auth-Endpunkte
   "/api/auth/login",
   "/api/auth/register",
+  "/api/auth/refresh",
+  "/api/auth/forgot-password",
+  "/api/auth/reset-password",
+  "/api/auth/verify-email",
+  // Validierungs-APIs (ohne Login nutzbar)
   "/api/validate-vat",
   "/api/validate-lei",
   "/api/lookup-hrb",
   "/api/enrich-company",
+  "/api/og",
+  // Öffentliche Inhaltsseiten
+  "/agb",
+  "/datenschutz",
+  "/impressum",
+  "/faq",
+  "/wissen",
+  "/insights",
+  "/marktpreise",
+  "/metalle",
+  "/duenger",
+  "/katalog",
+  "/trading",
+  "/api/market",
 ];
 
 const ADMIN_ROLES = ["ADMIN", "COMPLIANCE", "SUPER_ADMIN"] as const;
@@ -18,7 +37,7 @@ const ADMIN_ROLES = ["ADMIN", "COMPLIANCE", "SUPER_ADMIN"] as const;
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
+  if (PUBLIC_EXACT.has(pathname) || PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
 

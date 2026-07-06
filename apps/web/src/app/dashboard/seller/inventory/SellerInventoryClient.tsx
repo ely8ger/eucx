@@ -39,22 +39,54 @@ const STATUS_LABEL: Record<string, string> = {
   CANCELLED:  "Storniert",
 };
 
+const COUNTRIES = [
+  "DE - Deutschland", "AT - Österreich", "PL - Polen", "CZ - Tschechien",
+  "SK - Slowakei", "HU - Ungarn", "RO - Rumänien", "HR - Kroatien",
+  "IT - Italien", "FR - Frankreich", "ES - Spanien", "BE - Belgien",
+  "NL - Niederlande", "LU - Luxemburg", "SE - Schweden", "FI - Finnland",
+  "TR - Türkei", "UA - Ukraine", "BY - Weißrussland",
+  "CN - China", "IN - Indien", "KR - Südkorea", "JP - Japan",
+  "BR - Brasilien", "ZA - Südafrika", "EG - Ägypten", "DZ - Algerien",
+  "KZ - Kasachstan", "AZ - Aserbaidschan", "GE - Georgien",
+  "AM - Armenien", "TM - Turkmenistan", "RS - Serbien", "MK - Nordmazedonien",
+  "BA - Bosnien-Herzegowina", "ME - Montenegro", "AL - Albanien",
+];
+
+const LAGER_ORTE = [
+  "Hamburg", "Kiel", "Lübeck", "Rostock", "Bremerhaven", "Bremen",
+  "Duisburg", "Dortmund", "Hannover", "Berlin", "Leipzig", "München",
+  "Stuttgart", "Frankfurt am Main", "Köln", "Düsseldorf", "Essen",
+  "Rotterdam", "Antwerpen", "Amsterdam", "Gent",
+  "Glasgow", "Grangemouth", "Teesport", "Immingham",
+  "Gdańsk", "Szczecin", "Warschau",
+  "Riga", "Tallinn", "Klaipeda",
+  "Istanbul", "Iskenderun", "Constanta", "Triest", "Genua",
+  "Barcelona", "Le Havre", "Marseille",
+];
+
+interface UserStatus {
+  totpEnabled:        boolean;
+  verificationStatus: string;
+  phoneVerified:      boolean;
+}
+
 export function SellerInventoryClient() {
   const router = useRouter();
-  const [token,    setToken]    = useState("");
-  const [charges,  setCharges]  = useState<Charge[]>([]);
-  const [loading,  setLoading]  = useState(true);
-  const [saving,   setSaving]   = useState(false);
-  const [error,    setError]    = useState("");
-  const [showForm, setShowForm] = useState(false);
+  const [token,          setToken]          = useState("");
+  const [userStatus,     setUserStatus]     = useState<UserStatus | null>(null);
+  const [showPreflight,  setShowPreflight]  = useState(false);
+  const [charges,        setCharges]        = useState<Charge[]>([]);
+  const [loading,        setLoading]        = useState(true);
+  const [saving,         setSaving]         = useState(false);
+  const [error,          setError]          = useState("");
+  const [showForm,       setShowForm]       = useState(false);
 
-  // Formular-State
   const [fMaterial,   setFMaterial]   = useState("");
   const [fSpec,       setFSpec]       = useState("");
   const [fQty,        setFQty]        = useState("");
   const [fLager,      setFLager]      = useState("");
   const [fCo2,        setFCo2]        = useState("");
-  const [fLand,       setFLand]       = useState("DE");
+  const [fLand,       setFLand]       = useState("DE - Deutschland");
   const [fRegistryId, setFRegistryId] = useState("");
   const [fIncoterms,  setFIncoterms]  = useState("DAP");
   const [fSchmelzNr,  setFSchmelzNr]  = useState("");
@@ -62,29 +94,58 @@ export function SellerInventoryClient() {
   useEffect(() => {
     const tkn = localStorage.getItem("accessToken") ?? "";
     setToken(tkn);
-    if (!tkn) router.replace("/login");
+    if (!tkn) { router.replace("/login"); return; }
+    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${tkn}` } })
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => {
+        if (d) setUserStatus({ totpEnabled: d.totpEnabled ?? false, verificationStatus: d.verificationStatus ?? "GUEST", phoneVerified: d.phoneVerified ?? false });
+      })
+      .catch(() => null);
   }, [router]);
 
-  const load = useCallback(async () => {
-    if (!token) return;
+  const tryRefresh = useCallback(async (): Promise<string | null> => {
+    try {
+      const r = await fetch("/api/auth/refresh", { method: "POST", credentials: "include" });
+      if (!r.ok) return null;
+      const data = await r.json() as { accessToken: string };
+      localStorage.setItem("accessToken", data.accessToken);
+      setToken(data.accessToken);
+      return data.accessToken;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const load = useCallback(async (tkn?: string) => {
+    const t = tkn ?? token;
+    if (!t) return;
     setLoading(true);
     setError("");
     try {
-      const r = await fetch("/api/seller/inventory", {
-        headers: { Authorization: `Bearer ${token}` },
+      let r = await fetch("/api/seller/inventory", {
+        headers: { Authorization: `Bearer ${t}` },
       });
+      if (r.status === 401) {
+        const fresh = await tryRefresh();
+        if (!fresh) { setError("Sitzung abgelaufen — bitte neu anmelden."); router.replace("/login"); return; }
+        r = await fetch("/api/seller/inventory", {
+          headers: { Authorization: `Bearer ${fresh}` },
+        });
+      }
       if (r.ok) {
         const data = await r.json() as Charge[];
         setCharges(data);
       } else {
-        setError("Fehler beim Laden der Chargen.");
+        let msg = `GET Fehler ${r.status}`;
+        try { const d = await r.json() as { error?: string; details?: string }; msg = d.error ?? msg; if (d.details) msg += ": " + d.details; } catch { /* */ }
+        setError(msg);
       }
-    } catch {
-      setError("Netzwerkfehler.");
+    } catch (err) {
+      setError(`Netzwerkfehler: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, tryRefresh, router]);
 
   useEffect(() => { void load(); }, [load]);
 
@@ -105,25 +166,39 @@ export function SellerInventoryClient() {
         productionSiteId:  fRegistryId || undefined,
         incoterms:         fIncoterms,
       };
-      const r = await fetch("/api/seller/inventory", {
+      let tkn = token;
+      let r = await fetch("/api/seller/inventory", {
         method:  "POST",
-        headers: {
-          Authorization:  `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers: { Authorization: `Bearer ${tkn}`, "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      if (r.status === 401) {
+        const fresh = await tryRefresh();
+        if (!fresh) { setError("Sitzung abgelaufen — bitte neu anmelden."); router.replace("/login"); return; }
+        tkn = fresh;
+        r = await fetch("/api/seller/inventory", {
+          method:  "POST",
+          headers: { Authorization: `Bearer ${tkn}`, "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+      }
       if (r.ok) {
         setShowForm(false);
         setFMaterial(""); setFSpec(""); setFQty(""); setFLager("");
         setFCo2(""); setFRegistryId(""); setFSchmelzNr("");
-        await load();
+        setFLand("DE - Deutschland");
+        await load(tkn);
       } else {
-        const d = await r.json() as { error?: string };
-        setError(d.error ?? "Fehler beim Anlegen.");
+        let msg = `Serverfehler ${r.status}`;
+        try {
+          const d = await r.json() as { error?: string; details?: unknown };
+          msg = d.error ?? msg;
+          if (d.details) msg += ` — ${JSON.stringify(d.details)}`;
+        } catch { /* non-JSON body */ }
+        setError(msg);
       }
-    } catch {
-      setError("Netzwerkfehler.");
+    } catch (err) {
+      setError(`Netzwerkfehler: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setSaving(false);
     }
@@ -199,6 +274,13 @@ export function SellerInventoryClient() {
         .inv-loading { padding:40px; text-align:center; color:#9ca3af; font-size:13px; }
       `}</style>
 
+      <datalist id="country-list">
+        {COUNTRIES.map((c) => <option key={c} value={c} />)}
+      </datalist>
+      <datalist id="lager-orte">
+        {LAGER_ORTE.map((p) => <option key={p} value={p} />)}
+      </datalist>
+
       <div className="inv">
         <EucxHeader />
         <div className="inv-stripe">
@@ -216,14 +298,64 @@ export function SellerInventoryClient() {
               <div className="inv-title">Bestands- & Chargenverwaltung</div>
               <div className="inv-sub">Physische Ware, Schmelznummern und CBAM-Nachweise an einem Ort</div>
             </div>
-            <button className="inv-btn" onClick={() => setShowForm((v) => !v)}>
+            <button className="inv-btn" onClick={() => {
+              if (showForm) { setShowForm(false); return; }
+              const isTotp = userStatus?.totpEnabled ?? false;
+              const isKyc  = userStatus?.verificationStatus === "VERIFIED";
+              if (!isTotp || !isKyc) { setShowPreflight(true); }
+              else { setShowForm(true); }
+            }}>
               {showForm ? "✕ Abbrechen" : "+ Neue Charge melden"}
             </button>
           </div>
 
           {error && <div className="inv-err">{error}</div>}
 
-          {/* KPIs */}
+          {/* Preflight-Check */}
+          {showPreflight && (() => {
+            const isTotp = userStatus?.totpEnabled ?? false;
+            const isKyc  = userStatus?.verificationStatus === "VERIFIED";
+            const ok     = isTotp && isKyc;
+            return (
+              <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderTop: `3px solid ${A}`, padding: "24px 28px", marginBottom: 24 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>Voraussetzungen für Lagerchargen</div>
+                <div style={{ fontSize: 12.5, color: "#6b7280", marginBottom: 20 }}>Alle Punkte müssen erfüllt sein bevor Sie Ware ins System eintragen können.</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
+                  {[
+                    { ok: isKyc,  label: "Identitätsprüfung (KYC)", desc: isKyc ? "Identität bestätigt — vollständig handelsberechtigt." : "KYC noch nicht abgeschlossen. Unterlagen einreichen.", href: "/dashboard/settings/verification" },
+                    { ok: isTotp, label: "Zwei-Faktor-Authentifizierung", desc: isTotp ? "2FA aktiv — Konto zusätzlich gesichert." : "2FA noch nicht eingerichtet. Bitte jetzt aktivieren.", href: "/dashboard/settings/security" },
+                  ].map((row) => (
+                    <div key={row.label} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", background: row.ok ? "#f0fdf4" : "#fef2f2", border: `1px solid ${row.ok ? "#bbf7d0" : "#fecaca"}` }}>
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: row.ok ? "#16a34a" : "#dc2626", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
+                        {row.ok ? "✓" : "✕"}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{row.label}</div>
+                        <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>{row.desc}</div>
+                      </div>
+                      {!row.ok && (
+                        <a href={row.href} style={{ padding: "7px 14px", background: A, color: "#fff", fontSize: 12, fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>
+                          Einrichten →
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button
+                    className="inv-btn"
+                    disabled={!ok}
+                    onClick={() => { setShowPreflight(false); setShowForm(true); }}
+                    title={!ok ? "Alle Punkte müssen grün sein" : undefined}
+                  >
+                    {ok ? "Weiter → Charge anlegen" : "Ausstehend"}
+                  </button>
+                  <button className="inv-btn-cancel" onClick={() => setShowPreflight(false)}>Abbrechen</button>
+                </div>
+              </div>
+            );
+          })()}
+
           <div className="inv-kpi">
             <div className="inv-kpi-card">
               <div className="inv-kpi-num">{totalQty.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</div>
@@ -243,7 +375,6 @@ export function SellerInventoryClient() {
             </div>
           </div>
 
-          {/* Formular: Neue Charge */}
           {showForm && (
             <div className="inv-form">
               <div className="inv-form-title">Neue Charge erfassen</div>
@@ -258,7 +389,7 @@ export function SellerInventoryClient() {
                       Spezifikation
                       <span style={{ fontWeight: 400, color: "#9ca3af", marginLeft: 6 }}>Norm + Abmessung</span>
                     </label>
-                    <input className="inv-input" placeholder="z.B. EN 10080 — Ø12mm BST 500S" value={fSpec} onChange={(e) => setFSpec(e.target.value)} />
+                    <input className="inv-input" placeholder="z.B. EN 10080 - Ø12mm BST 500S" value={fSpec} onChange={(e) => setFSpec(e.target.value)} />
                     <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>
                       EN 10080 = EU-Norm für Betonstahl · DIN 488 = Deutsche Norm · EN 10025 = Baustahl
                     </div>
@@ -272,30 +403,42 @@ export function SellerInventoryClient() {
                       Schmelznummer
                       <span style={{ fontWeight: 400, color: "#9ca3af", marginLeft: 6 }}>aus dem 3.1-Werkszeugnis</span>
                     </label>
-                    <input className="inv-input" placeholder="z.B. 123456-A (steht im Werkszeugnis)" value={fSchmelzNr} onChange={(e) => setFSchmelzNr(e.target.value)} />
+                    <input
+                      className="inv-input"
+                      placeholder="z.B. SLZ-2026-04421 oder A 1234567"
+                      value={fSchmelzNr}
+                      onChange={(e) => setFSchmelzNr(e.target.value)}
+                    />
                     <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>
-                      Eindeutige Produktions-ID des Stahlwerks — nicht vom System generierbar
+                      Aufbau:{" "}
+                      <span style={{ fontFamily: "'IBM Plex Mono',monospace", color: "#374151", letterSpacing: ".02em" }}>
+                        SLZ - 2026 - 04421
+                      </span>
+                      {" "}(Werk-Kürzel - Jahr - Laufnummer). Steht auf dem 3.1-Zeugnis (EN 10204).
                     </div>
                   </div>
                   <div>
                     <label className="inv-label">Lager / Standort</label>
-                    <input className="inv-input" placeholder="z.B. Lager Hamburg Nord" value={fLager} onChange={(e) => setFLager(e.target.value)} />
+                    <input
+                      className="inv-input"
+                      list="lager-orte"
+                      placeholder="z.B. Hamburg, Kiel, Rotterdam..."
+                      value={fLager}
+                      onChange={(e) => setFLager(e.target.value)}
+                    />
                   </div>
                   <div>
-                    <label className="inv-label">Herkunftsland (ISO 3166-1)</label>
-                    <select className="inv-select" value={fLand} onChange={(e) => setFLand(e.target.value)}>
-                      {[
-                        ["DE","Deutschland"],["AT","Österreich"],["PL","Polen"],["CZ","Tschechien"],
-                        ["SK","Slowakei"],["HU","Ungarn"],["RO","Rumänien"],["HR","Kroatien"],
-                        ["IT","Italien"],["FR","Frankreich"],["ES","Spanien"],["BE","Belgien"],
-                        ["NL","Niederlande"],["LU","Luxemburg"],["SE","Schweden"],["FI","Finnland"],
-                        ["TR","Türkei"],["UA","Ukraine"],["RU","Russland"],["BY","Weißrussland"],
-                        ["CN","China"],["IN","Indien"],["KR","Südkorea"],["JP","Japan"],
-                        ["BR","Brasilien"],["ZA","Südafrika"],["EG","Ägypten"],["DZ","Algerien"],
-                      ].map(([c,n]) => (
-                        <option key={c} value={c}>{c} — {n}</option>
-                      ))}
-                    </select>
+                    <label className="inv-label">Herkunftsland</label>
+                    <input
+                      className="inv-input"
+                      list="country-list"
+                      placeholder="z.B. DE - Deutschland oder Usbekistan"
+                      value={fLand}
+                      onChange={(e) => setFLand(e.target.value)}
+                    />
+                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>
+                      Aus Liste wählen oder frei eingeben, z.B. Usbekistan, Kasachstan, Georgien
+                    </div>
                   </div>
                 </div>
 
@@ -316,19 +459,19 @@ export function SellerInventoryClient() {
                     <label className="inv-label">Lieferbedingung (INCOTERMS® 2020)</label>
                     <select className="inv-select" value={fIncoterms} onChange={(e) => setFIncoterms(e.target.value)}>
                       {[
-                        ["EXW","Ex Works — Ab Werk"],
-                        ["FCA","Free Carrier — Frei Frachtführer"],
-                        ["FAS","Free Alongside Ship — Frei Längsseite Schiff"],
-                        ["FOB","Free On Board — Frei an Bord"],
-                        ["CFR","Cost and Freight — Kosten und Fracht"],
-                        ["CIF","Cost Insurance Freight — Kosten, Versicherung, Fracht"],
-                        ["CPT","Carriage Paid To — Frachtfrei"],
-                        ["CIP","Carriage Insurance Paid — Frachtfrei versichert"],
-                        ["DAP","Delivered At Place — Geliefert benannter Ort"],
-                        ["DPU","Delivered at Place Unloaded — Geliefert entladen"],
-                        ["DDP","Delivered Duty Paid — Geliefert verzollt"],
+                        ["EXW", "Ex Works - Ab Werk"],
+                        ["FCA", "Free Carrier - Frei Frachtführer"],
+                        ["FAS", "Free Alongside Ship - Frei Längsseite Schiff"],
+                        ["FOB", "Free On Board - Frei an Bord"],
+                        ["CFR", "Cost and Freight - Kosten und Fracht"],
+                        ["CIF", "Cost Insurance Freight - Kosten, Versicherung, Fracht"],
+                        ["CPT", "Carriage Paid To - Frachtfrei"],
+                        ["CIP", "Carriage Insurance Paid - Frachtfrei versichert"],
+                        ["DAP", "Delivered At Place - Geliefert benannter Ort"],
+                        ["DPU", "Delivered at Place Unloaded - Geliefert entladen"],
+                        ["DDP", "Delivered Duty Paid - Geliefert verzollt"],
                       ].map(([code, label]) => (
-                        <option key={code} value={code}>{code} — {label}</option>
+                        <option key={code} value={code}>{code} - {label}</option>
                       ))}
                     </select>
                   </div>
@@ -344,7 +487,6 @@ export function SellerInventoryClient() {
             </div>
           )}
 
-          {/* Tabelle */}
           {loading ? (
             <div className="inv-loading">Chargen werden geladen…</div>
           ) : charges.length === 0 ? (
@@ -360,7 +502,7 @@ export function SellerInventoryClient() {
                     <th>Material / Spezifikation</th>
                     <th>Menge</th>
                     <th>Lager</th>
-                    <th>CBAM — CO₂/t</th>
+                    <th>CBAM - CO₂/t</th>
                     <th>Herkunft</th>
                     <th>Incoterms</th>
                     <th>Status</th>
@@ -385,7 +527,7 @@ export function SellerInventoryClient() {
                       <td style={{ fontFamily: "'IBM Plex Mono',monospace" }}>
                         {parseFloat(c.quantity).toLocaleString("de-DE")} {c.unit}
                       </td>
-                      <td style={{ fontSize: 12.5, color: "#374151" }}>{c.warehouseLocation || "—"}</td>
+                      <td style={{ fontSize: 12.5, color: "#374151" }}>{c.warehouseLocation || "-"}</td>
                       <td>
                         {c.co2PerTonne ? (
                           <div>
@@ -403,8 +545,8 @@ export function SellerInventoryClient() {
                           <span className="inv-warn">⚠ Fehlt</span>
                         )}
                       </td>
-                      <td style={{ fontSize: 12.5 }}>{c.countryOfOrigin || "—"}</td>
-                      <td style={{ fontSize: 12, fontFamily: "'IBM Plex Mono',monospace" }}>{c.incoterms || "—"}</td>
+                      <td style={{ fontSize: 12.5 }}>{c.countryOfOrigin || "-"}</td>
+                      <td style={{ fontSize: 12, fontFamily: "'IBM Plex Mono',monospace" }}>{c.incoterms || "-"}</td>
                       <td>
                         <span className="inv-status" style={{ background: STATUS_COLOR[c.status] ?? "#6b7280" }}>
                           {STATUS_LABEL[c.status] ?? c.status}
