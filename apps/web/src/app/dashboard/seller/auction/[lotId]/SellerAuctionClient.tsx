@@ -551,21 +551,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
             {/* ── Gebot abgeben ── */}
             {canBid && (
               <div className="s-bid-box">
-                {(!isVerified || !hasDeposit) && (
-                  <div className="s-overlay">
-                    <div className="s-overlay-title">
-                      {!isVerified ? "Auktion nur für verifizierte Mitglieder" : "Sicherheitsleistung unvollständig"}
-                    </div>
-                    <div className="s-overlay-desc">
-                      {!isVerified
-                        ? "Laden Sie Ihren Handelsregisterauszug und USt-IdNr.-Bestätigung hoch. Prüfung in der Regel unter 24h."
-                        : `Fehlende Sicherheitsleistung: ${depositReq ? Number(depositReq).toLocaleString("de-DE", { minimumFractionDigits: 2 }) : "—"} €`}
-                    </div>
-                    <Link href="/dashboard/settings/verification" className="s-overlay-link">
-                      {!isVerified ? "Jetzt Dokumente hochladen →" : "Depot aufladen →"}
-                    </Link>
-                  </div>
-                )}
+                {/* [TESTMODE-05] KYC-Overlay deaktiviert — Original: (!isVerified || !hasDeposit) */}
                 <div className="s-bid-title">Manueller Preis</div>
                 <div className="s-bid-row">
                   <input

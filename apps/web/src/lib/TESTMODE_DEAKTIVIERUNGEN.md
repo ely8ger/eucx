@@ -8,6 +8,7 @@ Alle Punkte müssen vor Produktionsstart wieder aktiviert werden.
 | TESTMODE-02 | `app/api/auction/lots/[lotId]/bids/route.ts` | CBAM-Precheck (SellerCharge-Pflicht bei CO₂-Lots) | Chargen-Verwaltungsflow fertig getestet |
 | TESTMODE-03 | `app/api/auction/lots/[lotId]/open/route.ts` | Handelsslot-Zeiten: 19:00–22:00 statt 14:00–16:00 Berlin | Nach Testbetrieb zurück auf 14:00–16:00 |
 | TESTMODE-04 | `app/api/auth/login/route.ts` | 2FA-Pflicht beim Login (`if (user.totpEnabled)` Block entfernt) | Nach TOTP-Bibliotheksproblem gelöst (otplib verifySync) |
+| TESTMODE-05 | `app/dashboard/seller/auction/[lotId]/SellerAuctionClient.tsx` | Client-seitiges KYC-Overlay über Gebotsfeld (`!isVerified`-Block) | Zusammen mit TESTMODE-01 reaktivieren |
 
 ## Hinweise
 
