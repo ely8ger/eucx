@@ -326,7 +326,7 @@ export function BuyerLotsClient() {
         .bl-table tr:hover td { background:#fafafa; }
 
         /* Phase badge */
-        .bl-phase { display:inline-block; padding:3px 9px; font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#fff; }
+        .bl-phase { display:inline-block; padding:3px 9px; font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#fff; white-space:nowrap; }
 
         /* Action buttons */
         .bl-btn-open { padding:7px 14px; background:#154194; color:#fff; font-size:12px; font-weight:700; border:none; cursor:pointer; transition:background .15s; white-space:nowrap; }
@@ -334,16 +334,17 @@ export function BuyerLotsClient() {
         .bl-btn-open:disabled { opacity:.4; cursor:not-allowed; }
 
         /* Zeitwähler-Popover */
-        .bl-timepick { background:#fff; border:1px solid #e5e7eb; border-top:3px solid #154194; padding:14px 16px; margin-top:8px; min-width:260px; box-shadow:0 4px 16px rgba(0,0,0,.1); }
-        .bl-timepick-label { font-size:11.5px; font-weight:700; color:#374151; margin-bottom:8px; }
-        .bl-timepick-hint { font-size:11px; color:#9ca3af; margin-bottom:10px; line-height:1.5; }
-        .bl-timepick-input { width:100%; height:36px; border:1px solid #d1d5db; padding:0 10px; font-size:13px; font-family:inherit; outline:none; }
+        .bl-timepick-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:300; display:flex; align-items:center; justify-content:center; }
+        .bl-timepick { background:#fff; border-top:3px solid #154194; padding:28px 28px 24px; width:360px; box-shadow:0 12px 40px rgba(0,0,0,.18); }
+        .bl-timepick-label { font-size:16px; font-weight:700; color:#0d1b2a; margin-bottom:6px; }
+        .bl-timepick-hint { font-size:12px; color:#9ca3af; margin-bottom:18px; line-height:1.6; }
+        .bl-timepick-input { width:100%; height:42px; border:1px solid #d1d5db; padding:0 12px; font-size:14px; font-family:inherit; outline:none; box-sizing:border-box; }
         .bl-timepick-input:focus { border-color:#154194; }
-        .bl-timepick-actions { display:flex; gap:8px; margin-top:10px; }
-        .bl-timepick-confirm { flex:1; height:34px; background:#154194; color:#fff; font-size:12px; font-weight:700; border:none; cursor:pointer; transition:background .15s; }
+        .bl-timepick-actions { display:flex; gap:10px; margin-top:18px; }
+        .bl-timepick-confirm { flex:1; height:42px; background:#154194; color:#fff; font-size:13px; font-weight:700; border:none; cursor:pointer; letter-spacing:.04em; transition:background .15s; }
         .bl-timepick-confirm:hover:not(:disabled) { background:#1a52c2; }
         .bl-timepick-confirm:disabled { opacity:.4; cursor:not-allowed; }
-        .bl-timepick-cancel { height:34px; padding:0 12px; background:#fff; color:#6b7280; font-size:12px; font-weight:600; border:1px solid #d1d5db; cursor:pointer; }
+        .bl-timepick-cancel { height:42px; padding:0 16px; background:#fff; color:#6b7280; font-size:13px; font-weight:600; border:1px solid #d1d5db; cursor:pointer; transition:background .15s; }
         .bl-timepick-cancel:hover { background:#f9fafb; }
         .bl-btn-watch { padding:7px 14px; background:#fff; color:#154194; font-size:12px; font-weight:700; border:1.5px solid #154194; text-decoration:none; display:inline-block; transition:all .15s; white-space:nowrap; }
         .bl-btn-watch:hover { background:#154194; color:#fff; }
@@ -865,49 +866,14 @@ export function BuyerLotsClient() {
                         </td>
                         <td style={{ whiteSpace: "nowrap" }}>
                           {lot.phase === "COLLECTION" && (
-                            <div>
-                              <button
-                                className="bl-btn-open"
-                                disabled={opening === lot.id || lot._count.registrations === 0}
-                                onClick={() => openingLotId === lot.id ? setOpeningLotId(null) : requestOpenLot(lot.id)}
-                                title={lot._count.registrations === 0 ? "Warten auf Verkäufer-Registrierungen" : "Auktionsende wählen"}
-                              >
-                                {opening === lot.id ? "…" : openingLotId === lot.id ? "Abbrechen" : "Auktion starten"}
-                              </button>
-
-                              {openingLotId === lot.id && (
-                                <div className="bl-timepick">
-                                  <div className="bl-timepick-label">Auktionsende festlegen</div>
-                                  <div className="bl-timepick-hint">
-                                    Gebote werden bis zu diesem Zeitpunkt angenommen.<br />
-                                    Mindestens 15 Min. · Höchstens 14 Tage.
-                                  </div>
-                                  <input
-                                    className="bl-timepick-input"
-                                    type="datetime-local"
-                                    value={pickedEnd}
-                                    onChange={(e) => setPickedEnd(e.target.value)}
-                                    min={(() => {
-                                      const m = new Date(Date.now() + 15 * 60 * 1000);
-                                      const p = (n: number) => String(n).padStart(2, "0");
-                                      return `${m.getFullYear()}-${p(m.getMonth()+1)}-${p(m.getDate())}T${p(m.getHours())}:${p(m.getMinutes())}`;
-                                    })()}
-                                  />
-                                  <div className="bl-timepick-actions">
-                                    <button
-                                      className="bl-timepick-confirm"
-                                      disabled={!pickedEnd || opening === lot.id}
-                                      onClick={() => { void confirmOpenLot(); }}
-                                    >
-                                      Jetzt starten →
-                                    </button>
-                                    <button className="bl-timepick-cancel" onClick={() => setOpeningLotId(null)}>
-                                      ✕
-                                    </button>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
+                            <button
+                              className="bl-btn-open"
+                              disabled={opening === lot.id || lot._count.registrations === 0}
+                              onClick={() => openingLotId === lot.id ? setOpeningLotId(null) : requestOpenLot(lot.id)}
+                              title={lot._count.registrations === 0 ? "Warten auf Verkäufer-Registrierungen" : "Auktion starten"}
+                            >
+                              {opening === lot.id ? "…" : "Auktion starten"}
+                            </button>
                           )}
                           {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && (
                             <a href={`/dashboard/buyer/auction/${lot.id}`} className="bl-btn-watch">
@@ -930,6 +896,42 @@ export function BuyerLotsClient() {
           })()}
         </div>
       </div>
+
+      {/* Auktionsende-Modal */}
+      {openingLotId && (
+        <div className="bl-timepick-overlay" onClick={() => setOpeningLotId(null)}>
+          <div className="bl-timepick" onClick={(e) => e.stopPropagation()}>
+            <div className="bl-timepick-label">Auktionsende festlegen</div>
+            <div className="bl-timepick-hint">
+              Gebote werden bis zu diesem Zeitpunkt angenommen.<br />
+              Mindestens 15 Min. - Höchstens 14 Tage.
+            </div>
+            <input
+              className="bl-timepick-input"
+              type="datetime-local"
+              value={pickedEnd}
+              onChange={(e) => setPickedEnd(e.target.value)}
+              min={(() => {
+                const m = new Date(Date.now() + 15 * 60 * 1000);
+                const p = (n: number) => String(n).padStart(2, "0");
+                return `${m.getFullYear()}-${p(m.getMonth()+1)}-${p(m.getDate())}T${p(m.getHours())}:${p(m.getMinutes())}`;
+              })()}
+            />
+            <div className="bl-timepick-actions">
+              <button
+                className="bl-timepick-confirm"
+                disabled={!pickedEnd || !!opening}
+                onClick={() => { void confirmOpenLot(); }}
+              >
+                Jetzt starten →
+              </button>
+              <button className="bl-timepick-cancel" onClick={() => setOpeningLotId(null)}>
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
