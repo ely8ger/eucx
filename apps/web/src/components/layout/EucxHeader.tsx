@@ -560,7 +560,10 @@ export function EucxHeader() {
           <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 28px", display: "flex", alignItems: "center", height: "100%" }}>
 
             {/* Logo — fixe Position links, statisch */}
-            <a href="/" style={{ textDecoration: "none", flexShrink: 0, marginRight: 24 }}>
+            <a
+              href={me?.role === "SELLER" ? "/dashboard/seller" : me?.role ? "/dashboard/buyer" : "/"}
+              style={{ textDecoration: "none", flexShrink: 0, marginRight: 24 }}
+            >
               <EucxLogo size="sm" />
             </a>
             <div style={{ width: 1, height: 20, background: "#e0e4ea", flexShrink: 0, marginRight: 4 }} />
