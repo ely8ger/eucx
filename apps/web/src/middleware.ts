@@ -11,6 +11,7 @@ const PUBLIC_PREFIXES = [
   "/api/auth/forgot-password",
   "/api/auth/reset-password",
   "/api/auth/verify-email",
+  "/api/auth/2fa",
   // Validierungs-APIs (ohne Login nutzbar)
   "/api/validate-vat",
   "/api/validate-lei",

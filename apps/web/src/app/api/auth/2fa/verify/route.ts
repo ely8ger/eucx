@@ -7,7 +7,7 @@
  * body: { code: string }  - 6-stelliger TOTP-Code
  */
 import { NextRequest, NextResponse } from "next/server";
-import { verify as totpVerify }      from "otplib";
+import { authenticator }             from "otplib";
 import { db }                        from "@/lib/db/client";
 import { verifyAccessToken }         from "@/lib/auth/jwt";
 import { z }                         from "zod";
@@ -47,7 +47,8 @@ export async function POST(req: NextRequest) {
   }
 
   // TOTP-Code prüfen
-  const isValid = await totpVerify({ token: parsed.data.code, secret: user.totpSecret });
+  authenticator.options = { window: 1 };
+  const isValid = authenticator.verify({ token: parsed.data.code, secret: user.totpSecret });
 
   if (!isValid) {
     return NextResponse.json({ error: "Code ungültig. Bitte erneut versuchen." }, { status: 400 });
