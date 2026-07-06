@@ -164,11 +164,17 @@ export function BuyerLotsClient() {
       if (countryOfOrigin)  body.countryOfOrigin  = countryOfOrigin;
       if (productionSiteId) body.productionSiteId = productionSiteId.trim();
       if (incoterms)        body.incoterms        = incoterms;
-      if (hsCode.trim())           body.hsCode         = hsCode.trim();
-      if (qualityGrade.trim())     body.qualityGrade   = qualityGrade.trim();
-      if (deliveryPeriod.trim())   body.deliveryPeriod = deliveryPeriod.trim();
-      if (paymentTerms.trim())     body.paymentTerms   = paymentTerms.trim();
-      if (vatTreatment)            body.vatTreatment   = vatTreatment;
+      // Pflichtfelder — vertragswesentlich
+      if (!hsCode.trim())         { setFormError("Zolltarifnummer (HS-Code) ist erforderlich.");     setSubmitting(false); return; }
+      if (!qualityGrade.trim())   { setFormError("Güte / Qualitätsnorm ist erforderlich.");          setSubmitting(false); return; }
+      if (!deliveryPeriod.trim()) { setFormError("Lieferzeitraum ist erforderlich.");                setSubmitting(false); return; }
+      if (!paymentTerms.trim())   { setFormError("Zahlungsbedingungen sind erforderlich.");          setSubmitting(false); return; }
+      if (!vatTreatment)          { setFormError("USt.-Behandlung muss ausgewählt werden.");         setSubmitting(false); return; }
+      body.hsCode         = hsCode.trim();
+      body.qualityGrade   = qualityGrade.trim();
+      body.deliveryPeriod = deliveryPeriod.trim();
+      body.paymentTerms   = paymentTerms.trim();
+      body.vatTreatment   = vatTreatment;
 
       const r = await fetch("/api/auction/lots", {
         method:  "POST",
@@ -772,55 +778,59 @@ export function BuyerLotsClient() {
                   <span className="bl-cbam-badge" style={{ background: "#154194" }}>Rechtlich relevant</span>
                 </div>
                 <div className="bl-cbam-hint">
-                  Diese Angaben sind Bestandteil des Kaufvertrags (§§ 433, 434 BGB) und werden Bietern vor Gebotsabgabe angezeigt.
+                  Pflichtangaben — Bestandteil des Kaufvertrags (§§ 433, 434 BGB). Werden Bietern vor Gebotsabgabe vollständig angezeigt.
                 </div>
                 <div className="bl-form-grid">
                   <div className="bl-form-group">
-                    <label className="bl-label">Zolltarifnummer (HS-Code) <span>(optional)</span></label>
+                    <label className="bl-label">Zolltarifnummer (HS-Code) *</label>
                     <input
                       className="bl-input"
                       type="text"
                       placeholder="z.B. 7214 20 00"
                       value={hsCode}
                       onChange={(e) => setHsCode(e.target.value)}
+                      required
                     />
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">Güte / Qualitätsnorm <span>(optional)</span></label>
+                    <label className="bl-label">Güte / Qualitätsnorm *</label>
                     <input
                       className="bl-input"
                       type="text"
                       placeholder="z.B. B500B · EN 10080"
                       value={qualityGrade}
                       onChange={(e) => setQualityGrade(e.target.value)}
+                      required
                     />
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">Lieferzeitraum <span>(optional)</span></label>
+                    <label className="bl-label">Lieferzeitraum *</label>
                     <input
                       className="bl-input"
                       type="text"
                       placeholder="z.B. 4–6 Wochen ab Zuschlag"
                       value={deliveryPeriod}
                       onChange={(e) => setDeliveryPeriod(e.target.value)}
+                      required
                     />
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">Zahlungsbedingungen <span>(optional)</span></label>
+                    <label className="bl-label">Zahlungsbedingungen *</label>
                     <input
                       className="bl-input"
                       type="text"
                       placeholder="z.B. 30 Tage netto nach Lieferung"
                       value={paymentTerms}
                       onChange={(e) => setPaymentTerms(e.target.value)}
+                      required
                     />
                   </div>
 
                   <div className="bl-form-group full">
-                    <label className="bl-label">USt.-Behandlung <span>(optional)</span></label>
+                    <label className="bl-label">USt.-Behandlung *</label>
                     <select
                       className="bl-select"
                       value={vatTreatment}

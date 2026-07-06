@@ -26,12 +26,12 @@ const createLotSchema = z.object({
   countryOfOrigin:  z.string().max(100).optional(),
   productionSiteId: z.string().max(50).optional(),
   incoterms:        z.enum(INCOTERMS_VALUES).optional(),
-  // Handels- und Vertragsangaben
-  hsCode:           z.string().max(20).optional(),
-  qualityGrade:     z.string().max(120).optional(),
-  deliveryPeriod:   z.string().max(120).optional(),
-  paymentTerms:     z.string().max(120).optional(),
-  vatTreatment:     z.string().max(120).optional(),
+  // Handels- und Vertragsangaben (Pflichtfelder — vertragswesentlich nach §§ 433, 434 BGB)
+  hsCode:           z.string().min(1, "HS-Code ist erforderlich").max(20),
+  qualityGrade:     z.string().min(1, "Güte / Qualitätsnorm ist erforderlich").max(120),
+  deliveryPeriod:   z.string().min(1, "Lieferzeitraum ist erforderlich").max(120),
+  paymentTerms:     z.string().min(1, "Zahlungsbedingungen sind erforderlich").max(120),
+  vatTreatment:     z.string().min(1, "USt.-Behandlung ist erforderlich").max(120),
 });
 
 export async function POST(req: NextRequest) {
