@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { lotId: string } },
+  { params }: { params: Promise<{ lotId: string }> },
 ) {
   // ── Auth ──────────────────────────────────────────────────────────
   // Bearer-Token oder Query-Parameter (für window.open() aus Frontend)
@@ -31,8 +31,9 @@ export async function GET(
   catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
 
   // ── Lot laden ─────────────────────────────────────────────────────
+  const { lotId } = await params;
   const lot = await db.lot.findUnique({
-    where:  { id: params.lotId },
+    where:  { id: lotId },
     select: {
       id:               true,
       commodity:        true,
