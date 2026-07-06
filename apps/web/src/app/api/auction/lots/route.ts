@@ -26,6 +26,12 @@ const createLotSchema = z.object({
   countryOfOrigin:  z.string().max(100).optional(),
   productionSiteId: z.string().max(50).optional(),
   incoterms:        z.enum(INCOTERMS_VALUES).optional(),
+  // Handels- und Vertragsangaben
+  hsCode:           z.string().max(20).optional(),
+  qualityGrade:     z.string().max(120).optional(),
+  deliveryPeriod:   z.string().max(120).optional(),
+  paymentTerms:     z.string().max(120).optional(),
+  vatTreatment:     z.string().max(120).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -65,7 +71,8 @@ export async function POST(req: NextRequest) {
 
   // ── Lot anlegen ───────────────────────────────────────────────────
   const { commodity, quantity, unit, startPrice, description,
-          co2PerTonne, countryOfOrigin, productionSiteId, incoterms } = parsed.data;
+          co2PerTonne, countryOfOrigin, productionSiteId, incoterms,
+          hsCode, qualityGrade, deliveryPeriod, paymentTerms, vatTreatment } = parsed.data;
   const lot = await db.lot.create({
     data: {
       buyerId:         user.id,
@@ -78,6 +85,11 @@ export async function POST(req: NextRequest) {
       countryOfOrigin,
       productionSiteId,
       incoterms,
+      hsCode,
+      qualityGrade,
+      deliveryPeriod,
+      paymentTerms,
+      vatTreatment,
     },
   });
 
@@ -129,6 +141,11 @@ export async function GET(req: NextRequest) {
       countryOfOrigin:  true,
       productionSiteId: true,
       incoterms:        true,
+      hsCode:           true,
+      qualityGrade:     true,
+      deliveryPeriod:   true,
+      paymentTerms:     true,
+      vatTreatment:     true,
       buyer: {
         select: { id: true, organizationId: true },
       },

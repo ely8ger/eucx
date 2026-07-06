@@ -14,7 +14,10 @@ interface Lot {
   auctionEnd: string | null; auctionStart: string | null;
   createdAt: string; description: string | null;
   incoterms: string | null; countryOfOrigin: string | null;
-  co2PerTonne: string | null;
+  co2PerTonne: string | null; productionSiteId: string | null;
+  hsCode: string | null; qualityGrade: string | null;
+  deliveryPeriod: string | null; paymentTerms: string | null;
+  vatTreatment: string | null;
 }
 
 interface MyBid   { price: string; rank: number; createdAt: string; }
@@ -460,18 +463,47 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                   <span className="sa-lot-val">{allBids.length} / {state?.activeBidderCount ?? "—"}</span>
                 </div>
 
+                {/* Qualität */}
+                {lot.qualityGrade && <>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Qualität</div>
+                  <div className="sa-lot-row">
+                    <span className="sa-lot-key">Güte / Norm</span>
+                    <span className="sa-lot-val" style={{ maxWidth: 130, textAlign: "right", wordBreak: "break-word" }}>{lot.qualityGrade}</span>
+                  </div>
+                  {lot.hsCode && <div className="sa-lot-row">
+                    <span className="sa-lot-key">HS-Code</span>
+                    <span className="sa-lot-val">{lot.hsCode}</span>
+                  </div>}
+                </>}
+
                 {/* Lieferung */}
                 <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Lieferung</div>
                 {[
                   ["Incoterms",     lot.incoterms       ?? "DAP"],
                   ["Herkunftsland", lot.countryOfOrigin ?? "—"],
-                  ...(lot.co2PerTonne ? [["CO₂-Äq.", `${lot.co2PerTonne} kg/t`]] : []),
+                  ...(lot.hsCode && !lot.qualityGrade ? [["HS-Code", lot.hsCode]] : []),
+                  ...(lot.co2PerTonne       ? [["CO₂-Äq.",          `${lot.co2PerTonne} kg/t`]] : []),
+                  ...(lot.productionSiteId  ? [["CBAM-Stätten-ID",   lot.productionSiteId]]      : []),
+                  ...(lot.deliveryPeriod    ? [["Lieferzeitraum",     lot.deliveryPeriod]]        : []),
                 ].map(([k, v]) => (
                   <div key={k} className="sa-lot-row">
                     <span className="sa-lot-key">{k}</span>
-                    <span className="sa-lot-val">{v}</span>
+                    <span className="sa-lot-val" style={{ maxWidth: 130, textAlign: "right", wordBreak: "break-word" }}>{v}</span>
                   </div>
                 ))}
+
+                {/* Vertrag */}
+                {(lot.paymentTerms || lot.vatTreatment) && <>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Vertrag</div>
+                  {lot.paymentTerms && <div className="sa-lot-row">
+                    <span className="sa-lot-key">Zahlungsbedingungen</span>
+                    <span className="sa-lot-val" style={{ maxWidth: 130, textAlign: "right", wordBreak: "break-word" }}>{lot.paymentTerms}</span>
+                  </div>}
+                  {lot.vatTreatment && <div className="sa-lot-row">
+                    <span className="sa-lot-key">USt.-Behandlung</span>
+                    <span className="sa-lot-val" style={{ maxWidth: 130, textAlign: "right", wordBreak: "break-word", fontSize: 10 }}>{lot.vatTreatment}</span>
+                  </div>}
+                </>}
 
                 {/* Zeitrahmen */}
                 <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Zeitrahmen</div>

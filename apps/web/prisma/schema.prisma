@@ -1153,6 +1153,13 @@ model Lot {
   productionSiteId String?                       // CBAM-Registry-ID der Produktionsstätte
   incoterms        String?  @default("DAP")      // INCOTERMS® 2020
 
+  // ── Handels- und Vertragsangaben ──────────────────────────────────────────────
+  hsCode           String?                       // Zolltarifnummer (HS-Code, z.B. "7214 20 00")
+  qualityGrade     String?                       // Güte / Qualitätsnorm (z.B. "B500B · EN 10080")
+  deliveryPeriod   String?                       // Lieferzeitraum (z.B. "4–6 Wochen ab Zuschlag")
+  paymentTerms     String?                       // Zahlungsbedingungen (z.B. "30 Tage netto")
+  vatTreatment     String?                       // USt.-Behandlung (z.B. "§13b UStG Reverse Charge")
+
   buyer         User              @relation("LotBuyer",  fields: [buyerId],   references: [id])
   winner        User?             @relation("LotWinner", fields: [winnerId],   references: [id])
   bids          Bid[]

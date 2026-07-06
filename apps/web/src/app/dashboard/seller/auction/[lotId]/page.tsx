@@ -34,6 +34,12 @@ export default async function SellerAuctionPage({
       incoterms:       true,
       countryOfOrigin: true,
       co2PerTonne:     true,
+      productionSiteId: true,
+      hsCode:           true,
+      qualityGrade:     true,
+      deliveryPeriod:   true,
+      paymentTerms:     true,
+      vatTreatment:     true,
     },
   });
 
@@ -53,9 +59,15 @@ export default async function SellerAuctionPage({
         auctionStart:    lot.auctionStart?.toISOString() ?? null,
         createdAt:       lot.createdAt.toISOString(),
         description:     lot.description     ?? null,
-        incoterms:       lot.incoterms       ?? null,
-        countryOfOrigin: lot.countryOfOrigin ?? null,
-        co2PerTonne:     lot.co2PerTonne?.toString() ?? null,
+        incoterms:        lot.incoterms        ?? null,
+        countryOfOrigin:  lot.countryOfOrigin  ?? null,
+        co2PerTonne:      lot.co2PerTonne?.toString()  ?? null,
+        productionSiteId: lot.productionSiteId ?? null,
+        hsCode:           lot.hsCode           ?? null,
+        qualityGrade:     lot.qualityGrade     ?? null,
+        deliveryPeriod:   lot.deliveryPeriod   ?? null,
+        paymentTerms:     lot.paymentTerms     ?? null,
+        vatTreatment:     lot.vatTreatment     ?? null,
       }}
     />
   );

@@ -106,6 +106,12 @@ export function BuyerLotsClient() {
   const [countryOfOrigin,  setCountryOfOrigin]  = useState("");
   const [productionSiteId, setProductionSiteId] = useState("");
   const [incoterms,        setIncoterms]        = useState("DAP");
+  // Handels- und Vertragsangaben
+  const [hsCode,           setHsCode]           = useState("");
+  const [qualityGrade,     setQualityGrade]     = useState("");
+  const [deliveryPeriod,   setDeliveryPeriod]   = useState("");
+  const [paymentTerms,     setPaymentTerms]     = useState("");
+  const [vatTreatment,     setVatTreatment]     = useState("");
 
   // ── Token + Auth-Redirect ──────────────────────────────────────────
   useEffect(() => {
@@ -158,6 +164,11 @@ export function BuyerLotsClient() {
       if (countryOfOrigin)  body.countryOfOrigin  = countryOfOrigin;
       if (productionSiteId) body.productionSiteId = productionSiteId.trim();
       if (incoterms)        body.incoterms        = incoterms;
+      if (hsCode.trim())           body.hsCode         = hsCode.trim();
+      if (qualityGrade.trim())     body.qualityGrade   = qualityGrade.trim();
+      if (deliveryPeriod.trim())   body.deliveryPeriod = deliveryPeriod.trim();
+      if (paymentTerms.trim())     body.paymentTerms   = paymentTerms.trim();
+      if (vatTreatment)            body.vatTreatment   = vatTreatment;
 
       const r = await fetch("/api/auction/lots", {
         method:  "POST",
@@ -751,6 +762,76 @@ export function BuyerLotsClient() {
                       {INCOTERMS_LIST.map((t) => (
                         <option key={t} value={t}>{t}</option>
                       ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Handels- und Vertragsangaben */}
+                <div className="bl-cbam-header" style={{ marginTop: 24 }}>
+                  <span className="bl-cbam-title">Handels- und Vertragsangaben</span>
+                  <span className="bl-cbam-badge" style={{ background: "#154194" }}>Rechtlich relevant</span>
+                </div>
+                <div className="bl-cbam-hint">
+                  Diese Angaben sind Bestandteil des Kaufvertrags (§§ 433, 434 BGB) und werden Bietern vor Gebotsabgabe angezeigt.
+                </div>
+                <div className="bl-form-grid">
+                  <div className="bl-form-group">
+                    <label className="bl-label">Zolltarifnummer (HS-Code) <span>(optional)</span></label>
+                    <input
+                      className="bl-input"
+                      type="text"
+                      placeholder="z.B. 7214 20 00"
+                      value={hsCode}
+                      onChange={(e) => setHsCode(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="bl-form-group">
+                    <label className="bl-label">Güte / Qualitätsnorm <span>(optional)</span></label>
+                    <input
+                      className="bl-input"
+                      type="text"
+                      placeholder="z.B. B500B · EN 10080"
+                      value={qualityGrade}
+                      onChange={(e) => setQualityGrade(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="bl-form-group">
+                    <label className="bl-label">Lieferzeitraum <span>(optional)</span></label>
+                    <input
+                      className="bl-input"
+                      type="text"
+                      placeholder="z.B. 4–6 Wochen ab Zuschlag"
+                      value={deliveryPeriod}
+                      onChange={(e) => setDeliveryPeriod(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="bl-form-group">
+                    <label className="bl-label">Zahlungsbedingungen <span>(optional)</span></label>
+                    <input
+                      className="bl-input"
+                      type="text"
+                      placeholder="z.B. 30 Tage netto nach Lieferung"
+                      value={paymentTerms}
+                      onChange={(e) => setPaymentTerms(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="bl-form-group full">
+                    <label className="bl-label">USt.-Behandlung <span>(optional)</span></label>
+                    <select
+                      className="bl-select"
+                      value={vatTreatment}
+                      onChange={(e) => setVatTreatment(e.target.value)}
+                    >
+                      <option value="">— Bitte wählen —</option>
+                      <option value="Umsatzsteuer 19 % (Regelbesteuerung)">Umsatzsteuer 19 % (Regelbesteuerung)</option>
+                      <option value="Steuerschuldumkehr §13b UStG (Reverse Charge)">Steuerschuldumkehr §13b UStG (Reverse Charge)</option>
+                      <option value="Innergemeinschaftliche Lieferung §4 Nr. 1b UStG (0 %)">Innergemeinschaftliche Lieferung §4 Nr. 1b UStG (0 %)</option>
+                      <option value="Ausfuhrlieferung steuerfrei §4 Nr. 1a UStG">Ausfuhrlieferung steuerfrei §4 Nr. 1a UStG</option>
+                      <option value="Differenzbesteuerung §25a UStG">Differenzbesteuerung §25a UStG</option>
                     </select>
                   </div>
                 </div>
