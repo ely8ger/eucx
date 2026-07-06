@@ -32,13 +32,17 @@ interface LotRow {
   incoterms?:       string | null;
 }
 
-const EU_COUNTRIES: [string, string][] = [
-  ["DE", "Deutschland"], ["AT", "Österreich"], ["CH", "Schweiz (nicht EU)"],
-  ["TR", "Türkei"], ["UA", "Ukraine"], ["CN", "China"], ["IN", "Indien"],
-  ["RU", "Russland"], ["BR", "Brasilien"], ["MX", "Mexiko"],
-  ["US", "USA"], ["GB", "Vereinigtes Königreich"],
-  ["PL", "Polen"], ["CZ", "Tschechien"], ["SK", "Slowakei"],
-  ["RO", "Rumänien"], ["HU", "Ungarn"], ["BG", "Bulgarien"],
+const COUNTRIES = [
+  "DE - Deutschland", "AT - Österreich", "PL - Polen", "CZ - Tschechien",
+  "SK - Slowakei", "HU - Ungarn", "RO - Rumänien", "HR - Kroatien",
+  "IT - Italien", "FR - Frankreich", "ES - Spanien", "BE - Belgien",
+  "NL - Niederlande", "LU - Luxemburg", "SE - Schweden", "FI - Finnland",
+  "TR - Türkei", "UA - Ukraine", "BY - Weißrussland",
+  "CN - China", "IN - Indien", "KR - Südkorea", "JP - Japan",
+  "BR - Brasilien", "ZA - Südafrika", "EG - Ägypten", "DZ - Algerien",
+  "KZ - Kasachstan", "AZ - Aserbaidschan", "GE - Georgien",
+  "AM - Armenien", "TM - Turkmenistan", "RS - Serbien", "MK - Nordmazedonien",
+  "BA - Bosnien-Herzegowina", "ME - Montenegro", "AL - Albanien",
 ];
 
 const INCOTERMS_LIST = ["EXW", "FCA", "FAS", "FOB", "CFR", "CIF", "CPT", "CIP", "DAP", "DPU", "DDP"] as const;
@@ -704,17 +708,17 @@ export function BuyerLotsClient() {
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">Herkunftsland <span>(optional, ISO)</span></label>
-                    <select
-                      className="bl-select"
+                    <label className="bl-label">Herkunftsland <span>(optional)</span></label>
+                    <input
+                      className="bl-input"
+                      list="buyer-country-list"
+                      placeholder="z.B. DE - Deutschland"
                       value={countryOfOrigin}
                       onChange={(e) => setCountryOfOrigin(e.target.value)}
-                    >
-                      <option value="">— nicht angegeben —</option>
-                      {EU_COUNTRIES.map(([code, name]) => (
-                        <option key={code} value={code}>{code} — {name}</option>
-                      ))}
-                    </select>
+                    />
+                    <datalist id="buyer-country-list">
+                      {COUNTRIES.map((c) => <option key={c} value={c} />)}
+                    </datalist>
                   </div>
 
                   <div className="bl-form-group">

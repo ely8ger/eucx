@@ -23,7 +23,7 @@ const createLotSchema = z.object({
   description:      z.string().max(2000).optional(),
   // CBAM-Felder (optional, aber empfohlen ab 2026 für grenzüberschreitenden Handel)
   co2PerTonne:      z.number().positive().optional(),
-  countryOfOrigin:  z.string().length(2).toUpperCase().optional(),
+  countryOfOrigin:  z.string().max(100).optional(),
   productionSiteId: z.string().max(50).optional(),
   incoterms:        z.enum(INCOTERMS_VALUES).optional(),
 });
