@@ -56,8 +56,8 @@ const NAV: Record<string, NavItem[]> = {
     { label: "Abschlüsse",     href: "#", disabled: true },
   ],
   seller: [
-    { label: "Verkaufs-Dashboard", href: "/dashboard/seller",            activePrefix: "/dashboard/seller" },
-    { label: "Meine Angebote",     href: "/dashboard/seller/auctions",   activePrefix: "/dashboard/seller/auctions" },
+    { label: "Ausschreibungen",    href: "/dashboard/seller/auctions",   activePrefix: "/dashboard/seller/auctions" },
+    { label: "Lagerbestand",       href: "/dashboard/seller/inventory",  activePrefix: "/dashboard/seller/inventory" },
     { label: "Aktive Gebote",      href: "/dashboard/seller/auctions",   activePrefix: "/dashboard/seller/auction" },
     { label: "Lieferungen",        href: "/dashboard/seller/logistics",  activePrefix: "/dashboard/seller/logistics" },
     { label: "Abrechnung",         href: "/dashboard/seller/billing",    activePrefix: "/dashboard/seller/billing" },
@@ -106,7 +106,23 @@ const BREADCRUMB_MAP: Array<{
   // ── Verkäufer-Portal ───────────────────────────────────────────────────────
   {
     match:  (p) => p === "/dashboard/seller",
-    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller", page: "Verkaufs-Dashboard", pageHref: "/dashboard/seller" }),
+    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Verkaufs-Dashboard", pageHref: "/dashboard/seller" }),
+  },
+  {
+    match:  (p) => p.startsWith("/dashboard/seller/auctions"),
+    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Ausschreibungen", pageHref: "/dashboard/seller/auctions" }),
+  },
+  {
+    match:  (p) => p.startsWith("/dashboard/seller/inventory"),
+    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Lagerbestand", pageHref: "/dashboard/seller/inventory" }),
+  },
+  {
+    match:  (p) => p.startsWith("/dashboard/seller/logistics"),
+    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Lieferungen", pageHref: "/dashboard/seller/logistics" }),
+  },
+  {
+    match:  (p) => p.startsWith("/dashboard/seller/billing"),
+    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Abrechnung", pageHref: "/dashboard/seller/billing" }),
   },
   {
     match:  (p) => p.startsWith("/dashboard/seller/auction/"),
