@@ -254,25 +254,45 @@ export function SellerInventoryClient() {
                     <input className="inv-input" placeholder="z.B. Betonstahl BST 500S" value={fMaterial} onChange={(e) => setFMaterial(e.target.value)} required />
                   </div>
                   <div>
-                    <label className="inv-label">Spezifikation</label>
-                    <input className="inv-input" placeholder="z.B. 12mm Rebar, EN 10080" value={fSpec} onChange={(e) => setFSpec(e.target.value)} />
+                    <label className="inv-label">
+                      Spezifikation
+                      <span style={{ fontWeight: 400, color: "#9ca3af", marginLeft: 6 }}>Norm + Abmessung</span>
+                    </label>
+                    <input className="inv-input" placeholder="z.B. EN 10080 — Ø12mm BST 500S" value={fSpec} onChange={(e) => setFSpec(e.target.value)} />
+                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>
+                      EN 10080 = EU-Norm für Betonstahl · DIN 488 = Deutsche Norm · EN 10025 = Baustahl
+                    </div>
                   </div>
                   <div>
                     <label className="inv-label">Menge (Tonnen) *</label>
                     <input className="inv-input" type="number" min="0.1" step="0.1" placeholder="250" value={fQty} onChange={(e) => setFQty(e.target.value)} required />
                   </div>
                   <div>
-                    <label className="inv-label">Schmelznummer</label>
-                    <input className="inv-input" placeholder="SM-DE-0001-A" value={fSchmelzNr} onChange={(e) => setFSchmelzNr(e.target.value)} />
+                    <label className="inv-label">
+                      Schmelznummer
+                      <span style={{ fontWeight: 400, color: "#9ca3af", marginLeft: 6 }}>aus dem 3.1-Werkszeugnis</span>
+                    </label>
+                    <input className="inv-input" placeholder="z.B. 123456-A (steht im Werkszeugnis)" value={fSchmelzNr} onChange={(e) => setFSchmelzNr(e.target.value)} />
+                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>
+                      Eindeutige Produktions-ID des Stahlwerks — nicht vom System generierbar
+                    </div>
                   </div>
                   <div>
                     <label className="inv-label">Lager / Standort</label>
                     <input className="inv-input" placeholder="z.B. Lager Hamburg Nord" value={fLager} onChange={(e) => setFLager(e.target.value)} />
                   </div>
                   <div>
-                    <label className="inv-label">Herkunftsland (ISO)</label>
+                    <label className="inv-label">Herkunftsland (ISO 3166-1)</label>
                     <select className="inv-select" value={fLand} onChange={(e) => setFLand(e.target.value)}>
-                      {[["DE","Deutschland"],["TR","Türkei"],["UA","Ukraine"],["CN","China"],["PL","Polen"],["AT","Österreich"],["FR","Frankreich"],["IT","Italien"]].map(([c,n]) => (
+                      {[
+                        ["DE","Deutschland"],["AT","Österreich"],["PL","Polen"],["CZ","Tschechien"],
+                        ["SK","Slowakei"],["HU","Ungarn"],["RO","Rumänien"],["HR","Kroatien"],
+                        ["IT","Italien"],["FR","Frankreich"],["ES","Spanien"],["BE","Belgien"],
+                        ["NL","Niederlande"],["LU","Luxemburg"],["SE","Schweden"],["FI","Finnland"],
+                        ["TR","Türkei"],["UA","Ukraine"],["RU","Russland"],["BY","Weißrussland"],
+                        ["CN","China"],["IN","Indien"],["KR","Südkorea"],["JP","Japan"],
+                        ["BR","Brasilien"],["ZA","Südafrika"],["EG","Ägypten"],["DZ","Algerien"],
+                      ].map(([c,n]) => (
                         <option key={c} value={c}>{c} — {n}</option>
                       ))}
                     </select>
@@ -295,8 +315,20 @@ export function SellerInventoryClient() {
                   <div>
                     <label className="inv-label">Lieferbedingung (INCOTERMS® 2020)</label>
                     <select className="inv-select" value={fIncoterms} onChange={(e) => setFIncoterms(e.target.value)}>
-                      {["EXW","FCA","FAS","FOB","CFR","CIF","CPT","CIP","DAP","DPU","DDP"].map((t) => (
-                        <option key={t} value={t}>{t}</option>
+                      {[
+                        ["EXW","Ex Works — Ab Werk"],
+                        ["FCA","Free Carrier — Frei Frachtführer"],
+                        ["FAS","Free Alongside Ship — Frei Längsseite Schiff"],
+                        ["FOB","Free On Board — Frei an Bord"],
+                        ["CFR","Cost and Freight — Kosten und Fracht"],
+                        ["CIF","Cost Insurance Freight — Kosten, Versicherung, Fracht"],
+                        ["CPT","Carriage Paid To — Frachtfrei"],
+                        ["CIP","Carriage Insurance Paid — Frachtfrei versichert"],
+                        ["DAP","Delivered At Place — Geliefert benannter Ort"],
+                        ["DPU","Delivered at Place Unloaded — Geliefert entladen"],
+                        ["DDP","Delivered Duty Paid — Geliefert verzollt"],
+                      ].map(([code, label]) => (
+                        <option key={code} value={code}>{code} — {label}</option>
                       ))}
                     </select>
                   </div>
