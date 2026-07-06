@@ -9,7 +9,7 @@
  * Bei Erfolg: vollständiges Login-Response wie POST /api/auth/login
  */
 import { NextRequest, NextResponse } from "next/server";
-import { authenticator }             from "otplib";
+import { TOTP }                      from "otplib";
 import { createHash }                from "crypto";
 import { db }                        from "@/lib/db/client";
 import { signAccessToken, signRefreshToken } from "@/lib/auth/jwt";
@@ -46,8 +46,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Konto nicht aktiv" }, { status: 403 });
   }
 
-  authenticator.options = { window: 1 };
-  const isValid = authenticator.verify({ token: parsed.data.code, secret: user.totpSecret });
+  const totp = new TOTP({ window: 1 });
+  const isValid = totp.verify({ token: parsed.data.code, secret: user.totpSecret });
   if (!isValid) {
     return NextResponse.json({ error: "Code ungültig. Bitte Authenticator-App prüfen." }, { status: 400 });
   }
