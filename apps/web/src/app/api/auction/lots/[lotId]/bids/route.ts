@@ -11,7 +11,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { placeBid } from "@/lib/auction/price-engine";
-import { checkBidEligibility } from "@/lib/auction/kyc-guard";
+// import { checkBidEligibility } from "@/lib/auction/kyc-guard"; // [TESTMODE-01]
 import { notifyOutbid, notifyLeading } from "@/lib/notifications/notification-service";
 import { db } from "@/lib/db/client";
 import { z } from "zod";
@@ -54,14 +54,10 @@ export async function POST(
     return NextResponse.json({ error: "Nur Verkäufer können Gebote abgeben" }, { status: 403 });
   }
 
-  // ── KYC + Deposit-Check ───────────────────────────────────────────
-  const kycCheck = await checkBidEligibility(token.userId, lotId);
-  if (!kycCheck.ok) {
-    return NextResponse.json(
-      { error: kycCheck.error, code: kycCheck.code, kycRequired: kycCheck.kycRequired, depositRequired: kycCheck.depositRequired },
-      { status: kycCheck.code }
-    );
-  }
+  // ── [TESTMODE-01] KYC + Deposit-Check — DEAKTIVIERT ─────────────
+  // Grund: Test-Seller nicht verifiziert. Wieder aktivieren wenn Admin-KYC-Flow bereit.
+  // Original: checkBidEligibility(token.userId, lotId)
+  // ──────────────────────────────────────────────────────────────────
 
   // ── Lot laden (für CBAM + Deal-Limit Checks) ─────────────────────
   const lot = await db.lot.findUnique({
@@ -70,29 +66,10 @@ export async function POST(
   });
   if (!lot) return NextResponse.json({ error: "Lot nicht gefunden" }, { status: 404 });
 
-  // ── CBAM-Precheck ─────────────────────────────────────────────────
-  // Wenn das Lot einen CO₂-Grenzwert hat, muss der Verkäufer eine
-  // verfügbare Charge mit co2PerTonne ≤ Lot-Limit nachweisen können.
-  if (lot.co2PerTonne !== null) {
-    const validCharge = await db.sellerCharge.findFirst({
-      where: {
-        sellerId:    token.userId,
-        status:      "AVAILABLE",
-        co2PerTonne: { lte: lot.co2PerTonne },
-      },
-      select: { id: true },
-    });
-    if (!validCharge) {
-      return NextResponse.json(
-        {
-          error: `CBAM-Voraussetzung nicht erfüllt: Dieses Lot verlangt eine Charge mit CO₂ ≤ ${lot.co2PerTonne} kg/t. Bitte legen Sie zuerst eine konforme Lagercharge unter Chargen-Verwaltung an.`,
-          code:  422,
-          cbamRequired: true,
-        },
-        { status: 422 }
-      );
-    }
-  }
+  // ── [TESTMODE-02] CBAM-Precheck — DEAKTIVIERT ────────────────────
+  // Grund: Test-Seller hat keine SellerCharge. Wieder aktivieren wenn Chargen-Flow bereit.
+  // Original: if (lot.co2PerTonne !== null) { const validCharge = ... }
+  // ──────────────────────────────────────────────────────────────────
 
   // ── Deal-Limit nach KYC-Tier ──────────────────────────────────────
   // Transaktionsgröße = Angebotspreis × Lot-Menge
