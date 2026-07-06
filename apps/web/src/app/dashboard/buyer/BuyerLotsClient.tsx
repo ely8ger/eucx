@@ -594,7 +594,7 @@ export function BuyerLotsClient() {
                     </div>
                   </div>
                   {!isPhoneVerif && (
-                    <a href="/dashboard/settings/profile" className="bl-pf-link">Verifizieren →</a>
+                    <a href="/dashboard/settings/phone" className="bl-pf-link">Verifizieren →</a>
                   )}
                 </div>
               </div>
