@@ -28,6 +28,21 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> }
 ) {
+  try {
+    return await _handlePost(req, params);
+  } catch (err) {
+    console.error("[POST /bids] unhandled error:", err);
+    return NextResponse.json(
+      { error: "Interner Fehler", detail: String(err) },
+      { status: 500 }
+    );
+  }
+}
+
+async function _handlePost(
+  req: NextRequest,
+  params: Promise<{ lotId: string }>
+) {
   const { lotId } = await params;
   // ── Auth ──────────────────────────────────────────────────────────
   const authHeader = req.headers.get("authorization");
