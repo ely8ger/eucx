@@ -253,128 +253,262 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
     return { ...bid, delta };
   });
 
+  const downloadContract = () => {
+    fetch(`/api/auction/lots/${lot.id}/contract`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(async (r) => {
+        if (!r.ok) { alert("Vertrag noch nicht verfügbar."); return; }
+        const blob = await r.blob();
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement("a");
+        a.href = url; a.download = `EUCX-Kaufvertrag-${lot.id.slice(0,8)}.pdf`;
+        a.click(); URL.revokeObjectURL(url);
+      }).catch(() => alert("Download fehlgeschlagen."));
+  };
+
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+        *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
 
-        *,*::before,*::after { box-sizing: border-box; }
+        /* ── Animations ── */
+        @keyframes pulse-red   { 0%,100%{opacity:1} 50%{opacity:.55} }
+        @keyframes pulse-dot   { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.7} }
+        @keyframes flash-green { 0%{background:#dcfce7;color:#14532d} 100%{background:transparent;color:inherit} }
+        @keyframes flash-red   { 0%{background:#fee2e2;color:#7f1d1d} 100%{background:transparent;color:inherit} }
+        @keyframes shake       { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
+        @keyframes fadeUp      { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes glow-green  { 0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,.3)} 50%{box-shadow:0 0 0 8px rgba(22,163,74,0)} }
+        @keyframes spin        { to{transform:rotate(360deg)} }
+        @keyframes price-tick  { 0%{transform:scale(1)} 50%{transform:scale(1.04)} 100%{transform:scale(1)} }
 
-        .s-root { font-family:'IBM Plex Sans',Arial,sans-serif; background:#f0f2f5; min-height:100vh; color:#0d1b2a; padding-bottom:120px; }
+        .sa-root { font-family:'IBM Plex Sans',Arial,sans-serif; background:#f0f2f5; min-height:100vh; color:#0d1b2a; padding-bottom:84px; }
 
-        /* ── Header ── */
-        .s-hdr { background:#0d1b2a; height:56px; padding:0 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:0; z-index:50; }
-        .s-hdr-logo { font-size:14px; font-weight:700; color:#fff; letter-spacing:.04em; white-space:nowrap; }
-        .s-hdr-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-        .s-dot { width:8px; height:8px; border-radius:50%; background:#16a34a; display:inline-block; animation:sdot 2s infinite; }
-        .s-dot.off { background:#6b7280; animation:none; }
-        @keyframes sdot { 0%,100%{opacity:1} 50%{opacity:.4} }
-        .s-conn { font-size:11px; color:#9ca3af; white-space:nowrap; }
+        /* ── Top Bar ── */
+        .sa-topbar {
+          background:linear-gradient(135deg,#0d1b2a 0%,#152d4e 100%);
+          border-bottom:1px solid rgba(255,255,255,.08);
+          padding:0 24px; height:60px;
+          display:flex; align-items:center; justify-content:space-between; gap:16px;
+          position:sticky; top:0; z-index:50;
+        }
+        .sa-topbar-left { display:flex; align-items:center; gap:16px; min-width:0; }
+        .sa-topbar-brand { font-size:13px; font-weight:700; color:rgba(255,255,255,.5); letter-spacing:.06em; flex-shrink:0; }
+        .sa-topbar-sep { color:rgba(255,255,255,.2); }
+        .sa-topbar-lot { font-size:15px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .sa-topbar-qty { font-size:12px; color:rgba(255,255,255,.5); white-space:nowrap; }
+        .sa-topbar-right { display:flex; align-items:center; gap:12px; flex-shrink:0; }
+        .sa-live-dot { width:8px; height:8px; border-radius:50%; background:#16a34a; animation:pulse-dot 2s infinite; flex-shrink:0; }
+        .sa-live-dot.off { background:#6b7280; animation:none; }
+        .sa-live-label { font-size:11px; color:rgba(255,255,255,.5); }
+        .sa-phase-chip {
+          padding:3px 10px; font-size:10px; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
+          border-radius:2px;
+        }
+        .sa-phase-chip.proposal { background:rgba(217,119,6,.2); color:#fbbf24; border:1px solid rgba(217,119,6,.3); }
+        .sa-phase-chip.reduction { background:rgba(22,163,74,.2); color:#4ade80; border:1px solid rgba(22,163,74,.3); }
+        .sa-phase-chip.conclusion { background:rgba(107,114,128,.2); color:#9ca3af; border:1px solid rgba(107,114,128,.3); }
 
-        /* ── Layout ── */
-        .s-body { max-width:1080px; margin:0 auto; padding:24px 16px; display:grid; grid-template-columns:260px 1fr; gap:20px; align-items:start; }
-        .s-body.compact { grid-template-columns:1fr; }
-        @media (max-width:760px) { .s-body { grid-template-columns:1fr; padding:16px 12px; } }
+        /* ── Page Grid ── */
+        .sa-grid {
+          max-width:1140px; margin:0 auto; padding:24px 20px;
+          display:grid; grid-template-columns:280px 1fr; gap:20px; align-items:start;
+        }
+        @media(max-width:800px) { .sa-grid { grid-template-columns:1fr; } }
 
         /* ── Sidebar ── */
-        .s-sidebar { display:flex; flex-direction:column; gap:16px; }
-        .s-lot-card { background:#fff; border:1px solid #e5e7eb; padding:18px; }
-        .s-lot-name { font-size:16px; font-weight:700; line-height:1.3; margin-bottom:6px; }
-        .s-lot-meta { font-size:12px; color:#6b7280; line-height:1.6; }
-        .s-sidebar-toggle { background:none; border:1px solid #e5e7eb; padding:7px 14px; font-size:12px; color:#6b7280; cursor:pointer; width:100%; text-align:left; transition:background .15s; }
-        .s-sidebar-toggle:hover { background:#f9fafb; }
+        .sa-sidebar { display:flex; flex-direction:column; gap:14px; position:sticky; top:80px; }
 
-        .s-kpi-card { background:#fff; border:1px solid #e5e7eb; padding:20px; }
-        .s-kpi-label { font-size:10px; font-weight:700; letter-spacing:.08em; color:#9ca3af; text-transform:uppercase; margin-bottom:6px; }
-        .s-kpi-val { font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600; line-height:1; }
-        .s-kpi-sub { font-size:11px; color:#6b7280; margin-top:4px; }
+        .sa-card { background:#fff; border:1px solid #e5e7eb; }
 
-        /* ── Main ── */
-        .s-main { display:flex; flex-direction:column; gap:20px; }
+        /* Lot info card */
+        .sa-lot-card { padding:20px; }
+        .sa-lot-label { font-size:9px; font-weight:700; letter-spacing:.1em; color:#9ca3af; text-transform:uppercase; margin-bottom:4px; }
+        .sa-lot-name { font-size:18px; font-weight:700; color:#0d1b2a; line-height:1.2; margin-bottom:8px; }
+        .sa-lot-row { display:flex; justify-content:space-between; font-size:12px; padding:4px 0; border-bottom:1px solid #f3f4f6; }
+        .sa-lot-row:last-child { border-bottom:none; }
+        .sa-lot-key { color:#9ca3af; font-weight:600; }
+        .sa-lot-val { color:#374151; font-weight:600; font-family:'IBM Plex Mono',monospace; }
 
-        /* ── Winning State ── */
-        .s-win { padding:24px 28px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
-        .s-win.lead { background:#f0fdf4; border:2px solid #16a34a; }
-        .s-win.trail{ background:#fef2f2; border:2px solid #dc2626; animation:sshake .5s; }
-        .s-win.idle { background:#f9fafb; border:1px solid #e5e7eb; }
-        @keyframes sshake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 60%{transform:translateX(5px)} }
-        .s-win-icon { font-size:36px; line-height:1; flex-shrink:0; }
-        .s-win-text { flex:1; min-width:200px; }
-        .s-win-title { font-size:18px; font-weight:700; }
-        .s-win-title.lead { color:#14532d; }
-        .s-win-title.trail { color:#7f1d1d; }
-        .s-win-sub { font-size:13px; margin-top:4px; }
-        .s-win-sub.lead { color:#166534; }
-        .s-win-sub.trail { color:#991b1b; }
-        .s-win-price { font-family:'IBM Plex Mono',monospace; font-size:40px; font-weight:600; transition:color .3s; }
-        .s-win-price.flash-good { color:#16a34a; }
-        .s-win-price.flash-bad  { color:#dc2626; }
-        .s-win-price.neutral    { color:#0d1b2a; }
+        /* Timer card */
+        .sa-timer-card { padding:20px; border-left:3px solid #154194; }
+        .sa-timer-card.urgent { border-left-color:#dc2626; animation:pulse-red 1.5s infinite; }
+        .sa-timer-label { font-size:9px; font-weight:700; letter-spacing:.1em; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; }
+        .sa-timer-val {
+          font-family:'IBM Plex Mono',monospace; font-size:36px; font-weight:700; line-height:1;
+          color:#0d1b2a; letter-spacing:.04em;
+        }
+        .sa-timer-val.urgent { color:#dc2626; }
+        .sa-timer-sub { font-size:11px; color:#6b7280; margin-top:6px; }
 
-        /* ── Deposit/KYC Banner ── */
-        .s-deposit { background:#fffbeb; border:1px solid #fcd34d; padding:12px 18px; font-size:13px; color:#92400e; }
+        /* My best card */
+        .sa-my-card { padding:18px; }
+        .sa-my-label { font-size:9px; font-weight:700; letter-spacing:.1em; color:#9ca3af; text-transform:uppercase; margin-bottom:6px; }
+        .sa-my-price { font-family:'IBM Plex Mono',monospace; font-size:24px; font-weight:700; color:#154194; }
+        .sa-my-rank { margin-top:4px; font-size:11px; }
+        .sa-rank-chip { display:inline-block; padding:2px 8px; font-size:10px; font-weight:700; border-radius:2px; }
+        .sa-rank-chip.first { background:#dcfce7; color:#14532d; }
+        .sa-rank-chip.other { background:#fef3c7; color:#92400e; }
 
-        /* ── Competitor Feed ── */
-        .s-comp { background:#fff; border:1px solid #e5e7eb; }
-        .s-comp-hdr { padding:14px 18px; border-bottom:1px solid #e5e7eb; display:flex; align-items:center; justify-content:space-between; }
-        .s-comp-title { font-size:13px; font-weight:700; }
-        .s-comp-cnt { font-size:11px; color:#9ca3af; }
-        .s-comp-empty { padding:32px; text-align:center; color:#9ca3af; font-size:13px; }
-        .s-comp-row { padding:11px 18px; display:grid; grid-template-columns:80px 1fr auto auto; gap:8px; align-items:center; border-bottom:1px solid #f3f4f6; font-size:13px; transition:background .1s; }
-        .s-comp-row:last-child { border-bottom:none; }
-        .s-comp-row.own { background:#eff4ff; }
-        .s-comp-row:hover { background:#f9fafb; }
-        .s-comp-row.own:hover { background:#e8f0fe; }
-        .s-comp-time { font-size:11px; color:#9ca3af; }
-        .s-comp-who  { font-size:12px; color:#6b7280; }
-        .s-comp-price { font-family:'IBM Plex Mono',monospace; font-weight:600; }
-        .s-comp-delta { font-size:11px; font-weight:700; text-align:right; white-space:nowrap; }
-        .s-comp-delta.down { color:#16a34a; }
-        .s-comp-delta.none { color:#9ca3af; }
+        /* Bid history in sidebar */
+        .sa-hist { }
+        .sa-hist-hdr { padding:12px 18px; border-bottom:1px solid #f3f4f6; font-size:10px; font-weight:700; letter-spacing:.08em; color:#6b7280; text-transform:uppercase; }
+        .sa-hist-row { padding:10px 18px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f9fafb; animation:fadeUp .3s ease; }
+        .sa-hist-row:last-child { border-bottom:none; }
+        .sa-hist-price { font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:700; color:#0d1b2a; }
+        .sa-hist-meta { font-size:11px; color:#9ca3af; }
+        .sa-hist-empty { padding:20px 18px; text-align:center; color:#d1d5db; font-size:12px; }
 
-        /* ── Bid Area ── */
-        .s-bid-box { background:#fff; border:1px solid #e5e7eb; padding:22px; position:relative; overflow:hidden; }
-        .s-bid-title { font-size:14px; font-weight:700; margin-bottom:16px; }
-        .s-bid-row { display:flex; gap:10px; margin-bottom:12px; }
-        .s-bid-input { flex:1; height:52px; border:1px solid #d1d5db; padding:0 16px; font-size:18px; font-family:'IBM Plex Mono',monospace; outline:none; transition:border-color .15s; min-width:0; }
-        .s-bid-input:focus { border-color:#154194; }
-        .s-bid-btn { height:52px; padding:0 22px; background:#154194; color:#fff; font-size:14px; font-weight:700; border:none; cursor:pointer; white-space:nowrap; transition:background .15s,transform .1s; }
-        .s-bid-btn:hover:not(:disabled) { background:#1a52c2; }
-        .s-bid-btn:active:not(:disabled) { transform:scale(.97); }
-        .s-bid-btn:disabled { opacity:.5; cursor:not-allowed; }
-        .s-bid-hint { font-size:11px; color:#9ca3af; margin-top:8px; }
+        /* ── Main Column ── */
+        .sa-main { display:flex; flex-direction:column; gap:16px; }
 
-        /* Overlay */
-        .s-overlay { position:absolute; inset:0; background:rgba(255,255,255,.95); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; z-index:10; padding:24px; text-align:center; }
-        .s-overlay-title { font-size:15px; font-weight:700; }
-        .s-overlay-desc  { font-size:13px; color:#6b7280; max-width:320px; line-height:1.6; }
-        .s-overlay-link  { padding:10px 22px; background:#154194; color:#fff; font-size:13px; font-weight:700; text-decoration:none; display:inline-block; transition:background .15s; }
-        .s-overlay-link:hover { background:#1a52c2; }
+        /* ── Status Banner ── */
+        .sa-status-banner {
+          padding:22px 28px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;
+          border-left:4px solid;
+        }
+        .sa-status-banner.idle     { background:#fff; border-color:#e5e7eb; border:1px solid #e5e7eb; border-left:4px solid #154194; }
+        .sa-status-banner.leading  { background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%); border-color:#16a34a; border:2px solid #16a34a; animation:glow-green 3s infinite; }
+        .sa-status-banner.trailing { background:linear-gradient(135deg,#fff5f5 0%,#fee2e2 100%); border-color:#dc2626; border:2px solid #dc2626; animation:shake .4s; }
+        .sa-status-icon { font-size:32px; line-height:1; flex-shrink:0; }
+        .sa-status-text { flex:1; min-width:180px; }
+        .sa-status-title { font-size:18px; font-weight:700; line-height:1.2; }
+        .sa-status-title.idle     { color:#374151; }
+        .sa-status-title.leading  { color:#14532d; }
+        .sa-status-title.trailing { color:#7f1d1d; }
+        .sa-status-sub { font-size:13px; margin-top:5px; color:#6b7280; }
+        .sa-status-sub.leading  { color:#166534; }
+        .sa-status-sub.trailing { color:#b91c1c; }
+        .sa-status-price {
+          font-family:'IBM Plex Mono',monospace; font-size:42px; font-weight:700; line-height:1;
+          transition:color .4s;
+        }
+        .sa-status-price.idle     { color:#9ca3af; }
+        .sa-status-price.leading  { color:#16a34a; }
+        .sa-status-price.trailing { color:#dc2626; }
+        .sa-status-price.flash-g  { animation:flash-green .6s forwards; }
+        .sa-status-price.flash-r  { animation:flash-red .6s forwards; }
 
-        /* ── Sticky Quick-Bid Footer ── */
-        .s-sticky { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:2px solid #e5e7eb; padding:12px 20px; z-index:100; display:flex; align-items:center; gap:10px; flex-wrap:wrap; box-shadow:0 -4px 16px rgba(0,0,0,.08); }
-        .s-sticky-label { font-size:11px; font-weight:700; color:#6b7280; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; }
-        .s-qbtn { padding:10px 16px; border:1.5px solid #154194; background:#fff; color:#154194; font-size:13px; font-weight:700; cursor:pointer; transition:all .15s; white-space:nowrap; min-height:44px; touch-action:manipulation; }
-        .s-qbtn:hover:not(:disabled) { background:#154194; color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(21,65,148,.25); }
-        .s-qbtn:active:not(:disabled) { transform:scale(.95); }
-        .s-qbtn:disabled { opacity:.35; cursor:not-allowed; border-color:#d1d5db; color:#9ca3af; }
-        .s-sticky-best { font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:700; color:#0d1b2a; margin-left:auto; white-space:nowrap; }
+        /* ── Bid Box ── */
+        .sa-bid-box { background:#fff; border:1px solid #e5e7eb; border-top:3px solid #154194; padding:24px; }
+        .sa-bid-box-title { font-size:13px; font-weight:700; color:#374151; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+        .sa-bid-box-title-hint { font-size:11px; font-weight:400; color:#9ca3af; }
+        .sa-bid-row { display:flex; gap:10px; }
+        .sa-bid-input {
+          flex:1; height:56px; border:2px solid #e5e7eb; padding:0 20px;
+          font-size:22px; font-family:'IBM Plex Mono',monospace; font-weight:600;
+          outline:none; transition:border-color .15s, box-shadow .15s; min-width:0;
+          color:#0d1b2a;
+        }
+        .sa-bid-input:focus { border-color:#154194; box-shadow:0 0 0 3px rgba(21,65,148,.1); }
+        .sa-bid-input::placeholder { color:#d1d5db; font-weight:400; font-size:16px; }
+        .sa-bid-btn {
+          height:56px; padding:0 32px; background:#154194; color:#fff;
+          font-size:15px; font-weight:700; border:none; cursor:pointer; white-space:nowrap;
+          letter-spacing:.04em; transition:background .15s, transform .1s, box-shadow .15s;
+        }
+        .sa-bid-btn:hover:not(:disabled) { background:#1a52c2; box-shadow:0 4px 16px rgba(21,65,148,.3); transform:translateY(-1px); }
+        .sa-bid-btn:active:not(:disabled) { transform:scale(.97); }
+        .sa-bid-btn:disabled { background:#93a3be; cursor:not-allowed; }
+        .sa-bid-btn.submitting { position:relative; }
+        .sa-bid-hint { font-size:11px; color:#9ca3af; margin-top:10px; line-height:1.5; }
+        .sa-bid-limit { color:#374151; font-weight:600; }
 
-        /* ── My bid history (in sidebar) ── */
-        .s-mybids { background:#fff; border:1px solid #e5e7eb; }
-        .s-mybids-hdr { padding:12px 16px; border-bottom:1px solid #e5e7eb; font-size:12px; font-weight:700; }
-        .s-mybids-item { padding:10px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f3f4f6; font-size:12px; }
-        .s-mybids-item:last-child { border-bottom:none; }
-        .s-mybids-price { font-family:'IBM Plex Mono',monospace; font-weight:600; }
-        .s-mybids-empty { padding:20px 16px; text-align:center; color:#9ca3af; font-size:12px; }
+        /* ── Live Feed ── */
+        .sa-feed { background:#fff; border:1px solid #e5e7eb; }
+        .sa-feed-hdr {
+          padding:14px 20px; border-bottom:2px solid #154194;
+          display:flex; align-items:center; justify-content:space-between;
+        }
+        .sa-feed-title { font-size:13px; font-weight:700; color:#0d1b2a; display:flex; align-items:center; gap:8px; }
+        .sa-feed-dot { width:6px; height:6px; border-radius:50%; background:#16a34a; animation:pulse-dot 1.5s infinite; }
+        .sa-feed-meta { font-size:11px; color:#9ca3af; }
+        .sa-feed-empty { padding:40px 24px; text-align:center; }
+        .sa-feed-empty-icon { font-size:28px; margin-bottom:8px; opacity:.4; }
+        .sa-feed-empty-text { font-size:13px; color:#9ca3af; }
+        .sa-feed-row {
+          padding:12px 20px;
+          display:grid; grid-template-columns:64px 1fr 1fr auto;
+          gap:10px; align-items:center;
+          border-bottom:1px solid #f3f4f6; font-size:13px;
+          transition:background .15s;
+          animation:fadeUp .25s ease;
+        }
+        .sa-feed-row:last-child { border-bottom:none; }
+        .sa-feed-row.own { background:#eff6ff; }
+        .sa-feed-row:hover { background:#f9fafb; }
+        .sa-feed-row.own:hover { background:#dbeafe; }
+        .sa-feed-time { font-size:11px; color:#9ca3af; font-family:'IBM Plex Mono',monospace; }
+        .sa-feed-who { font-size:12px; color:#6b7280; }
+        .sa-feed-who strong { color:#154194; }
+        .sa-feed-price { font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:14px; }
+        .sa-feed-price.best { color:#16a34a; }
+        .sa-feed-price.other { color:#374151; }
+        .sa-feed-delta { font-size:11px; font-weight:700; text-align:right; padding:2px 7px; border-radius:2px; white-space:nowrap; }
+        .sa-feed-delta.down { background:#dcfce7; color:#14532d; }
+        .sa-feed-delta.first { background:#dbeafe; color:#1d4ed8; }
+        .sa-feed-delta.none { color:#d1d5db; }
+
+        /* ── Conclusion Card ── */
+        .sa-conclusion { padding:32px; text-align:center; }
+        .sa-conclusion.won { background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:2px solid #16a34a; }
+        .sa-conclusion.lost { background:#fafafa; border:1px solid #e5e7eb; }
+        .sa-conclusion-icon { font-size:48px; margin-bottom:12px; }
+        .sa-conclusion-title { font-size:22px; font-weight:700; margin-bottom:6px; }
+        .sa-conclusion-title.won { color:#14532d; }
+        .sa-conclusion-title.lost { color:#374151; }
+        .sa-conclusion-price { font-family:'IBM Plex Mono',monospace; font-size:36px; font-weight:700; margin:12px 0; }
+        .sa-conclusion-price.won { color:#16a34a; }
+        .sa-conclusion-price.lost { color:#6b7280; }
+        .sa-conclusion-sub { font-size:13px; color:#6b7280; margin-bottom:20px; }
+        .sa-dl-btn {
+          display:inline-flex; align-items:center; gap:8px;
+          padding:12px 28px; background:#154194; color:#fff;
+          font-size:13px; font-weight:700; border:none; cursor:pointer;
+          text-decoration:none; letter-spacing:.04em;
+          transition:background .15s, transform .1s;
+        }
+        .sa-dl-btn:hover { background:#1a52c2; transform:translateY(-1px); }
+
+        /* ── Sticky Quick-Bid ── */
+        .sa-sticky {
+          position:fixed; bottom:0; left:0; right:0;
+          background:linear-gradient(135deg,#0d1b2a 0%,#152d4e 100%);
+          border-top:1px solid rgba(255,255,255,.1);
+          padding:10px 24px; z-index:100;
+          display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+          box-shadow:0 -8px 32px rgba(0,0,0,.2);
+        }
+        .sa-sticky-label { font-size:10px; font-weight:700; color:rgba(255,255,255,.4); letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; flex-shrink:0; }
+        .sa-qbtn {
+          padding:8px 16px; border:1.5px solid rgba(255,255,255,.25);
+          background:transparent; color:#fff;
+          font-size:13px; font-weight:700; cursor:pointer;
+          transition:all .15s; white-space:nowrap; min-height:40px;
+          font-family:'IBM Plex Mono',monospace;
+        }
+        .sa-qbtn:hover:not(:disabled) { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.6); transform:translateY(-2px); }
+        .sa-qbtn:active:not(:disabled) { transform:scale(.95); }
+        .sa-qbtn:disabled { opacity:.25; cursor:not-allowed; }
+        .sa-sticky-best { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; flex-shrink:0; }
+        .sa-sticky-best-label { font-size:9px; color:rgba(255,255,255,.4); letter-spacing:.1em; text-transform:uppercase; }
+        .sa-sticky-best-val { font-family:'IBM Plex Mono',monospace; font-size:16px; font-weight:700; color:#4ade80; }
       `}</style>
 
-      <div className="s-root">
+      <div className="sa-root">
 
-        {/* ── Header ── */}
-        <div className="s-hdr">
-          <span className="s-hdr-logo">EUCX — Verkäufer</span>
-          <div className="s-hdr-right">
+        {/* ── Top Bar ── */}
+        <div className="sa-topbar">
+          <div className="sa-topbar-left">
+            <span className="sa-topbar-brand">EUCX</span>
+            <span className="sa-topbar-sep">›</span>
+            <span className="sa-topbar-lot">{lot.commodity}</span>
+            <span className="sa-topbar-qty">{lot.quantity} {lot.unit}</span>
+            <span className={`sa-phase-chip ${livePhase === "PROPOSAL" ? "proposal" : livePhase === "REDUCTION" ? "reduction" : "conclusion"}`}>
+              {livePhase === "PROPOSAL" ? "Erstgebote" : livePhase === "REDUCTION" ? "Auktion läuft" : "Abgeschlossen"}
+            </span>
+          </div>
+          <div className="sa-topbar-right">
             {kyc && (
               <KycStatusBadge
                 status={kyc.verificationStatus}
@@ -384,222 +518,198 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
               />
             )}
             {token && <NotificationBell token={token} />}
-            <span className="s-conn">
-              <span className={`s-dot${connected ? "" : " off"}`} />{" "}
-              {connected ? "Live" : "…"}
-            </span>
+            <span className={`sa-live-dot${connected ? "" : " off"}`} />
+            <span className="sa-live-label">{connected ? "Live" : "Verbinde…"}</span>
           </div>
         </div>
 
-        {/* ── Body ── */}
-        <div className={`s-body${sidebarOpen ? "" : " compact"}`}>
+        {/* ── Grid ── */}
+        <div className="sa-grid">
 
           {/* ── Sidebar ── */}
-          {sidebarOpen && (
-            <aside className="s-sidebar">
-              <div className="s-lot-card">
-                <div className="s-lot-name">{lot.commodity}</div>
-                <div className="s-lot-meta">
-                  {lot.quantity} {lot.unit}
-                  {lot.startPrice && <><br />Limit: {fmtEur(lot.startPrice)}</>}
-                  {lot.description && <><br />{lot.description}</>}
+          <aside className="sa-sidebar">
+
+            {/* Lot Info */}
+            <div className="sa-card sa-lot-card">
+              <div className="sa-lot-label">Ausschreibung</div>
+              <div className="sa-lot-name">{lot.commodity}</div>
+              {[
+                ["Menge",   `${lot.quantity} ${lot.unit}`],
+                ["Limit",   lot.startPrice ? fmtEur(lot.startPrice) : "Offen"],
+                ...(lot.description ? [["Notiz", lot.description]] : []),
+              ].map(([k, v]) => (
+                <div key={k} className="sa-lot-row">
+                  <span className="sa-lot-key">{k}</span>
+                  <span className="sa-lot-val">{v}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Timer */}
+            <div className={`sa-card sa-timer-card${isUrgent ? " urgent" : ""}`}>
+              <div className="sa-timer-label">Verbleibende Zeit</div>
+              <div className={`sa-timer-val${isUrgent ? " urgent" : ""}`}>{liveEnd ? countdown : "—"}</div>
+              <div className="sa-timer-sub">
+                {livePhase === "PROPOSAL"   && "Angebotsphase läuft"}
+                {livePhase === "REDUCTION"  && "Bieterwettbewerb aktiv"}
+                {livePhase === "CONCLUSION" && "Auktion beendet"}
+              </div>
+            </div>
+
+            {/* Mein bestes Gebot */}
+            {myBids.length > 0 && (
+              <div className="sa-card sa-my-card">
+                <div className="sa-my-label">Mein bestes Gebot</div>
+                <div className="sa-my-price">{fmtEur(myBids[0]!.price)}</div>
+                <div className="sa-my-rank" style={{ marginTop: 6 }}>
+                  {myRank === 1
+                    ? <span className="sa-rank-chip first">Nr. 1 — Führend</span>
+                    : <span className="sa-rank-chip other">Rang #{myRank} — Überboten</span>
+                  }
                 </div>
               </div>
-
-              {/* Timer */}
-              <div className="s-kpi-card">
-                <div className="s-kpi-label">Verbleibend</div>
-                <div className="s-kpi-val" style={{ color: isUrgent ? "#dc2626" : "#0d1b2a" }}>
-                  {liveEnd ? countdown : "—"}
-                </div>
-                <div className="s-kpi-sub">
-                  {livePhase === "COLLECTION" && "Noch nicht gestartet"}
-                  {livePhase === "REDUCTION"  && "Auktion läuft"}
-                  {livePhase === "CONCLUSION" && "Abgeschlossen"}
-                </div>
-              </div>
-
-              {/* Mein bestes Gebot */}
-              <div className="s-kpi-card">
-                <div className="s-kpi-label">Mein bestes Gebot</div>
-                <div className="s-kpi-val">{myBids.length > 0 ? fmtEur(myBids[0]!.price) : "—"}</div>
-                <div className="s-kpi-sub">{myBids.length} Gebot{myBids.length !== 1 ? "e" : ""} abgegeben</div>
-              </div>
-
-              {/* Meine Gebotshistorie */}
-              <div className="s-mybids">
-                <div className="s-mybids-hdr">Meine Gebote</div>
-                {myBids.length === 0
-                  ? <div className="s-mybids-empty">Noch keine Gebote</div>
-                  : myBids.map((b, i) => (
-                    <div key={i} className="s-mybids-item">
-                      <span className="s-mybids-price">{fmtEur(b.price)}</span>
-                      <span style={{ color: "#9ca3af" }}>
-                        #{b.rank} · {new Date(b.createdAt).toLocaleTimeString("de-DE")}
-                      </span>
-                    </div>
-                  ))
-                }
-              </div>
-            </aside>
-          )}
-
-          {/* ── Main Content ── */}
-          <main className="s-main">
-
-            {/* Sidebar toggle (nur wenn collapsed) */}
-            {!sidebarOpen && (
-              <button className="s-sidebar-toggle" onClick={() => setSidebar(true)}>
-                ▶ Details einblenden — {lot.commodity} · {lot.quantity} {lot.unit}
-              </button>
-            )}
-            {sidebarOpen && livePhase === "REDUCTION" && (
-              <button className="s-sidebar-toggle" onClick={() => setSidebar(false)}>
-                ◀ Sidebar einklappen (mehr Platz für Gebote)
-              </button>
             )}
 
-            {/* ── Winning State Card ── */}
+            {/* Meine Gebote */}
+            <div className="sa-card sa-hist">
+              <div className="sa-hist-hdr">Meine Gebote ({myBids.length})</div>
+              {myBids.length === 0
+                ? <div className="sa-hist-empty">Noch keine Gebote abgegeben</div>
+                : myBids.map((b, i) => (
+                  <div key={i} className="sa-hist-row">
+                    <span className="sa-hist-price">{fmtEur(b.price)}</span>
+                    <span className="sa-hist-meta">#{b.rank} · {new Date(b.createdAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span>
+                  </div>
+                ))
+              }
+            </div>
+
+          </aside>
+
+          {/* ── Main ── */}
+          <main className="sa-main">
+
+            {/* Status Banner */}
             {canBid && (
-              <div className={`s-win${isLeading ? " lead" : myRank !== null ? " trail" : " idle"}`}>
-                <div className="s-win-icon">
-                  {isLeading ? "✓" : myRank !== null ? "!" : "○"}
+              <div className={`sa-status-banner${isLeading ? " leading" : myRank !== null ? " trailing" : " idle"}`}>
+                <div className="sa-status-icon">
+                  {isLeading ? "✓" : myRank !== null ? "↑" : "◎"}
                 </div>
-                <div className="s-win-text">
-                  <div className={`s-win-title${isLeading ? " lead" : myRank !== null ? " trail" : ""}`}>
+                <div className="sa-status-text">
+                  <div className={`sa-status-title${isLeading ? " leading" : myRank !== null ? " trailing" : " idle"}`}>
                     {isLeading
-                      ? "Sie halten aktuell das beste Angebot"
+                      ? "Sie halten das beste Angebot"
                       : myRank !== null
-                        ? `Sie wurden überboten! Handeln Sie jetzt. (Rang #${myRank})`
-                        : "Noch kein Gebot abgegeben"}
+                        ? `Überboten — Rang #${myRank}. Jetzt handeln!`
+                        : "Bereit zum Bieten"}
                   </div>
-                  <div className={`s-win-sub${isLeading ? " lead" : myRank !== null ? " trail" : ""}`}>
+                  <div className={`sa-status-sub${isLeading ? " leading" : myRank !== null ? " trailing" : ""}`}>
                     {isLeading
-                      ? `Ihr Gebot: ${fmtEur(myBids[0]?.price ?? null)} — Halten Sie die Position!`
+                      ? `Ihr Gebot ${fmtEur(myBids[0]?.price ?? null)} ist aktuell führend — halten Sie die Position`
                       : myRank !== null
-                        ? `Bestes Angebot aktuell: ${fmtEur(liveBest)} — Quick-Bid nutzen ↓`
-                        : "Geben Sie unten Ihr erstes Gebot ab"}
+                        ? `Aktuelles Bestgebot: ${fmtEur(liveBest)} — Quick-Bid nutzen ↓`
+                        : "Geben Sie Ihr erstes Angebot ab — Limit des Käufers: " + fmtEur(lot.startPrice)}
                   </div>
                 </div>
-                <div className={`s-win-price${flash === "good" ? " flash-good" : flash === "bad" ? " flash-bad" : " neutral"}`}>
+                <div className={`sa-status-price${isLeading ? " leading" : myRank !== null ? " trailing" : " idle"}${flash === "good" ? " flash-g" : flash === "bad" ? " flash-r" : ""}`}>
                   {fmtEur(liveBest)}
                 </div>
               </div>
             )}
 
+            {/* Conclusion */}
             {livePhase === "CONCLUSION" && (
-              <div className={`s-win${isLeading ? " lead" : " idle"}`}>
-                <div className="s-win-icon">{isLeading ? "🏆" : "○"}</div>
-                <div className="s-win-text">
-                  <div className={`s-win-title${isLeading ? " lead" : ""}`}>
-                    {isLeading ? "Auktion gewonnen!" : `Auktion beendet — Rang #${myRank ?? "—"}`}
-                  </div>
-                  <div className="s-win-sub lead">
-                    {isLeading ? `Ihr Siegergebot: ${fmtEur(myBids[0]?.price ?? null)}` : `Siegergebot: ${fmtEur(liveBest)}`}
-                  </div>
-                  {isLeading && (
-                    <a
-                      href={`/api/auction/lots/${lot.id}/contract`}
-                      download
-                      style={{
-                        display: "inline-block",
-                        marginTop: 10,
-                        padding: "7px 16px",
-                        background: "#154194",
-                        color: "#fff",
-                        fontSize: 12,
-                        fontWeight: 600,
-                        letterSpacing: "0.04em",
-                        textDecoration: "none",
-                        cursor: "pointer",
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        fetch(`/api/auction/lots/${lot.id}/contract`, {
-                          headers: { Authorization: `Bearer ${token}` },
-                        })
-                          .then(async (r) => {
-                            if (!r.ok) { alert("Vertrag noch nicht verfügbar."); return; }
-                            const blob = await r.blob();
-                            const url  = URL.createObjectURL(blob);
-                            const a    = document.createElement("a");
-                            a.href     = url;
-                            a.download = `EUCX-Kaufvertrag-${lot.id.slice(0, 8)}.pdf`;
-                            a.click();
-                            URL.revokeObjectURL(url);
-                          })
-                          .catch(() => alert("Download fehlgeschlagen."));
-                      }}
-                    >
-                      Kaufvertrag herunterladen (PDF)
-                    </a>
-                  )}
+              <div className={`sa-card sa-conclusion${isLeading ? " won" : " lost"}`}>
+                <div className="sa-conclusion-icon">{isLeading ? "🏆" : "📋"}</div>
+                <div className={`sa-conclusion-title${isLeading ? " won" : " lost"}`}>
+                  {isLeading ? "Auktion gewonnen!" : "Auktion beendet"}
                 </div>
-                <div className="s-win-price neutral">{fmtEur(liveBest)}</div>
+                <div className={`sa-conclusion-price${isLeading ? " won" : " lost"}`}>
+                  {isLeading ? fmtEur(myBids[0]?.price ?? null) : fmtEur(liveBest)}
+                </div>
+                <div className="sa-conclusion-sub">
+                  {isLeading
+                    ? "Ihr Siegergebot wurde akzeptiert. Laden Sie jetzt den Kaufvertrag herunter."
+                    : `Siegergebot: ${fmtEur(liveBest)} — Kein Zuschlag erhalten.`}
+                </div>
+                {isLeading && (
+                  <button className="sa-dl-btn" onClick={downloadContract}>
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    Kaufvertrag herunterladen (PDF)
+                  </button>
+                )}
               </div>
             )}
 
-            {/* Depot-Banner */}
+            {/* Deposit-Banner */}
             {kyc?.isYoungCompany && depositReq && canBid && (
-              <div className="s-deposit">
-                Sicherheitsleistung (5%) erforderlich — fehlend:{" "}
-                <strong style={{ color: "#dc2626" }}>{Number(depositReq).toLocaleString("de-DE", { minimumFractionDigits: 2 })} €</strong>
-                {" "}· Aktuelles Depot: <strong>{Number(kyc.walletBalance).toLocaleString("de-DE", { minimumFractionDigits: 2 })} €</strong>
+              <div style={{ background:"#fffbeb", border:"1px solid #fcd34d", padding:"12px 18px", fontSize:13, color:"#92400e" }}>
+                Sicherheitsleistung (5%) erforderlich — fehlend: <strong style={{ color:"#dc2626" }}>{Number(depositReq).toLocaleString("de-DE", { minimumFractionDigits:2 })} €</strong>
               </div>
             )}
 
             {/* ── Gebot abgeben ── */}
             {canBid && (
-              <div className="s-bid-box">
-                {/* [TESTMODE-05] KYC-Overlay deaktiviert — Original: (!isVerified || !hasDeposit) */}
-                <div className="s-bid-title">Manueller Preis</div>
-                <div className="s-bid-row">
+              <div className="sa-bid-box">
+                {/* [TESTMODE-05] KYC-Overlay deaktiviert */}
+                <div className="sa-bid-box-title">
+                  Angebot abgeben
+                  <span className="sa-bid-box-title-hint">
+                    {bestNum ? `— unter ${fmtEur(liveBest)} bleiben` : "— Erste Phase: Basisreferenz setzen"}
+                  </span>
+                </div>
+                <div className="sa-bid-row">
                   <input
-                    className="s-bid-input"
+                    className="sa-bid-input"
                     type="number" step="0.01" min="0"
-                    placeholder={bestNum ? `Unter ${fmtEur(String(bestNum))}` : "€/Einheit"}
+                    placeholder={bestNum ? String(Math.floor(bestNum - 1)) : "€ / Einheit"}
                     value={priceInput}
                     onChange={(e) => setPriceInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && priceInput && submitBid(Number(priceInput))}
                     disabled={submitting}
                   />
                   <button
-                    className="s-bid-btn"
+                    className={`sa-bid-btn${submitting ? " submitting" : ""}`}
                     disabled={!priceInput || submitting}
                     onClick={() => submitBid(Number(priceInput))}
                   >
-                    {submitting ? "…" : "Abgeben"}
+                    {submitting
+                      ? <svg style={{ animation:"spin 1s linear infinite", width:16, height:16 }} fill="none" viewBox="0 0 24 24"><circle style={{ opacity:.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path style={{ opacity:.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                      : "Abgeben →"}
                   </button>
                 </div>
-                <div className="s-bid-hint">
-                  Gebot muss unter aktuellem Bestgebot liegen.{" "}
-                  {livePhase === "PROPOSAL" && "Erste Phase: setzt die Basisreferenz."}
+                <div className="sa-bid-hint">
+                  Preis in € pro Einheit eingeben.{" "}
+                  {lot.startPrice && <span className="sa-bid-limit">Käufer-Limit: {fmtEur(lot.startPrice)}</span>}
+                  {" "}· Enter-Taste oder Button zum Abgeben.
                 </div>
               </div>
             )}
 
-            {/* ── Competitor Feed ── */}
-            <div className="s-comp">
-              <div className="s-comp-hdr">
-                <span className="s-comp-title">Gebotsübersicht — alle Teilnehmer</span>
-                <span className="s-comp-cnt">{allBids.length} Gebote · {state?.activeBidderCount ?? "—"} aktive Bieter</span>
+            {/* ── Live Feed ── */}
+            <div className="sa-card sa-feed">
+              <div className="sa-feed-hdr">
+                <div className="sa-feed-title">
+                  <span className="sa-feed-dot" />
+                  Gebots-Feed — alle Teilnehmer
+                </div>
+                <span className="sa-feed-meta">
+                  {allBids.length} Gebot{allBids.length !== 1 ? "e" : ""} · {state?.activeBidderCount ?? "—"} aktive Bieter
+                </span>
               </div>
               {competitorWithDelta.length === 0 ? (
-                <div className="s-comp-empty">Noch keine Gebote in dieser Auktion.</div>
+                <div className="sa-feed-empty">
+                  <div className="sa-feed-empty-icon">◎</div>
+                  <div className="sa-feed-empty-text">Noch keine Gebote in dieser Auktion</div>
+                </div>
               ) : (
                 competitorWithDelta.map((bid) => (
-                  <div key={bid.id} className={`s-comp-row${bid.isOwn ? " own" : ""}`}>
-                    <span className="s-comp-time">
-                      {new Date(bid.createdAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-                    </span>
-                    <span className="s-comp-who">
-                      {bid.isOwn ? <strong style={{ color: "#154194" }}>Sie</strong> : bid.sellerId}
-                    </span>
-                    <span className="s-comp-price" style={{ color: bid.rank === 1 ? "#16a34a" : "#0d1b2a" }}>
-                      {fmtEur(bid.price)}
-                    </span>
-                    <span className={`s-comp-delta${bid.delta < 0 ? " down" : " none"}`}>
-                      {bid.delta !== 0 ? fmtDelta(bid.delta) : "Erstgebot"}
+                  <div key={bid.id} className={`sa-feed-row${bid.isOwn ? " own" : ""}`}>
+                    <span className="sa-feed-time">{new Date(bid.createdAt).toLocaleTimeString("de-DE", { hour:"2-digit", minute:"2-digit", second:"2-digit" })}</span>
+                    <span className="sa-feed-who">{bid.isOwn ? <strong>Sie</strong> : bid.sellerId}</span>
+                    <span className={`sa-feed-price${bid.rank === 1 ? " best" : " other"}`}>{fmtEur(bid.price)}</span>
+                    <span className={`sa-feed-delta${bid.delta < 0 ? " down" : bid.delta === 0 ? " first" : " none"}`}>
+                      {bid.delta < 0 ? fmtDelta(bid.delta) : "Erstgebot"}
                     </span>
                   </div>
                 ))
@@ -609,26 +719,29 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
           </main>
         </div>
 
-        {/* ── Sticky Quick-Bid Footer (immer sichtbar wenn canBid) ── */}
+        {/* ── Sticky Quick-Bid ── */}
         {canBid && (
-          <div className="s-sticky">
-            <span className="s-sticky-label">Quick-Bid:</span>
+          <div className="sa-sticky">
+            <span className="sa-sticky-label">Quick-Bid</span>
             {quickSteps.map((step) => {
               const qp = bestNum ? bestNum - step : 0;
               return (
                 <button
                   key={step}
-                  className="s-qbtn"
-                  disabled={!bestNum || qp <= 0 || submitting || !isVerified || !hasDeposit}
+                  className="sa-qbtn"
+                  disabled={!bestNum || qp <= 0 || submitting}
                   onClick={() => submitBid(qp)}
                   title={qp > 0 ? `Gebot: ${fmtEur(String(qp))}` : undefined}
                 >
-                  −{step} € {qp > 0 ? `→ ${fmtEur(String(qp))}` : ""}
+                  −{step} €{qp > 0 ? ` → ${fmtEur(String(qp))}` : ""}
                 </button>
               );
             })}
             {bestNum && (
-              <span className="s-sticky-best">Best: {fmtEur(liveBest)}</span>
+              <div className="sa-sticky-best">
+                <span className="sa-sticky-best-label">Bestgebot</span>
+                <span className="sa-sticky-best-val">{fmtEur(liveBest)}</span>
+              </div>
             )}
           </div>
         )}
