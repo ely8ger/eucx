@@ -122,20 +122,13 @@ export async function placeBid(
       ? price.toFixed(2)
       : currentBest.toFixed(2);
 
-    const updateData: Record<string, unknown> = { currentBest: newBest };
-
-    // Erster Preis in PROPOSAL → Phase wechselt zu REDUCTION
-    if (lot.phase === "PROPOSAL") {
-      updateData.phase = "REDUCTION";
-    }
-
-    await tx.$executeRaw`
-      UPDATE lots
-      SET "currentBest" = ${newBest},
-          phase = ${updateData.phase ?? lot.phase}::"AuctionPhase",
-          "updatedAt" = NOW()
-      WHERE id = ${lotId}
-    `;
+    await tx.lot.update({
+      where: { id: lotId },
+      data: {
+        currentBest: newBest,
+        ...(lot.phase === "PROPOSAL" ? { phase: "REDUCTION" as const } : {}),
+      },
+    });
 
     return { ok: true, bidId: bid.id, newBest };
   });
@@ -172,14 +165,14 @@ async function _concludeLot(
 
   const winnerId = winningBid?.sellerId ?? null;
 
-  await tx.$executeRaw`
-    UPDATE lots
-    SET phase       = 'CONCLUSION'::"AuctionPhase",
-        "winnerId"  = ${winnerId},
-        "lockedAt"  = NOW(),
-        "updatedAt" = NOW()
-    WHERE id = ${lotId}
-  `;
+  await tx.lot.update({
+    where: { id: lotId },
+    data: {
+      phase:    "CONCLUSION",
+      winnerId: winnerId,
+      lockedAt: new Date(),
+    },
+  });
 
   if (winningBid) {
     await tx.bid.update({
