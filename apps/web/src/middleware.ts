@@ -43,7 +43,10 @@ export async function middleware(req: NextRequest) {
   }
 
   if (pathname.startsWith("/api/")) {
-    const auth = req.headers.get("authorization");
+    // SSE-Endpoints senden Token als Query-Parameter (EventSource unterstützt keine Header)
+    const queryToken = req.nextUrl.searchParams.get("token");
+    const authHeader = req.headers.get("authorization");
+    const auth = authHeader ?? (queryToken ? `Bearer ${queryToken}` : null);
     if (!auth?.startsWith("Bearer ")) {
       return NextResponse.json({ code: "UNAUTHORIZED", message: "Token fehlt" }, { status: 401 });
     }

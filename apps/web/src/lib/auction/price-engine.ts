@@ -39,14 +39,14 @@ export async function placeBid(
       Array<{
         id: string;
         phase: AuctionPhase;
-        current_best: string | null;
-        start_price: string | null;
-        auction_end: Date | null;
-        winner_id: string | null;
-        locked_at: Date | null;
+        currentBest: string | null;
+        startPrice: string | null;
+        auctionEnd: Date | null;
+        winnerId: string | null;
+        lockedAt: Date | null;
       }>
     >`
-      SELECT id, phase, current_best, start_price, auction_end, winner_id, locked_at
+      SELECT id, phase, "currentBest", "startPrice", "auctionEnd", "winnerId", "lockedAt"
       FROM lots
       WHERE id = ${lotId}
       FOR UPDATE
@@ -69,7 +69,7 @@ export async function placeBid(
 
     // ── 3. Zeit-Check: auctionEnd überschritten? ──────────────────────
     const now = new Date();
-    if (lot.auction_end && now >= lot.auction_end) {
+    if (lot.auctionEnd && now >= lot.auctionEnd) {
       // Phase automatisch schließen (Concurrently safe, da wir den Lock haben)
       await _concludeLot(tx, lotId);
       return { ok: false, error: "Auktionsfenster ist abgelaufen", code: 409 };
@@ -87,8 +87,8 @@ export async function placeBid(
     // ── 5. Preis-Validierung ──────────────────────────────────────────
     // In PROPOSAL: Gebot muss <= startPrice sein (falls gesetzt)
     // In REDUCTION: Gebot muss strikt < currentBest sein
-    const currentBest = lot.current_best ? new Decimal(lot.current_best) : null;
-    const startPrice  = lot.start_price  ? new Decimal(lot.start_price)  : null;
+    const currentBest = lot.currentBest ? new Decimal(lot.currentBest) : null;
+    const startPrice  = lot.startPrice  ? new Decimal(lot.startPrice)  : null;
 
     if (lot.phase === "PROPOSAL") {
       if (startPrice && price.gt(startPrice)) {
@@ -131,9 +131,9 @@ export async function placeBid(
 
     await tx.$executeRaw`
       UPDATE lots
-      SET current_best = ${newBest},
-          phase = ${updateData.phase ?? lot.phase}::\"AuctionPhase\",
-          updated_at = NOW()
+      SET "currentBest" = ${newBest},
+          phase = ${updateData.phase ?? lot.phase}::"AuctionPhase",
+          "updatedAt" = NOW()
       WHERE id = ${lotId}
     `;
 
@@ -146,11 +146,11 @@ export async function placeBid(
 // Wird aufgerufen: a) vom AuctionTimer (Cron), b) on-demand bei abgelaufenem Lot.
 export async function concludeLot(lotId: string): Promise<{ ok: boolean; winnerId?: string }> {
   return db.$transaction(async (tx) => {
-    const lots = await tx.$queryRaw<Array<{ phase: AuctionPhase; locked_at: Date | null }>>`
-      SELECT phase, locked_at FROM lots WHERE id = ${lotId} FOR UPDATE
+    const lots = await tx.$queryRaw<Array<{ phase: AuctionPhase; lockedAt: Date | null }>>`
+      SELECT phase, "lockedAt" FROM lots WHERE id = ${lotId} FOR UPDATE
     `;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (lots.length === 0 || lots[0]!.locked_at) {
+    if (lots.length === 0 || lots[0]!.lockedAt) {
       return { ok: false };
     }
     return _concludeLot(tx, lotId);
@@ -174,10 +174,10 @@ async function _concludeLot(
 
   await tx.$executeRaw`
     UPDATE lots
-    SET phase      = 'CONCLUSION'::"AuctionPhase",
-        winner_id  = ${winnerId},
-        locked_at  = NOW(),
-        updated_at = NOW()
+    SET phase       = 'CONCLUSION'::"AuctionPhase",
+        "winnerId"  = ${winnerId},
+        "lockedAt"  = NOW(),
+        "updatedAt" = NOW()
     WHERE id = ${lotId}
   `;
 
