@@ -1,8 +1,7 @@
-import { SellerControlCenter } from "./SellerControlCenter";
+import { redirect } from "next/navigation";
 
-export const metadata = { title: "Verkäufer Control Center | EUCX", robots: { index: false, follow: false } };
-export const dynamic  = "force-dynamic";
+export const dynamic = "force-dynamic";
 
 export default function SellerDashboardPage() {
-  return <SellerControlCenter />;
+  redirect("/dashboard/seller/auctions");
 }
