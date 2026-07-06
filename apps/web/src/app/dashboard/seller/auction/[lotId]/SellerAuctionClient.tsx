@@ -441,12 +441,16 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                 {/* Preisrahmen */}
                 <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Preisrahmen</div>
                 <div className="sa-lot-row">
-                  <span className="sa-lot-key">Käufer-Limit</span>
+                  <span className="sa-lot-key">Währung</span>
+                  <span className="sa-lot-val" style={{ color: "#154194", fontWeight: 700 }}>EUR (€)</span>
+                </div>
+                <div className="sa-lot-row">
+                  <span className="sa-lot-key">Käufer-Limit (EUR/Einheit)</span>
                   <span className="sa-lot-val" style={{ color: "#154194" }}>{lot.startPrice ? fmtEur(lot.startPrice) : "—"}</span>
                 </div>
                 <div className="sa-lot-row">
                   <span className="sa-lot-key">Aktuell bestes Gebot</span>
-                  <span className="sa-lot-val" style={{ color: liveBest ? "#16a34a" : "#9ca3af" }}>
+                  <span className="sa-lot-val" style={{ color: liveBest ? "#16a34a" : "#9ca3af", fontWeight: 700 }}>
                     {liveBest ? fmtEur(liveBest) : "Noch kein Gebot"}
                   </span>
                 </div>
@@ -493,17 +497,25 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                 ))}
 
                 {/* Vertrag */}
-                {(lot.paymentTerms || lot.vatTreatment) && <>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Vertrag</div>
-                  {lot.paymentTerms && <div className="sa-lot-row">
-                    <span className="sa-lot-key">Zahlungsbedingungen</span>
-                    <span className="sa-lot-val" style={{ maxWidth: 130, textAlign: "right", wordBreak: "break-word" }}>{lot.paymentTerms}</span>
-                  </div>}
-                  {lot.vatTreatment && <div className="sa-lot-row">
-                    <span className="sa-lot-key">USt.-Behandlung</span>
-                    <span className="sa-lot-val" style={{ maxWidth: 130, textAlign: "right", wordBreak: "break-word", fontSize: 10 }}>{lot.vatTreatment}</span>
-                  </div>}
-                </>}
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Vertrag</div>
+                <div className="sa-lot-row">
+                  <span className="sa-lot-key">Währung</span>
+                  <span className="sa-lot-val">EUR (Euro)</span>
+                </div>
+                {lot.paymentTerms && <div className="sa-lot-row">
+                  <span className="sa-lot-key">Zahlungsbedingungen</span>
+                  <span className="sa-lot-val" style={{ maxWidth: 130, textAlign: "right", wordBreak: "break-word" }}>{lot.paymentTerms}</span>
+                </div>}
+                {lot.vatTreatment && <div className="sa-lot-row">
+                  <span className="sa-lot-key">USt.-Behandlung</span>
+                  <span className="sa-lot-val" style={{ maxWidth: 130, textAlign: "right", wordBreak: "break-word", fontSize: 10 }}>{lot.vatTreatment}</span>
+                </div>}
+                {!lot.paymentTerms && !lot.vatTreatment && (
+                  <div className="sa-lot-row">
+                    <span className="sa-lot-key" style={{ color: "#d97706" }}>Zahlungsbedingungen</span>
+                    <span style={{ fontSize: 10, color: "#d97706" }}>nicht angegeben</span>
+                  </div>
+                )}
 
                 {/* Zeitrahmen */}
                 <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Zeitrahmen</div>
@@ -656,7 +668,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                     </button>
                   </div>
                   <div className="sa-bid-hint">
-                    Preis in € pro Einheit.
+                    Preis in <strong style={{ color: "#154194" }}>EUR (€)</strong> pro {lot.unit} — alle Beträge in Euro.
                     {lot.startPrice && <> Käufer-Limit: <strong style={{ color: "#374151" }}>{fmtEur(lot.startPrice)}</strong>.</>}
                     {" "}Enter oder Button zum Bestätigen.
                   </div>

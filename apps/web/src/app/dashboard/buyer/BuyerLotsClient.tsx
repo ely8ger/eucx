@@ -30,6 +30,11 @@ interface LotRow {
   co2PerTonne?:     string | null;
   countryOfOrigin?: string | null;
   incoterms?:       string | null;
+  hsCode?:          string | null;
+  qualityGrade?:    string | null;
+  deliveryPeriod?:  string | null;
+  paymentTerms?:    string | null;
+  vatTreatment?:    string | null;
 }
 
 const COUNTRIES = [
@@ -46,6 +51,27 @@ const COUNTRIES = [
 ];
 
 const INCOTERMS_LIST = ["EXW", "FCA", "FAS", "FOB", "CFR", "CIF", "CPT", "CIP", "DAP", "DPU", "DDP"] as const;
+
+// ── Warenkatalog — EUCX-Produktpalette ────────────────────────────────────────
+// Jede Vorlage befüllt Pflichtfelder vor; Käufer passt Menge, Preis, Lieferzeitraum an.
+const COMMODITY_CATALOG = [
+  // Stahl — Langprodukte
+  { id: "rebar-bst500",   cat: "Stahl — Langprodukte",     name: "Betonstahl BST 500 (Rebar)",                hsCode: "7214 20 00", qualityGrade: "B500B · EN 10080",             co2: "1850.0000", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Gerippter Betonstahl BST 500, Ø 8–40 mm. Normen: EN 10080, DIN 488. Lieferung in Stäben 6 m / 12 m oder Ring. 3.1-Werkzeugnis nach EN 10204 beizufügen. Anwendung: Stahlbetonkonstruktionen." },
+  { id: "rebar-bst500s",  cat: "Stahl — Langprodukte",     name: "Betonstahl BST 500S (seismisch)",            hsCode: "7214 20 00", qualityGrade: "B500S · EN 10080",             co2: "1890.0000", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Gerippter Betonstahl BST 500S, erhöhte Duktilität Klasse S für Erdbebengebiete. Ø 8–32 mm. Normen: EN 10080, DIN 488-2, EC 8. 3.1-Werkzeugnis nach EN 10204 erforderlich." },
+  { id: "wire-rod",       cat: "Stahl — Langprodukte",     name: "Walzdraht (Wire Rod) SAE 1008",              hsCode: "7213 91 10", qualityGrade: "SAE 1008 · EN 10016-2",        co2: "1650.0000", inco: "EXW", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Walzdraht unlegiert, niedriggekohlter Stahl SAE 1008 / DD11. Coil, Ø 5,5–16 mm. Normen: EN 10016-2. Schmelznachweis 3.1 nach EN 10204 erforderlich. Anwendung: Zieherei, Betonstahlproduktion." },
+  // Stahl — Flachprodukte
+  { id: "flat-s235",      cat: "Stahl — Flachprodukte",    name: "Warmgewalzter Stahl S235JR (Blech / Coil)", hsCode: "7208 51 20", qualityGrade: "S235JR · EN 10025-2",          co2: "1780.0000", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Warmgewalzte Bleche / Coils, S235JR. Breite 600–2000 mm, Dicke 2–25 mm. Normen: EN 10025-2, EN 10051. Anwendung: Konstruktionsstahl, Maschinenbau. 3.1-Zeugnis nach EN 10204 beizufügen." },
+  { id: "flat-s355",      cat: "Stahl — Flachprodukte",    name: "Feinkornbaustahl S355JR (Blech)",            hsCode: "7208 51 91", qualityGrade: "S355JR · EN 10025-2",          co2: "1820.0000", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Warmgewalzte Feinkornbaustahl-Bleche S355JR. Dicke 3–80 mm, Breite bis 3000 mm. Normen: EN 10025-2. Anwendung: Brückenbau, Schweißkonstruktionen. 3.1-Werkzeugnis nach EN 10204." },
+  // Stahl — Träger / Profile
+  { id: "beams-hea-heb",  cat: "Stahl — Träger / Profile", name: "HEA / HEB Stahlträger S235 / S355",         hsCode: "7216 33 10", qualityGrade: "S235JR / S355JR · EN 10025-2", co2: "1950.0000", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Breitflanschträger HEA/HEB nach EN 10365, S235JR oder S355JR. Größen HEA 100–900, HEB 100–1000. Anwendung: Stahlbau, Hallenkonstruktionen. 3.1-Werkzeugnis nach EN 10204." },
+  // Stahl — Rohre
+  { id: "pipes-welded",   cat: "Stahl — Rohre",            name: "Nahtgeschweißte Hohlprofile S235JRH",       hsCode: "7306 30 51", qualityGrade: "S235JRH · EN 10210-1",         co2: "2050.0000", inco: "EXW", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Nahtgeschweißte Hohlprofile (quadratisch, rechteckig, rund), S235JRH. Wandstärke 2–16 mm. Normen: EN 10210-1, EN 10219. Anwendung: Stahlbau, Konstruktionsprofile. 3.1-Zeugnis EN 10204." },
+  // NE-Metalle
+  { id: "copper-cathodes", cat: "NE-Metalle",              name: "Kupferkathoden Grade A",                    hsCode: "7403 11 00", qualityGrade: "Cu-CATH-1 · EN 1978 Grade A",  co2: "2800.0000", inco: "CIF", vat: "Umsatzsteuer 19 % (Regelbesteuerung)",             desc: "Elektrolyt-Kupferkathoden EN 1978 Grade A, Reinheit min. 99,99 % Cu. Standardkathode ca. 110–130 kg/Stück. LME-konforme Qualität, palettiert. Analysezertifikat erforderlich." },
+  { id: "aluminium-1050",  cat: "NE-Metalle",              name: "Aluminiumbarren (Primär) EN AW-1050A",      hsCode: "7601 10 00", qualityGrade: "EN AW-1050A · EN 573-3",       co2: "6700.0000", inco: "CIF", vat: "Umsatzsteuer 19 % (Regelbesteuerung)",             desc: "Primär-Aluminiumbarren EN AW-1050A (Al 99,5 %), T-Barren oder Masseln. LME-Spezifikation P1020. Analysezertifikat und Ursprungsnachweis erforderlich. CBAM-pflichtig ab 2026." },
+  // Schrott
+  { id: "scrap-hms",       cat: "Stahl — Schrott",         name: "Stahlschrott HMS 1/2 (Heavy Melting Scrap)", hsCode: "7204 10 00", qualityGrade: "HMS 1/2 · ISRI 200–212",      co2: "",          inco: "FOB", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Schwerer Stahlschrott HMS 1/2, ISRI-Spezifikation 200 (HMS1) / 210 (HMS2). Feuchtigkeitsgehalt max. 1 %. Analyse: C ≤ 0,4 %, S ≤ 0,05 %. Sichtkontrolle bei Übernahme." },
+] as const;
 
 interface KycInfo {
   verificationStatus: "GUEST" | "PENDING_VERIFICATION" | "VERIFIED" | "REJECTED" | "SUSPENDED";
@@ -112,6 +138,7 @@ export function BuyerLotsClient() {
   const [deliveryPeriod,   setDeliveryPeriod]   = useState("");
   const [paymentTerms,     setPaymentTerms]     = useState("");
   const [vatTreatment,     setVatTreatment]     = useState("");
+  const [selectedPreset,   setSelectedPreset]   = useState("");
 
   // ── Token + Auth-Redirect ──────────────────────────────────────────
   useEffect(() => {
@@ -145,6 +172,19 @@ export function BuyerLotsClient() {
   }, [token]);
 
   useEffect(() => { loadLots(); }, [loadLots]);
+
+  // ── Warenvorlage anwenden ──────────────────────────────────────────
+  function applyPreset(presetId: string) {
+    const p = COMMODITY_CATALOG.find((c) => c.id === presetId);
+    if (!p) return;
+    setCommodity(p.name);
+    setHsCode(p.hsCode);
+    setQualityGrade(p.qualityGrade);
+    setDescription(p.desc);
+    if (p.co2) setCo2PerTonne(p.co2);
+    setIncoterms(p.inco);
+    setVatTreatment(p.vat);
+  }
 
   // ── Ausschreibung erstellen ───────────────────────────────────────
   async function createLot(e: React.FormEvent) {
@@ -191,6 +231,8 @@ export function BuyerLotsClient() {
         });
         setCommodity(""); setQuantity(""); setUnit("TON"); setStartPrice(""); setDescription("");
         setCo2PerTonne(""); setCountryOfOrigin(""); setProductionSiteId(""); setIncoterms("DAP");
+        setHsCode(""); setQualityGrade(""); setDeliveryPeriod(""); setPaymentTerms(""); setVatTreatment("");
+        setSelectedPreset("");
         setShowForm(false);
         await loadLots();
       }
@@ -652,13 +694,59 @@ export function BuyerLotsClient() {
             <div className="bl-form-wrap">
               <div className="bl-form-title">Neue Ausschreibung erstellen</div>
               <form onSubmit={(e) => { void createLot(e); }}>
+
+                {/* ── Warenvorlage ── */}
+                <div style={{ background: "#f0f4ff", border: "1px solid #c7d7fc", padding: "14px 16px", marginBottom: 20 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".06em", color: "#1e3a8a", textTransform: "uppercase", marginBottom: 8 }}>
+                    Warenvorlage <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— wählen Sie ein Produkt, alle Felder werden vorbefüllt</span>
+                  </div>
+                  <select
+                    className="bl-select"
+                    style={{ width: "100%", border: "1px solid #93c5fd", background: "#fff" }}
+                    value={selectedPreset}
+                    onChange={(e) => {
+                      setSelectedPreset(e.target.value);
+                      if (e.target.value) applyPreset(e.target.value);
+                    }}
+                  >
+                    <option value="">— Vorlage wählen (empfohlen) —</option>
+                    <optgroup label="Stahl — Langprodukte">
+                      <option value="rebar-bst500">Betonstahl BST 500 (Rebar) · HS 7214 20 00</option>
+                      <option value="rebar-bst500s">Betonstahl BST 500S (seismisch) · HS 7214 20 00</option>
+                      <option value="wire-rod">Walzdraht (Wire Rod) SAE 1008 · HS 7213 91 10</option>
+                    </optgroup>
+                    <optgroup label="Stahl — Flachprodukte">
+                      <option value="flat-s235">Warmgewalzter Stahl S235JR (Blech / Coil) · HS 7208 51 20</option>
+                      <option value="flat-s355">Feinkornbaustahl S355JR (Blech) · HS 7208 51 91</option>
+                    </optgroup>
+                    <optgroup label="Stahl — Träger / Profile">
+                      <option value="beams-hea-heb">HEA / HEB Stahlträger S235 / S355 · HS 7216 33 10</option>
+                    </optgroup>
+                    <optgroup label="Stahl — Rohre">
+                      <option value="pipes-welded">Nahtgeschweißte Hohlprofile S235JRH · HS 7306 30 51</option>
+                    </optgroup>
+                    <optgroup label="NE-Metalle">
+                      <option value="copper-cathodes">Kupferkathoden Grade A · HS 7403 11 00</option>
+                      <option value="aluminium-1050">Aluminiumbarren (Primär) EN AW-1050A · HS 7601 10 00</option>
+                    </optgroup>
+                    <optgroup label="Schrott / Recycling">
+                      <option value="scrap-hms">Stahlschrott HMS 1/2 · HS 7204 10 00</option>
+                    </optgroup>
+                  </select>
+                  {selectedPreset && (
+                    <div style={{ fontSize: 11, color: "#6b7280", marginTop: 6 }}>
+                      Vorlage angewendet — alle Felder sind anpassbar.
+                    </div>
+                  )}
+                </div>
+
                 <div className="bl-form-grid">
                   <div className="bl-form-group">
                     <label className="bl-label">Ware / Commodity *</label>
                     <input
                       className="bl-input"
                       type="text"
-                      placeholder="z.B. Stahl-Rebar BST 500, 16mm"
+                      placeholder="z.B. Betonstahl BST 500, Ø 16 mm, 12 m Stäbe"
                       value={commodity}
                       onChange={(e) => setCommodity(e.target.value)}
                       required
@@ -687,16 +775,20 @@ export function BuyerLotsClient() {
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">Maximaler Preis <span>(optional, €/Einheit)</span></label>
-                    <input
-                      className="bl-input"
-                      type="number"
-                      step="0.01"
-                      min="0.01"
-                      placeholder="850.00"
-                      value={startPrice}
-                      onChange={(e) => setStartPrice(e.target.value)}
-                    />
+                    <label className="bl-label">Maximaler Preis <span>(optional, EUR €/Einheit)</span></label>
+                    <div style={{ position: "relative" }}>
+                      <input
+                        className="bl-input"
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        placeholder="850.00"
+                        value={startPrice}
+                        onChange={(e) => setStartPrice(e.target.value)}
+                        style={{ paddingRight: 50, width: "100%" }}
+                      />
+                      <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: 12, fontWeight: 700, color: "#154194", pointerEvents: "none" }}>EUR</span>
+                    </div>
                   </div>
 
                   <div className="bl-form-group full">
@@ -908,10 +1000,20 @@ export function BuyerLotsClient() {
 
                     return (
                       <tr key={lot.id}>
-                        <td style={{ fontWeight: 600, color: "#111827", maxWidth: 220 }}>
-                          <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <td style={{ maxWidth: 240 }}>
+                          <div style={{ fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {lot.commodity}
                           </div>
+                          {lot.qualityGrade && (
+                            <div style={{ fontSize: 10.5, color: "#6b7280", marginTop: 2, fontWeight: 500 }}>
+                              {lot.qualityGrade}
+                            </div>
+                          )}
+                          {lot.hsCode && (
+                            <div style={{ fontSize: 10, color: "#9ca3af", fontFamily: "'IBM Plex Mono',monospace" }}>
+                              HS {lot.hsCode}
+                            </div>
+                          )}
                         </td>
                         <td style={{ color: "#374151", whiteSpace: "nowrap" }}>
                           {Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}
