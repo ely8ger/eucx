@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
 
 export function PhoneSettingsClient() {
+  const router = useRouter();
   const [token, setToken]           = useState("");
   const [phone, setPhone]           = useState("");
   const [phoneVerified, setPhoneVerified] = useState(false);
@@ -41,7 +43,8 @@ export function PhoneSettingsClient() {
         setMsg({ type: "err", text: d.error ?? `Fehler ${r.status}` });
       } else {
         setPhoneVerified(true);
-        setMsg({ type: "ok", text: "Telefonnummer gespeichert und verifiziert." });
+        setMsg({ type: "ok", text: "Telefonnummer gespeichert. Sie werden weitergeleitet …" });
+        setTimeout(() => router.push("/dashboard/buyer"), 1500);
       }
     } catch {
       setMsg({ type: "err", text: "Netzwerkfehler" });
