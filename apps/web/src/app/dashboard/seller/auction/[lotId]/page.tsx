@@ -20,15 +20,20 @@ export default async function SellerAuctionPage({
   const lot = await db.lot.findUnique({
     where:  { id: lotId },
     select: {
-      id:          true,
-      commodity:   true,
-      quantity:    true,
-      unit:        true,
-      phase:       true,
-      startPrice:  true,
-      currentBest: true,
-      auctionEnd:  true,
-      description: true,
+      id:              true,
+      commodity:       true,
+      quantity:        true,
+      unit:            true,
+      phase:           true,
+      startPrice:      true,
+      currentBest:     true,
+      auctionEnd:      true,
+      auctionStart:    true,
+      createdAt:       true,
+      description:     true,
+      incoterms:       true,
+      countryOfOrigin: true,
+      co2PerTonne:     true,
     },
   });
 
@@ -37,15 +42,20 @@ export default async function SellerAuctionPage({
   return (
     <SellerAuctionClient
       lot={{
-        id:          lot.id,
-        commodity:   lot.commodity,
-        quantity:    lot.quantity.toString(),
-        unit:        lot.unit,
-        phase:       lot.phase,
-        startPrice:  lot.startPrice?.toString()  ?? null,
-        currentBest: lot.currentBest?.toString() ?? null,
-        auctionEnd:  lot.auctionEnd?.toISOString() ?? null,
-        description: lot.description ?? null,
+        id:              lot.id,
+        commodity:       lot.commodity,
+        quantity:        lot.quantity.toString(),
+        unit:            lot.unit,
+        phase:           lot.phase,
+        startPrice:      lot.startPrice?.toString()  ?? null,
+        currentBest:     lot.currentBest?.toString() ?? null,
+        auctionEnd:      lot.auctionEnd?.toISOString()   ?? null,
+        auctionStart:    lot.auctionStart?.toISOString() ?? null,
+        createdAt:       lot.createdAt.toISOString(),
+        description:     lot.description     ?? null,
+        incoterms:       lot.incoterms       ?? null,
+        countryOfOrigin: lot.countryOfOrigin ?? null,
+        co2PerTonne:     lot.co2PerTonne?.toString() ?? null,
       }}
     />
   );

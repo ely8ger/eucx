@@ -11,7 +11,10 @@ import { toast } from "sonner";
 interface Lot {
   id: string; commodity: string; quantity: string; unit: string;
   phase: string; startPrice: string | null; currentBest: string | null;
-  auctionEnd: string | null; description: string | null;
+  auctionEnd: string | null; auctionStart: string | null;
+  createdAt: string; description: string | null;
+  incoterms: string | null; countryOfOrigin: string | null;
+  co2PerTonne: string | null;
 }
 
 interface MyBid   { price: string; rank: number; createdAt: string; }
@@ -387,8 +390,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
               HANDELSSITZUNG
             </span>
             <span style={{ fontSize: 11, color: "rgba(253,230,138,.7)", letterSpacing: "0.02em" }}>
-              {lot.commodity} · {lot.quantity} {lot.unit}
-              {lot.startPrice && ` · Limit: ${fmtEur(lot.startPrice)}`}
+              Ref. {lot.id.slice(0, 8).toUpperCase()} · {lot.commodity} · {lot.quantity} {lot.unit}
             </span>
             <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
               <span className={`sa-dot${connected ? "" : " off"}`} />
@@ -417,18 +419,79 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
 
               {/* Lot Details */}
               <div className="sa-card sa-lot-card">
-                <div className="sa-lot-label">Los-Details</div>
+                <div className="sa-lot-label">Ausschreibung</div>
                 <div className="sa-lot-name">{lot.commodity}</div>
+
+                {/* Ware */}
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Ware</div>
                 {[
-                  ["Menge",   `${lot.quantity} ${lot.unit}`],
-                  ["Limit",   lot.startPrice ? fmtEur(lot.startPrice) : "Offen"],
-                  ...(lot.description ? [["Notiz", lot.description]] : []),
+                  ["Bezeichnung", lot.commodity],
+                  ["Menge",       `${lot.quantity} ${lot.unit}`],
+                  ...(lot.description ? [["Beschreibung", lot.description]] : []),
+                ].map(([k, v]) => (
+                  <div key={k} className="sa-lot-row">
+                    <span className="sa-lot-key">{k}</span>
+                    <span className="sa-lot-val" style={{ maxWidth: 120, textAlign: "right", wordBreak: "break-word" }}>{v}</span>
+                  </div>
+                ))}
+
+                {/* Preisrahmen */}
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Preisrahmen</div>
+                <div className="sa-lot-row">
+                  <span className="sa-lot-key">Käufer-Limit</span>
+                  <span className="sa-lot-val" style={{ color: "#154194" }}>{lot.startPrice ? fmtEur(lot.startPrice) : "—"}</span>
+                </div>
+                <div className="sa-lot-row">
+                  <span className="sa-lot-key">Aktuell bestes Gebot</span>
+                  <span className="sa-lot-val" style={{ color: liveBest ? "#16a34a" : "#9ca3af" }}>
+                    {liveBest ? fmtEur(liveBest) : "Noch kein Gebot"}
+                  </span>
+                </div>
+                {liveBest && lot.startPrice && (
+                  <div className="sa-lot-row">
+                    <span className="sa-lot-key">Ersparnis ggü. Limit</span>
+                    <span className="sa-lot-val" style={{ color: "#16a34a" }}>
+                      {((1 - Number(liveBest) / Number(lot.startPrice)) * 100).toFixed(1)} %
+                    </span>
+                  </div>
+                )}
+                <div className="sa-lot-row">
+                  <span className="sa-lot-key">Gebote / Bieter</span>
+                  <span className="sa-lot-val">{allBids.length} / {state?.activeBidderCount ?? "—"}</span>
+                </div>
+
+                {/* Lieferung */}
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Lieferung</div>
+                {[
+                  ["Incoterms",     lot.incoterms       ?? "DAP"],
+                  ["Herkunftsland", lot.countryOfOrigin ?? "—"],
+                  ...(lot.co2PerTonne ? [["CO₂-Äq.", `${lot.co2PerTonne} kg/t`]] : []),
                 ].map(([k, v]) => (
                   <div key={k} className="sa-lot-row">
                     <span className="sa-lot-key">{k}</span>
                     <span className="sa-lot-val">{v}</span>
                   </div>
                 ))}
+
+                {/* Zeitrahmen */}
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Zeitrahmen</div>
+                {[
+                  ["Veröffentlicht", new Date(lot.createdAt).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })],
+                  ...(lot.auctionStart ? [["Auktionsstart", new Date(lot.auctionStart).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })]] : []),
+                  ...(lot.auctionEnd   ? [["Auktionsende",  new Date(lot.auctionEnd).toLocaleString("de-DE",   { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })]] : []),
+                ].map(([k, v]) => (
+                  <div key={k} className="sa-lot-row">
+                    <span className="sa-lot-key">{k}</span>
+                    <span className="sa-lot-val">{v}</span>
+                  </div>
+                ))}
+
+                {/* Referenz */}
+                <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid #f3f4f6" }}>
+                  <span style={{ fontSize: 10, color: "#d1d5db", fontFamily: "'IBM Plex Mono',monospace" }}>
+                    Ref. {lot.id.slice(0, 8).toUpperCase()}
+                  </span>
+                </div>
               </div>
 
               {/* Timer */}
