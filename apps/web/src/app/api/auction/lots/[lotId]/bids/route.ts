@@ -106,7 +106,16 @@ export async function POST(
     select:  { sellerId: true, price: true },
   });
 
-  const result = await placeBid(lotId, token.userId, parsed.data.price);
+  let result;
+  try {
+    result = await placeBid(lotId, token.userId, parsed.data.price);
+  } catch (err) {
+    console.error("[bids/route] placeBid threw:", err);
+    return NextResponse.json(
+      { error: "Interner Fehler beim Gebotsspeichern", detail: String(err) },
+      { status: 500 }
+    );
+  }
 
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: result.code });
