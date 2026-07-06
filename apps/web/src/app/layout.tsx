@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import { BASE_URL } from "@/lib/seo/metadata";
 import { I18nProvider } from "@/lib/i18n/context";
 import { CookieBanner } from "@/components/CookieBanner";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: {
@@ -67,7 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL ?? ""} />
       </head>
-      <body><I18nProvider>{children}</I18nProvider><CookieBanner /></body>
+      <body><I18nProvider>{children}</I18nProvider><CookieBanner /><Toaster richColors position="top-right" /></body>
     </html>
   );
 }
