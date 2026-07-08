@@ -312,7 +312,7 @@ export async function generateLotContract(data: LotContractData): Promise<Genera
 
     const cbamRows: [string, string][] = [];
     if (data.countryOfOrigin)  cbamRows.push(["Herkunftsland:", `${data.countryOfOrigin}`]);
-    if (data.co2PerTonne)      cbamRows.push(["CO₂-Emissionen:", `${parseFloat(data.co2PerTonne).toLocaleString("de-DE", { maximumFractionDigits: 4 })} kg CO₂-Äq. / t`]);
+    if (data.co2PerTonne)      cbamRows.push(["CO2-Emissionen:", `${parseFloat(data.co2PerTonne).toLocaleString("de-DE", { maximumFractionDigits: 4 })} kg CO2-Aequiv. / t`]);
     if (data.productionSiteId) cbamRows.push(["CBAM-Registry-ID (Werk):", data.productionSiteId]);
     cbamRows.push(["Lieferbedingung (Incoterms):", data.incoterms ?? "DAP"]);
 
