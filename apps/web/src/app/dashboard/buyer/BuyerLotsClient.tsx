@@ -128,7 +128,8 @@ export function BuyerLotsClient() {
   const [description,      setDescription]      = useState("");
   const [formError,        setFormError]        = useState<string | null>(null);
   // CBAM form state
-  const [co2PerTonne,      setCo2PerTonne]      = useState("");
+  const [co2Rate,          setCo2Rate]          = useState("");   // Richtwert kg/t aus Vorlage
+  const [co2PerTonne,      setCo2PerTonne]      = useState("");   // Angezeigter Wert (= co2Rate × Menge)
   const [countryOfOrigin,  setCountryOfOrigin]  = useState("");
   const [productionSiteId, setProductionSiteId] = useState("");
   const [incoterms,        setIncoterms]        = useState("DAP");
@@ -173,6 +174,17 @@ export function BuyerLotsClient() {
 
   useEffect(() => { loadLots(); }, [loadLots]);
 
+  // ── CO₂ automatisch berechnen wenn Menge oder Vorlage ändert ────────
+  useEffect(() => {
+    if (!co2Rate) return;
+    const rate = parseFloat(co2Rate);
+    if (!rate || rate <= 0) return;
+    const rawQty = parseFloat(quantity);
+    if (!rawQty || rawQty <= 0) { setCo2PerTonne(""); return; }
+    const qtyTon = unit === "TON" ? rawQty : unit === "KG" ? rawQty / 1000 : rawQty;
+    setCo2PerTonne(String(Math.round(rate * qtyTon)));
+  }, [co2Rate, quantity, unit]);
+
   // ── Warenvorlage anwenden ──────────────────────────────────────────
   function applyPreset(presetId: string) {
     const p = COMMODITY_CATALOG.find((c) => c.id === presetId);
@@ -181,7 +193,7 @@ export function BuyerLotsClient() {
     setHsCode(p.hsCode);
     setQualityGrade(p.qualityGrade);
     setDescription(p.desc);
-    if (p.co2) setCo2PerTonne(p.co2);
+    if (p.co2) setCo2Rate(p.co2);   // Rate speichern → useEffect berechnet Gesamtwert
     setIncoterms(p.inco);
     setVatTreatment(p.vat);
   }
@@ -230,7 +242,7 @@ export function BuyerLotsClient() {
           style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" },
         });
         setCommodity(""); setQuantity(""); setUnit("TON"); setStartPrice(""); setDescription("");
-        setCo2PerTonne(""); setCountryOfOrigin(""); setProductionSiteId(""); setIncoterms("DAP");
+        setCo2Rate(""); setCo2PerTonne(""); setCountryOfOrigin(""); setProductionSiteId(""); setIncoterms("DAP");
         setHsCode(""); setQualityGrade(""); setDeliveryPeriod(""); setPaymentTerms(""); setVatTreatment("");
         setSelectedPreset("");
         setShowForm(false);
@@ -813,16 +825,21 @@ export function BuyerLotsClient() {
                 </div>
                 <div className="bl-form-grid">
                   <div className="bl-form-group">
-                    <label className="bl-label">CO₂-Emissionen <span>(optional, kg CO₂-Äq./t)</span></label>
+                    <label className="bl-label">CO₂-Emissionen gesamt <span>(optional, kg CO₂-Äq.)</span></label>
                     <input
                       className="bl-input"
                       type="number"
-                      step="0.0001"
+                      step="1"
                       min="0"
-                      placeholder="1850.0000"
+                      placeholder="Wird automatisch berechnet"
                       value={co2PerTonne}
-                      onChange={(e) => setCo2PerTonne(e.target.value)}
+                      onChange={(e) => { setCo2Rate(""); setCo2PerTonne(e.target.value); }}
                     />
+                    {co2Rate && quantity && (
+                      <span style={{ fontSize: 11, color: "#6b7280", marginTop: 3, display: "block" }}>
+                        {co2Rate} kg/t × {parseFloat(quantity).toLocaleString("de-DE")} {unit === "TON" ? "t" : unit === "KG" ? "kg" : "Stk"}
+                      </span>
+                    )}
                   </div>
 
                   <div className="bl-form-group">
@@ -911,14 +928,22 @@ export function BuyerLotsClient() {
 
                   <div className="bl-form-group">
                     <label className="bl-label">Zahlungsbedingungen *</label>
-                    <input
-                      className="bl-input"
-                      type="text"
-                      placeholder="z.B. 30 Tage netto nach Lieferung"
+                    <select
+                      className="bl-select"
                       value={paymentTerms}
                       onChange={(e) => setPaymentTerms(e.target.value)}
                       required
-                    />
+                    >
+                      <option value="">— Bitte wählen —</option>
+                      <option value="Vorkasse 100 % vor Lieferung">Vorkasse — 100 % vor Lieferung</option>
+                      <option value="Anzahlung 10 % bei Zuschlag, Rest bei Lieferung">Anzahlung 10 % bei Zuschlag, Rest bei Lieferung</option>
+                      <option value="Anzahlung 25 % bei Zuschlag, Rest bei Lieferung">Anzahlung 25 % bei Zuschlag, Rest bei Lieferung</option>
+                      <option value="Anzahlung 50 % bei Zuschlag, Rest bei Lieferung">Anzahlung 50 % bei Zuschlag, Rest bei Lieferung</option>
+                      <option value="14 Tage netto nach Lieferung">14 Tage netto nach Lieferung</option>
+                      <option value="30 Tage netto nach Lieferung">30 Tage netto nach Lieferung</option>
+                      <option value="60 Tage netto nach Lieferung">60 Tage netto nach Lieferung</option>
+                      <option value="90 Tage netto nach Lieferung">90 Tage netto nach Lieferung</option>
+                    </select>
                   </div>
 
                   <div className="bl-form-group full">
