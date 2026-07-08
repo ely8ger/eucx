@@ -105,7 +105,7 @@ export async function processLotConclusion(lotId: string): Promise<void> {
 
   if (!lot) throw new Error(`Lot ${lotId} nicht gefunden`);
 
-  // Keine Gebote eingegangen — kein Vertrag, Käufer benachrichtigen und sauber beenden
+  // Keine Gebote oder keine Parteien mit Organisation — kein Vertrag
   if (!lot.winner || !lot.currentBest) {
     console.log(`[PostTrade] Lot ${lotId}: keine Gebote eingegangen — kein Vertrag erstellt.`);
     await db.notification.create({
@@ -140,13 +140,13 @@ export async function processLotConclusion(lotId: string): Promise<void> {
     lotId:           lot.id,
     auctionDate,
     // Käufer
-    buyerName:       lot.buyer.organization.name,
-    buyerCountry:    lot.buyer.organization.country,
-    buyerTaxId:      lot.buyer.organization.taxId,
+    buyerName:       lot.buyer.organization?.name    ?? lot.buyer.email,
+    buyerCountry:    lot.buyer.organization?.country ?? "DE",
+    buyerTaxId:      lot.buyer.organization?.taxId   ?? "—",
     // Verkäufer
-    sellerName:      lot.winner.organization.name,
-    sellerCountry:   lot.winner.organization.country,
-    sellerTaxId:     lot.winner.organization.taxId,
+    sellerName:      lot.winner.organization?.name    ?? lot.winner.email,
+    sellerCountry:   lot.winner.organization?.country ?? "DE",
+    sellerTaxId:     lot.winner.organization?.taxId   ?? "—",
     // Ware
     commodity:       lot.commodity,
     quantity:        lot.quantity.toString(),
