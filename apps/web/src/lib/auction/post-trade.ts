@@ -77,6 +77,11 @@ export async function processLotConclusion(lotId: string): Promise<void> {
       countryOfOrigin:  true,
       productionSiteId: true,
       incoterms:        true,
+      hsCode:           true,
+      qualityGrade:     true,
+      deliveryPeriod:   true,
+      paymentTerms:     true,
+      vatTreatment:     true,
       buyer: {
         select: {
           id:    true,
@@ -154,6 +159,12 @@ export async function processLotConclusion(lotId: string): Promise<void> {
     sellerFeeAmount: sellerFee.amount.toString(),
     buyerFeeRate:    buyerFee.rate.times(100).toFixed(2),
     buyerFeeAmount:  buyerFee.amount.toString(),
+    // Warenspezifikation
+    hsCode:           lot.hsCode         ?? undefined,
+    qualityGrade:     lot.qualityGrade   ?? undefined,
+    deliveryPeriod:   lot.deliveryPeriod ?? undefined,
+    paymentTerms:     lot.paymentTerms   ?? undefined,
+    vatTreatment:     lot.vatTreatment   ?? undefined,
     // CBAM-Felder (nullable — undefined wenn nicht gesetzt)
     co2PerTonne:      lot.co2PerTonne?.toString(),
     countryOfOrigin:  lot.countryOfOrigin ?? undefined,

@@ -53,11 +53,17 @@ export interface LotContractData {
   sellerFeeAmount: string;
   buyerFeeRate:    string;
   buyerFeeAmount:  string;
+  // Warenspezifikation (Pflichtangaben — vertragswesentlich §§ 433, 434 BGB)
+  hsCode?:         string;   // Zolltarifnummer, z.B. "7214 20 00"
+  qualityGrade?:   string;   // Güte / Qualitätsnorm, z.B. "B500B · EN 10080"
+  deliveryPeriod?: string;   // Lieferzeitraum, z.B. "4–6 Wochen ab Zuschlag"
+  paymentTerms?:   string;   // Zahlungsbedingungen, z.B. "30 Tage netto"
+  vatTreatment?:   string;   // USt.-Behandlung, z.B. "§13b UStG Reverse Charge"
   // CBAM-Daten (Carbon Border Adjustment Mechanism — EU-Verordnung 2023/956)
-  co2PerTonne?:      string;   // kg CO₂-Äq./Tonne
-  countryOfOrigin?:  string;   // ISO 3166-1 alpha-2
-  productionSiteId?: string;   // EU-CBAM-Registry-ID
-  incoterms?:        string;   // INCOTERMS® 2020, z.B. "DAP"
+  co2PerTonne?:      string; // kg CO₂-Äq./Tonne
+  countryOfOrigin?:  string; // ISO 3166-1 alpha-2
+  productionSiteId?: string; // EU-CBAM-Registry-ID
+  incoterms?:        string; // INCOTERMS® 2020, z.B. "DAP"
 }
 
 export interface GeneratedLotContract {
@@ -220,7 +226,34 @@ export async function generateLotContract(data: LotContractData): Promise<Genera
   txt(page, "GESAMTBETRAG:", totalX + 4, y - 10, bold, 7.5, C.white);
   txt(page, fmtCurrency(data.totalValue, data.currency), offsets[4]! + 4, y - 10, bold, 8, C.yellow);
 
-  y -= 28;
+  y -= 20;
+
+  // ── §2a Warenspezifikation ────────────────────────────────────────────────────
+  const hasSpec = data.hsCode || data.qualityGrade || data.deliveryPeriod || data.paymentTerms || data.vatTreatment;
+  sectionHeader(page, bold, "§ 2a  Warenspezifikation & Vertragsbedingungen", M, y, CW, C);
+  y -= 16;
+
+  if (hasSpec) {
+    const specRows: [string, string][] = [];
+    if (data.qualityGrade)   specRows.push(["Güte / Qualitätsnorm:",    data.qualityGrade]);
+    if (data.hsCode)         specRows.push(["Zolltarifnummer (HS-Code):", data.hsCode]);
+    if (data.deliveryPeriod) specRows.push(["Lieferzeitraum:",           data.deliveryPeriod]);
+    if (data.paymentTerms)   specRows.push(["Zahlungsbedingungen:",      data.paymentTerms]);
+    if (data.vatTreatment)   specRows.push(["USt.-Behandlung:",          data.vatTreatment]);
+    specRows.push(["Währung:",                "EUR (Euro)"]);
+
+    for (const [label, value] of specRows) {
+      txt(page, label, M,       y, bold,   7.5, C.gray);
+      txt(page, value, M + 160, y, normal, 7.5, C.black);
+      y -= 13;
+    }
+
+    txt(page, "Diese Angaben sind Bestandteil des Kaufvertrags gemäß §§ 433, 434 BGB.", M, y, normal, 6.5, C.gray);
+  } else {
+    page.drawRectangle({ x: M, y: y - 14, width: CW, height: 14, color: C.lightGray });
+    txt(page, "Keine detaillierten Warenspezifikationen hinterlegt (empfohlen für Neuerstellungen).", M + 8, y - 10, normal, 7, C.gray);
+  }
+  y -= 24;
 
   // ── §3 Plattformgebühren ─────────────────────────────────────────────────────
   sectionHeader(page, bold, "§ 3  Plattformgebühren", M, y, CW, C);

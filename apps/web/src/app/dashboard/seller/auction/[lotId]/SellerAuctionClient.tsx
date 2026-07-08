@@ -248,16 +248,33 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
     return { ...bid, delta };
   });
 
-  const downloadContract = () => {
-    fetch(`/api/auction/lots/${lot.id}/contract`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(async (r) => {
-        if (!r.ok) { alert("Vertrag noch nicht verfügbar."); return; }
-        const blob = await r.blob();
-        const url  = URL.createObjectURL(blob);
-        const a    = document.createElement("a");
-        a.href = url; a.download = `EUCX-Kaufvertrag-${lot.id.slice(0,8)}.pdf`;
-        a.click(); URL.revokeObjectURL(url);
-      }).catch(() => alert("Download fehlgeschlagen."));
+  const downloadContract = async () => {
+    try {
+      const r = await fetch(`/api/auction/lots/${lot.id}/contract`, { headers: { Authorization: `Bearer ${token}` } });
+      if (r.status === 202) {
+        const d = await r.json();
+        toast("Kaufvertrag wird generiert", {
+          description: `Bitte in ${d.retry ?? 15} Sekunden erneut versuchen.`,
+          duration: 8000,
+          style: { background: "#fffbeb", border: "1px solid #d97706", color: "#92400e" },
+        });
+        return;
+      }
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        toast.error(d.error ?? "Vertrag noch nicht verfügbar", {
+          style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" },
+        });
+        return;
+      }
+      const blob = await r.blob();
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement("a");
+      a.href = url; a.download = `EUCX-Kaufvertrag-${lot.id.slice(0, 8).toUpperCase()}.pdf`;
+      a.click(); URL.revokeObjectURL(url);
+    } catch {
+      toast.error("Download fehlgeschlagen — Netzwerkfehler");
+    }
   };
 
   const PHASE_LABEL: Record<string, string> = {

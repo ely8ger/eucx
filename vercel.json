@@ -17,6 +17,13 @@
     }
   ],
 
+  "crons": [
+    {
+      "path": "/api/auction/cron",
+      "schedule": "* * * * *"
+    }
+  ],
+
   "git": {
     "deploymentEnabled": {
       "main": true

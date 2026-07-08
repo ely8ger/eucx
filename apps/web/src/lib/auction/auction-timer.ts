@@ -121,5 +121,23 @@ export async function runAuctionTimer(): Promise<{
     urgency5m.push(id);
   }
 
+  // ── 4. Recovery: CONCLUSION-Lots ohne Kaufvertrag ──────────────────────────
+  // Catch-all falls processLotConclusion on-demand fehlschlug oder nie aufgerufen wurde
+  const unprocessed = await db.lot.findMany({
+    where: {
+      phase:    "CONCLUSION",
+      lockedAt: { not: null },
+      winnerId: { not: null },
+      lotContract: null,
+    },
+    select: { id: true },
+    take: 10,
+  });
+  for (const { id } of unprocessed) {
+    processLotConclusion(id).catch((e) => {
+      console.error(`[AuctionTimer] Recovery PostTrade fehlgeschlagen ${id}:`, e);
+    });
+  }
+
   return { processed: dueLots.length, concluded, urgency10m, urgency5m, errors };
 }

@@ -44,22 +44,29 @@ export async function GET(
   });
 
   if (!contract) {
-    // Lot-Status prüfen für präzise Fehlermeldung
     const lot = await db.lot.findUnique({
       where:  { id: lotId },
       select: { phase: true, winnerId: true },
     });
-    if (lot?.phase === "CONCLUSION" && !lot.winnerId) {
+
+    if (lot?.phase !== "CONCLUSION") {
+      return NextResponse.json({ error: "Die Auktion ist noch nicht abgeschlossen." }, { status: 404 });
+    }
+    if (!lot.winnerId) {
       return NextResponse.json(
         { error: "Für diese Auktion wurden keine Gebote abgegeben. Es wird kein Kaufvertrag erstellt." },
         { status: 404 },
       );
     }
+
+    // Abgeschlossen mit Winner, aber kein Vertrag → Post-Trade on-demand triggern
+    void import("@/lib/auction/post-trade")
+      .then(m => m.processLotConclusion(lotId))
+      .catch(console.error);
+
     return NextResponse.json(
-      { error: lot?.phase !== "CONCLUSION"
-          ? "Die Auktion ist noch nicht abgeschlossen."
-          : "Kaufvertrag wird noch generiert. Bitte in Kürze erneut versuchen." },
-      { status: 404 },
+      { error: "Kaufvertrag wird generiert. Bitte in 15 Sekunden erneut versuchen.", retry: 15 },
+      { status: 202 },
     );
   }
 
