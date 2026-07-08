@@ -59,15 +59,46 @@ export async function GET(
       );
     }
 
-    // Abgeschlossen mit Winner, aber kein Vertrag → Post-Trade on-demand triggern
-    void import("@/lib/auction/post-trade")
-      .then(m => m.processLotConclusion(lotId))
-      .catch(console.error);
+    // Abgeschlossen mit Winner, aber kein Vertrag → Post-Trade synchron ausführen
+    // (Serverless: void/fire-and-forget wird mit der Function terminiert)
+    try {
+      const { processLotConclusion } = await import("@/lib/auction/post-trade");
+      await processLotConclusion(lotId);
+    } catch (err) {
+      console.error("[ContractRoute] processLotConclusion fehlgeschlagen:", err);
+      return NextResponse.json(
+        { error: "Kaufvertrag konnte nicht generiert werden. Bitte Support kontaktieren." },
+        { status: 500 },
+      );
+    }
 
-    return NextResponse.json(
-      { error: "Kaufvertrag wird generiert. Bitte in 15 Sekunden erneut versuchen.", retry: 15 },
-      { status: 202 },
-    );
+    // Vertrag nach Generierung laden
+    const generated = await db.lotContract.findUnique({
+      where:  { lotId },
+      select: { id: true, contractNumber: true, buyerId: true, sellerId: true, pdfBase64: true, pdfHash: true },
+    });
+    if (!generated) {
+      return NextResponse.json({ error: "Kaufvertrag konnte nicht geladen werden." }, { status: 500 });
+    }
+
+    // Zugriffscheck
+    const userCheck = await db.user.findUnique({ where: { id: token.userId }, select: { role: true } });
+    const isPartyGen = generated.buyerId === token.userId || generated.sellerId === token.userId;
+    const isAdminGen = ["SUPER_ADMIN", "ADMIN", "COMPLIANCE_OFFICER"].includes(userCheck?.role ?? "");
+    if (!isPartyGen && !isAdminGen) {
+      return NextResponse.json({ error: "Kein Zugriff auf diesen Vertrag" }, { status: 403 });
+    }
+
+    const pdfBytesGen = Buffer.from(generated.pdfBase64, "base64");
+    return new Response(pdfBytesGen, {
+      headers: {
+        "Content-Type":        "application/pdf",
+        "Content-Disposition": `attachment; filename="${generated.contractNumber}.pdf"`,
+        "Content-Length":      String(pdfBytesGen.length),
+        "X-PDF-Hash":          generated.pdfHash,
+        "Cache-Control":       "private, no-store",
+      },
+    });
   }
 
   // Berechtigungsprüfung: nur Käufer, Sieger-Verkäufer oder Admin
