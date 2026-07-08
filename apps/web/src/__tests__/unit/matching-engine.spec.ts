@@ -196,9 +196,9 @@ describe("Matching Engine - Price-Time Priority", () => {
     ];
 
     const sorted = sortAsks(asks);
-    expect(sorted[0].pricePerUnit).toBe("540");
-    expect(sorted[1].pricePerUnit).toBe("545");
-    expect(sorted[2].pricePerUnit).toBe("550");
+    expect(sorted[0]!.pricePerUnit).toBe("540");
+    expect(sorted[1]!.pricePerUnit).toBe("545");
+    expect(sorted[2]!.pricePerUnit).toBe("550");
   });
 
   it("Zeit-Priorität: bei gleichem Preis - ältestes ASK zuerst", () => {
@@ -213,9 +213,9 @@ describe("Matching Engine - Price-Time Priority", () => {
     ];
 
     const sorted = sortAsks(asks);
-    expect(sorted[0].createdAt).toEqual(t1);   // t1 ist älteste
-    expect(sorted[1].createdAt).toEqual(t2);
-    expect(sorted[2].createdAt).toEqual(t3);
+    expect(sorted[0]!.createdAt).toEqual(t1);   // t1 ist älteste
+    expect(sorted[1]!.createdAt).toEqual(t2);
+    expect(sorted[2]!.createdAt).toEqual(t3);
   });
 
   it("BID-Sortierung: teuerster BID zuerst", () => {
@@ -226,9 +226,9 @@ describe("Matching Engine - Price-Time Priority", () => {
     ];
 
     const sorted = sortBids(bids);
-    expect(sorted[0].pricePerUnit).toBe("545");
-    expect(sorted[1].pricePerUnit).toBe("540");
-    expect(sorted[2].pricePerUnit).toBe("538");
+    expect(sorted[0]!.pricePerUnit).toBe("545");
+    expect(sorted[1]!.pricePerUnit).toBe("540");
+    expect(sorted[2]!.pricePerUnit).toBe("538");
   });
 
   // ── Mehrere Matches ───────────────────────────────────────────────────────

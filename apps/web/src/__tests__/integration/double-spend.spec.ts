@@ -141,7 +141,7 @@ describe("Matching Engine - Race Condition Prävention", () => {
 
 describe("Order Inventur - Negative Quantities verboten", () => {
 
-  function calcRemaining(qty: string, filled: string): Decimal {
+  function calcRemaining(qty: string, filled: string) {
     return new Decimal(qty).minus(filled);
   }
 

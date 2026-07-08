@@ -18,6 +18,8 @@ const PUBLIC_PREFIXES = [
   "/api/lookup-hrb",
   "/api/enrich-company",
   "/api/og",
+  // Interner Cron-Endpunkt — hat eigene Auth (CRON_SECRET Bearer)
+  "/api/auction/cron",
   // Öffentliche Inhaltsseiten
   "/agb",
   "/datenschutz",
