@@ -67,7 +67,7 @@ export async function GET(
     } catch (err) {
       console.error("[ContractRoute] processLotConclusion fehlgeschlagen:", err);
       return NextResponse.json(
-        { error: "Kaufvertrag konnte nicht generiert werden. Bitte Support kontaktieren." },
+        { error: "Kaufvertrag konnte nicht generiert werden.", detail: String(err) },
         { status: 500 },
       );
     }
