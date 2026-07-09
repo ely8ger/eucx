@@ -15,6 +15,12 @@ import { toast } from "sonner";
 
 type Phase = "COLLECTION" | "PROPOSAL" | "REDUCTION" | "CONCLUSION";
 
+interface CatalogResult {
+  id: string; nr: number; slug: string;
+  nameEn: string; nameRu: string; norm: string | null;
+  _count: { sizes: number };
+}
+
 interface LotRow {
   id:               string;
   commodity:        string;
@@ -164,6 +170,15 @@ export function BuyerLotsClient() {
   const [vatTreatment,     setVatTreatment]     = useState("");
   const [selectedPreset,   setSelectedPreset]   = useState("");
 
+  // Katalog-Suche
+  const [catalogQuery,   setCatalogQuery]   = useState("");
+  const [catalogResults, setCatalogResults] = useState<CatalogResult[]>([]);
+  const [catalogOpen,    setCatalogOpen]    = useState(false);
+  const [catalogProduct, setCatalogProduct] = useState<{ slug: string; nameEn: string; norm: string | null } | null>(null);
+  const [catalogSizes,   setCatalogSizes]   = useState<string[]>([]);
+  const [selectedSize,   setSelectedSize]   = useState("");
+  const [sizeQuery,      setSizeQuery]      = useState("");
+
   // ── Token + Auth-Redirect ──────────────────────────────────────────
   useEffect(() => {
     const tkn = localStorage.getItem("accessToken") ?? "";
@@ -196,6 +211,27 @@ export function BuyerLotsClient() {
   }, [token]);
 
   useEffect(() => { loadLots(); }, [loadLots]);
+
+  // ── Katalog-Suche (debounced 300ms) ──────────────────────────────────
+  useEffect(() => {
+    if (catalogQuery.length < 2) { setCatalogResults([]); setCatalogOpen(false); return; }
+    const t = setTimeout(() => {
+      fetch(`/api/catalog?q=${encodeURIComponent(catalogQuery)}`)
+        .then((r) => r.json())
+        .then((d) => { setCatalogResults(d.products ?? []); setCatalogOpen(true); })
+        .catch(() => {});
+    }, 300);
+    return () => clearTimeout(t);
+  }, [catalogQuery]);
+
+  // ── Größen für gewähltes Produkt laden ───────────────────────────────
+  useEffect(() => {
+    if (!catalogProduct) { setCatalogSizes([]); return; }
+    fetch(`/api/catalog?slug=${catalogProduct.slug}`)
+      .then((r) => r.json())
+      .then((d) => setCatalogSizes(d.sizes?.map((s: { value: string }) => s.value) ?? []))
+      .catch(() => {});
+  }, [catalogProduct]);
 
   // ── CO₂-Faktor aus CBAM-Gruppe laden wenn Kategorie gewählt ─────────
   useEffect(() => {
@@ -265,6 +301,8 @@ export function BuyerLotsClient() {
         setCbamCategory(""); setCo2PerTonne(""); setCountryOfOrigin(""); setProductionSiteId(""); setIncoterms("DAP");
         setHsCode(""); setQualityGrade(""); setDeliveryPeriod(""); setPaymentTerms(""); setVatTreatment("");
         setSelectedPreset("");
+        setCatalogQuery(""); setCatalogResults([]); setCatalogOpen(false);
+        setCatalogProduct(null); setCatalogSizes([]); setSelectedSize(""); setSizeQuery("");
         setShowForm(false);
         await loadLots();
       }
@@ -727,50 +765,98 @@ export function BuyerLotsClient() {
               <div className="bl-form-title">Neue Ausschreibung erstellen</div>
               <form onSubmit={(e) => { void createLot(e); }}>
 
-                {/* ── Warenvorlage ── */}
-                <div style={{ background: "#f0f4ff", border: "1px solid #c7d7fc", padding: "14px 16px", marginBottom: 20 }}>
+                {/* ── Produktsuche aus 23met-Katalog ── */}
+                <div style={{ background: "#f0f4ff", border: "1px solid #c7d7fc", padding: "14px 16px", marginBottom: 20, position: "relative" }}>
                   <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".06em", color: "#1e3a8a", textTransform: "uppercase", marginBottom: 8 }}>
-                    Warenvorlage <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— wählen Sie ein Produkt, alle Felder werden vorbefüllt</span>
+                    Produktkatalog <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— 88 Produkte · 15.454 Abmessungen</span>
                   </div>
-                  <select
-                    className="bl-select"
-                    style={{ width: "100%", border: "1px solid #93c5fd", background: "#fff" }}
-                    value={selectedPreset}
-                    onChange={(e) => {
-                      setSelectedPreset(e.target.value);
-                      if (e.target.value) applyPreset(e.target.value);
-                    }}
-                  >
-                    <option value="">— Vorlage wählen (empfohlen) —</option>
-                    <optgroup label="Stahl — Langprodukte">
-                      <option value="rebar-bst500">Betonstahl BST 500 (Rebar) · HS 7214 20 00</option>
-                      <option value="rebar-bst500s">Betonstahl BST 500S (seismisch) · HS 7214 20 00</option>
-                      <option value="wire-rod">Walzdraht (Wire Rod) SAE 1008 · HS 7213 91 10</option>
-                    </optgroup>
-                    <optgroup label="Stahl — Flachprodukte">
-                      <option value="flat-s235">Warmgewalzter Stahl S235JR (Blech / Coil) · HS 7208 51 20</option>
-                      <option value="flat-s355">Feinkornbaustahl S355JR (Blech) · HS 7208 51 91</option>
-                    </optgroup>
-                    <optgroup label="Stahl — Träger / Profile">
-                      <option value="beams-hea-heb">HEA / HEB Stahlträger S235 / S355 · HS 7216 33 10</option>
-                    </optgroup>
-                    <optgroup label="Stahl — Rohre">
-                      <option value="pipes-welded">Nahtgeschweißte Hohlprofile S235JRH · HS 7306 30 51</option>
-                    </optgroup>
-                    <optgroup label="NE-Metalle">
-                      <option value="copper-cathodes">Kupferkathoden Grade A · HS 7403 11 00</option>
-                      <option value="aluminium-1050">Aluminiumbarren (Primär) EN AW-1050A · HS 7601 10 00</option>
-                    </optgroup>
-                    <optgroup label="Schrott / Recycling">
-                      <option value="scrap-hms">Stahlschrott HMS 1/2 · HS 7204 10 00</option>
-                    </optgroup>
-                  </select>
-                  {selectedPreset && (
-                    <div style={{ fontSize: 11, color: "#6b7280", marginTop: 6 }}>
-                      Vorlage angewendet — alle Felder sind anpassbar.
+                  <input
+                    className="bl-input"
+                    style={{ border: "1px solid #93c5fd", background: "#fff" }}
+                    placeholder='Suchen: "wire", "pipe", "angle", "DIN EN 10218", "уголок" …'
+                    value={catalogQuery}
+                    autoComplete="off"
+                    onChange={(e) => { setCatalogQuery(e.target.value); if (!e.target.value) { setCatalogProduct(null); setSelectedSize(""); } }}
+                    onFocus={() => { if (catalogResults.length > 0) setCatalogOpen(true); }}
+                    onBlur={() => setTimeout(() => setCatalogOpen(false), 150)}
+                  />
+
+                  {/* Suchergebnisse Dropdown */}
+                  {catalogOpen && catalogResults.length > 0 && (
+                    <div style={{ position: "absolute", left: 16, right: 16, background: "#fff", border: "1px solid #c7d7fc", borderRadius: "0 0 6px 6px", zIndex: 200, maxHeight: 280, overflowY: "auto", boxShadow: "0 4px 16px rgba(0,0,0,.12)" }}>
+                      {catalogResults.map((r) => (
+                        <div
+                          key={r.id}
+                          style={{ padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f1f5f9" }}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setCatalogProduct({ slug: r.slug, nameEn: r.nameEn, norm: r.norm });
+                            setCatalogQuery(r.nameEn);
+                            setCatalogOpen(false);
+                            setSelectedSize(""); setSizeQuery("");
+                            setCommodity(r.nameEn);
+                            if (r.norm) setQualityGrade(r.norm);
+                          }}
+                        >
+                          <div style={{ fontWeight: 600, fontSize: 13, color: "#1e3a5f" }}>{r.nameEn}</div>
+                          <div style={{ fontSize: 11, color: "#6b7280", marginTop: 1 }}>
+                            {r.norm ?? "—"} · {r._count.sizes} Abmessungen · {r.nameRu}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {catalogQuery.length >= 2 && catalogResults.length === 0 && !catalogOpen && (
+                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 5 }}>Kein Treffer — freien Produktnamen im Feld unten eingeben.</div>
+                  )}
+                  {catalogProduct && (
+                    <div style={{ marginTop: 8, fontSize: 11, color: "#14532d", background: "#f0fdf4", border: "1px solid #16a34a", padding: "5px 10px", borderRadius: 4 }}>
+                      Ausgewählt: <strong>{catalogProduct.nameEn}</strong>
+                      {catalogProduct.norm ? ` · ${catalogProduct.norm}` : ""}
+                      {selectedSize ? ` · ${selectedSize}` : ""}
                     </div>
                   )}
                 </div>
+
+                {/* ── Größen-Picker ── */}
+                {catalogProduct && catalogSizes.length > 0 && (
+                  <div style={{ border: "1px solid #e2e8f0", borderRadius: 4, padding: 14, marginBottom: 20 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1e3a5f", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 8 }}>
+                      Abmessung <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>({catalogSizes.length} verfügbar)</span>
+                    </div>
+                    <input
+                      className="bl-input"
+                      style={{ marginBottom: 10 }}
+                      placeholder={`Filtern: z.B. "${catalogSizes[0]}", "${catalogSizes[1] ?? ""}" …`}
+                      value={sizeQuery}
+                      onChange={(e) => setSizeQuery(e.target.value)}
+                    />
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 5, maxHeight: 180, overflowY: "auto" }}>
+                      {catalogSizes
+                        .filter((s) => !sizeQuery || s.toLowerCase().includes(sizeQuery.toLowerCase()))
+                        .slice(0, 200)
+                        .map((s) => (
+                          <button
+                            key={s}
+                            type="button"
+                            onClick={() => { setSelectedSize(s); setCommodity(`${catalogProduct.nameEn}, ${s}`); }}
+                            style={{
+                              padding: "3px 9px", fontSize: 12, borderRadius: 4, cursor: "pointer",
+                              border: selectedSize === s ? "2px solid #154194" : "1px solid #d1d5db",
+                              background: selectedSize === s ? "#eff6ff" : "#f9fafb",
+                              color: selectedSize === s ? "#154194" : "#374151",
+                              fontWeight: selectedSize === s ? 700 : 400,
+                            }}
+                          >{s}</button>
+                        ))}
+                      {!sizeQuery && catalogSizes.length > 200 && (
+                        <span style={{ fontSize: 11, color: "#9ca3af", alignSelf: "center" }}>
+                          +{catalogSizes.length - 200} weitere — Suchfeld verwenden
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div className="bl-form-grid">
                   <div className="bl-form-group">

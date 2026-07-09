@@ -1411,6 +1411,34 @@ model Notification {
   @@map("notifications")
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// PRODUKTKATALOG — 23met.ru-basiert, 90 Produkte, ~15 k Größen
+// Primär: name_en + norm | Sekundär: name_ru (Lieferantenkommunikation)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model CatalogProduct {
+  id      String        @id @default(cuid())
+  nr      Int           @unique                   // Original-Nummer von 23met.ru
+  slug    String        @unique                   // URL-Kürzel (z.B. "provoloka")
+  nameEn  String                                  // Englischer Handelsname (Primäranzeige)
+  nameRu  String                                  // Russischer Name (Lieferantenkommunikation)
+  norm    String?                                 // EU-Norm (z.B. "DIN EN 10218")
+  sizes   ProductSize[]
+
+  @@index([nameEn])
+  @@map("catalog_products")
+}
+
+model ProductSize {
+  id        String         @id @default(cuid())
+  productId String
+  value     String         // Abmessung als String (z.B. "8х0.4", "20х20х1", "0.2")
+  product   CatalogProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@map("product_sizes")
+}
+
 // ─── NotificationPreference — Nutzer-Präferenzen für E-Mail-Benachrichtigungen
 // Wird beim ersten GET/PATCH angelegt falls noch nicht vorhanden (upsert).
 model NotificationPreference {
