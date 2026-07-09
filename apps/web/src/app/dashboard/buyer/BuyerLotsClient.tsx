@@ -946,6 +946,79 @@ export function BuyerLotsClient() {
                   </div>
                 </div>
 
+                {/* CBAM-Insights: Einsparpotenzial · Plausibilität · Zertifikatskosten */}
+                {cbamCategory && co2PerTonne && (() => {
+                  const grp = CBAM_GROUPS.find(g => g.id === cbamCategory);
+                  if (!grp) return null;
+                  const entered  = parseFloat(co2PerTonne);
+                  if (!entered || entered <= 0) return null;
+                  const std      = grp.factor;                   // kg/t EU-Standard
+                  const rawQty   = parseFloat(quantity) || 0;
+                  const qtyTon   = unit === "TON" ? rawQty : unit === "KG" ? rawQty / 1000 : rawQty;
+                  const ETS      = 75;                           // €/t CO₂ — EU-ETS-Schätzpreis 2026
+                  const diff     = std - entered;                // positiv = Einsparung ggü. EU-Standard
+                  const diffPct  = (diff / std) * 100;
+                  const isSaving   = diff > 0;
+                  const isCritical = diff > std * 0.5;           // >50 % unter EU-Standard → Plausibilitätsprüfung
+                  const totalCO2t  = (entered / 1000) * qtyTon; // t CO₂ beim deklarierten Faktor
+                  const euCO2t     = (std    / 1000) * qtyTon;  // t CO₂ beim EU-Standard
+                  const cbamCost   = totalCO2t * ETS;
+                  const cbamSaving = (euCO2t - totalCO2t) * ETS;
+
+                  return (
+                    <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+
+                      {/* 1 — Grünes Einsparpotenzial-Badge */}
+                      {isSaving && qtyTon > 0 && (
+                        <div style={{ background: "#f0fdf4", border: "1px solid #16a34a", borderRadius: 6, padding: "10px 14px", display: "flex", alignItems: "flex-start", gap: 10 }}>
+                          <span style={{ fontSize: 16, lineHeight: 1 }}>🌱</span>
+                          <div style={{ fontSize: 12, color: "#14532d", lineHeight: 1.6 }}>
+                            <strong>Einsparung gegenüber EU-Standard:</strong>{" "}
+                            −{(diff * qtyTon / 1000).toFixed(1)} t CO₂ (−{diffPct.toFixed(1)} %) ·{" "}
+                            CBAM-Kostenvorteil: ~{cbamSaving.toLocaleString("de-DE", { maximumFractionDigits: 0 })} € ·{" "}
+                            <strong>Starkes Verkaufsargument!</strong>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 2 — Gelber Plausibilitäts-Warn-Indikator */}
+                      {isCritical && (
+                        <div style={{ background: "#fffbeb", border: "1px solid #d97706", borderRadius: 6, padding: "10px 14px", display: "flex", alignItems: "flex-start", gap: 10 }}>
+                          <span style={{ fontSize: 16, lineHeight: 1 }}>⚠️</span>
+                          <div style={{ fontSize: 12, color: "#92400e", lineHeight: 1.6 }}>
+                            <strong>Plausibilitätshinweis:</strong> Der eingegebene Wert liegt mehr als 50 % unter dem EU-Standard
+                            ({(std / 1000).toFixed(3)} t CO₂/t). Bitte stellen Sie sicher, dass das Werkszeugnis
+                            (EN 10204 3.1) diesen Wert zweifelsfrei belegt. Abweichungen ohne Nachweis können bei der
+                            CBAM-Zollerklärung zu Nachforderungen führen.
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 3 — CBAM-Zertifikatkosten-Rechner */}
+                      {qtyTon > 0 && (
+                        <div style={{ background: "#eff6ff", border: "1px solid #93c5fd", borderRadius: 6, padding: "10px 14px", fontSize: 12, color: "#1e3a5f", lineHeight: 1.7 }}>
+                          <strong>Geschätzte CBAM-Zertifikatkosten für diesen Deal</strong><br />
+                          {totalCO2t.toFixed(2)} t CO₂ × {ETS} €/t (EU-ETS){" "}
+                          = <strong>~{cbamCost.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</strong>
+                          {isSaving && (
+                            <>{" "}· Einsparung vs. EU-Standard:{" "}
+                              <strong style={{ color: "#15803d" }}>
+                                −{cbamSaving.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
+                              </strong>
+                            </>
+                          )}
+                          <br />
+                          <span style={{ color: "#6b7280", fontSize: 11 }}>
+                            Schätzung auf Basis EU-ETS {ETS} €/t CO₂ (Indikativpreis 2026). Kein rechtsverbindlicher Wert —
+                            tatsächliche Kosten hängen von freien ETS-Zertifikaten und dem Tagespreismarkt ab.
+                          </span>
+                        </div>
+                      )}
+
+                    </div>
+                  );
+                })()}
+
                 {/* Handels- und Vertragsangaben */}
                 <div className="bl-cbam-header" style={{ marginTop: 24 }}>
                   <span className="bl-cbam-title">Handels- und Vertragsangaben</span>
