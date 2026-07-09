@@ -177,6 +177,7 @@ export function BuyerLotsClient() {
   const [catalogProduct, setCatalogProduct] = useState<{ slug: string; nameEn: string; norm: string | null } | null>(null);
   const [catalogSizes,   setCatalogSizes]   = useState<string[]>([]);
   const [selectedSize,   setSelectedSize]   = useState("");
+  const [selectedPrimary, setSelectedPrimary] = useState("");
   const [sizeQuery,      setSizeQuery]      = useState("");
 
   // ── Token + Auth-Redirect ──────────────────────────────────────────
@@ -302,7 +303,7 @@ export function BuyerLotsClient() {
         setHsCode(""); setQualityGrade(""); setDeliveryPeriod(""); setPaymentTerms(""); setVatTreatment("");
         setSelectedPreset("");
         setCatalogQuery(""); setCatalogResults([]); setCatalogOpen(false);
-        setCatalogProduct(null); setCatalogSizes([]); setSelectedSize(""); setSizeQuery("");
+        setCatalogProduct(null); setCatalogSizes([]); setSelectedSize(""); setSelectedPrimary(""); setSizeQuery("");
         setShowForm(false);
         await loadLots();
       }
@@ -765,98 +766,195 @@ export function BuyerLotsClient() {
               <div className="bl-form-title">Neue Ausschreibung erstellen</div>
               <form onSubmit={(e) => { void createLot(e); }}>
 
-                {/* ── Produktsuche aus 23met-Katalog ── */}
-                <div style={{ background: "#f0f4ff", border: "1px solid #c7d7fc", padding: "14px 16px", marginBottom: 20, position: "relative" }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".06em", color: "#1e3a8a", textTransform: "uppercase", marginBottom: 8 }}>
-                    Produktkatalog <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— 88 Produkte · 15.454 Abmessungen</span>
+                {/* ── Produktkatalog-Suche ── */}
+                <div style={{ marginBottom: 20, position: "relative" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, paddingLeft: 12, borderLeft: "3px solid #154194" }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase" }}>Produktkatalog</span>
+                    <span style={{ fontSize: 11, color: "#9ca3af" }}>88 Produkte · 15.454 Abmessungen</span>
                   </div>
                   <input
                     className="bl-input"
-                    style={{ border: "1px solid #93c5fd", background: "#fff" }}
-                    placeholder='Suchen: "wire", "pipe", "angle", "DIN EN 10218", "уголок" …'
+                    placeholder='Produkt suchen: "wire", "pipe", "angle", "DIN EN 10162", "уголок" …'
                     value={catalogQuery}
                     autoComplete="off"
-                    onChange={(e) => { setCatalogQuery(e.target.value); if (!e.target.value) { setCatalogProduct(null); setSelectedSize(""); } }}
+                    onChange={(e) => {
+                      setCatalogQuery(e.target.value);
+                      if (!e.target.value) { setCatalogProduct(null); setSelectedSize(""); setSelectedPrimary(""); }
+                    }}
                     onFocus={() => { if (catalogResults.length > 0) setCatalogOpen(true); }}
-                    onBlur={() => setTimeout(() => setCatalogOpen(false), 150)}
+                    onBlur={() => setTimeout(() => setCatalogOpen(false), 200)}
                   />
 
-                  {/* Suchergebnisse Dropdown */}
+                  {/* Ergebnis-Dropdown */}
                   {catalogOpen && catalogResults.length > 0 && (
-                    <div style={{ position: "absolute", left: 16, right: 16, background: "#fff", border: "1px solid #c7d7fc", borderRadius: "0 0 6px 6px", zIndex: 200, maxHeight: 280, overflowY: "auto", boxShadow: "0 4px 16px rgba(0,0,0,.12)" }}>
+                    <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 1px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 300, overflowY: "auto", boxShadow: "0 6px 20px rgba(0,0,0,.10)" }}>
                       {catalogResults.map((r) => (
                         <div
                           key={r.id}
-                          style={{ padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f1f5f9" }}
                           onMouseDown={(e) => {
                             e.preventDefault();
                             setCatalogProduct({ slug: r.slug, nameEn: r.nameEn, norm: r.norm });
                             setCatalogQuery(r.nameEn);
                             setCatalogOpen(false);
-                            setSelectedSize(""); setSizeQuery("");
+                            setSelectedSize(""); setSelectedPrimary(""); setSizeQuery("");
                             setCommodity(r.nameEn);
                             if (r.norm) setQualityGrade(r.norm);
                           }}
+                          style={{ padding: "10px 14px", cursor: "pointer", borderBottom: "1px solid #f3f4f6", display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "start" }}
                         >
-                          <div style={{ fontWeight: 600, fontSize: 13, color: "#1e3a5f" }}>{r.nameEn}</div>
-                          <div style={{ fontSize: 11, color: "#6b7280", marginTop: 1 }}>
-                            {r.norm ?? "—"} · {r._count.sizes} Abmessungen · {r.nameRu}
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{r.nameEn}</div>
+                            <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{r.nameRu}</div>
+                          </div>
+                          <div style={{ textAlign: "right", fontSize: 11, color: "#6b7280", whiteSpace: "nowrap" }}>
+                            <div>{r.norm ?? "—"}</div>
+                            <div style={{ color: "#9ca3af" }}>{r._count.sizes > 0 ? `${r._count.sizes} Größen` : "keine Maße"}</div>
                           </div>
                         </div>
                       ))}
                     </div>
                   )}
                   {catalogQuery.length >= 2 && catalogResults.length === 0 && !catalogOpen && (
-                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 5 }}>Kein Treffer — freien Produktnamen im Feld unten eingeben.</div>
+                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 5, paddingLeft: 2 }}>Kein Treffer — Produktnamen im Feld „Ware / Commodity" frei eingeben.</div>
                   )}
+
+                  {/* Ausgewählt-Zeile */}
                   {catalogProduct && (
-                    <div style={{ marginTop: 8, fontSize: 11, color: "#14532d", background: "#f0fdf4", border: "1px solid #16a34a", padding: "5px 10px", borderRadius: 4 }}>
-                      Ausgewählt: <strong>{catalogProduct.nameEn}</strong>
-                      {catalogProduct.norm ? ` · ${catalogProduct.norm}` : ""}
-                      {selectedSize ? ` · ${selectedSize}` : ""}
+                    <div style={{ marginTop: 6, padding: "6px 12px", background: "#f8faff", border: "1px solid #154194", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ fontSize: 12, color: "#154194" }}>
+                        <strong>{catalogProduct.nameEn}</strong>
+                        {catalogProduct.norm && <span style={{ color: "#6b7280", fontWeight: 400 }}> · {catalogProduct.norm}</span>}
+                        {selectedSize && <span style={{ fontWeight: 700 }}> · {selectedSize}</span>}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => { setCatalogProduct(null); setCatalogQuery(""); setSelectedSize(""); setSelectedPrimary(""); setSizeQuery(""); }}
+                        style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", fontSize: 16, lineHeight: 1, padding: "0 2px" }}
+                        title="Auswahl zurücksetzen"
+                      >×</button>
                     </div>
                   )}
                 </div>
 
-                {/* ── Größen-Picker ── */}
-                {catalogProduct && catalogSizes.length > 0 && (
-                  <div style={{ border: "1px solid #e2e8f0", borderRadius: 4, padding: 14, marginBottom: 20 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1e3a5f", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 8 }}>
-                      Abmessung <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>({catalogSizes.length} verfügbar)</span>
-                    </div>
-                    <input
-                      className="bl-input"
-                      style={{ marginBottom: 10 }}
-                      placeholder={`Filtern: z.B. "${catalogSizes[0]}", "${catalogSizes[1] ?? ""}" …`}
-                      value={sizeQuery}
-                      onChange={(e) => setSizeQuery(e.target.value)}
-                    />
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 5, maxHeight: 180, overflowY: "auto" }}>
-                      {catalogSizes
-                        .filter((s) => !sizeQuery || s.toLowerCase().includes(sizeQuery.toLowerCase()))
-                        .slice(0, 200)
-                        .map((s) => (
-                          <button
-                            key={s}
-                            type="button"
-                            onClick={() => { setSelectedSize(s); setCommodity(`${catalogProduct.nameEn}, ${s}`); }}
-                            style={{
-                              padding: "3px 9px", fontSize: 12, borderRadius: 4, cursor: "pointer",
-                              border: selectedSize === s ? "2px solid #154194" : "1px solid #d1d5db",
-                              background: selectedSize === s ? "#eff6ff" : "#f9fafb",
-                              color: selectedSize === s ? "#154194" : "#374151",
-                              fontWeight: selectedSize === s ? 700 : 400,
-                            }}
-                          >{s}</button>
-                        ))}
-                      {!sizeQuery && catalogSizes.length > 200 && (
-                        <span style={{ fontSize: 11, color: "#9ca3af", alignSelf: "center" }}>
-                          +{catalogSizes.length - 200} weitere — Suchfeld verwenden
+                {/* ── Abmessungs-Picker ── */}
+                {catalogProduct && catalogSizes.length > 0 && (() => {
+                  const SEP = "х";
+                  const hasMultiPart = catalogSizes.some((s) => s.includes(SEP));
+
+                  if (!hasMultiPart) {
+                    // Einfache Maße (z.B. Draht: 0.2 mm, 0.3 mm)
+                    const filtered = sizeQuery
+                      ? catalogSizes.filter((s) => s.includes(sizeQuery))
+                      : catalogSizes;
+                    return (
+                      <div style={{ marginBottom: 20, border: "1px solid #e5e7eb" }}>
+                        <div style={{ padding: "8px 14px", borderBottom: "1px solid #e5e7eb", background: "#f9fafb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span style={{ fontSize: 11, letterSpacing: ".06em", color: "#6b7280", textTransform: "uppercase" }}>Maß <span style={{ color: "#9ca3af" }}>· {catalogSizes.length}</span></span>
+                          <input
+                            className="bl-input"
+                            style={{ width: 140, padding: "3px 8px", fontSize: 12 }}
+                            placeholder="Filtern …"
+                            value={sizeQuery}
+                            onChange={(e) => setSizeQuery(e.target.value)}
+                          />
+                        </div>
+                        <div style={{ padding: 12, display: "flex", flexWrap: "wrap", gap: 4, maxHeight: 200, overflowY: "auto" }}>
+                          {filtered.map((s) => (
+                            <button
+                              key={s}
+                              type="button"
+                              onClick={() => { setSelectedSize(s); setCommodity(`${catalogProduct.nameEn}, ${s}`); }}
+                              style={{ padding: "4px 10px", fontSize: 12, cursor: "pointer", fontFamily: "monospace", border: selectedSize === s ? "1.5px solid #154194" : "1px solid #d1d5db", background: selectedSize === s ? "#154194" : "#fff", color: selectedSize === s ? "#fff" : "#374151" }}
+                            >{s}</button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Zwei-Stufen-Picker: Primärmaß (links) × Wandstärke/Dicke (rechts)
+                  const grouped = new Map<string, string[]>();
+                  for (const s of catalogSizes) {
+                    const lastIdx = s.lastIndexOf(SEP);
+                    const primary = lastIdx > 0 ? s.slice(0, lastIdx) : s;
+                    if (!grouped.has(primary)) grouped.set(primary, []);
+                    grouped.get(primary)!.push(s);
+                  }
+                  const primaries = [...grouped.keys()];
+                  const filteredPrimaries = sizeQuery ? primaries.filter((p) => p.toLowerCase().includes(sizeQuery.toLowerCase())) : primaries;
+                  const secondaries = selectedPrimary ? (grouped.get(selectedPrimary) ?? []) : [];
+
+                  return (
+                    <div style={{ marginBottom: 20, border: "1px solid #e5e7eb" }}>
+                      {/* Header mit Filter */}
+                      <div style={{ padding: "8px 14px", borderBottom: "1px solid #e5e7eb", background: "#f9fafb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ fontSize: 11, letterSpacing: ".06em", color: "#6b7280", textTransform: "uppercase" }}>
+                          Abmessung <span style={{ color: "#9ca3af" }}>· {catalogSizes.length} Größen · {primaries.length} Profile</span>
                         </span>
+                        <input
+                          className="bl-input"
+                          style={{ width: 160, padding: "3px 8px", fontSize: 12 }}
+                          placeholder="Profil filtern …"
+                          value={sizeQuery}
+                          onChange={(e) => { setSizeQuery(e.target.value); setSelectedPrimary(""); }}
+                        />
+                      </div>
+
+                      {/* Zwei-Spalten-Grid */}
+                      <div style={{ display: "grid", gridTemplateColumns: "200px 1fr" }}>
+                        {/* Links: Primärmaß-Liste */}
+                        <div style={{ borderRight: "1px solid #e5e7eb", maxHeight: 240, overflowY: "auto" }}>
+                          {filteredPrimaries.map((p) => (
+                            <div
+                              key={p}
+                              onClick={() => { setSelectedPrimary(p); setSelectedSize(""); }}
+                              style={{
+                                padding: "7px 14px", cursor: "pointer", fontSize: 12, fontFamily: "monospace",
+                                background: selectedPrimary === p ? "#154194" : "transparent",
+                                color: selectedPrimary === p ? "#fff" : "#374151",
+                                borderBottom: "1px solid #f3f4f6",
+                                display: "flex", justifyContent: "space-between",
+                              }}
+                            >
+                              <span>{p}</span>
+                              <span style={{ fontSize: 10, opacity: 0.6 }}>{grouped.get(p)!.length}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Rechts: Wandstärke / Dicke */}
+                        <div>
+                          <div style={{ padding: "8px 12px", fontSize: 11, color: "#9ca3af", borderBottom: "1px solid #f3f4f6" }}>
+                            {selectedPrimary
+                              ? `Wandstärke / Dicke für ${selectedPrimary} (${secondaries.length})`
+                              : "← Profil auswählen"}
+                          </div>
+                          <div style={{ padding: 10, display: "flex", flexWrap: "wrap", gap: 4, maxHeight: 210, overflowY: "auto" }}>
+                            {secondaries.map((s) => {
+                              const lastIdx = s.lastIndexOf(SEP);
+                              const label = lastIdx > 0 ? s.slice(lastIdx + 1) : s;
+                              return (
+                                <button
+                                  key={s}
+                                  type="button"
+                                  onClick={() => { setSelectedSize(s); setCommodity(`${catalogProduct.nameEn}, ${s}`); }}
+                                  style={{ padding: "5px 12px", fontSize: 12, cursor: "pointer", fontFamily: "monospace", border: selectedSize === s ? "1.5px solid #154194" : "1px solid #d1d5db", background: selectedSize === s ? "#154194" : "#fff", color: selectedSize === s ? "#fff" : "#374151" }}
+                                >{label}</button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Gewählte Abmessung */}
+                      {selectedSize && (
+                        <div style={{ padding: "6px 14px", borderTop: "1px solid #e5e7eb", background: "#f8faff", fontSize: 12, color: "#154194" }}>
+                          Gewählt: <strong style={{ fontFamily: "monospace" }}>{selectedSize}</strong>
+                        </div>
                       )}
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
 
                 <div className="bl-form-grid">
                   <div className="bl-form-group">
