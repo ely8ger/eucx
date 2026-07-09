@@ -52,25 +52,48 @@ const COUNTRIES = [
 
 const INCOTERMS_LIST = ["EXW", "FCA", "FAS", "FOB", "CFR", "CIF", "CPT", "CIP", "DAP", "DPU", "DDP"] as const;
 
+// ── CBAM-Warengruppen nach Anhang I EU-VO 2023/956 ───────────────────────────
+// factor: kg CO₂-Äq. pro Tonne (EU Global Default Value für die Übergangsphase)
+// Quellen: Anhang VIII VO (EU) 2023/1773 + Delg. VO (EU) 2024/1316
+const CBAM_GROUPS = [
+  // Eisen & Stahl (Kapitel 72–73)
+  { id: "STEEL_PRIMARY",       label: "Rohstahl / Eisenprimärprodukte",       kn: "KN 7206–7212", factor: 2030 },
+  { id: "STEEL_PROCESSED",     label: "Weiterverarbeitete Stahlerzeugnisse",  kn: "KN 7213–7326", factor: 1930 },
+  // Aluminium (Kapitel 76)
+  { id: "ALUMINIUM_UNWROUGHT", label: "Roh-Aluminium, primär (Unwrought)",   kn: "KN 7601",      factor: 6720 },
+  { id: "ALUMINIUM_PROCESSED", label: "Aluminium-Erzeugnisse (Wrought)",      kn: "KN 7603–7616", factor: 2860 },
+  // Zement (Kapitel 25)
+  { id: "CEMENT_CLINKER",      label: "Zementklinker",                        kn: "KN 2523 10",   factor: 874  },
+  { id: "CEMENT_HYDRAULIC",    label: "Hydraulischer Zement",                 kn: "KN 2523 21–90",factor: 766  },
+  // Düngemittel (Kapitel 28 & 31)
+  { id: "FERTILIZER_AMMONIA",  label: "Ammoniak (NH₃)",                       kn: "KN 2814",      factor: 1694 },
+  { id: "FERTILIZER_UREA",     label: "Harnstoff (Urea)",                     kn: "KN 3102 10",   factor: 2082 },
+  { id: "FERTILIZER_AN",       label: "Ammoniumnitrat",                       kn: "KN 3102 30",   factor: 1571 },
+  { id: "FERTILIZER_MIXED",    label: "Mischstickstoffdünger",                kn: "KN 3105",      factor: 1780 },
+  // Wasserstoff (Kapitel 28)
+  { id: "HYDROGEN",            label: "Wasserstoff (H₂)",                     kn: "KN 2804 10",   factor: 2350 },
+] as const;
+type CbamGroupId = typeof CBAM_GROUPS[number]["id"];
+
 // ── Warenkatalog — EUCX-Produktpalette ────────────────────────────────────────
 // Jede Vorlage befüllt Pflichtfelder vor; Käufer passt Menge, Preis, Lieferzeitraum an.
 const COMMODITY_CATALOG = [
   // Stahl — Langprodukte
-  { id: "rebar-bst500",   cat: "Stahl — Langprodukte",     name: "Betonstahl BST 500 (Rebar)",                hsCode: "7214 20 00", qualityGrade: "B500B · EN 10080",             co2: "1850.0000", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Gerippter Betonstahl BST 500, Ø 8–40 mm. Normen: EN 10080, DIN 488. Lieferung in Stäben 6 m / 12 m oder Ring. 3.1-Werkzeugnis nach EN 10204 beizufügen. Anwendung: Stahlbetonkonstruktionen." },
-  { id: "rebar-bst500s",  cat: "Stahl — Langprodukte",     name: "Betonstahl BST 500S (seismisch)",            hsCode: "7214 20 00", qualityGrade: "B500S · EN 10080",             co2: "1890.0000", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Gerippter Betonstahl BST 500S, erhöhte Duktilität Klasse S für Erdbebengebiete. Ø 8–32 mm. Normen: EN 10080, DIN 488-2, EC 8. 3.1-Werkzeugnis nach EN 10204 erforderlich." },
-  { id: "wire-rod",       cat: "Stahl — Langprodukte",     name: "Walzdraht (Wire Rod) SAE 1008",              hsCode: "7213 91 10", qualityGrade: "SAE 1008 · EN 10016-2",        co2: "1650.0000", inco: "EXW", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Walzdraht unlegiert, niedriggekohlter Stahl SAE 1008 / DD11. Coil, Ø 5,5–16 mm. Normen: EN 10016-2. Schmelznachweis 3.1 nach EN 10204 erforderlich. Anwendung: Zieherei, Betonstahlproduktion." },
+  { id: "rebar-bst500",   cat: "Stahl — Langprodukte",     cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Betonstahl BST 500 (Rebar)",                hsCode: "7214 20 00", qualityGrade: "B500B · EN 10080",             inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Gerippter Betonstahl BST 500, Ø 8–40 mm. Normen: EN 10080, DIN 488. Lieferung in Stäben 6 m / 12 m oder Ring. 3.1-Werkzeugnis nach EN 10204 beizufügen. Anwendung: Stahlbetonkonstruktionen." },
+  { id: "rebar-bst500s",  cat: "Stahl — Langprodukte",     cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Betonstahl BST 500S (seismisch)",            hsCode: "7214 20 00", qualityGrade: "B500S · EN 10080",             inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Gerippter Betonstahl BST 500S, erhöhte Duktilität Klasse S für Erdbebengebiete. Ø 8–32 mm. Normen: EN 10080, DIN 488-2, EC 8. 3.1-Werkzeugnis nach EN 10204 erforderlich." },
+  { id: "wire-rod",       cat: "Stahl — Langprodukte",     cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Walzdraht (Wire Rod) SAE 1008",              hsCode: "7213 91 10", qualityGrade: "SAE 1008 · EN 10016-2",        inco: "EXW", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Walzdraht unlegiert, niedriggekohlter Stahl SAE 1008 / DD11. Coil, Ø 5,5–16 mm. Normen: EN 10016-2. Schmelznachweis 3.1 nach EN 10204 erforderlich. Anwendung: Zieherei, Betonstahlproduktion." },
   // Stahl — Flachprodukte
-  { id: "flat-s235",      cat: "Stahl — Flachprodukte",    name: "Warmgewalzter Stahl S235JR (Blech / Coil)", hsCode: "7208 51 20", qualityGrade: "S235JR · EN 10025-2",          co2: "1780.0000", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Warmgewalzte Bleche / Coils, S235JR. Breite 600–2000 mm, Dicke 2–25 mm. Normen: EN 10025-2, EN 10051. Anwendung: Konstruktionsstahl, Maschinenbau. 3.1-Zeugnis nach EN 10204 beizufügen." },
-  { id: "flat-s355",      cat: "Stahl — Flachprodukte",    name: "Feinkornbaustahl S355JR (Blech)",            hsCode: "7208 51 91", qualityGrade: "S355JR · EN 10025-2",          co2: "1820.0000", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Warmgewalzte Feinkornbaustahl-Bleche S355JR. Dicke 3–80 mm, Breite bis 3000 mm. Normen: EN 10025-2. Anwendung: Brückenbau, Schweißkonstruktionen. 3.1-Werkzeugnis nach EN 10204." },
+  { id: "flat-s235",      cat: "Stahl — Flachprodukte",    cbam: "STEEL_PRIMARY" as CbamGroupId,      name: "Warmgewalzter Stahl S235JR (Blech / Coil)", hsCode: "7208 51 20", qualityGrade: "S235JR · EN 10025-2",          inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Warmgewalzte Bleche / Coils, S235JR. Breite 600–2000 mm, Dicke 2–25 mm. Normen: EN 10025-2, EN 10051. Anwendung: Konstruktionsstahl, Maschinenbau. 3.1-Zeugnis nach EN 10204 beizufügen." },
+  { id: "flat-s355",      cat: "Stahl — Flachprodukte",    cbam: "STEEL_PRIMARY" as CbamGroupId,      name: "Feinkornbaustahl S355JR (Blech)",            hsCode: "7208 51 91", qualityGrade: "S355JR · EN 10025-2",          inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Warmgewalzte Feinkornbaustahl-Bleche S355JR. Dicke 3–80 mm, Breite bis 3000 mm. Normen: EN 10025-2. Anwendung: Brückenbau, Schweißkonstruktionen. 3.1-Werkzeugnis nach EN 10204." },
   // Stahl — Träger / Profile
-  { id: "beams-hea-heb",  cat: "Stahl — Träger / Profile", name: "HEA / HEB Stahlträger S235 / S355",         hsCode: "7216 33 10", qualityGrade: "S235JR / S355JR · EN 10025-2", co2: "1950.0000", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Breitflanschträger HEA/HEB nach EN 10365, S235JR oder S355JR. Größen HEA 100–900, HEB 100–1000. Anwendung: Stahlbau, Hallenkonstruktionen. 3.1-Werkzeugnis nach EN 10204." },
+  { id: "beams-hea-heb",  cat: "Stahl — Träger / Profile", cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "HEA / HEB Stahlträger S235 / S355",         hsCode: "7216 33 10", qualityGrade: "S235JR / S355JR · EN 10025-2", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Breitflanschträger HEA/HEB nach EN 10365, S235JR oder S355JR. Größen HEA 100–900, HEB 100–1000. Anwendung: Stahlbau, Hallenkonstruktionen. 3.1-Werkzeugnis nach EN 10204." },
   // Stahl — Rohre
-  { id: "pipes-welded",   cat: "Stahl — Rohre",            name: "Nahtgeschweißte Hohlprofile S235JRH",       hsCode: "7306 30 51", qualityGrade: "S235JRH · EN 10210-1",         co2: "2050.0000", inco: "EXW", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Nahtgeschweißte Hohlprofile (quadratisch, rechteckig, rund), S235JRH. Wandstärke 2–16 mm. Normen: EN 10210-1, EN 10219. Anwendung: Stahlbau, Konstruktionsprofile. 3.1-Zeugnis EN 10204." },
+  { id: "pipes-welded",   cat: "Stahl — Rohre",            cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Nahtgeschweißte Hohlprofile S235JRH",       hsCode: "7306 30 51", qualityGrade: "S235JRH · EN 10210-1",         inco: "EXW", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Nahtgeschweißte Hohlprofile (quadratisch, rechteckig, rund), S235JRH. Wandstärke 2–16 mm. Normen: EN 10210-1, EN 10219. Anwendung: Stahlbau, Konstruktionsprofile. 3.1-Zeugnis EN 10204." },
   // NE-Metalle
-  { id: "copper-cathodes", cat: "NE-Metalle",              name: "Kupferkathoden Grade A",                    hsCode: "7403 11 00", qualityGrade: "Cu-CATH-1 · EN 1978 Grade A",  co2: "2800.0000", inco: "CIF", vat: "Umsatzsteuer 19 % (Regelbesteuerung)",             desc: "Elektrolyt-Kupferkathoden EN 1978 Grade A, Reinheit min. 99,99 % Cu. Standardkathode ca. 110–130 kg/Stück. LME-konforme Qualität, palettiert. Analysezertifikat erforderlich." },
-  { id: "aluminium-1050",  cat: "NE-Metalle",              name: "Aluminiumbarren (Primär) EN AW-1050A",      hsCode: "7601 10 00", qualityGrade: "EN AW-1050A · EN 573-3",       co2: "6700.0000", inco: "CIF", vat: "Umsatzsteuer 19 % (Regelbesteuerung)",             desc: "Primär-Aluminiumbarren EN AW-1050A (Al 99,5 %), T-Barren oder Masseln. LME-Spezifikation P1020. Analysezertifikat und Ursprungsnachweis erforderlich. CBAM-pflichtig ab 2026." },
+  { id: "copper-cathodes", cat: "NE-Metalle",              cbam: null,                                 name: "Kupferkathoden Grade A",                    hsCode: "7403 11 00", qualityGrade: "Cu-CATH-1 · EN 1978 Grade A",  inco: "CIF", vat: "Umsatzsteuer 19 % (Regelbesteuerung)",             desc: "Elektrolyt-Kupferkathoden EN 1978 Grade A, Reinheit min. 99,99 % Cu. Standardkathode ca. 110–130 kg/Stück. LME-konforme Qualität, palettiert. Analysezertifikat erforderlich." },
+  { id: "aluminium-1050",  cat: "NE-Metalle",              cbam: "ALUMINIUM_UNWROUGHT" as CbamGroupId, name: "Aluminiumbarren (Primär) EN AW-1050A",      hsCode: "7601 10 00", qualityGrade: "EN AW-1050A · EN 573-3",       inco: "CIF", vat: "Umsatzsteuer 19 % (Regelbesteuerung)",             desc: "Primär-Aluminiumbarren EN AW-1050A (Al 99,5 %), T-Barren oder Masseln. LME-Spezifikation P1020. Analysezertifikat und Ursprungsnachweis erforderlich. CBAM-pflichtig ab 2026." },
   // Schrott
-  { id: "scrap-hms",       cat: "Stahl — Schrott",         name: "Stahlschrott HMS 1/2 (Heavy Melting Scrap)", hsCode: "7204 10 00", qualityGrade: "HMS 1/2 · ISRI 200–212",      co2: "",          inco: "FOB", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Schwerer Stahlschrott HMS 1/2, ISRI-Spezifikation 200 (HMS1) / 210 (HMS2). Feuchtigkeitsgehalt max. 1 %. Analyse: C ≤ 0,4 %, S ≤ 0,05 %. Sichtkontrolle bei Übernahme." },
+  { id: "scrap-hms",       cat: "Stahl — Schrott",         cbam: null,                                 name: "Stahlschrott HMS 1/2 (Heavy Melting Scrap)", hsCode: "7204 10 00", qualityGrade: "HMS 1/2 · ISRI 200–212",      inco: "FOB", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Schwerer Stahlschrott HMS 1/2, ISRI-Spezifikation 200 (HMS1) / 210 (HMS2). Feuchtigkeitsgehalt max. 1 %. Analyse: C ≤ 0,4 %, S ≤ 0,05 %. Sichtkontrolle bei Übernahme." },
 ] as const;
 
 interface KycInfo {
@@ -128,8 +151,8 @@ export function BuyerLotsClient() {
   const [description,      setDescription]      = useState("");
   const [formError,        setFormError]        = useState<string | null>(null);
   // CBAM form state
-  const [co2Rate,          setCo2Rate]          = useState("");   // Richtwert kg/t aus Vorlage
-  const [co2PerTonne,      setCo2PerTonne]      = useState("");   // Angezeigter Wert (= co2Rate × Menge)
+  const [cbamCategory,     setCbamCategory]     = useState<CbamGroupId | "">("");
+  const [co2PerTonne,      setCo2PerTonne]      = useState("");   // kg CO₂-Äq./t (EU-Default oder Werkswert)
   const [countryOfOrigin,  setCountryOfOrigin]  = useState("");
   const [productionSiteId, setProductionSiteId] = useState("");
   const [incoterms,        setIncoterms]        = useState("DAP");
@@ -174,16 +197,12 @@ export function BuyerLotsClient() {
 
   useEffect(() => { loadLots(); }, [loadLots]);
 
-  // ── CO₂ automatisch berechnen wenn Menge oder Vorlage ändert ────────
+  // ── CO₂-Faktor aus CBAM-Gruppe laden wenn Kategorie gewählt ─────────
   useEffect(() => {
-    if (!co2Rate) return;
-    const rate = parseFloat(co2Rate);
-    if (!rate || rate <= 0) return;
-    const rawQty = parseFloat(quantity);
-    if (!rawQty || rawQty <= 0) { setCo2PerTonne(""); return; }
-    const qtyTon = unit === "TON" ? rawQty : unit === "KG" ? rawQty / 1000 : rawQty;
-    setCo2PerTonne(String(Math.round(rate * qtyTon)));
-  }, [co2Rate, quantity, unit]);
+    if (!cbamCategory) return;
+    const grp = CBAM_GROUPS.find((g) => g.id === cbamCategory);
+    if (grp) setCo2PerTonne(String(grp.factor));
+  }, [cbamCategory]);
 
   // ── Warenvorlage anwenden ──────────────────────────────────────────
   function applyPreset(presetId: string) {
@@ -193,7 +212,7 @@ export function BuyerLotsClient() {
     setHsCode(p.hsCode);
     setQualityGrade(p.qualityGrade);
     setDescription(p.desc);
-    if (p.co2) setCo2Rate(p.co2);   // Rate speichern → useEffect berechnet Gesamtwert
+    if (p.cbam) setCbamCategory(p.cbam);  // CBAM-Gruppe aus Katalog vorbelegen
     setIncoterms(p.inco);
     setVatTreatment(p.vat);
   }
@@ -212,6 +231,7 @@ export function BuyerLotsClient() {
       if (startPrice) body.startPrice = parseFloat(startPrice);
       if (description.trim()) body.description = description.trim();
       // CBAM-Felder (optional)
+      if (cbamCategory)     body.cbamCategory     = cbamCategory;
       if (co2PerTonne)      body.co2PerTonne      = parseFloat(co2PerTonne);
       if (countryOfOrigin)  body.countryOfOrigin  = countryOfOrigin;
       if (productionSiteId) body.productionSiteId = productionSiteId.trim();
@@ -242,7 +262,7 @@ export function BuyerLotsClient() {
           style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" },
         });
         setCommodity(""); setQuantity(""); setUnit("TON"); setStartPrice(""); setDescription("");
-        setCo2Rate(""); setCo2PerTonne(""); setCountryOfOrigin(""); setProductionSiteId(""); setIncoterms("DAP");
+        setCbamCategory(""); setCo2PerTonne(""); setCountryOfOrigin(""); setProductionSiteId(""); setIncoterms("DAP");
         setHsCode(""); setQualityGrade(""); setDeliveryPeriod(""); setPaymentTerms(""); setVatTreatment("");
         setSelectedPreset("");
         setShowForm(false);
@@ -824,20 +844,65 @@ export function BuyerLotsClient() {
                   Angaben für grenzüberschreitenden Handel — Pflicht ab 2026. Bei inländischer Ware empfohlen.
                 </div>
                 <div className="bl-form-grid">
+                  <div className="bl-form-group full">
+                    <label className="bl-label">CBAM-Warengruppe <span>(EU-Verordnung 2023/956, Anhang I)</span></label>
+                    <select
+                      className="bl-select"
+                      value={cbamCategory}
+                      onChange={(e) => setCbamCategory(e.target.value as CbamGroupId | "")}
+                    >
+                      <option value="">— Keine / Nicht CBAM-pflichtig —</option>
+                      <optgroup label="Eisen &amp; Stahl">
+                        {CBAM_GROUPS.filter(g => g.id.startsWith("STEEL")).map(g => (
+                          <option key={g.id} value={g.id}>{g.label} ({g.kn})</option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Aluminium">
+                        {CBAM_GROUPS.filter(g => g.id.startsWith("ALUMINIUM")).map(g => (
+                          <option key={g.id} value={g.id}>{g.label} ({g.kn})</option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Zement">
+                        {CBAM_GROUPS.filter(g => g.id.startsWith("CEMENT")).map(g => (
+                          <option key={g.id} value={g.id}>{g.label} ({g.kn})</option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Düngemittel">
+                        {CBAM_GROUPS.filter(g => g.id.startsWith("FERTILIZER")).map(g => (
+                          <option key={g.id} value={g.id}>{g.label} ({g.kn})</option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Wasserstoff">
+                        {CBAM_GROUPS.filter(g => g.id === "HYDROGEN").map(g => (
+                          <option key={g.id} value={g.id}>{g.label} ({g.kn})</option>
+                        ))}
+                      </optgroup>
+                    </select>
+                    {cbamCategory && (() => {
+                      const grp = CBAM_GROUPS.find(g => g.id === cbamCategory);
+                      return grp ? (
+                        <span style={{ fontSize: 11, color: "#6b7280", marginTop: 3, display: "block" }}>
+                          EU-Standardfaktor: {(grp.factor / 1000).toFixed(3)} t CO₂-Äq./t · Quelle: Anhang VIII VO (EU) 2023/1773
+                        </span>
+                      ) : null;
+                    })()}
+                  </div>
+
                   <div className="bl-form-group">
-                    <label className="bl-label">CO₂-Emissionen gesamt <span>(optional, kg CO₂-Äq.)</span></label>
+                    <label className="bl-label">CO₂-Emissionsfaktor <span>(optional, kg CO₂-Äq./t)</span></label>
                     <input
                       className="bl-input"
                       type="number"
                       step="1"
                       min="0"
-                      placeholder="Wird automatisch berechnet"
+                      placeholder="Wird aus CBAM-Warengruppe geladen"
                       value={co2PerTonne}
-                      onChange={(e) => { setCo2Rate(""); setCo2PerTonne(e.target.value); }}
+                      onChange={(e) => setCo2PerTonne(e.target.value)}
                     />
-                    {co2Rate && quantity && (
+                    {co2PerTonne && quantity && (
                       <span style={{ fontSize: 11, color: "#6b7280", marginTop: 3, display: "block" }}>
-                        {co2Rate} kg/t × {parseFloat(quantity).toLocaleString("de-DE")} {unit === "TON" ? "t" : unit === "KG" ? "kg" : "Stk"}
+                        Gesamt: {(parseFloat(co2PerTonne) * parseFloat(quantity)).toLocaleString("de-DE", { maximumFractionDigits: 0 })} kg CO₂-Äq.
+                        {" "}für {parseFloat(quantity).toLocaleString("de-DE")} {unit === "TON" ? "t" : unit === "KG" ? "kg" : "Stk"}
                       </span>
                     )}
                   </div>

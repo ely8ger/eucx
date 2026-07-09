@@ -10,10 +10,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { z } from "zod";
+import { CbamCategory } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
 const INCOTERMS_VALUES = ["EXW", "FCA", "FAS", "FOB", "CFR", "CIF", "CPT", "CIP", "DAP", "DPU", "DDP"] as const;
+const CBAM_CATEGORY_VALUES = Object.values(CbamCategory) as [CbamCategory, ...CbamCategory[]];
 
 const createLotSchema = z.object({
   commodity:        z.string().min(3).max(120),
@@ -22,6 +24,7 @@ const createLotSchema = z.object({
   startPrice:       z.number().positive().optional(),
   description:      z.string().max(2000).optional(),
   // CBAM-Felder (optional, aber empfohlen ab 2026 für grenzüberschreitenden Handel)
+  cbamCategory:     z.enum(CBAM_CATEGORY_VALUES).optional(),
   co2PerTonne:      z.number().positive().optional(),
   countryOfOrigin:  z.string().max(100).optional(),
   productionSiteId: z.string().max(50).optional(),
@@ -71,7 +74,7 @@ export async function POST(req: NextRequest) {
 
   // ── Lot anlegen ───────────────────────────────────────────────────
   const { commodity, quantity, unit, startPrice, description,
-          co2PerTonne, countryOfOrigin, productionSiteId, incoterms,
+          cbamCategory, co2PerTonne, countryOfOrigin, productionSiteId, incoterms,
           hsCode, qualityGrade, deliveryPeriod, paymentTerms, vatTreatment } = parsed.data;
   const lot = await db.lot.create({
     data: {
@@ -81,6 +84,7 @@ export async function POST(req: NextRequest) {
       unit,
       startPrice:      startPrice?.toString(),
       description,
+      cbamCategory,
       co2PerTonne:     co2PerTonne?.toString(),
       countryOfOrigin,
       productionSiteId,
