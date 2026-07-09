@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +23,37 @@ const SUBCATEGORIES: Record<string, string[]> = {
   "Industriegüter":      ["Elektromotoren", "Kabel / Leitungen", "Werkzeug", "Lager / Getriebe"],
 };
 const DELIVERY_TERMS = ["Franko Lager Verkäufer", "Franko Lager Käufer", "Franko Station Bestimmung", "DAP", "DDP", "FCA", "FOB", "CIF", "CPT"];
+
+// CBAM-relevante Kategorien (EU-Verordnung 2023/956)
+const CBAM_CATEGORIES = new Set(["Metalle", "Schrott & Sekundär", "Baustoffe", "Chemie & Petrochemie"]);
+
+// CO2-Richtwerte in kg CO2-Äq. pro Tonne (Quelle: EU-CBAM Datenblätter, Worldsteel 2023)
+const CO2_LOOKUP: Record<string, { eaf: number; bof: number | null; label: string }> = {
+  "Betonstahl":       { eaf: 420,  bof: 1850, label: "Betonstahl / Rebar" },
+  "Walzdraht":        { eaf: 480,  bof: 1900, label: "Walzdraht" },
+  "Träger / Profile": { eaf: 500,  bof: 1950, label: "Träger / Profile" },
+  "Bleche":           { eaf: 550,  bof: 2100, label: "Flachstahl / Bleche" },
+  "Rohre":            { eaf: 600,  bof: 2000, label: "Stahlrohre" },
+  "Aluminium":        { eaf: 1700, bof: null,  label: "Aluminium (Primär)" },
+  "Kupfer":           { eaf: 350,  bof: null,  label: "Kupfer" },
+  "Zink":             { eaf: 3200, bof: null,  label: "Zink" },
+  "Nickel":           { eaf: 6700, bof: null,  label: "Nickel" },
+  "Eisenschrott":     { eaf: 55,   bof: null,  label: "Eisenschrott (Recycling)" },
+  "NE-Schrott":       { eaf: 80,   bof: null,  label: "NE-Schrott" },
+  "Edelstahlschrott": { eaf: 70,   bof: null,  label: "Edelstahlschrott" },
+  "Zement":           { eaf: 820,  bof: null,  label: "Zement (Portland)" },
+  "Düngemittel":      { eaf: 2400, bof: null,  label: "Stickstoffdünger" },
+};
+const PAYMENT_TERMS = [
+  "Vorkasse (100 % vor Lieferung)",
+  "Anzahlung 10 % + Rest bei Lieferung",
+  "Anzahlung 25 % + Rest bei Lieferung",
+  "Anzahlung 50 % + Rest bei Lieferung",
+  "14 Tage netto",
+  "30 Tage netto",
+  "60 Tage netto",
+  "90 Tage netto",
+];
 
 export default function NewOrderPage() {
   const { t } = useI18n();
@@ -50,7 +81,12 @@ export default function NewOrderPage() {
     deliveryPlace:  z.string().min(1, t("new_order_err_required")),
     paymentTerms:   z.string().min(1, t("new_order_err_required")),
     deliveryDays:   z.preprocess((v) => Number(v), z.number().min(1, t("new_order_err_required"))),
-    additionalInfo: z.string().optional(),
+    additionalInfo:    z.string().optional(),
+    // CBAM-Felder
+    productionMethod:  z.enum(["EAF", "BOF"]).optional(),
+    co2PerTonne:       z.preprocess((v) => v === "" || v === undefined ? undefined : Number(v), z.number().positive().optional()),
+    productionSiteId:  z.string().optional(),
+    incoterms:         z.string().optional(),
   });
 
   type FormData = z.infer<typeof schema>;
@@ -59,6 +95,7 @@ export default function NewOrderPage() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,14 +103,32 @@ export default function NewOrderPage() {
     defaultValues: { direction: "VERKAUF", unit: "t", currency: "EUR", vatRate: "19", locationStatus: "AUF_LAGER" },
   });
 
-  const category   = watch("category");
-  const priceNet   = watch("priceNet") || 0;
-  const vatRate    = Number(watch("vatRate") || 19);
-  const quantity   = watch("quantity") || 0;
-  const unit       = watch("unit");
-  const vatAmount  = (priceNet * vatRate) / 100;
-  const priceGross = priceNet + vatAmount;
-  const total      = priceGross * quantity;
+  const category         = watch("category");
+  const subcategory      = watch("subcategory");
+  const productionMethod = watch("productionMethod");
+  const co2PerTonne      = watch("co2PerTonne") || 0;
+  const priceNet         = watch("priceNet") || 0;
+  const vatRate          = Number(watch("vatRate") || 19);
+  const quantity         = watch("quantity") || 0;
+  const unit             = watch("unit");
+  const vatAmount        = (priceNet * vatRate) / 100;
+  const priceGross       = priceNet + vatAmount;
+  const total            = priceGross * quantity;
+
+  const showCbam      = CBAM_CATEGORIES.has(category);
+  const cbamLookup    = CO2_LOOKUP[subcategory];
+  const hasBofOption  = cbamLookup?.bof !== null;
+
+  // Auto-Fill: CO₂-Gesamtemissionen = Rate × Menge — aktualisiert bei Ware/Verfahren/Menge
+  useEffect(() => {
+    if (!cbamLookup) return;
+    const method = productionMethod ?? "EAF";
+    const rate   = method === "EAF" ? cbamLookup.eaf : (cbamLookup.bof ?? cbamLookup.eaf);
+    const qty    = unit === "t"  ? Number(quantity)
+                 : unit === "kg" ? Number(quantity) / 1000
+                 : Number(quantity);
+    if (qty > 0) setValue("co2PerTonne", Math.round(rate * qty), { shouldValidate: false });
+  }, [subcategory, productionMethod, quantity, unit]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function onSubmit(_data: FormData) {
     await new Promise((r) => setTimeout(r, 800)); // API-Call-Placeholder
@@ -150,6 +205,59 @@ export default function NewOrderPage() {
                 <Input label={t("new_order_lbl_manufacturer")} placeholder={t("new_order_placeholder_mfr")} {...register("manufacturer")} />
               </div>
             </Card>
+
+            {/* CBAM-Block — nur für relevante Kategorien */}
+            {showCbam && (
+              <Card header={
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-bold bg-green-100 text-green-800 border border-green-300">CBAM</span>
+                  <span className="text-sm font-semibold text-gov-text">CO₂-Emissionen (EU-Verordnung 2023/956)</span>
+                </div>
+              }>
+                <div className="grid grid-cols-2 gap-4 pt-1">
+                  <Select
+                    label="Produktionsverfahren"
+                    placeholder="Verfahren wählen …"
+                    {...register("productionMethod")}
+                  >
+                    <option value="EAF">EAF — Elektrolichtbogenofen (Recycling-Stahl)</option>
+                    {hasBofOption && <option value="BOF">BF-BOF — Hochofen / Sauerstoffkonverter (Primärstahl)</option>}
+                  </Select>
+
+                  <div>
+                    <Input
+                      label="CO₂-Emissionen (optional, kg CO₂-Äq./t)"
+                      type="number"
+                      step="1"
+                      placeholder="wird automatisch berechnet"
+                      suffix="kg"
+                      {...register("co2PerTonne")}
+                      error={errors.co2PerTonne?.message}
+                    />
+                    {cbamLookup && quantity > 0 && co2PerTonne > 0 && (
+                      <p className="mt-1 text-xs text-green-700">
+                        = {(() => {
+                          const method = productionMethod ?? "EAF";
+                          const rate   = method === "EAF" ? cbamLookup.eaf : (cbamLookup.bof ?? cbamLookup.eaf);
+                          return `${rate.toLocaleString("de-DE")} kg/t × ${Number(quantity).toLocaleString("de-DE")} ${unit}`;
+                        })()}
+                      </p>
+                    )}
+                  </div>
+
+                  <Input
+                    label="CBAM-Registry-ID (Produktionsstätte)"
+                    placeholder="z. B. CBAM-DE-2024-001234"
+                    {...register("productionSiteId")}
+                  />
+                  <Select label="Incoterms (für CBAM-Deklaration)" placeholder="wählen …" {...register("incoterms")}>
+                    {["DAP","DDP","FCA","FOB","CIF","CPT","CFR","EXW"].map((i) => (
+                      <option key={i} value={i}>{i}</option>
+                    ))}
+                  </Select>
+                </div>
+              </Card>
+            )}
 
             {/* Menge */}
             <Card header={<span className="text-sm font-semibold text-gov-text">{t("new_order_card_qty")}</span>}>
@@ -228,7 +336,9 @@ export default function NewOrderPage() {
                   {DELIVERY_TERMS.map((term) => <option key={term} value={term}>{term}</option>)}
                 </Select>
                 <Input label={t("new_order_lbl_delivery_place")} required placeholder={t("new_order_placeholder_delivery_place")} {...register("deliveryPlace")} error={errors.deliveryPlace?.message} />
-                <Input label={t("new_order_lbl_payment_terms")} required placeholder={t("new_order_placeholder_payment")} {...register("paymentTerms")} error={errors.paymentTerms?.message} />
+                <Select label={t("new_order_lbl_payment_terms")} required placeholder={t("new_order_placeholder_select")} {...register("paymentTerms")} error={errors.paymentTerms?.message}>
+                  {PAYMENT_TERMS.map((term) => <option key={term} value={term}>{term}</option>)}
+                </Select>
                 <Input label={t("new_order_lbl_delivery_days")} required type="number" suffix="WT" {...register("deliveryDays")} error={errors.deliveryDays?.message} />
               </div>
             </Card>

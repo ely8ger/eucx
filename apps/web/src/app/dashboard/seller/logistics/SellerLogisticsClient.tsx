@@ -6,7 +6,7 @@ import { EucxHeader } from "@/components/layout/EucxHeader";
 
 const A = "#d97706";
 
-type DeliveryStatus = "MATCHED" | "PAYMENT_ESCROW" | "READY_FOR_PICKUP" | "IN_TRANSIT" | "DELIVERED" | "COMPLETED";
+type DeliveryStatus = "MATCHED" | "AWAITING_PAYMENT" | "READY_FOR_PICKUP" | "IN_TRANSIT" | "DELIVERED" | "COMPLETED";
 
 interface Delivery {
   id:             string;
@@ -31,7 +31,7 @@ interface Delivery {
 
 const STEPS: { key: DeliveryStatus; label: string; hint: string }[] = [
   { key: "MATCHED",          label: "Vertrag generiert",    hint: "Kaufvertrag nach Auktionsabschluss" },
-  { key: "PAYMENT_ESCROW",   label: "Zahlung Treuhand",     hint: "Kaufpreis im Escrow-Konto" },
+  { key: "AWAITING_PAYMENT",  label: "Zahlung ausstehend",   hint: "Käufer überweist direkt an Verkäufer" },
   { key: "READY_FOR_PICKUP", label: "Bereit zur Abholung",  hint: "Ware bereit, Abholcode aktiv" },
   { key: "IN_TRANSIT",       label: "In Transport",          hint: "CMR hochgeladen, Ware unterwegs" },
   { key: "DELIVERED",        label: "Geliefert",             hint: "Empfangsbestätigung beim Käufer" },
@@ -39,12 +39,12 @@ const STEPS: { key: DeliveryStatus; label: string; hint: string }[] = [
 ];
 
 const STATUS_IDX: Record<DeliveryStatus, number> = {
-  MATCHED: 0, PAYMENT_ESCROW: 1, READY_FOR_PICKUP: 2, IN_TRANSIT: 3, DELIVERED: 4, COMPLETED: 5,
+  MATCHED: 0, AWAITING_PAYMENT: 1, READY_FOR_PICKUP: 2, IN_TRANSIT: 3, DELIVERED: 4, COMPLETED: 5,
 };
 
 const NEXT_STATUS: Record<DeliveryStatus, DeliveryStatus | null> = {
-  MATCHED:          "PAYMENT_ESCROW",
-  PAYMENT_ESCROW:   "READY_FOR_PICKUP",
+  MATCHED:           "AWAITING_PAYMENT",
+  AWAITING_PAYMENT:  "READY_FOR_PICKUP",
   READY_FOR_PICKUP: "IN_TRANSIT",
   IN_TRANSIT:       "DELIVERED",
   DELIVERED:        "COMPLETED",

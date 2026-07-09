@@ -2,7 +2,7 @@
  * PATCH /api/auction/lots/[lotId]/delivery
  *
  * Aktualisiert den Lieferstatus eines abgeschlossenen Kontrakts.
- * Übergänge: MATCHED → PAYMENT_ESCROW → READY_FOR_PICKUP → IN_TRANSIT → DELIVERED → COMPLETED
+ * Übergänge: MATCHED → AWAITING_PAYMENT → READY_FOR_PICKUP → IN_TRANSIT → DELIVERED → COMPLETED
  *
  * Bei READY_FOR_PICKUP: pickupCode wird automatisch generiert (6-stellig numerisch).
  * Bei DELIVERED: deliveredAt wird gesetzt.
@@ -20,7 +20,7 @@ export const dynamic = "force-dynamic";
 
 const DELIVERY_ORDER: DeliveryStatus[] = [
   DeliveryStatus.MATCHED,
-  DeliveryStatus.PAYMENT_ESCROW,
+  DeliveryStatus.AWAITING_PAYMENT,
   DeliveryStatus.READY_FOR_PICKUP,
   DeliveryStatus.IN_TRANSIT,
   DeliveryStatus.DELIVERED,
@@ -28,7 +28,7 @@ const DELIVERY_ORDER: DeliveryStatus[] = [
 ];
 
 const patchSchema = z.object({
-  status: z.enum(["MATCHED", "PAYMENT_ESCROW", "READY_FOR_PICKUP", "IN_TRANSIT", "DELIVERED", "COMPLETED"]),
+  status: z.enum(["MATCHED", "AWAITING_PAYMENT", "READY_FOR_PICKUP", "IN_TRANSIT", "DELIVERED", "COMPLETED"]),
 });
 
 export async function PATCH(
