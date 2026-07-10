@@ -1,6 +1,7 @@
 /**
- * Einmaliger Import: 23met_produkte.csv → Neon-DB (catalog_products + product_sizes)
+ * Import: 23met_komplett.jsonl → Neon-DB (catalog_products + product_sizes)
  * Aufruf: DATABASE_URL=... DIRECT_URL=... npx tsx prisma/import-catalog.ts
+ * Pfad überschreibbar: JSONL_PATH=/pfad/datei.jsonl
  */
 import { PrismaClient } from "@prisma/client";
 import { createReadStream } from "fs";
@@ -8,56 +9,33 @@ import { createInterface } from "readline";
 import { resolve } from "path";
 
 const db = new PrismaClient();
-const CSV_PATH = resolve(process.env.CSV_PATH ?? "/Users/ki/Desktop/23met_produkte.csv");
+const JSONL_PATH = resolve(process.env.JSONL_PATH ?? "/Users/ki/Desktop/23met_komplett.jsonl");
 
 interface Product {
   nr:     number;
   slug:   string;
+  nameDe: string;
   nameEn: string;
   nameRu: string;
   norm:   string;
   sizes:  string[];
 }
 
-async function parseCsv(): Promise<Product[]> {
+async function parseJsonl(): Promise<Product[]> {
   const products: Product[] = [];
-  let current: Product | null = null;
-
-  const rl = createInterface({ input: createReadStream(CSV_PATH), crlfDelay: Infinity });
-  let firstLine = true;
-
-  for await (const raw of rl) {
-    if (firstLine) { firstLine = false; continue; }
-
-    // Simple CSV split — values don't contain commas
-    const cols = raw.split(",");
-    const typ  = cols[6]?.trim();
-
-    if (typ === "Produkt") {
-      if (current) products.push(current);
-      current = {
-        nr:     parseInt(cols[0]?.trim() || "0", 10),
-        nameEn: cols[2]?.trim() ?? "",
-        nameRu: cols[3]?.trim() ?? "",
-        norm:   cols[4]?.trim() ?? "",
-        slug:   cols[5]?.trim() ?? "",
-        sizes:  [],
-      };
-    } else if (typ === "Größe" && current) {
-      const val = cols[7]?.trim();
-      if (val) current.sizes.push(val);
-    }
+  const rl = createInterface({ input: createReadStream(JSONL_PATH), crlfDelay: Infinity });
+  for await (const line of rl) {
+    if (line.trim()) products.push(JSON.parse(line));
   }
-  if (current) products.push(current);
   return products;
 }
 
 async function main() {
-  console.log(`Lese: ${CSV_PATH}`);
-  const products = await parseCsv();
-  console.log(`Gefunden: ${products.length} Produkte, ${products.reduce((s, p) => s + p.sizes.length, 0)} Größen`);
+  console.log(`Lese: ${JSONL_PATH}`);
+  const products = await parseJsonl();
+  const totalSizes = products.reduce((s, p) => s + p.sizes.length, 0);
+  console.log(`Gefunden: ${products.length} Produkte, ${totalSizes} Größen`);
 
-  // Bestehende Daten löschen (idempotenter Re-Import)
   await db.productSize.deleteMany();
   await db.catalogProduct.deleteMany();
   console.log("Alte Daten gelöscht.");
@@ -68,6 +46,7 @@ async function main() {
       data: {
         nr:     p.nr,
         slug:   p.slug,
+        nameDe: p.nameDe || null,
         nameEn: p.nameEn,
         nameRu: p.nameRu,
         norm:   p.norm || null,
@@ -77,7 +56,7 @@ async function main() {
       },
     });
     imported++;
-    if (imported % 10 === 0) process.stdout.write(`  ${imported}/${products.length}\r`);
+    if (imported % 20 === 0) process.stdout.write(`  ${imported}/${products.length}\r`);
   }
 
   console.log(`\nFertig: ${imported} Produkte importiert.`);

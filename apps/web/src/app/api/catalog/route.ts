@@ -27,13 +27,14 @@ export async function GET(req: NextRequest) {
   const products = await db.catalogProduct.findMany({
     where: {
       OR: [
+        { nameDe: { contains: q, mode: "insensitive" } },
         { nameEn: { contains: q, mode: "insensitive" } },
         { nameRu: { contains: q, mode: "insensitive" } },
         { norm:   { contains: q, mode: "insensitive" } },
         { slug:   { contains: q, mode: "insensitive" } },
       ],
     },
-    select: { id: true, nr: true, slug: true, nameEn: true, nameRu: true, norm: true, _count: { select: { sizes: true } } },
+    select: { id: true, nr: true, slug: true, nameDe: true, nameEn: true, nameRu: true, norm: true, _count: { select: { sizes: true } } },
     orderBy: { nr: "asc" },
     take: 12,
   });

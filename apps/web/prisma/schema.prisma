@@ -1420,12 +1420,14 @@ model CatalogProduct {
   id      String        @id @default(cuid())
   nr      Int           @unique                   // Original-Nummer von 23met.ru
   slug    String        @unique                   // URL-Kürzel (z.B. "provoloka")
+  nameDe  String?                                 // Deutscher Handelsname (Suchindex)
   nameEn  String                                  // Englischer Handelsname (Primäranzeige)
   nameRu  String                                  // Russischer Name (Lieferantenkommunikation)
   norm    String?                                 // EU-Norm (z.B. "DIN EN 10218")
   sizes   ProductSize[]
 
   @@index([nameEn])
+  @@index([nameDe])
   @@map("catalog_products")
 }
 

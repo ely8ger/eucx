@@ -17,7 +17,7 @@ type Phase = "COLLECTION" | "PROPOSAL" | "REDUCTION" | "CONCLUSION";
 
 interface CatalogResult {
   id: string; nr: number; slug: string;
-  nameEn: string; nameRu: string; norm: string | null;
+  nameDe: string | null; nameEn: string; nameRu: string; norm: string | null;
   _count: { sizes: number };
 }
 
@@ -770,7 +770,7 @@ export function BuyerLotsClient() {
                 <div style={{ marginBottom: 20, position: "relative" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, paddingLeft: 12, borderLeft: "3px solid #154194" }}>
                     <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase" }}>Produktkatalog</span>
-                    <span style={{ fontSize: 11, color: "#9ca3af" }}>88 Produkte · 15.454 Abmessungen</span>
+                    <span style={{ fontSize: 11, color: "#9ca3af" }}>184 Produkte · 24.438 Abmessungen</span>
                   </div>
                   <input
                     className="bl-input"
@@ -793,18 +793,19 @@ export function BuyerLotsClient() {
                           key={r.id}
                           onMouseDown={(e) => {
                             e.preventDefault();
-                            setCatalogProduct({ slug: r.slug, nameEn: r.nameEn, norm: r.norm });
-                            setCatalogQuery(r.nameEn);
+                            setCatalogProduct({ slug: r.slug, nameEn: r.nameDe ?? r.nameEn, norm: r.norm });
+                            setCatalogQuery(r.nameDe ?? r.nameEn);
                             setCatalogOpen(false);
                             setSelectedSize(""); setSelectedPrimary(""); setSizeQuery("");
-                            setCommodity(r.nameEn);
+                            setCommodity(r.nameDe ?? r.nameEn);
                             if (r.norm) setQualityGrade(r.norm);
                           }}
                           style={{ padding: "10px 14px", cursor: "pointer", borderBottom: "1px solid #f3f4f6", display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "start" }}
                         >
                           <div>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{r.nameEn}</div>
-                            <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{r.nameRu}</div>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{r.nameDe ?? r.nameEn}</div>
+                            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 1 }}>{r.nameEn}</div>
+                            <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 1 }}>{r.nameRu}</div>
                           </div>
                           <div style={{ textAlign: "right", fontSize: 11, color: "#6b7280", whiteSpace: "nowrap" }}>
                             <div>{r.norm ?? "—"}</div>
