@@ -217,22 +217,22 @@ export function BuyerLotsClient() {
   useEffect(() => {
     if (catalogQuery.length < 2) { setCatalogResults([]); setCatalogOpen(false); return; }
     const t = setTimeout(() => {
-      fetch(`/api/catalog?q=${encodeURIComponent(catalogQuery)}`)
+      fetch(`/api/catalog?q=${encodeURIComponent(catalogQuery)}`, { headers: { Authorization: `Bearer ${token}` } })
         .then((r) => r.json())
         .then((d) => { setCatalogResults(d.products ?? []); setCatalogOpen(true); })
         .catch(() => {});
     }, 300);
     return () => clearTimeout(t);
-  }, [catalogQuery]);
+  }, [catalogQuery, token]);
 
   // ── Größen für gewähltes Produkt laden ───────────────────────────────
   useEffect(() => {
     if (!catalogProduct) { setCatalogSizes([]); return; }
-    fetch(`/api/catalog?slug=${catalogProduct.slug}`)
+    fetch(`/api/catalog?slug=${catalogProduct.slug}`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((d) => setCatalogSizes(d.sizes?.map((s: { value: string }) => s.value) ?? []))
       .catch(() => {});
-  }, [catalogProduct]);
+  }, [catalogProduct, token]);
 
   // ── CO₂-Faktor aus CBAM-Gruppe laden wenn Kategorie gewählt ─────────
   useEffect(() => {
