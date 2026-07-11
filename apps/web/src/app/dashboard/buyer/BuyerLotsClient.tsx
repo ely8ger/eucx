@@ -57,17 +57,17 @@ const COUNTRIES = [
 ];
 
 const INCOTERMS_LIST = [
-  { code: "EXW", label: "EXW — Ex Works" },
-  { code: "FCA", label: "FCA — Free Carrier" },
-  { code: "FAS", label: "FAS — Free Alongside Ship" },
-  { code: "FOB", label: "FOB — Free On Board" },
-  { code: "CFR", label: "CFR — Cost and Freight" },
-  { code: "CIF", label: "CIF — Cost, Insurance and Freight" },
-  { code: "CPT", label: "CPT — Carriage Paid To" },
-  { code: "CIP", label: "CIP — Carriage and Insurance Paid To" },
-  { code: "DAP", label: "DAP — Delivered At Place" },
-  { code: "DPU", label: "DPU — Delivered at Place Unloaded" },
-  { code: "DDP", label: "DDP — Delivered Duty Paid" },
+  { code: "EXW", label: "EXW - Ex Works" },
+  { code: "FCA", label: "FCA - Free Carrier" },
+  { code: "FAS", label: "FAS - Free Alongside Ship" },
+  { code: "FOB", label: "FOB - Free On Board" },
+  { code: "CFR", label: "CFR - Cost and Freight" },
+  { code: "CIF", label: "CIF - Cost, Insurance and Freight" },
+  { code: "CPT", label: "CPT - Carriage Paid To" },
+  { code: "CIP", label: "CIP - Carriage and Insurance Paid To" },
+  { code: "DAP", label: "DAP - Delivered At Place" },
+  { code: "DPU", label: "DPU - Delivered at Place Unloaded" },
+  { code: "DDP", label: "DDP - Delivered Duty Paid" },
 ] as const;
 
 // ── CBAM-Warengruppen nach Anhang I EU-VO 2023/956 ───────────────────────────
