@@ -334,9 +334,9 @@ export function ProfileClient() {
                 label: "Sicherheit", sub: "2FA, Passwort, Sitzungen",
                 href: "/dashboard/settings/security",
                 icon: (
-                  <svg width="22" height="22" viewBox="0 0 16 16" fill="none" style={{ color: BLUE }}>
-                    <path d="M8 1.5L14 4.5v4c0 3.5-2.5 6-6 7C2.5 14.5 0 12 0 8.5v-4L8 1.5Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
-                    <path d="M5 8.5l2 2 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ color: BLUE }}>
+                    <path d="M12 3L4 7v5c0 5.5 3.8 9.5 8 10.5 4.2-1 8-5 8-10.5V7L12 3Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                    <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 ),
               },
