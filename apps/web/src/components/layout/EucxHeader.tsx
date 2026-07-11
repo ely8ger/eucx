@@ -500,10 +500,11 @@ export function EucxHeader() {
   function isActive(item: NavItem): boolean {
     if (item.disabled || item.href === "#") return false;
     if (item.activePrefix) {
-      // Übersicht and Verkaufs-Dashboard are active only on exact match
+      // Root-Einträge nur bei exaktem Pfad aktiv (sonst matchen alle Unterseiten)
       if (
         (item.href === "/dashboard/buyer"  && item.activePrefix === "/dashboard/buyer") ||
-        (item.href === "/dashboard/seller" && item.activePrefix === "/dashboard/seller")
+        (item.href === "/dashboard/seller" && item.activePrefix === "/dashboard/seller") ||
+        (item.href === "/admin"            && item.activePrefix === "/admin")
       ) {
         return pathname === item.href;
       }
