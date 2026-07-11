@@ -347,7 +347,6 @@ function UserAvatar({ me }: { me: MeUser | null }) {
 
   const navLinks = [
     dashboardLink,
-    { label: "Mein Profil",             href: "/dashboard/profile" },
     { label: "Meine Verträge",          href: "/dashboard/contracts" },
     { label: "KYC-Verifikation",        href: "/dashboard/settings/verification" },
     { label: "Sicherheitseinstellungen",href: "/dashboard/settings/security" },
@@ -408,8 +407,7 @@ function UserAvatar({ me }: { me: MeUser | null }) {
               }}>
                 {me?.email}
               </p>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                {/* Rollen-Badge */}
+              <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
                 <span style={{
                   padding: "3px 10px", fontSize: 11, fontWeight: 700,
                   background: roleMeta.bg, color: roleMeta.color,
@@ -417,11 +415,24 @@ function UserAvatar({ me }: { me: MeUser | null }) {
                 }}>
                   {roleMeta.label}
                 </span>
-                {/* KYC-Status */}
                 <span style={{ fontSize: 11, color: kycMeta.color, fontWeight: 600 }}>
                   · {kycMeta.label}
                 </span>
               </div>
+              <a
+                href="/dashboard/profile"
+                onClick={() => setOpen(false)}
+                style={{
+                  display: "block", textAlign: "center",
+                  padding: "7px 0", fontSize: 12, fontWeight: 600,
+                  color: BLUE, border: `1px solid ${BLUE}`,
+                  textDecoration: "none", transition: "background .12s, color .12s",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = BLUE; e.currentTarget.style.color = "#fff"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = BLUE; }}
+              >
+                Profil bearbeiten
+              </a>
             </div>
 
             {/* Wallet (nur wenn vorhanden) */}
