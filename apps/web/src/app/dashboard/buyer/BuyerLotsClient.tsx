@@ -367,7 +367,7 @@ export function BuyerLotsClient() {
     }
   }
 
-  /** Nächste Handelssitzung als lesbarer String */
+  /** Nächste Handelssitzung als lesbarer String (für Bestätigungs-Modal) */
   function nextSlotLabel(): string {
     const now = new Date();
     const fmt = (d: Date) => d.toLocaleDateString("de-DE", {
@@ -387,6 +387,31 @@ export function BuyerLotsClient() {
       if (wd >= 1 && wd <= 5) return `${fmt(d)} · 13:00–15:00 MEZ`;
     }
     return "nächste Handelssitzung";
+  }
+
+  /** Auktion-Start-Zeitpunkt für Button-Text */
+  function nextSlotStartLabel(): string {
+    const now = new Date();
+    const fmt = (d: Date) => d.toLocaleDateString("de-DE", {
+      weekday: "short", day: "2-digit", month: "2-digit",
+      timeZone: "Europe/Berlin",
+    });
+    const berlinHour = parseInt(new Intl.DateTimeFormat("de-DE", {
+      timeZone: "Europe/Berlin", hour: "2-digit", hour12: false,
+    }).format(now), 10);
+    const day = now.getDay();
+    const isWeekday = day >= 1 && day <= 5;
+    const inSlot = isWeekday && berlinHour >= 13 && berlinHour < 15;
+    if (inSlot) return `Auktion läuft · endet 15:00 MEZ`;
+    for (let i = 1; i <= 7; i++) {
+      const d = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
+      const wd = d.getDay();
+      if (wd >= 1 && wd <= 5) {
+        const label = i === 1 ? "morgen" : fmt(d);
+        return `Startet ${label} · 13:00 MEZ`;
+      }
+    }
+    return "Auktion starten";
   }
 
   const isVerified    = kyc?.verificationStatus === "VERIFIED";
@@ -1534,9 +1559,10 @@ export function BuyerLotsClient() {
                               className="bl-btn-open"
                               disabled={opening === lot.id || lot._count.registrations === 0}
                               onClick={() => openingLotId === lot.id ? setOpeningLotId(null) : requestOpenLot(lot.id)}
-                              title={lot._count.registrations === 0 ? "Warten auf Verkäufer-Registrierungen" : "Auktion starten"}
+                              title={lot._count.registrations === 0 ? "Warten auf Verkäufer-Registrierungen" : nextSlotStartLabel()}
+                              style={{ fontSize: 11, whiteSpace: "nowrap" }}
                             >
-                              {opening === lot.id ? "…" : "Auktion starten"}
+                              {opening === lot.id ? "…" : nextSlotStartLabel()}
                             </button>
                           )}
                           {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && (
