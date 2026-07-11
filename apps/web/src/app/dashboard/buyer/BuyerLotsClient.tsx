@@ -441,7 +441,7 @@ export function BuyerLotsClient() {
         .bl-form-group.full { grid-column:1/-1; }
         .bl-label { font-size:12.5px; font-weight:600; color:#374151; }
         .bl-label span { color:#9ca3af; font-weight:400; margin-left:4px; }
-        .bl-input { height:40px; border:1px solid #d1d5db; padding:0 12px; font-size:14px; outline:none; font-family:inherit; transition:border-color .15s; }
+        .bl-input { width:100%; box-sizing:border-box; height:40px; border:1px solid #d1d5db; padding:0 12px; font-size:14px; outline:none; font-family:inherit; transition:border-color .15s; }
         .bl-input:focus { border-color:#154194; }
         .bl-select { height:40px; border:1px solid #d1d5db; padding:0 12px; font-size:14px; outline:none; font-family:inherit; background:#fff; appearance:none; cursor:pointer; }
         .bl-select:focus { border-color:#154194; }
@@ -787,7 +787,14 @@ export function BuyerLotsClient() {
 
                   {/* Ergebnis-Dropdown */}
                   {catalogOpen && catalogResults.length > 0 && (
-                    <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 1px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 300, overflowY: "auto", boxShadow: "0 6px 20px rgba(0,0,0,.10)" }}>
+                    <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 2px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 360, overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                      {/* Kopfzeile */}
+                      <div style={{ display: "grid", gridTemplateColumns: "36px 1fr 140px 52px", gap: "0 12px", padding: "6px 14px", background: "#f9fafb", borderBottom: "1px solid #e5e7eb", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase" as const }}>
+                        <div>Nr</div>
+                        <div>Produkt</div>
+                        <div>Norm</div>
+                        <div style={{ textAlign: "right" }}>Abm.</div>
+                      </div>
                       {catalogResults.map((r) => (
                         <div
                           key={r.id}
@@ -800,16 +807,30 @@ export function BuyerLotsClient() {
                             setCommodity(r.nameDe ?? r.nameEn);
                             if (r.norm) setQualityGrade(r.norm);
                           }}
-                          style={{ padding: "10px 14px", cursor: "pointer", borderBottom: "1px solid #f3f4f6", display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "start" }}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#f0f5ff"; }}
+                          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ""; }}
+                          style={{ display: "grid", gridTemplateColumns: "36px 1fr 140px 52px", gap: "0 12px", padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f3f4f6", alignItems: "center" }}
                         >
-                          <div>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{r.nameDe ?? r.nameEn}</div>
-                            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 1 }}>{r.nameEn}</div>
-                            <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 1 }}>{r.nameRu}</div>
+                          {/* Nr */}
+                          <div style={{ fontSize: 11, color: "#c4c9d4", fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>
+                            {r.nr}
                           </div>
-                          <div style={{ textAlign: "right", fontSize: 11, color: "#6b7280", whiteSpace: "nowrap" }}>
-                            <div>{r.norm ?? "—"}</div>
-                            <div style={{ color: "#9ca3af" }}>{r._count.sizes > 0 ? `${r._count.sizes} Größen` : "keine Maße"}</div>
+                          {/* Produkt-Name */}
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {r.nameDe ?? r.nameEn}
+                            </div>
+                            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {r.nameEn}
+                            </div>
+                          </div>
+                          {/* Norm */}
+                          <div style={{ fontSize: 11, color: "#6b7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {r.norm ?? <span style={{ color: "#d1d5db" }}>—</span>}
+                          </div>
+                          {/* Abmessungen */}
+                          <div style={{ fontSize: 11, color: "#9ca3af", textAlign: "right", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
+                            {r._count.sizes > 0 ? r._count.sizes : <span style={{ color: "#d1d5db" }}>—</span>}
                           </div>
                         </div>
                       ))}
@@ -821,16 +842,22 @@ export function BuyerLotsClient() {
 
                   {/* Ausgewählt-Zeile */}
                   {catalogProduct && (
-                    <div style={{ marginTop: 6, padding: "6px 12px", background: "#f8faff", border: "1px solid #154194", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: 12, color: "#154194" }}>
-                        <strong>{catalogProduct.nameEn}</strong>
-                        {catalogProduct.norm && <span style={{ color: "#6b7280", fontWeight: 400 }}> · {catalogProduct.norm}</span>}
-                        {selectedSize && <span style={{ fontWeight: 700 }}> · {selectedSize}</span>}
-                      </span>
+                    <div style={{ marginTop: 6, padding: "8px 14px", background: "#f0f5ff", borderLeft: "3px solid #154194", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#154194", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {catalogProduct.nameEn}
+                          {catalogProduct.norm && <span style={{ fontWeight: 400, color: "#6b7280", marginLeft: 8 }}>{catalogProduct.norm}</span>}
+                        </div>
+                        {selectedSize && (
+                          <div style={{ fontSize: 11, color: "#374151", marginTop: 2, fontWeight: 600 }}>
+                            Abmessung: {selectedSize}
+                          </div>
+                        )}
+                      </div>
                       <button
                         type="button"
                         onClick={() => { setCatalogProduct(null); setCatalogQuery(""); setSelectedSize(""); setSelectedPrimary(""); setSizeQuery(""); }}
-                        style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", fontSize: 16, lineHeight: 1, padding: "0 2px" }}
+                        style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: "#9ca3af", fontSize: 18, lineHeight: 1, padding: "2px 4px" }}
                         title="Auswahl zurücksetzen"
                       >×</button>
                     </div>
