@@ -1,5 +1,6 @@
 /**
- * GET /api/catalog?q=wire          → Produktsuche (max 12 Treffer)
+ * GET /api/catalog?q=wire          → Produktsuche (max 20 Treffer, ab 1 Zeichen)
+ * GET /api/catalog?browse=1        → Alle Produkte für Dropdown-Browse (top 25)
  * GET /api/catalog?slug=provoloka  → Einzelprodukt mit allen Größen
  */
 import { NextRequest, NextResponse } from "next/server";
@@ -7,9 +8,12 @@ import { db } from "@/lib/db/client";
 
 export const dynamic = "force-dynamic";
 
+const SELECT = { id: true, nr: true, slug: true, nameDe: true, nameEn: true, nameRu: true, norm: true, _count: { select: { sizes: true } } } as const;
+
 export async function GET(req: NextRequest) {
-  const q    = req.nextUrl.searchParams.get("q")?.trim() ?? "";
-  const slug = req.nextUrl.searchParams.get("slug")?.trim() ?? "";
+  const q      = req.nextUrl.searchParams.get("q")?.trim() ?? "";
+  const slug   = req.nextUrl.searchParams.get("slug")?.trim() ?? "";
+  const browse = req.nextUrl.searchParams.get("browse") === "1";
 
   // ── Einzelprodukt mit Größen ────────────────────────────────────────
   if (slug) {
@@ -21,8 +25,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(product);
   }
 
-  // ── Suche ───────────────────────────────────────────────────────────
-  if (q.length < 2) return NextResponse.json({ products: [] });
+  // ── Browse-Modus: Alle Produkte (Dropdown-Pfeil ohne Sucheingabe) ───
+  if (browse) {
+    const products = await db.catalogProduct.findMany({
+      select: SELECT,
+      orderBy: { nr: "asc" },
+      take: 25,
+    });
+    return NextResponse.json({ products, browse: true });
+  }
+
+  // ── Suche (ab 1 Zeichen) ───────────────────────────────────────────
+  if (q.length < 1) return NextResponse.json({ products: [] });
 
   const products = await db.catalogProduct.findMany({
     where: {
@@ -34,9 +48,9 @@ export async function GET(req: NextRequest) {
         { slug:   { contains: q, mode: "insensitive" } },
       ],
     },
-    select: { id: true, nr: true, slug: true, nameDe: true, nameEn: true, nameRu: true, norm: true, _count: { select: { sizes: true } } },
+    select: SELECT,
     orderBy: { nr: "asc" },
-    take: 12,
+    take: 20,
   });
 
   return NextResponse.json({ products });

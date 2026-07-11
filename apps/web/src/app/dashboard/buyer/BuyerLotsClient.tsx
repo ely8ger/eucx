@@ -56,7 +56,19 @@ const COUNTRIES = [
   "BA - Bosnien-Herzegowina", "ME - Montenegro", "AL - Albanien",
 ];
 
-const INCOTERMS_LIST = ["EXW", "FCA", "FAS", "FOB", "CFR", "CIF", "CPT", "CIP", "DAP", "DPU", "DDP"] as const;
+const INCOTERMS_LIST = [
+  { code: "EXW", label: "EXW — Ex Works" },
+  { code: "FCA", label: "FCA — Free Carrier" },
+  { code: "FAS", label: "FAS — Free Alongside Ship" },
+  { code: "FOB", label: "FOB — Free On Board" },
+  { code: "CFR", label: "CFR — Cost and Freight" },
+  { code: "CIF", label: "CIF — Cost, Insurance and Freight" },
+  { code: "CPT", label: "CPT — Carriage Paid To" },
+  { code: "CIP", label: "CIP — Carriage and Insurance Paid To" },
+  { code: "DAP", label: "DAP — Delivered At Place" },
+  { code: "DPU", label: "DPU — Delivered at Place Unloaded" },
+  { code: "DDP", label: "DDP — Delivered Duty Paid" },
+] as const;
 
 // ── CBAM-Warengruppen nach Anhang I EU-VO 2023/956 ───────────────────────────
 // factor: kg CO₂-Äq. pro Tonne (EU Global Default Value für die Übergangsphase)
@@ -171,14 +183,15 @@ export function BuyerLotsClient() {
   const [selectedPreset,   setSelectedPreset]   = useState("");
 
   // Katalog-Suche
-  const [catalogQuery,   setCatalogQuery]   = useState("");
-  const [catalogResults, setCatalogResults] = useState<CatalogResult[]>([]);
-  const [catalogOpen,    setCatalogOpen]    = useState(false);
-  const [catalogProduct, setCatalogProduct] = useState<{ slug: string; nameEn: string; norm: string | null } | null>(null);
-  const [catalogSizes,   setCatalogSizes]   = useState<string[]>([]);
-  const [selectedSize,   setSelectedSize]   = useState("");
-  const [selectedPrimary, setSelectedPrimary] = useState("");
-  const [sizeQuery,      setSizeQuery]      = useState("");
+  const [catalogQuery,      setCatalogQuery]      = useState("");
+  const [catalogResults,    setCatalogResults]    = useState<CatalogResult[]>([]);
+  const [catalogOpen,       setCatalogOpen]       = useState(false);
+  const [catalogBrowseMode, setCatalogBrowseMode] = useState(false);
+  const [catalogProduct,    setCatalogProduct]    = useState<{ slug: string; nameEn: string; norm: string | null } | null>(null);
+  const [catalogSizes,      setCatalogSizes]      = useState<string[]>([]);
+  const [selectedSize,      setSelectedSize]      = useState("");
+  const [selectedPrimary,   setSelectedPrimary]   = useState("");
+  const [sizeQuery,         setSizeQuery]         = useState("");
 
   // ── Token + Auth-Redirect ──────────────────────────────────────────
   useEffect(() => {
@@ -215,7 +228,9 @@ export function BuyerLotsClient() {
 
   // ── Katalog-Suche (debounced 300ms) ──────────────────────────────────
   useEffect(() => {
-    if (catalogQuery.length < 2) { setCatalogResults([]); setCatalogOpen(false); return; }
+    if (catalogProduct) return; // Produkt bereits gewählt — keine Neu-Suche
+    if (catalogQuery.length < 1) { setCatalogResults([]); setCatalogOpen(false); setCatalogBrowseMode(false); return; }
+    setCatalogBrowseMode(false);
     const t = setTimeout(() => {
       fetch(`/api/catalog?q=${encodeURIComponent(catalogQuery)}`, { headers: { Authorization: `Bearer ${token}` } })
         .then((r) => r.json())
@@ -223,7 +238,7 @@ export function BuyerLotsClient() {
         .catch(() => {});
     }, 300);
     return () => clearTimeout(t);
-  }, [catalogQuery, token]);
+  }, [catalogQuery, token, catalogProduct]);
 
   // ── Größen für gewähltes Produkt laden ───────────────────────────────
   useEffect(() => {
@@ -258,9 +273,10 @@ export function BuyerLotsClient() {
   async function createLot(e: React.FormEvent) {
     e.preventDefault();
     setFormError(null);
-    if (!commodity.trim()) { setFormError("Ware ist erforderlich."); return; }
+    if (!commodity.trim())   { setFormError("Ware ist erforderlich."); return; }
     const qty = parseFloat(quantity);
-    if (!qty || qty <= 0)  { setFormError("Menge muss größer als 0 sein."); return; }
+    if (!qty || qty <= 0)    { setFormError("Menge muss größer als 0 sein."); return; }
+    if (!description.trim()) { setFormError("Beschreibung ist erforderlich — bitte technische Details, Zeugnis, Lieferort und Verpackung angeben."); return; }
 
     setSubmitting(true);
     try {
@@ -302,7 +318,7 @@ export function BuyerLotsClient() {
         setCbamCategory(""); setCo2PerTonne(""); setCountryOfOrigin(""); setProductionSiteId(""); setIncoterms("DAP");
         setHsCode(""); setQualityGrade(""); setDeliveryPeriod(""); setPaymentTerms(""); setVatTreatment("");
         setSelectedPreset("");
-        setCatalogQuery(""); setCatalogResults([]); setCatalogOpen(false);
+        setCatalogQuery(""); setCatalogResults([]); setCatalogOpen(false); setCatalogBrowseMode(false);
         setCatalogProduct(null); setCatalogSizes([]); setSelectedSize(""); setSelectedPrimary(""); setSizeQuery("");
         setShowForm(false);
         await loadLots();
@@ -772,26 +788,56 @@ export function BuyerLotsClient() {
                     <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase" }}>Produktkatalog</span>
                     <span style={{ fontSize: 11, color: "#9ca3af" }}>184 Produkte · 24.438 Abmessungen</span>
                   </div>
-                  <input
-                    className="bl-input"
-                    placeholder='Produkt suchen: "wire", "pipe", "angle", "DIN EN 10162", "уголок" …'
-                    value={catalogQuery}
-                    autoComplete="off"
-                    onChange={(e) => {
-                      setCatalogQuery(e.target.value);
-                      if (!e.target.value) { setCatalogProduct(null); setSelectedSize(""); setSelectedPrimary(""); }
-                    }}
-                    onFocus={() => { if (catalogResults.length > 0) setCatalogOpen(true); }}
-                    onBlur={() => setTimeout(() => setCatalogOpen(false), 200)}
-                  />
+                  <div style={{ position: "relative" }}>
+                    <input
+                      className="bl-input"
+                      style={{ paddingRight: 42 }}
+                      placeholder='Produkt suchen oder ▼ klicken — "Beton", "pipe", "angle", "B240A" …'
+                      value={catalogQuery}
+                      autoComplete="off"
+                      onChange={(e) => {
+                        setCatalogQuery(e.target.value);
+                        if (!e.target.value) { setCatalogProduct(null); setSelectedSize(""); setSelectedPrimary(""); }
+                      }}
+                      onFocus={() => { if (catalogResults.length > 0) setCatalogOpen(true); }}
+                      onBlur={() => setTimeout(() => setCatalogOpen(false), 200)}
+                    />
+                    {/* Dropdown-Pfeil */}
+                    <button
+                      type="button"
+                      aria-label="Alle Produkte anzeigen"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        if (catalogOpen) {
+                          setCatalogOpen(false);
+                        } else {
+                          fetch(`/api/catalog?browse=1`, { headers: { Authorization: `Bearer ${token}` } })
+                            .then((r) => r.json())
+                            .then((d) => { setCatalogResults(d.products ?? []); setCatalogBrowseMode(true); setCatalogOpen(true); })
+                            .catch(() => {});
+                        }
+                      }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#e8edf8"; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "#f0f5ff"; }}
+                      style={{
+                        position: "absolute", right: 0, top: 0, height: "100%", width: 40,
+                        background: "#f0f5ff", border: "none", borderLeft: "1px solid #c7d7fc",
+                        cursor: "pointer", color: "#154194", fontSize: 10, fontWeight: 700,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        transition: "background .12s", letterSpacing: ".02em",
+                      }}
+                    >
+                      {catalogOpen ? "▲" : "▼"}
+                    </button>
+                  </div>
 
                   {/* Ergebnis-Dropdown */}
                   {catalogOpen && catalogResults.length > 0 && (
                     <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 2px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 360, overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
                       {/* Kopfzeile */}
-                      <div style={{ display: "grid", gridTemplateColumns: "36px 1fr 140px 52px", gap: "0 12px", padding: "6px 14px", background: "#f9fafb", borderBottom: "1px solid #e5e7eb", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase" as const }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "36px 1fr 140px 52px", gap: "0 12px", padding: "6px 14px", background: "#f0f5ff", borderBottom: "1px solid #c7d7fc", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase" as const }}>
                         <div>Nr</div>
-                        <div>Produkt</div>
+                        <div>{catalogBrowseMode ? `Alle Produkte (${catalogResults.length}+)` : "Produkt"}</div>
                         <div>Norm</div>
                         <div style={{ textAlign: "right" }}>Abm.</div>
                       </div>
@@ -836,7 +882,7 @@ export function BuyerLotsClient() {
                       ))}
                     </div>
                   )}
-                  {catalogQuery.length >= 2 && catalogResults.length === 0 && !catalogOpen && (
+                  {catalogQuery.length >= 1 && catalogResults.length === 0 && !catalogOpen && !catalogProduct && (
                     <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 5, paddingLeft: 2 }}>Kein Treffer — Produktnamen im Feld „Ware / Commodity" frei eingeben.</div>
                   )}
 
@@ -870,14 +916,19 @@ export function BuyerLotsClient() {
                   const hasMultiPart = catalogSizes.some((s) => s.includes(SEP));
 
                   if (!hasMultiPart) {
-                    // Einfache Maße (z.B. Draht: 0.2 mm, 0.3 mm)
+                    // Einfache Maße (z.B. Betonstahl: 10 mm, 12 mm oder Draht: 0.2 mm)
                     const filtered = sizeQuery
                       ? catalogSizes.filter((s) => s.includes(sizeQuery))
                       : catalogSizes;
+                    const allMm = catalogSizes.length > 0 && catalogSizes.every((s) => /^\d+(\.\d+)?\s*mm$/.test(s));
+                    const dimLabel = allMm ? "Ø Nenndurchmesser" : "Abmessung";
                     return (
                       <div style={{ marginBottom: 20, border: "1px solid #e5e7eb" }}>
                         <div style={{ padding: "8px 14px", borderBottom: "1px solid #e5e7eb", background: "#f9fafb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <span style={{ fontSize: 11, letterSpacing: ".06em", color: "#6b7280", textTransform: "uppercase" }}>Maß <span style={{ color: "#9ca3af" }}>· {catalogSizes.length}</span></span>
+                          <div>
+                            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".06em", color: "#374151", textTransform: "uppercase" as const }}>{dimLabel}</span>
+                            <span style={{ fontSize: 11, color: "#9ca3af", marginLeft: 6 }}>· {catalogSizes.length} Größen</span>
+                          </div>
                           <input
                             className="bl-input"
                             style={{ width: 140, padding: "3px 8px", fontSize: 12 }}
@@ -886,16 +937,30 @@ export function BuyerLotsClient() {
                             onChange={(e) => setSizeQuery(e.target.value)}
                           />
                         </div>
-                        <div style={{ padding: 12, display: "flex", flexWrap: "wrap", gap: 4, maxHeight: 200, overflowY: "auto" }}>
+                        <div style={{ padding: "12px 14px", display: "flex", flexWrap: "wrap", gap: 6, maxHeight: 200, overflowY: "auto" }}>
                           {filtered.map((s) => (
                             <button
                               key={s}
                               type="button"
                               onClick={() => { setSelectedSize(s); setCommodity(`${catalogProduct.nameEn}, ${s}`); }}
-                              style={{ padding: "4px 10px", fontSize: 12, cursor: "pointer", fontFamily: "monospace", border: selectedSize === s ? "1.5px solid #154194" : "1px solid #d1d5db", background: selectedSize === s ? "#154194" : "#fff", color: selectedSize === s ? "#fff" : "#374151" }}
+                              style={{
+                                padding: "6px 14px", fontSize: 13, cursor: "pointer",
+                                fontFamily: "'IBM Plex Mono', monospace", fontWeight: 500,
+                                border: selectedSize === s ? "1.5px solid #154194" : "1px solid #d1d5db",
+                                background: selectedSize === s ? "#154194" : "#fff",
+                                color: selectedSize === s ? "#fff" : "#374151",
+                                transition: "all .1s",
+                                minWidth: 72, textAlign: "center" as const,
+                              }}
                             >{s}</button>
                           ))}
                         </div>
+                        {selectedSize && (
+                          <div style={{ padding: "6px 14px", borderTop: "1px solid #e5e7eb", background: "#f8faff", fontSize: 12, color: "#154194", fontWeight: 600 }}>
+                            Gewählt: <span style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{selectedSize}</span>
+                            {allMm && <span style={{ color: "#9ca3af", fontWeight: 400 }}> (Ø {selectedSize})</span>}
+                          </div>
+                        )}
                       </div>
                     );
                   }
@@ -1036,13 +1101,14 @@ export function BuyerLotsClient() {
                   </div>
 
                   <div className="bl-form-group full">
-                    <label className="bl-label">Beschreibung <span>(optional)</span></label>
+                    <label className="bl-label">Beschreibung *</label>
                     <textarea
                       className="bl-textarea"
-                      placeholder="Technische Spezifikationen, Lieferbedingungen, Normen…"
+                      placeholder="Technische Anforderungen: Oberfläche, Toleranzen, Lieferform (Stab/Ring/Bund/Coil), Stabläge. – Zeugnis: EN 10204 3.1 oder 3.2? – Lieferort: vollständige Adresse. – Verpackung & Kennzeichnung. – Sonstige Bedingungen (Split-Lieferung, Inspektion)."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       maxLength={2000}
+                      required
                     />
                   </div>
                 </div>
@@ -1152,7 +1218,7 @@ export function BuyerLotsClient() {
                       onChange={(e) => setIncoterms(e.target.value)}
                     >
                       {INCOTERMS_LIST.map((t) => (
-                        <option key={t} value={t}>{t}</option>
+                        <option key={t.code} value={t.code}>{t.label}</option>
                       ))}
                     </select>
                   </div>
