@@ -65,5 +65,41 @@ export async function POST(
     select: { id: true, createdAt: true },
   });
 
-  return NextResponse.json({ registrationId: reg.id, registered: true });
+  // ── Auto-Start: Handelssitzung 13:00–15:00 Mo–Fr Berlin aktiv? ───
+  const now = new Date();
+  let autoStarted = false;
+
+  if (lot.phase === "COLLECTION" && isSlotActive(now)) {
+    const auctionEnd = slotEndUTC(now);
+    const affected = await db.lot.updateMany({
+      where: { id: lotId, phase: "COLLECTION" }, // atomischer Guard gegen Race
+      data:  { phase: "PROPOSAL", auctionStart: now, auctionEnd },
+    });
+    autoStarted = affected.count > 0;
+  }
+
+  return NextResponse.json({ registrationId: reg.id, registered: true, autoStarted });
+}
+
+// ── Hilfsfunktionen Handelssitzung ───────────────────────────────────
+function isSlotActive(now: Date): boolean {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Berlin", weekday: "long",
+    hour: "2-digit", minute: "2-digit", hour12: false,
+  }).formatToParts(now);
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+  const wd  = get("weekday");
+  if (wd === "Saturday" || wd === "Sunday") return false;
+  const mins = parseInt(get("hour"), 10) * 60 + parseInt(get("minute"), 10);
+  return mins >= 13 * 60 && mins < 15 * 60;
+}
+
+function slotEndUTC(now: Date): Date {
+  const berlinDateStr = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Berlin",
+  }).format(now);
+  // Berlin-Offset ermitteln
+  const berlinNow    = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Berlin" }));
+  const berlinOffset = now.getTime() - berlinNow.getTime();
+  return new Date(new Date(`${berlinDateStr}T15:00:00`).getTime() + berlinOffset);
 }

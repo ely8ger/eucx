@@ -379,13 +379,12 @@ export function BuyerLotsClient() {
     }).format(now), 10);
     const day = now.getDay();
     const isWeekday = day >= 1 && day <= 5;
-    // [TESTMODE-03] Slot 19:00–22:00 Berlin
-    const inSlot = isWeekday && berlinHour >= 19 && berlinHour < 22;
-    if (inSlot) return `heute bis 22:00 MEZ`;
+    const inSlot = isWeekday && berlinHour >= 13 && berlinHour < 15;
+    if (inSlot) return `heute bis 15:00 MEZ`;
     for (let i = 1; i <= 7; i++) {
       const d = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
       const wd = d.getDay();
-      if (wd >= 1 && wd <= 5) return `${fmt(d)} · 19:00–22:00 MEZ`;
+      if (wd >= 1 && wd <= 5) return `${fmt(d)} · 13:00–15:00 MEZ`;
     }
     return "nächste Handelssitzung";
   }

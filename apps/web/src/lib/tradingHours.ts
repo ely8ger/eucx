@@ -11,8 +11,8 @@ export interface TradingStatus {
   tzLabel:       string;   // "MEZ" oder "MESZ"
 }
 
-const OPEN_HOUR  = 10;
-const CLOSE_HOUR = 13;
+const OPEN_HOUR  = 13;
+const CLOSE_HOUR = 15;
 
 /** Gibt Datum+Uhrzeit in der Europe/Berlin-Zeitzone zurück */
 function berlinerzeit(date: Date): { h: number; m: number; s: number; weekday: number } {
@@ -100,10 +100,10 @@ export function getTradingStatus(now: Date = new Date()): TradingStatus {
   const berlinOffset = now.getTime() - berlinNow.getTime(); // ms
 
   const closesAtUTC = new Date(
-    new Date(berlinDateStr + "T13:00:00").getTime() + berlinOffset,
+    new Date(berlinDateStr + "T15:00:00").getTime() + berlinOffset,
   );
   const opensAtUTC = new Date(
-    new Date(berlinDateStr + "T10:00:00").getTime() + berlinOffset,
+    new Date(berlinDateStr + "T13:00:00").getTime() + berlinOffset,
   );
 
   let secondsLeft: number;

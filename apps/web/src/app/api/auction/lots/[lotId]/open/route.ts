@@ -13,10 +13,8 @@ import { verifyAccessToken } from "@/lib/auth/jwt";
 
 export const dynamic = "force-dynamic";
 
-// [TESTMODE-03] Slot temporär auf 19:00–22:00 Berlin (Testbetrieb 06.07.26)
-// Original: SLOT_END_HOUR = 16, SLOT_START_HOUR = 14
-const SLOT_END_HOUR   = 22; // 22:00 Berlin
-const SLOT_START_HOUR = 19; // 19:00 Berlin
+const SLOT_END_HOUR   = 15; // 15:00 Berlin
+const SLOT_START_HOUR = 13; // 13:00 Berlin
 
 /** UTC-Zeitpunkt für 16:00 Europe/Berlin an einem bestimmten Berliner Kalendertag */
 function berlinSlotEnd(year: number, month: number, day: number): Date {
