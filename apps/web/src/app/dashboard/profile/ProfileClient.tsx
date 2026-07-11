@@ -329,11 +329,40 @@ export function ProfileClient() {
             Weitere Einstellungen
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
-            {[
-              { label: "Sicherheit",         sub: "2FA, Passwort, Sitzungen",     href: "/dashboard/settings/security",       icon: "🔒" },
-              { label: "KYC-Verifikation",   sub: "Dokumente & Freischaltung",    href: "/dashboard/settings/verification",   icon: "✅" },
-              { label: "Benachrichtigungen", sub: "E-Mail & Plattform-Alerts",    href: "/dashboard/settings/notifications",  icon: "🔔" },
-            ].map((card) => (
+            {([
+              {
+                label: "Sicherheit", sub: "2FA, Passwort, Sitzungen",
+                href: "/dashboard/settings/security",
+                icon: (
+                  <svg width="22" height="22" viewBox="0 0 16 16" fill="none" style={{ color: BLUE }}>
+                    <path d="M8 1.5L14 4.5v4c0 3.5-2.5 6-6 7C2.5 14.5 0 12 0 8.5v-4L8 1.5Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+                    <path d="M5 8.5l2 2 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                ),
+              },
+              {
+                label: "KYC-Verifikation", sub: "Dokumente & Freischaltung",
+                href: "/dashboard/settings/verification",
+                icon: (
+                  <svg width="22" height="22" viewBox="0 0 16 16" fill="none" style={{ color: BLUE }}>
+                    <rect x="2" y="1" width="12" height="14" rx="1" stroke="currentColor" strokeWidth="1.4"/>
+                    <path d="M5 5h6M5 8h6M5 11h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                    <circle cx="12.5" cy="11.5" r="2.5" fill="#fff" stroke="currentColor" strokeWidth="1.2"/>
+                    <path d="M11.5 11.5l.8.8 1.2-1.2" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                ),
+              },
+              {
+                label: "Benachrichtigungen", sub: "E-Mail & Plattform-Alerts",
+                href: "/dashboard/settings/notifications",
+                icon: (
+                  <svg width="22" height="22" viewBox="0 0 16 16" fill="none" style={{ color: BLUE }}>
+                    <path d="M8 1.5a5 5 0 00-5 5v3l-1.5 2h13L13 9.5v-3a5 5 0 00-5-5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+                    <path d="M6.5 13.5a1.5 1.5 0 003 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                  </svg>
+                ),
+              },
+            ] as { label: string; sub: string; href: string; icon: React.ReactNode }[]).map((card) => (
               <a
                 key={card.href}
                 href={card.href}
@@ -346,7 +375,7 @@ export function ProfileClient() {
                 onMouseEnter={e => { e.currentTarget.style.borderColor = BLUE; e.currentTarget.style.boxShadow = "0 2px 8px rgba(21,65,148,.1)"; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.boxShadow = "none"; }}
               >
-                <p style={{ margin: "0 0 6px", fontSize: 20 }}>{card.icon}</p>
+                <div style={{ marginBottom: 8 }}>{card.icon}</div>
                 <p style={{ margin: "0 0 3px", fontSize: 13, fontWeight: 700, color: TEXT, fontFamily: F }}>{card.label}</p>
                 <p style={{ margin: 0, fontSize: 11.5, color: MUTED, fontFamily: F }}>{card.sub}</p>
               </a>
