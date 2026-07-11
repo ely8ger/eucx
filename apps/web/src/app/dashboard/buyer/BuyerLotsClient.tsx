@@ -1433,16 +1433,22 @@ export function BuyerLotsClient() {
             );
             return (
             <div className="bl-table-wrap">
-              <table className="bl-table">
+              <table className="bl-table" style={{ tableLayout: "fixed", width: "100%" }}>
+                <colgroup>
+                  <col style={{ width: "34%" }} />
+                  <col style={{ width: "11%" }} />
+                  <col style={{ width: "13%" }} />
+                  <col style={{ width: "18%" }} />
+                  <col style={{ width: "12%" }} />
+                  <col style={{ width: "12%" }} />
+                </colgroup>
                 <thead>
                   <tr>
                     <th>Ware</th>
                     <th>Menge</th>
                     <th>Status</th>
-                    <th>Max-Preis</th>
-                    <th>Bestes Gebot / Ergebnis</th>
+                    <th>Preis / Ergebnis</th>
                     <th>Auktionsende</th>
-                    <th>Bieter</th>
                     <th>Aktion</th>
                   </tr>
                 </thead>
@@ -1454,12 +1460,13 @@ export function BuyerLotsClient() {
 
                     return (
                       <tr key={lot.id}>
-                        <td style={{ maxWidth: 240 }}>
+                        {/* Ware */}
+                        <td>
                           <div style={{ fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {lot.commodity}
                           </div>
                           {lot.qualityGrade && (
-                            <div style={{ fontSize: 10.5, color: "#6b7280", marginTop: 2, fontWeight: 500 }}>
+                            <div style={{ fontSize: 10.5, color: "#6b7280", marginTop: 2, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                               {lot.qualityGrade}
                             </div>
                           )}
@@ -1469,29 +1476,36 @@ export function BuyerLotsClient() {
                             </div>
                           )}
                         </td>
-                        <td style={{ color: "#374151", whiteSpace: "nowrap" }}>
+                        {/* Menge */}
+                        <td style={{ fontSize: 12.5, color: "#374151", whiteSpace: "nowrap" }}>
                           {Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}
                         </td>
+                        {/* Status + Bieter */}
                         <td>
                           <span className="bl-phase" style={{ background: PHASE_COLOR[lot.phase] }}>
                             {PHASE_LABEL[lot.phase]}
                           </span>
+                          <div style={{ fontSize: 10.5, color: "#9ca3af", marginTop: 5, lineHeight: 1.4 }}>
+                            {lot._count.registrations} angemeldet<br />
+                            {lot._count.bids} Gebote
+                          </div>
                         </td>
-                        <td style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12.5, color: "#6b7280" }}>
-                          {fmtEur(lot.startPrice)}
-                        </td>
-                        <td style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12.5 }}>
+                        {/* Preis / Ergebnis */}
+                        <td style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12 }}>
+                          {lot.startPrice && (
+                            <div style={{ color: "#9ca3af", fontSize: 10.5, marginBottom: 2 }}>
+                              Max: {fmtEur(lot.startPrice)}
+                            </div>
+                          )}
                           {lot.phase === "CONCLUSION" ? (
                             lot.winnerId ? (
                               <div>
-                                <span className="bl-winner">✓ Zuschlag erteilt</span>
+                                <span className="bl-winner">✓ Zuschlag</span>
                                 {lot.currentBest && (
-                                  <div style={{ marginTop: 4, color: "#14532d", fontWeight: 700 }}>
+                                  <div style={{ marginTop: 3, color: "#14532d", fontWeight: 700, fontSize: 12 }}>
                                     {fmtEur(lot.currentBest)}
                                     {savings !== null && savings > 0 && (
-                                      <span style={{ fontSize: 10, color: "#16a34a", marginLeft: 6 }}>
-                                        −{fmtEur(String(savings))}
-                                      </span>
+                                      <div style={{ fontSize: 10, color: "#16a34a" }}>−{fmtEur(String(savings))}</div>
                                     )}
                                   </div>
                                 )}
@@ -1501,24 +1515,20 @@ export function BuyerLotsClient() {
                             )
                           ) : lot.currentBest ? (
                             <div>
-                              <strong style={{ color: "#16a34a" }}>{fmtEur(lot.currentBest)}</strong>
+                              <strong style={{ color: "#16a34a", fontSize: 12.5 }}>{fmtEur(lot.currentBest)}</strong>
                               {savings !== null && savings > 0 && (
-                                <div style={{ fontSize: 11, color: "#16a34a" }}>
-                                  −{fmtEur(String(savings))} Ersparnis
-                                </div>
+                                <div style={{ fontSize: 10, color: "#16a34a" }}>−{fmtEur(String(savings))}</div>
                               )}
                             </div>
                           ) : (
-                            <span style={{ color: "#9ca3af" }}>—</span>
+                            <span style={{ color: "#d1d5db" }}>—</span>
                           )}
                         </td>
-                        <td style={{ fontSize: 12, color: "#6b7280", whiteSpace: "nowrap" }}>
+                        {/* Auktionsende */}
+                        <td style={{ fontSize: 11.5, color: "#6b7280" }}>
                           {lot.auctionEnd ? fmtDate(lot.auctionEnd) : "—"}
                         </td>
-                        <td style={{ fontSize: 12, textAlign: "center" }}>
-                          <div>{lot._count.registrations} angemeldet</div>
-                          <div style={{ color: "#9ca3af" }}>{lot._count.bids} Gebote</div>
-                        </td>
+                        {/* Aktion */}
                         <td style={{ whiteSpace: "nowrap" }}>
                           {lot.phase === "COLLECTION" && (
                             <button
@@ -1532,7 +1542,7 @@ export function BuyerLotsClient() {
                           )}
                           {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && (
                             <a href={`/dashboard/buyer/auction/${lot.id}`} className="bl-btn-watch">
-                              Live beobachten →
+                              Live →
                             </a>
                           )}
                           {lot.phase === "CONCLUSION" && (
