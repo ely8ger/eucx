@@ -37,9 +37,10 @@ export default async function SellerAuctionPage({
       productionSiteId: true,
       hsCode:           true,
       qualityGrade:     true,
-      deliveryPeriod:   true,
-      paymentTerms:     true,
-      vatTreatment:     true,
+      deliveryPeriod:    true,
+      deliveryLocation:  true,
+      paymentTerms:      true,
+      vatTreatment:      true,
     },
   });
 
@@ -65,9 +66,10 @@ export default async function SellerAuctionPage({
         productionSiteId: lot.productionSiteId ?? null,
         hsCode:           lot.hsCode           ?? null,
         qualityGrade:     lot.qualityGrade     ?? null,
-        deliveryPeriod:   lot.deliveryPeriod   ?? null,
-        paymentTerms:     lot.paymentTerms     ?? null,
-        vatTreatment:     lot.vatTreatment     ?? null,
+        deliveryPeriod:    lot.deliveryPeriod    ?? null,
+        deliveryLocation:  lot.deliveryLocation  ?? null,
+        paymentTerms:      lot.paymentTerms      ?? null,
+        vatTreatment:      lot.vatTreatment      ?? null,
       }}
     />
   );

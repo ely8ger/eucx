@@ -32,7 +32,8 @@ const createLotSchema = z.object({
   // Handels- und Vertragsangaben (Pflichtfelder — vertragswesentlich nach §§ 433, 434 BGB)
   hsCode:           z.string().min(1, "HS-Code ist erforderlich").max(20),
   qualityGrade:     z.string().min(1, "Güte / Qualitätsnorm ist erforderlich").max(120),
-  deliveryPeriod:   z.string().min(1, "Lieferzeitraum ist erforderlich").max(120),
+  deliveryPeriod:   z.string().min(1, "Max. Lieferzeit ist erforderlich").max(120),
+  deliveryLocation: z.string().min(1, "Lieferort ist erforderlich").max(200),
   paymentTerms:     z.string().min(1, "Zahlungsbedingungen sind erforderlich").max(120),
   vatTreatment:     z.string().min(1, "USt.-Behandlung ist erforderlich").max(120),
 });
@@ -75,7 +76,7 @@ export async function POST(req: NextRequest) {
   // ── Lot anlegen ───────────────────────────────────────────────────
   const { commodity, quantity, unit, startPrice, description,
           cbamCategory, co2PerTonne, countryOfOrigin, productionSiteId, incoterms,
-          hsCode, qualityGrade, deliveryPeriod, paymentTerms, vatTreatment } = parsed.data;
+          hsCode, qualityGrade, deliveryPeriod, deliveryLocation, paymentTerms, vatTreatment } = parsed.data;
   const lot = await db.lot.create({
     data: {
       buyerId:         user.id,
@@ -92,6 +93,7 @@ export async function POST(req: NextRequest) {
       hsCode,
       qualityGrade,
       deliveryPeriod,
+      deliveryLocation,
       paymentTerms,
       vatTreatment,
     },
@@ -148,6 +150,7 @@ export async function GET(req: NextRequest) {
       hsCode:           true,
       qualityGrade:     true,
       deliveryPeriod:   true,
+      deliveryLocation: true,
       paymentTerms:     true,
       vatTreatment:     true,
       buyer: {

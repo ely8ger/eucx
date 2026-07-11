@@ -16,8 +16,8 @@ interface Lot {
   incoterms: string | null; countryOfOrigin: string | null;
   co2PerTonne: string | null; productionSiteId: string | null;
   hsCode: string | null; qualityGrade: string | null;
-  deliveryPeriod: string | null; paymentTerms: string | null;
-  vatTreatment: string | null;
+  deliveryPeriod: string | null; deliveryLocation: string | null;
+  paymentTerms: string | null; vatTreatment: string | null;
 }
 
 interface MyBid   { price: string; rank: number; createdAt: string; }
@@ -39,6 +39,15 @@ const fmtDelta = (delta: number) =>
   delta === 0 ? "±0 €"
   : (delta > 0 ? "+" : "") +
     new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(delta);
+
+function vatShort(vat: string): string {
+  if (vat.startsWith("Innergemeinschaftliche")) return "§4 Nr. 1b UStG · 0 %";
+  if (vat.startsWith("Steuerschuldumkehr"))     return "§13b UStG · Reverse Charge";
+  if (vat.startsWith("Umsatzsteuer 19"))         return "19 % Regelbesteuerung";
+  if (vat.startsWith("Ausfuhrlieferung"))        return "§4 Nr. 1a UStG · steuerfrei";
+  if (vat.startsWith("Differenzbesteuerung"))    return "§25a UStG";
+  return vat;
+}
 
 function useCountdown(endIso: string | null) {
   const [ms, setMs] = useState(0);
@@ -505,7 +514,8 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                   ...(lot.hsCode && !lot.qualityGrade ? [["HS-Code", lot.hsCode]] : []),
                   ...(lot.co2PerTonne       ? [["CO₂-Äq.",          `${lot.co2PerTonne} kg/t`]] : []),
                   ...(lot.productionSiteId  ? [["CBAM-Stätten-ID",   lot.productionSiteId]]      : []),
-                  ...(lot.deliveryPeriod    ? [["Lieferzeitraum",     lot.deliveryPeriod]]        : []),
+                  ...(lot.deliveryPeriod    ? [["Max. Lieferzeit",    lot.deliveryPeriod]]        : []),
+                  ...(lot.deliveryLocation  ? [["Lieferort",          lot.deliveryLocation]]      : []),
                 ].map(([k, v]) => (
                   <div key={k} className="sa-lot-row">
                     <span className="sa-lot-key">{k}</span>
@@ -525,7 +535,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                 </div>}
                 {lot.vatTreatment && <div className="sa-lot-row">
                   <span className="sa-lot-key">USt.-Behandlung</span>
-                  <span className="sa-lot-val" style={{ maxWidth: 130, textAlign: "right", wordBreak: "break-word", fontSize: 10 }}>{lot.vatTreatment}</span>
+                  <span className="sa-lot-val" style={{ maxWidth: 140, textAlign: "right", wordBreak: "break-word", fontSize: 10 }}>{vatShort(lot.vatTreatment)}</span>
                 </div>}
                 {!lot.paymentTerms && !lot.vatTreatment && (
                   <div className="sa-lot-row">
@@ -538,8 +548,8 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                 <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Zeitrahmen</div>
                 {[
                   ["Veröffentlicht", new Date(lot.createdAt).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })],
-                  ...(lot.auctionStart ? [["Auktionsstart", new Date(lot.auctionStart).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })]] : []),
-                  ...(lot.auctionEnd   ? [["Auktionsende",  new Date(lot.auctionEnd).toLocaleString("de-DE",   { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })]] : []),
+                  ...(lot.auctionStart ? [["Auktionsstart", new Date(lot.auctionStart).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })]] : []),
+                  ...(lot.auctionEnd   ? [["Auktionsende",  new Date(lot.auctionEnd).toLocaleString("de-DE",   { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })]] : []),
                 ].map(([k, v]) => (
                   <div key={k} className="sa-lot-row">
                     <span className="sa-lot-key">{k}</span>

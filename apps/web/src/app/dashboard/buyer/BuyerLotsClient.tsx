@@ -38,9 +38,10 @@ interface LotRow {
   incoterms?:       string | null;
   hsCode?:          string | null;
   qualityGrade?:    string | null;
-  deliveryPeriod?:  string | null;
-  paymentTerms?:    string | null;
-  vatTreatment?:    string | null;
+  deliveryPeriod?:    string | null;
+  deliveryLocation?:  string | null;
+  paymentTerms?:      string | null;
+  vatTreatment?:      string | null;
 }
 
 const COUNTRIES = [
@@ -178,6 +179,7 @@ export function BuyerLotsClient() {
   const [hsCode,           setHsCode]           = useState("");
   const [qualityGrade,     setQualityGrade]     = useState("");
   const [deliveryPeriod,   setDeliveryPeriod]   = useState("");
+  const [deliveryLocation, setDeliveryLocation] = useState("");
   const [paymentTerms,     setPaymentTerms]     = useState("");
   const [vatTreatment,     setVatTreatment]     = useState("");
   const [selectedPreset,   setSelectedPreset]   = useState("");
@@ -293,13 +295,15 @@ export function BuyerLotsClient() {
       // Pflichtfelder — vertragswesentlich
       if (!hsCode.trim())         { setFormError("Zolltarifnummer (HS-Code) ist erforderlich.");     setSubmitting(false); return; }
       if (!qualityGrade.trim())   { setFormError("Güte / Qualitätsnorm ist erforderlich.");          setSubmitting(false); return; }
-      if (!deliveryPeriod.trim()) { setFormError("Lieferzeitraum ist erforderlich.");                setSubmitting(false); return; }
-      if (!paymentTerms.trim())   { setFormError("Zahlungsbedingungen sind erforderlich.");          setSubmitting(false); return; }
+      if (!deliveryPeriod.trim())   { setFormError("Max. Lieferzeit ist erforderlich.");               setSubmitting(false); return; }
+      if (!deliveryLocation.trim()) { setFormError("Lieferort ist erforderlich.");                     setSubmitting(false); return; }
+      if (!paymentTerms.trim())     { setFormError("Zahlungsbedingungen sind erforderlich.");          setSubmitting(false); return; }
       if (!vatTreatment)          { setFormError("USt.-Behandlung muss ausgewählt werden.");         setSubmitting(false); return; }
       body.hsCode         = hsCode.trim();
       body.qualityGrade   = qualityGrade.trim();
-      body.deliveryPeriod = deliveryPeriod.trim();
-      body.paymentTerms   = paymentTerms.trim();
+      body.deliveryPeriod   = deliveryPeriod.trim();
+      body.deliveryLocation = deliveryLocation.trim();
+      body.paymentTerms     = paymentTerms.trim();
       body.vatTreatment   = vatTreatment;
 
       const r = await fetch("/api/auction/lots", {
@@ -317,7 +321,7 @@ export function BuyerLotsClient() {
         });
         setCommodity(""); setQuantity(""); setUnit("TON"); setStartPrice(""); setDescription("");
         setCbamCategory(""); setCo2PerTonne(""); setCountryOfOrigin(""); setProductionSiteId(""); setIncoterms("DAP");
-        setHsCode(""); setQualityGrade(""); setDeliveryPeriod(""); setPaymentTerms(""); setVatTreatment("");
+        setHsCode(""); setQualityGrade(""); setDeliveryPeriod(""); setDeliveryLocation(""); setPaymentTerms(""); setVatTreatment("");
         setSelectedPreset("");
         setCatalogQuery(""); setCatalogResults([]); setCatalogOpen(false); setCatalogBrowseMode(false);
         setCatalogProduct(null); setCatalogSizes([]); setSelectedSize(""); setSelectedPrimary(""); setSizeQuery("");
@@ -1368,13 +1372,25 @@ export function BuyerLotsClient() {
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">Lieferzeitraum *</label>
+                    <label className="bl-label">Max. Lieferzeit *</label>
                     <input
                       className="bl-input"
                       type="text"
-                      placeholder="z.B. 4–6 Wochen ab Zuschlag"
+                      placeholder="z.B. max. 6 Wochen ab Zuschlag"
                       value={deliveryPeriod}
                       onChange={(e) => setDeliveryPeriod(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="bl-form-group">
+                    <label className="bl-label">Lieferort *</label>
+                    <input
+                      className="bl-input"
+                      type="text"
+                      placeholder="z.B. Musterstraße 12, 10115 Berlin, Deutschland"
+                      value={deliveryLocation}
+                      onChange={(e) => setDeliveryLocation(e.target.value)}
                       required
                     />
                   </div>
