@@ -63,7 +63,7 @@ const NAV: Record<string, NavItem[]> = {
     { label: "Abrechnung",         href: "/dashboard/seller/billing",    activePrefix: "/dashboard/seller/billing" },
   ],
   settings: [
-    { label: "Profil",             href: "#", disabled: true },
+    { label: "Profil",             href: "/dashboard/profile",               activePrefix: "/dashboard/profile" },
     { label: "Verträge",           href: "/dashboard/contracts",             activePrefix: "/dashboard/contracts" },
     { label: "KYC-Verifikation",   href: "/dashboard/settings/verification", activePrefix: "/dashboard/settings/verification" },
     { label: "Sicherheit",         href: "/dashboard/settings/security",     activePrefix: "/dashboard/settings/security" },
@@ -141,16 +141,20 @@ const BREADCRUMB_MAP: Array<{
     config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/contracts", page: "Verträge", pageHref: "/dashboard/contracts" }),
   },
   {
+    match:  (p) => p.startsWith("/dashboard/profile"),
+    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "Profil", pageHref: "/dashboard/profile" }),
+  },
+  {
     match:  (p) => p === "/dashboard/settings/verification",
-    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/contracts", page: "KYC-Verifikation", pageHref: "/dashboard/settings/verification" }),
+    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "KYC-Verifikation", pageHref: "/dashboard/settings/verification" }),
   },
   {
     match:  (p) => p === "/dashboard/settings/security",
-    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/contracts", page: "Sicherheit", pageHref: "/dashboard/settings/security" }),
+    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "Sicherheit", pageHref: "/dashboard/settings/security" }),
   },
   {
     match:  (p) => p === "/dashboard/settings/notifications",
-    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/contracts", page: "Benachrichtigungen", pageHref: "/dashboard/settings/notifications" }),
+    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "Benachrichtigungen", pageHref: "/dashboard/settings/notifications" }),
   },
   // ── Administration ─────────────────────────────────────────────────────────
   {
@@ -192,6 +196,7 @@ function resolveContext(path: string): "buyer" | "seller" | "settings" | "admin"
   if (path.startsWith("/dashboard/seller"))    return "seller";
   if (path.startsWith("/dashboard/settings"))  return "settings";
   if (path.startsWith("/dashboard/contracts")) return "settings";
+  if (path.startsWith("/dashboard/profile"))   return "settings";
   if (path.startsWith("/admin"))               return "admin";
   return null;
 }
@@ -342,9 +347,9 @@ function UserAvatar({ me }: { me: MeUser | null }) {
 
   const navLinks = [
     dashboardLink,
+    { label: "Mein Profil",             href: "/dashboard/profile" },
     { label: "Meine Verträge",          href: "/dashboard/contracts" },
     { label: "KYC-Verifikation",        href: "/dashboard/settings/verification" },
-    { label: "Benachrichtigungen",      href: "/dashboard/settings/notifications" },
     { label: "Sicherheitseinstellungen",href: "/dashboard/settings/security" },
   ];
 

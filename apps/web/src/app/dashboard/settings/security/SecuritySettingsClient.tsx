@@ -46,18 +46,46 @@ interface SecurityLogEntry {
 
 // ─── Sub-Komponenten ──────────────────────────────────────────────────────────
 
-function SectionCard({ title, subtitle, children }: {
+function SectionCard({ title, subtitle, children, collapsible = false, defaultOpen = true }: {
   title: string; subtitle?: string; children: React.ReactNode;
+  collapsible?: boolean; defaultOpen?: boolean;
 }) {
+  const [open, setOpen] = useState(defaultOpen);
+
   return (
     <div style={{ background: "#fff", border: `1px solid ${BORDER}`, borderTop: `3px solid ${BLUE}`, marginBottom: 16 }}>
-      <div style={{ borderBottom: `1px solid ${BORDER}`, padding: "16px 24px" }}>
-        <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F }}>{title}</p>
-        {subtitle && <p style={{ margin: "3px 0 0", fontSize: 12, color: MUTED, fontFamily: F }}>{subtitle}</p>}
+      <div
+        style={{
+          borderBottom: open || !collapsible ? `1px solid ${BORDER}` : "none",
+          padding: "16px 24px",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          cursor: collapsible ? "pointer" : "default",
+          userSelect: "none",
+        }}
+        onClick={() => collapsible && setOpen((v) => !v)}
+      >
+        <div>
+          <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F }}>{title}</p>
+          {subtitle && <p style={{ margin: "3px 0 0", fontSize: 12, color: MUTED, fontFamily: F }}>{subtitle}</p>}
+        </div>
+        {collapsible && (
+          <svg
+            width="16" height="16" viewBox="0 0 16 16" fill="none"
+            style={{
+              flexShrink: 0, marginLeft: 12, color: MUTED,
+              transform: open ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 200ms",
+            }}
+          >
+            <path d="M3 6l5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        )}
       </div>
-      <div style={{ padding: "20px 24px" }}>
-        {children}
-      </div>
+      {(open || !collapsible) && (
+        <div style={{ padding: "20px 24px" }}>
+          {children}
+        </div>
+      )}
     </div>
   );
 }
@@ -750,6 +778,7 @@ export function SecuritySettingsClient() {
         <SectionCard
           title="Aktive Sitzungen"
           subtitle="Alle Geräte und Browser, auf denen Sie aktuell angemeldet sind."
+          collapsible defaultOpen={false}
         >
           {sessionsLoading ? (
             <p style={{ margin: 0, fontSize: 13, color: MUTED }}>Wird geladen…</p>
@@ -800,6 +829,7 @@ export function SecuritySettingsClient() {
         <SectionCard
           title="Sicherheitsprotokoll"
           subtitle="Die letzten 15 sicherheitsrelevanten Aktionen auf Ihrem Konto."
+          collapsible defaultOpen={false}
         >
           {secLogLoading ? (
             <p style={{ margin: 0, fontSize: 13, color: MUTED }}>Wird geladen…</p>

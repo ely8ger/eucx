@@ -42,6 +42,7 @@ interface LotRow {
   deliveryLocation?:  string | null;
   paymentTerms?:      string | null;
   vatTreatment?:      string | null;
+  contractId?:        string | null;
 }
 
 const COUNTRIES = [
@@ -531,8 +532,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-timepick-cancel:hover { background:#f9fafb; }
         .bl-btn-watch { padding:7px 14px; background:#fff; color:#154194; font-size:12px; font-weight:700; border:1.5px solid #154194; text-decoration:none; display:inline-block; transition:all .15s; white-space:nowrap; }
         .bl-btn-watch:hover { background:#154194; color:#fff; }
-        .bl-btn-contract { padding:7px 14px; background:#fff; color:#6b7280; font-size:12px; font-weight:700; border:1.5px solid #d1d5db; text-decoration:none; display:inline-block; transition:all .15s; white-space:nowrap; }
-        .bl-btn-contract:hover { background:#f9fafb; }
+        .bl-btn-contract { padding:7px 14px; background:#154194; color:#fff; font-size:12px; font-weight:700; border:none; text-decoration:none; display:inline-block; transition:background .15s; white-space:nowrap; }
+        .bl-btn-contract:hover { background:#0f3073; }
 
         /* Empty */
         .bl-empty { padding:60px 24px; text-align:center; color:#9ca3af; font-size:13px; background:#fff; border:1px solid #e5e7eb; }
@@ -1586,8 +1587,11 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                             </a>
                           )}
                           {lot.phase === "CONCLUSION" && (
-                            <a href="/dashboard/contracts" className="bl-btn-contract">
-                              Vertrag →
+                            <a
+                              href={lot.contractId ? `/dashboard/contracts/${lot.contractId}` : "/dashboard/contracts"}
+                              className="bl-btn-contract"
+                            >
+                              Abwicklung →
                             </a>
                           )}
                         </td>

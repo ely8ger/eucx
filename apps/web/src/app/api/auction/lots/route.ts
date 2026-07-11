@@ -163,11 +163,15 @@ export async function GET(req: NextRequest) {
         where:  { sellerId: userId },
         select: { id: true },
       },
+      lotContract: {
+        select: { id: true },
+      },
     },
   });
 
-  const result = lots.map(({ registrations, ...lot }) => ({
+  const result = lots.map(({ registrations, lotContract, ...lot }) => ({
     ...lot,
+    contractId:   lotContract?.id ?? null,
     isRegistered: registrations.length > 0,
   }));
 

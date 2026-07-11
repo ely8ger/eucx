@@ -260,6 +260,11 @@ model Organization {
   isVerified Boolean   @default(false)
   createdAt  DateTime  @default(now())
 
+  // Handelsberechtigter Ansprechpartner
+  contactName              String?   // Vollständiger Name des Ansprechpartners
+  contactPosition          String?   // Funktion (z.B. Geschäftsführer, Prokurist)
+  isGeschaeftsfuehrer      Boolean?  // true = GF/GBV → keine Vollmacht nötig
+
   users         User[]
   products      Product[]
   orders        Order[]

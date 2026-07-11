@@ -28,6 +28,9 @@ export const registerSchema = z.object({
   foundedAt:        z.string().optional(),
   naceCode:         z.string().max(10).optional(),
   role:             z.enum(["SELLER", "BUYER"]),
+  contactName:           z.string().min(2).max(100),
+  contactPosition:       z.string().min(2).max(100),
+  isGeschaeftsfuehrer:   z.boolean(),
 });
 
 // ─── Warengruppen ─────────────────────────────────────────────────────────────

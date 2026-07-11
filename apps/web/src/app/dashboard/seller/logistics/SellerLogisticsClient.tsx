@@ -243,6 +243,7 @@ export function SellerLogisticsClient() {
                         <th>Käufer / Ort</th>
                         <th>Wert</th>
                         <th>Status</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -277,6 +278,14 @@ export function SellerLogisticsClient() {
                               <span className="log-status" style={{ background: colors[idx] ?? "#6b7280" }}>
                                 {STEPS[idx]?.label ?? d.deliveryStatus}
                               </span>
+                            </td>
+                            <td onClick={(e) => e.stopPropagation()}>
+                              <a
+                                href={`/dashboard/contracts/${d.id}`}
+                                style={{ fontSize: 11.5, fontWeight: 700, color: "#154194", textDecoration: "none", whiteSpace: "nowrap" }}
+                              >
+                                Details →
+                              </a>
                             </td>
                           </tr>
                         );

@@ -458,6 +458,14 @@ export default function RegisterPage() {
   const [resendCooldown,  setResendCooldown]  = useState(false);
   const [btnHover, setBtnHover] = useState(false);
   const [role,     setRole]     = useState("");
+  const [consentPep, setConsentPep] = useState(false);
+  const [consentUbo, setConsentUbo] = useState(false);
+
+  // Ansprechpartner
+  const [contactName,           setContactName]           = useState("");
+  const [contactPosition,       setContactPosition]       = useState("");
+  const [isGeschaeftsfuehrer,   setIsGeschaeftsfuehrer]   = useState<boolean | null>(null);
+  const [contactErrors,         setContactErrors]         = useState<{ name?: string; position?: string; auth?: string }>({});
 
   // Country state - needed for VAT field
   const [country, setCountry] = useState("DE");
@@ -515,7 +523,7 @@ export default function RegisterPage() {
   // Consent checkboxes
   const [consentDsgvo, setConsentDsgvo] = useState(false);
   const [consentAgb,   setConsentAgb]   = useState(false);
-  const [consentErrors, setConsentErrors] = useState<{ dsgvo?: string; agb?: string }>({});
+  const [consentErrors, setConsentErrors] = useState<{ dsgvo?: string; agb?: string; pep?: string; ubo?: string }>({});
 
   function validateEmail(v: string) {
     if (!v) { setEmailError(""); return; }
@@ -543,11 +551,21 @@ export default function RegisterPage() {
     setError("");
 
     // Validate consents
-    const ce: { dsgvo?: string; agb?: string } = {};
+    const ce: { dsgvo?: string; agb?: string; pep?: string; ubo?: string } = {};
     if (!consentDsgvo) ce.dsgvo = t("register_consent_err");
     if (!consentAgb)   ce.agb   = t("register_consent_err");
+    if (!consentPep)   ce.pep   = "Diese Erklärung ist zur Einhaltung des GwG Pflicht.";
+    if (!consentUbo)   ce.ubo   = "Diese Erklärung ist zur Einhaltung des GwG Pflicht.";
     if (Object.keys(ce).length > 0) { setConsentErrors(ce); return; }
     setConsentErrors({});
+
+    // Ansprechpartner-Validierung
+    const cpe: { name?: string; position?: string; auth?: string } = {};
+    if (!contactName.trim())     cpe.name     = "Bitte geben Sie den Namen des Ansprechpartners ein.";
+    if (!contactPosition.trim()) cpe.position = "Bitte geben Sie die Funktion an.";
+    if (isGeschaeftsfuehrer === null) cpe.auth = "Bitte wählen Sie die Vertretungsberechtigung aus.";
+    if (Object.keys(cpe).length > 0) { setContactErrors(cpe); return; }
+    setContactErrors({});
 
     if (emailError || pwError || phoneError) return;
 
@@ -573,6 +591,9 @@ export default function RegisterPage() {
           foundedAt:        fd.get("foundedAt") || undefined,
           phone:            fd.get("phone"),
           role:             fd.get("role"),
+          contactName,
+          contactPosition,
+          isGeschaeftsfuehrer: isGeschaeftsfuehrer ?? true,
           consentDsgvo:     true,
           consentAgb:       true,
         }),
@@ -935,7 +956,124 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* ── 3. Marktteilnehmer-Rolle ────────────────────────────── */}
+              {/* ── 3. Handelsberechtigter Ansprechpartner ──────────────── */}
+              <div>
+                <SectionHead>Handelsberechtigter Ansprechpartner</SectionHead>
+                <div style={{
+                  backgroundColor: "rgba(21,65,148,.03)", border: "1px solid rgba(21,65,148,.12)",
+                  padding: "12px 16px", marginBottom: 14,
+                }}>
+                  <p style={{ fontSize: 11.5, color: "#374151", fontFamily: F, margin: 0, lineHeight: 1.55 }}>
+                    Als regulierter Handelsplatz gem. MiFID II sind wir verpflichtet, den handelsberechtigten
+                    Vertreter Ihres Unternehmens zu erfassen. Diese Person muss rechtsverbindlich für Ihr
+                    Unternehmen handeln können.
+                  </p>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
+                  {/* Name */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                    <label style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: F }}>
+                      Vor- und Nachname <span style={{ color: RED }}>*</span>
+                    </label>
+                    <input
+                      type="text" value={contactName} required
+                      placeholder="Max Mustermann"
+                      onChange={(e) => { setContactName(e.target.value); setContactErrors((p) => ({ ...p, name: undefined })); }}
+                      style={{
+                        height: 42, border: `1px solid ${contactErrors.name ? RED : BORDER}`,
+                        borderRadius: 0, padding: "0 12px", fontSize: 14, fontFamily: F,
+                        outline: "none", width: "100%", boxSizing: "border-box",
+                      }}
+                    />
+                    {contactErrors.name && <p style={{ fontSize: 11, color: RED, fontFamily: F, margin: 0 }}>{contactErrors.name}</p>}
+                  </div>
+
+                  {/* Position */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                    <label style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: F }}>
+                      Funktion / Position <span style={{ color: RED }}>*</span>
+                    </label>
+                    <select
+                      value={contactPosition}
+                      onChange={(e) => { setContactPosition(e.target.value); setContactErrors((p) => ({ ...p, position: undefined })); }}
+                      style={{
+                        height: 42, border: `1px solid ${contactErrors.position ? RED : BORDER}`,
+                        borderRadius: 0, padding: "0 12px", fontSize: 14, fontFamily: F,
+                        outline: "none", width: "100%", boxSizing: "border-box",
+                        background: "#fff", color: contactPosition ? TEXT : MUTED, cursor: "pointer",
+                      }}
+                    >
+                      <option value="" disabled>Bitte wählen…</option>
+                      <option value="Geschäftsführer">Geschäftsführer (GmbH, UG)</option>
+                      <option value="Vorstandsmitglied">Vorstandsmitglied (AG)</option>
+                      <option value="Gesamtprokura">Gesamtprokura</option>
+                      <option value="Einzelprokura">Einzelprokura</option>
+                      <option value="Handlungsbevollmächtigter">Handlungsbevollmächtigter</option>
+                      <option value="Gesellschafter">Gesellschafter mit Vertretungsmacht</option>
+                    </select>
+                    {contactErrors.position && <p style={{ fontSize: 11, color: RED, fontFamily: F, margin: 0 }}>{contactErrors.position}</p>}
+                  </div>
+
+                  {/* Vertretungsberechtigung */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: F, margin: 0 }}>
+                      Vertretungsberechtigung <span style={{ color: RED }}>*</span>
+                    </p>
+                    <p style={{ fontSize: 11.5, color: MUTED, fontFamily: F, margin: 0 }}>
+                      Sind Sie im Handelsregister als Geschäftsführer oder mit Einzelvertretungsmacht eingetragen?
+                    </p>
+                    {[
+                      { value: true,  label: "Ja — ich bin Geschäftsführer oder habe Einzelvertretungsmacht", desc: "Keine weitere Vollmacht erforderlich" },
+                      { value: false, label: "Nein — ich handele auf Basis einer Vollmacht",                  desc: "Vollmacht muss in der KYC-Prüfung hochgeladen werden" },
+                    ].map((opt) => (
+                      <label
+                        key={String(opt.value)}
+                        style={{
+                          display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 14px",
+                          border: `1px solid ${isGeschaeftsfuehrer === opt.value ? BLUE : BORDER}`,
+                          backgroundColor: isGeschaeftsfuehrer === opt.value ? "rgba(21,65,148,.04)" : BG,
+                          cursor: "pointer", transition: "border-color 150ms, background-color 150ms",
+                        }}
+                      >
+                        <input
+                          type="radio" name="isGeschaeftsfuehrer"
+                          checked={isGeschaeftsfuehrer === opt.value}
+                          onChange={() => { setIsGeschaeftsfuehrer(opt.value); setContactErrors((p) => ({ ...p, auth: undefined })); }}
+                          style={{ marginTop: 3, accentColor: BLUE, flexShrink: 0 }}
+                        />
+                        <div>
+                          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: F, margin: 0 }}>{opt.label}</p>
+                          <p style={{ fontSize: 11, color: MUTED, fontFamily: F, marginTop: 2, marginBottom: 0 }}>{opt.desc}</p>
+                        </div>
+                      </label>
+                    ))}
+                    {contactErrors.auth && <p style={{ fontSize: 11, color: RED, fontFamily: F, margin: 0 }}>{contactErrors.auth}</p>}
+
+                    {/* Hinweis wenn Vollmacht benötigt */}
+                    {isGeschaeftsfuehrer === false && (
+                      <div style={{
+                        padding: "12px 14px", background: "#fffbeb",
+                        border: "1px solid #fde68a", borderLeft: "4px solid #d97706",
+                        marginTop: 4,
+                      }}>
+                        <p style={{ fontSize: 12.5, fontWeight: 700, color: "#92400e", fontFamily: F, margin: "0 0 4px" }}>
+                          Handlungsvollmacht erforderlich
+                        </p>
+                        <p style={{ fontSize: 12, color: "#78350f", fontFamily: F, margin: 0, lineHeight: 1.55 }}>
+                          Da Sie nicht als Geschäftsführer im Handelsregister eingetragen sind, müssen Sie im
+                          nächsten Schritt (KYC-Verifikation) eine von der Geschäftsführung unterzeichnete
+                          Handlungsvollmacht hochladen. Die Vollmacht muss Ihre Berechtigung zum Abschluss
+                          von Warentermingeschäften auf EUCX ausdrücklich beinhalten.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              </div>
+
+              {/* ── 4. Marktteilnehmer-Rolle ──────────────────────────── */}
               <div>
                 <SectionHead>{t("register_section_role")}</SectionHead>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -967,7 +1105,41 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* ── 4. Einwilligungen ───────────────────────────────────── */}
+              {/* ── 4. Compliance-Erklärungen (GwG) ────────────────────── */}
+              <div>
+                <SectionHead>Compliance-Erklärungen</SectionHead>
+                <div style={{
+                  backgroundColor: "rgba(21,65,148,.03)", border: "1px solid rgba(21,65,148,.12)",
+                  padding: "14px 16px", marginBottom: 14,
+                }}>
+                  <p style={{ fontSize: 11.5, color: "#374151", fontFamily: F, margin: 0, lineHeight: 1.55 }}>
+                    Gemäß § 3 GwG (Geldwäschegesetz) und der EU-Geldwäscherichtlinie 2015/849 sind
+                    Marktteilnehmer auf regulierten Handelsmärkten zur folgenden Selbstauskunft verpflichtet.
+                  </p>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                  <ConsentBox
+                    name="consentPep" checked={consentPep}
+                    onChange={setConsentPep} error={consentErrors.pep}
+                  >
+                    <strong style={{ fontWeight: 600, color: "#1f2937" }}>PEP-Erklärung: </strong>
+                    Ich erkläre, dass weder ich persönlich noch Gesellschafter mit mehr als 25 % Unternehmensanteil
+                    eine politisch exponierte Person (PEP) im Sinne des § 2 Abs. 12 GwG sind oder waren.
+                    Ich werde EUCX unverzüglich informieren, sollte sich dieser Status ändern.
+                  </ConsentBox>
+                  <ConsentBox
+                    name="consentUbo" checked={consentUbo}
+                    onChange={setConsentUbo} error={consentErrors.ubo}
+                  >
+                    <strong style={{ fontWeight: 600, color: "#1f2937" }}>UBO-Erklärung: </strong>
+                    Ich erkläre, dass alle wirtschaftlich Berechtigten (Gesellschafter mit mehr als 25 % Anteil)
+                    gemäß § 19 GwG im Transparenzregister eingetragen sind und keine abweichenden wirtschaftlich
+                    Berechtigten existieren. Ich verpflichte mich, Änderungen unverzüglich zu melden.
+                  </ConsentBox>
+                </div>
+              </div>
+
+              {/* ── 5. Einwilligungen ───────────────────────────────────── */}
               <div>
                 <SectionHead>{t("register_section_consent")}</SectionHead>
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

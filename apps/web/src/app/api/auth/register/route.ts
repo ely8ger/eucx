@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { email, password, organizationName, taxId, lei, country, city, street, postalCode, phone, hrb, legalForm, foundedAt, naceCode, role } = parsed.data;
+    const { email, password, organizationName, taxId, lei, country, city, street, postalCode, phone, hrb, legalForm, foundedAt, naceCode, role, contactName, contactPosition, isGeschaeftsfuehrer } = parsed.data;
 
     // Duplikat-Prüfung
     const existing = await db.user.findUnique({ where: { email } });
@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
         name: organizationName, taxId, lei, country, city,
         street, postalCode, phone, hrb, legalForm, naceCode,
         foundedAt: foundedAt ? new Date(foundedAt) : undefined,
+        contactName, contactPosition, isGeschaeftsfuehrer,
       },
     });
     const user = await db.user.create({

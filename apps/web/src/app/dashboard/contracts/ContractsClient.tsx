@@ -245,6 +245,7 @@ export function ContractsClient() {
                     <th>Verkäufer</th>
                     <th>Meine Gebühr</th>
                     <th></th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -282,6 +283,14 @@ export function ContractsClient() {
                         >
                           {downloading === c.contractNumber ? "…" : "PDF"}
                         </button>
+                      </td>
+                      <td>
+                        <a
+                          href={`/dashboard/contracts/${c.id}`}
+                          style={{ padding: "6px 12px", background: "transparent", color: "#154194", border: "1px solid #154194", fontSize: 12, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", textDecoration: "none", display: "inline-block" }}
+                        >
+                          Abwicklung →
+                        </a>
                       </td>
                     </tr>
                   ))}
