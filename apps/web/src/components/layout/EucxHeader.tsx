@@ -58,7 +58,7 @@ const NAV: Record<string, NavItem[]> = {
   seller: [
     { label: "Ausschreibungen",    href: "/dashboard/seller/auctions",   activePrefix: "/dashboard/seller/auctions" },
     { label: "Lagerbestand",       href: "/dashboard/seller/inventory",  activePrefix: "/dashboard/seller/inventory" },
-    { label: "Aktive Gebote",      href: "/dashboard/seller/auctions",   activePrefix: "/dashboard/seller/auction" },
+    { label: "Aktive Gebote",      href: "/dashboard/seller/auctions",   activePrefix: "/dashboard/seller/auction/" },
     { label: "Lieferungen",        href: "/dashboard/seller/logistics",  activePrefix: "/dashboard/seller/logistics" },
     { label: "Abrechnung",         href: "/dashboard/seller/billing",    activePrefix: "/dashboard/seller/billing" },
   ],
