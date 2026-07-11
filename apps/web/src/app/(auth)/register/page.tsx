@@ -15,12 +15,40 @@ const BORDER = "#d4d8e0";
 const BG     = "#f7f9fc";
 
 // Corporate-only domains - free providers are rejected
-const FREE_DOMAINS = [
-  "gmail.com","yahoo.com","yahoo.de","hotmail.com","hotmail.de",
-  "outlook.com","outlook.de","gmx.de","gmx.net","gmx.at","gmx.ch",
-  "web.de","t-online.de","icloud.com","me.com","mac.com",
-  "protonmail.com","proton.me","mailbox.org","posteo.de",
-];
+const FREE_DOMAINS = new Set([
+  // Major free providers
+  "gmail.com","yahoo.com","yahoo.de","yahoo.fr","yahoo.co.uk","yahoo.it","yahoo.es","yahoo.at",
+  "hotmail.com","hotmail.de","hotmail.fr","hotmail.co.uk","hotmail.it","hotmail.es","hotmail.be",
+  "outlook.com","outlook.de","live.com","live.de","windowslive.com","msn.com",
+  "gmx.de","gmx.net","gmx.at","gmx.ch","gmx.com",
+  "web.de","t-online.de","freenet.de","arcor.de","online.de",
+  "icloud.com","me.com","mac.com",
+  "aol.com","yandex.com","yandex.ru","mail.ru",
+  "seznam.cz","orange.fr","sfr.fr","laposte.net","libero.it",
+  // Privacy/encrypted (compliant usage requires corporate domain)
+  "protonmail.com","proton.me","pm.me","protonmail.ch",
+  "mailbox.org","posteo.de","tutanota.com","tutamail.com","tuta.io",
+  // Disposable / temp mail services
+  "mailinator.com","mailinator2.com",
+  "guerrillamail.com","guerrillamail.net","guerrillamail.org","guerrillamail.de",
+  "guerrillamail.info","guerrillamailblock.com","sharklasers.com","grr.la","spam4.me",
+  "10minutemail.com","10minutemail.net","10minutemail.org","10minutemail.de",
+  "20minutemail.com","30minutemail.com",
+  "trashmail.com","trashmail.me","trashmail.net","trashmail.at","trashmail.io","trashmail.org",
+  "yopmail.com","yopmail.fr","cool.fr.nf","jetable.fr.nf","nospam.ze.tc",
+  "nomail.xl.cx","mega.zik.dj","speed.1s.fr","courriel.fr.nf","moncourrier.fr.nf",
+  "monemail.fr.nf","monmail.fr.nf",
+  "tempmail.com","temp-mail.org","tempmail.net","tempmail.de",
+  "mailnull.com","dispostable.com","throwam.com","fakeinbox.com",
+  "mailscrap.com","mintemail.com","discard.email","maildrop.cc",
+  "mailtemp.info","getnada.com","nada.email","filzmail.com",
+  "spamgourmet.com","spamgourmet.net","spamfree24.org","spamhereplease.com",
+  "emailondeck.com","33mail.com","getairmail.com","mailexpire.com",
+  "throwaway.email","throwam.com","crap.handcrafted.jp",
+  "meltmail.com","mailbucket.org","put2.net","smellfear.com",
+  "hatespam.org","wuzupmail.net","superrito.com","kurzepost.de",
+  "objectmail.com","ownmail.net","pecinan.com","safetymail.info",
+]);
 
 const EU_COUNTRIES: { code: string; name: string }[] = [
   { code: "DE", name: "Deutschland" },
@@ -90,7 +118,7 @@ function parseViesAddress(raw: string): { street?: string; postalCode?: string; 
 
 function isFreeEmail(email: string): boolean {
   const domain = email.split("@")[1]?.toLowerCase() ?? "";
-  return FREE_DOMAINS.includes(domain);
+  return FREE_DOMAINS.has(domain);
 }
 
 // ── Section Heading ───────────────────────────────────────────────────────────
@@ -109,25 +137,26 @@ function SectionHead({ children }: { children: React.ReactNode }) {
 
 // ── Field ─────────────────────────────────────────────────────────────────────
 interface FieldProps {
-  id?:         string;
-  label:       string;
-  name:        string;
-  type?:       string;
-  placeholder?: string;
-  hint?:       string;
-  required?:   boolean;
-  error?:      string;
-  success?:    string;
-  value?:      string;
-  onChange?:   (v: string) => void;
-  onBlur?:     () => void;
-  readOnly?:   boolean;
-  maxLength?:  number;
+  id?:              string;
+  label:            string;
+  name:             string;
+  type?:            string;
+  placeholder?:     string;
+  hint?:            string;
+  required?:        boolean;
+  error?:           string;
+  success?:         string;
+  value?:           string;
+  onChange?:        (v: string) => void;
+  onBlur?:          () => void;
+  readOnly?:        boolean;
+  maxLength?:       number;
+  onErrorIconClick?: () => void;
 }
 
 function Field({
   id, label, name, type = "text", placeholder, hint, required,
-  error, success, value, onChange, onBlur, readOnly, maxLength,
+  error, success, value, onChange, onBlur, readOnly, maxLength, onErrorIconClick,
 }: FieldProps) {
   const [focused, setFocused] = useState(false);
   const eid = id ?? name;
@@ -174,7 +203,12 @@ function Field({
         )}
         {error && (
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
-            style={{ position: "absolute", right: 11, top: 13, color: RED, pointerEvents: "none" }}>
+            onClick={onErrorIconClick}
+            style={{
+              position: "absolute", right: 11, top: 13, color: RED,
+              pointerEvents: onErrorIconClick ? "auto" : "none",
+              cursor: onErrorIconClick ? "pointer" : "default",
+            }}>
             <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.4"/>
             <line x1="8" y1="5" x2="8" y2="9.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
             <circle cx="8" cy="11.5" r="0.8" fill="currentColor"/>
@@ -516,9 +550,10 @@ export default function RegisterPage() {
   }
 
   // Field-level errors
-  const [emailError, setEmailError] = useState("");
-  const [pwError,    setPwError]    = useState("");
-  const [phoneError, setPhoneError] = useState("");
+  const [emailError,    setEmailError]    = useState("");
+  const [showEmailHint, setShowEmailHint] = useState(false);
+  const [pwError,       setPwError]       = useState("");
+  const [phoneError,    setPhoneError]    = useState("");
 
   // Consent checkboxes
   const [consentDsgvo, setConsentDsgvo] = useState(false);
@@ -801,15 +836,40 @@ export default function RegisterPage() {
               <div>
                 <SectionHead>{t("register_section_access")}</SectionHead>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                  <Field
-                    label={t("register_email")} name="email" type="email" required
-                    placeholder="name@firma.de"
-                    error={emailError}
-                    onBlur={() => {
-                      const el = document.getElementById("email") as HTMLInputElement | null;
-                      if (el) validateEmail(el.value);
-                    }}
-                  />
+                  <div>
+                    <Field
+                      label={t("register_email")} name="email" type="email" required
+                      placeholder="name@firma.de"
+                      error={emailError}
+                      onBlur={() => {
+                        const el = document.getElementById("email") as HTMLInputElement | null;
+                        if (el) validateEmail(el.value);
+                      }}
+                      onErrorIconClick={() => setShowEmailHint(v => !v)}
+                    />
+                    {showEmailHint && emailError && (
+                      <div style={{
+                        marginTop: 6,
+                        padding: "10px 13px",
+                        background: "#eff4ff",
+                        border: "1px solid #c7d7f5",
+                        borderLeft: `3px solid ${BLUE}`,
+                        fontSize: 12,
+                        color: TEXT,
+                        fontFamily: F,
+                        lineHeight: 1.55,
+                      }}>
+                        <strong style={{ display: "block", marginBottom: 4, color: BLUE, fontSize: 12 }}>
+                          Was ist eine Geschäfts-E-Mail?
+                        </strong>
+                        Eine Geschäfts-E-Mail enthält die Domain Ihres Unternehmens nach dem @-Zeichen,
+                        z.&nbsp;B.&nbsp;<span style={{ fontWeight: 600 }}>vorname.nachname@ihrefirma.de</span>.
+                        {" "}Kostenlose Anbieter wie Gmail, GMX, Proton&nbsp;Mail oder temporäre Dienste
+                        werden aus Compliance-Gründen (GwG) nicht akzeptiert.
+                        Kontaktieren Sie Ihre IT-Abteilung, falls Sie noch keine Unternehmens-E-Mail besitzen.
+                      </div>
+                    )}
+                  </div>
                   <Field
                     label={t("register_password")} name="password" type="password" required
                     hint={t("register_pw_hint")}
