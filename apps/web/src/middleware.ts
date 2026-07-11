@@ -71,12 +71,19 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  const token = req.cookies.get("access_token")?.value;
+  const token        = req.cookies.get("access_token")?.value;
+  const refreshToken = req.cookies.get("refresh_token")?.value;
+
+  // Kein Access Token → prüfen ob Refresh Token vorhanden ist.
+  // Falls ja: Seite durchlassen, AuthGuard im Client übernimmt den Refresh.
+  // Falls nein: direkt zu /login.
   if (!token) {
+    if (refreshToken) return NextResponse.next();
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
   }
+
   try {
     const payload = await verifyAccessToken(token);
 
@@ -102,7 +109,6 @@ export async function middleware(req: NextRequest) {
     }
 
     // Alte /(app)/ Routen → rollenbasierter Redirect auf neue Struktur
-    // /dashboard (exakt) und Legacy-Seiten ohne Rollentrennung
     const OLD_ROUTES = ["/orders", "/trading", "/portfolio", "/deals", "/reports", "/products", "/personal", "/kyc"];
     const isOldDashboard = pathname === "/dashboard";
     const isOldRoute     = OLD_ROUTES.some((p) => pathname === p || pathname.startsWith(p + "/"));
@@ -114,12 +120,14 @@ export async function middleware(req: NextRequest) {
       if (payload.role === "SELLER") {
         return NextResponse.redirect(new URL("/dashboard/seller", req.url));
       }
-      // BUYER und alle anderen → Käufer-Dashboard
       return NextResponse.redirect(new URL("/dashboard/buyer", req.url));
     }
 
     return NextResponse.next();
   } catch {
+    // Access Token ungültig (abgelaufen) → Refresh Token prüfen.
+    // Falls vorhanden: Seite durchlassen, AuthGuard übernimmt den Refresh.
+    if (refreshToken) return NextResponse.next();
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("next", pathname);
     const res = NextResponse.redirect(loginUrl);
