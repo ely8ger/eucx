@@ -9,6 +9,8 @@ interface OcAddress {
 interface OcCompany {
   name:                string;
   company_number?:     string;
+  company_type?:       string;
+  incorporation_date?: string;
   registered_address?: OcAddress;
 }
 
@@ -59,10 +61,13 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       found:      true,
-      name:       co.name ?? null,
-      street:     addr?.street_address ?? null,
-      postalCode: addr?.postal_code    ?? null,
-      city:       addr?.locality       ?? null,
+      name:       co.name                ?? null,
+      hrb:        co.company_number      ?? null,
+      legalForm:  co.company_type        ?? null,
+      foundedAt:  co.incorporation_date  ?? null,
+      street:     addr?.street_address   ?? null,
+      postalCode: addr?.postal_code      ?? null,
+      city:       addr?.locality         ?? null,
     });
   } catch {
     return NextResponse.json({ found: false, error: "Verbindungsfehler." }, { status: 503 });

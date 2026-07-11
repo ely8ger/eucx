@@ -383,8 +383,11 @@ function VatField({
 }
 
 // ── HRB Field with Handelsregister Lookup ─────────────────────────────────────
-function HrbField({ onFound }: { onFound: (data: CompanyData) => void }) {
-  const [value,  setValue]  = useState("");
+function HrbField({ value, onChange, onFound }: {
+  value:    string;
+  onChange: (v: string) => void;
+  onFound:  (data: CompanyData) => void;
+}) {
   const [status, setStatus] = useState<HrbStatus>("idle");
 
   async function lookup() {
@@ -396,7 +399,7 @@ function HrbField({ onFound }: { onFound: (data: CompanyData) => void }) {
       const data = await res.json() as { found: boolean } & CompanyData;
       if (data.found) {
         setStatus("found");
-        onFound({ name: data.name, street: data.street, postalCode: data.postalCode, city: data.city });
+        onFound({ name: data.name, hrb: data.hrb, legalForm: data.legalForm, foundedAt: data.foundedAt, street: data.street, postalCode: data.postalCode, city: data.city });
       } else {
         setStatus("notfound");
       }
@@ -417,7 +420,7 @@ function HrbField({ onFound }: { onFound: (data: CompanyData) => void }) {
           id="hrb" name="hrb" type="text"
           placeholder="HRB 123456 Frankfurt"
           value={value}
-          onChange={(e) => { setValue(e.target.value); if (status !== "idle") setStatus("idle"); }}
+          onChange={(e) => { onChange(e.target.value); if (status !== "idle") setStatus("idle"); }}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void lookup(); } }}
           style={{
             flex: 1, height: 42, borderRadius: 0,
@@ -963,14 +966,13 @@ export default function RegisterPage() {
                     hint={t("register_org_hint")}
                   />
 
-                  {/* Rechtsform + Gründungsdatum — auto-fill */}
+                  {/* Rechtsform + Gründungsdatum */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                     <Field
                       label="Rechtsform" name="legalForm"
                       placeholder="GmbH"
                       value={legalForm}
                       onChange={setLegalForm}
-                      hint="Wird automatisch befüllt"
                     />
                     <Field
                       label="Gründungsdatum" name="foundedAt"
@@ -978,17 +980,14 @@ export default function RegisterPage() {
                       placeholder=""
                       value={foundedAt}
                       onChange={setFoundedAt}
-                      hint="Wird automatisch befüllt"
                     />
                   </div>
 
                   {/* HRB mit Handelsregister-Prüfung + Auto-Fill */}
-                  <Field
-                    label="Handelsregisternummer (HRB)" name="hrb"
-                    placeholder="HRB 123456 Frankfurt"
+                  <HrbField
                     value={hrb}
                     onChange={setHrb}
-                    hint="Optional — wird automatisch aus dem Handelsregister befüllt"
+                    onFound={(data) => applyCompanyData(data)}
                   />
 
                   {/* Anschrift — auto-fill aus VIES oder HRB */}
