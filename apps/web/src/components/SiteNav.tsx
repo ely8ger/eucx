@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowRight, Lock, ShieldCheck, X } from "lucide-react";
 import { EucxLogo } from "@/components/logo/EucxLogo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -19,11 +20,25 @@ interface Props {
 
 export function SiteNav({ activeHref, rootPage = false }: Props) {
   const { t } = useI18n();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [dropdown, setDropdown] = useState<string | null>(null);
   const [mobileInsights, setMobileInsights] = useState(false);
 
   const prefix = rootPage ? "" : "/";
+
+  // Aktiver Pfad: explizites Prop gewinnt, sonst automatisch aus URL
+  const activePath = activeHref ?? pathname;
+
+  function navItemActive(href: string): boolean {
+    if (href.startsWith("#") || href.startsWith("/#")) return false;
+    return activePath === href || activePath.startsWith(href + "/");
+  }
+
+  const insightsActive =
+    activePath === "/insights" ||
+    activePath.startsWith("/insights/") ||
+    activePath === "/marktpreise";
 
   const NAV: { label: string; href: string }[] = [
     { label: t("nav_katalog"),    href: "/katalog" },
@@ -178,28 +193,28 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
           <nav style={{ display: "flex", alignItems: "stretch", flex: 1, gap: 0 }}
             className="hidden-mobile">
             {NAV.map(({ label, href }) => {
-              const isActive = activeHref === href;
+              const active = navItemActive(href);
               return (
                 <a key={href} href={href}
                   style={{
-                    fontSize: 13, fontWeight: isActive ? 600 : 400,
-                    color: isActive ? BLUE : "#3a3a3a",
+                    fontSize: 13, fontWeight: active ? 600 : 400,
+                    color: active ? BLUE : "#3a3a3a",
                     padding: "0 18px", height: 68,
                     display: "flex", alignItems: "center",
-                    borderBottom: isActive ? `2px solid ${BLUE}` : "2px solid transparent",
+                    borderBottom: active ? `2px solid ${BLUE}` : "2px solid transparent",
                     textDecoration: "none",
                     whiteSpace: "nowrap",
                     transition: "color .15s, border-color .15s",
                     letterSpacing: "0.01em",
                   }}
                   onMouseEnter={e => {
-                    if (!isActive) {
+                    if (!active) {
                       e.currentTarget.style.color = BLUE;
                       e.currentTarget.style.borderBottomColor = "rgba(21,65,148,.3)";
                     }
                   }}
                   onMouseLeave={e => {
-                    if (!isActive) {
+                    if (!active) {
                       e.currentTarget.style.color = "#3a3a3a";
                       e.currentTarget.style.borderBottomColor = "transparent";
                     }
@@ -217,11 +232,11 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
               <Link href="/insights"
                 style={{
                   fontSize: 13,
-                  fontWeight: activeHref === "/insights" ? 600 : 400,
-                  color: (activeHref === "/insights" || dropdown === "insights") ? BLUE : "#3a3a3a",
+                  fontWeight: insightsActive ? 600 : 400,
+                  color: (insightsActive || dropdown === "insights") ? BLUE : "#3a3a3a",
                   padding: "0 18px", height: 68,
                   display: "flex", alignItems: "center", gap: 5,
-                  borderBottom: activeHref === "/insights" ? `2px solid ${BLUE}` : dropdown === "insights" ? `2px solid rgba(21,65,148,.25)` : "2px solid transparent",
+                  borderBottom: insightsActive ? `2px solid ${BLUE}` : dropdown === "insights" ? `2px solid rgba(21,65,148,.25)` : "2px solid transparent",
                   textDecoration: "none", whiteSpace: "nowrap",
                   transition: "color .15s",
                 }}>
