@@ -22,12 +22,12 @@ export async function signAccessToken(payload: Omit<TokenPayload, keyof JWTPaylo
     .sign(JWT_SECRET);
 }
 
-// Refresh Token: 7 Tage
+// Refresh Token: 90 Tage
 export async function signRefreshToken(userId: string): Promise<string> {
   return new SignJWT({ userId, type: "refresh" })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("7d")
+    .setExpirationTime("90d")
     .setIssuer("eucx.eu")
     .sign(JWT_SECRET);
 }
