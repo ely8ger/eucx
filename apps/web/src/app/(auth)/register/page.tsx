@@ -529,6 +529,7 @@ export default function RegisterPage() {
 
   async function validateLei(value: string) {
     const v = value.trim().toUpperCase();
+    if (!v) { setLeiError(""); setLeiStatus("idle"); return; }
     if (v.length !== 20) { setLeiError("LEI muss genau 20 Zeichen lang sein."); return; }
     setLeiStatus("loading"); setLeiError("");
     try {
@@ -906,18 +907,18 @@ export default function RegisterPage() {
                     onValidated={(data) => { if (data) applyCompanyData(data); }}
                   />
 
-                  {/* LEI — MiFID II Pflichtfeld */}
+                  {/* LEI — optional */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                     <label htmlFor="lei" style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: F }}>
-                      LEI-Nummer (Legal Entity Identifier)<span style={{ color: RED, marginLeft: 3 }}>*</span>
+                      LEI-Nummer (Legal Entity Identifier)
                     </label>
                     <div style={{ position: "relative" }}>
                       <input
-                        id="lei" name="lei" type="text" required maxLength={20}
+                        id="lei" name="lei" type="text" maxLength={20}
                         placeholder="5299000J2N45DDNE4Y28"
                         value={lei}
                         onChange={(e) => { setLei(e.target.value.toUpperCase()); setLeiStatus("idle"); setLeiError(""); }}
-                        onBlur={() => { if (lei.trim().length === 20) void validateLei(lei); }}
+                        onBlur={() => { void validateLei(lei); }}
                         style={{
                           height: 42, borderRadius: 0, width: "100%", boxSizing: "border-box",
                           border: `1px solid ${leiStatus === "valid" ? GREEN : leiStatus === "invalid" ? RED : leiStatus === "unavailable" ? "#b45309" : BORDER}`,
@@ -951,7 +952,7 @@ export default function RegisterPage() {
                     {leiStatus === "valid"       && <p style={{ fontSize: 11, color: GREEN,    fontFamily: F, margin: 0 }}>Aktive LEI verifiziert via GLEIF.</p>}
                     {leiStatus === "unavailable" && <p style={{ fontSize: 11, color: "#b45309", fontFamily: F, margin: 0 }}>GLEIF vorübergehend nicht erreichbar — wird manuell geprüft.</p>}
                     {leiError                   && <p style={{ fontSize: 11, color: RED,      fontFamily: F, margin: 0 }}>{leiError}</p>}
-                    {leiStatus === "idle"        && <p style={{ fontSize: 11, color: MUTED,    fontFamily: F, margin: 0 }}>MiFID II Pflicht — 20-stellige Kennnummer. Noch keine LEI? lei.info/register</p>}
+                    {leiStatus === "idle"        && <p style={{ fontSize: 11, color: MUTED,    fontFamily: F, margin: 0 }}>Optional — 20-stellige Kennnummer. Wird bei Eingabe automatisch über GLEIF geprüft.</p>}
                   </div>
 
                   <Field
