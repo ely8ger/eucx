@@ -149,7 +149,7 @@ const fmtDate = (iso: string) =>
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
-export function BuyerLotsClient() {
+export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "all" | "collection" | "active" | "conclusion" }) {
   const router = useRouter();
   const [token,        setToken]        = useState("");
   const [kyc,          setKyc]          = useState<KycInfo | null>(null);
@@ -160,7 +160,7 @@ export function BuyerLotsClient() {
   const [opening,       setOpening]       = useState<string | null>(null);
   const [submitting,    setSubmitting]    = useState(false);
   const [openingLotId,  setOpeningLotId]  = useState<string | null>(null);
-  const [activeTab,     setActiveTab]     = useState<"all" | "collection" | "active" | "conclusion">("all");
+  const [activeTab,     setActiveTab]     = useState<"all" | "collection" | "active" | "conclusion">(initialFilter);
 
   // Form state
   const [commodity,        setCommodity]        = useState("");
