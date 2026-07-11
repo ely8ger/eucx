@@ -868,7 +868,6 @@ export function BuyerLotsClient() {
                     >
                       {catalogOpen ? "▲" : "▼"}
                     </button>
-                  </div>
 
                   {/* Ergebnis-Dropdown */}
                   {catalogOpen && catalogResults.length > 0 && (
