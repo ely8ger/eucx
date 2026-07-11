@@ -59,7 +59,7 @@ const PHASE_COLOR: Record<string, string> = {
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
-export function SellerLotsClient() {
+export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "all" | "mine" | "active" }) {
   const router = useRouter();
   const [token,        setToken]        = useState("");
   const [hydrated,     setHydrated]     = useState(false);
@@ -67,7 +67,7 @@ export function SellerLotsClient() {
   const [loading,      setLoading]      = useState(true);
   const [kyc,          setKyc]          = useState<KycInfo | null>(null);
   const [registering,  setRegistering]  = useState<string | null>(null);
-  const [filter,       setFilter]       = useState<"all" | "mine" | "active">("all");
+  const [filter,       setFilter]       = useState<"all" | "mine" | "active">(initialFilter);
 
   // ── Token + Auth-Redirect ──────────────────────────────────────────
   useEffect(() => {
