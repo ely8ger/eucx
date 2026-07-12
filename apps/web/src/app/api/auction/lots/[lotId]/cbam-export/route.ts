@@ -35,9 +35,18 @@ export async function GET(
       co2PerTonne: true, countryOfOrigin: true,
       productionSiteId: true, incoterms: true,
       hsCode: true, qualityGrade: true,
+      cbamCategory: true, currentBest: true,
+      deliveryLocation: true, vatTreatment: true,
+      description: true,
       buyer: {
         select: {
-          organization: { select: { name: true, taxId: true, country: true, city: true } },
+          organization: {
+            select: {
+              name: true, taxId: true, country: true, city: true,
+              street: true, postalCode: true, hrb: true, lei: true,
+              contactName: true, contactPosition: true, legalForm: true,
+            },
+          },
         },
       },
     },
@@ -157,24 +166,30 @@ export async function GET(
 
   <h2>1. Anmelder / Importeur</h2>
   <table class="info">
-    <tr><td>Unternehmensname</td><td>${h(org.name)}</td></tr>
+    <tr><td>Unternehmensname</td><td><strong>${h(org.name)}</strong>${org.legalForm ? ` (${h(org.legalForm)})` : ""}</td></tr>
+    <tr><td>Anschrift</td><td>${[org.street, org.postalCode && org.city ? `${org.postalCode} ${org.city}` : (org.city ?? ""), org.country].filter(Boolean).map(s => h(s!)).join(", ") || "—"}</td></tr>
     <tr><td>USt-IdNr.</td><td>${h(org.taxId ?? "—")}</td></tr>
-    <tr><td>Land</td><td>${h(org.country ?? "DE")}</td></tr>
-    ${org.city ? `<tr><td>Ort</td><td>${h(org.city)}</td></tr>` : ""}
-    <tr><td>Rolle</td><td>EU-Importeur (EUImporterRole)</td></tr>
+    ${org.hrb ? `<tr><td>Handelsregisternummer</td><td>${h(org.hrb)}</td></tr>` : ""}
+    ${org.lei ? `<tr><td>LEI (Legal Entity Identifier)</td><td><span style="font-family:monospace">${h(org.lei)}</span></td></tr>` : ""}
+    ${org.contactName ? `<tr><td>Ansprechpartner / Unterzeichner</td><td>${h(org.contactName)}${org.contactPosition ? ` · ${h(org.contactPosition)}` : ""}</td></tr>` : ""}
+    <tr><td>Rolle</td><td>EU-Importeur</td></tr>
     <tr><td>Handelsplattform</td><td>EUCX — eucx.eu</td></tr>
     <tr><td>Los-ID</td><td><span style="font-family:monospace;font-size:8.5pt">${lot.id}</span></td></tr>
   </table>
 
   <h2>2. Ware / Handelsgut</h2>
   <table class="info">
-    <tr><td>Warenbezeichnung</td><td>${h(lot.commodity)}</td></tr>
+    <tr><td>Warenbezeichnung</td><td><strong>${h(lot.commodity)}</strong></td></tr>
     ${lot.qualityGrade ? `<tr><td>Güte / Qualitätsnorm</td><td>${h(lot.qualityGrade)}</td></tr>` : ""}
     ${lot.hsCode ? `<tr><td>Zolltarifnummer (HS-Code)</td><td>${h(lot.hsCode)}</td></tr>` : ""}
+    ${lot.cbamCategory ? `<tr><td>CBAM-Warengruppe (Anhang I EU 2023/956)</td><td>${h(lot.cbamCategory)}</td></tr>` : ""}
     <tr><td>Menge</td><td>${qty.toLocaleString("de-DE", { minimumFractionDigits: 2 })} ${lot.unit}</td></tr>
     <tr><td>Herkunftsland</td><td>${h(lot.countryOfOrigin ?? "—")}</td></tr>
-    ${lot.productionSiteId ? `<tr><td>Produktionsstätte (CBAM-ID)</td><td>${h(lot.productionSiteId)}</td></tr>` : ""}
-    <tr><td>Lieferbedingung (INCOTERMS 2020)</td><td>${h(lot.incoterms ?? "DAP")}</td></tr>
+    ${lot.productionSiteId ? `<tr><td>Produktionsstätte (CBAM-Registry-ID)</td><td>${h(lot.productionSiteId)}</td></tr>` : ""}
+    <tr><td>Lieferbedingung (INCOTERMS® 2020)</td><td>${h(lot.incoterms ?? "DAP")}</td></tr>
+    ${lot.deliveryLocation ? `<tr><td>Lieferort</td><td>${h(lot.deliveryLocation)}</td></tr>` : ""}
+    ${lot.vatTreatment ? `<tr><td>USt.-Behandlung</td><td>${h(lot.vatTreatment)}</td></tr>` : ""}
+    ${lot.currentBest ? `<tr><td>Transaktionswert (Zuschlagspreis)</td><td><strong>${parseFloat(lot.currentBest.toString()).toLocaleString("de-DE", { style: "currency", currency: "EUR" })} / ${lot.unit}</strong></td></tr>` : ""}
     <tr><td>Abschluss der Auktion</td><td>${lot.lockedAt ? fmtDate(lot.lockedAt) : "—"}</td></tr>
   </table>
 
@@ -226,12 +241,14 @@ export async function GET(
   <div class="signature-row">
     <div class="sig-block">
       <div class="sig-label">Ort, Datum</div>
+      <div style="font-size:8.5pt;margin-top:4px;color:#374151">${org.city ? h(org.city) + ", " : ""}________________</div>
     </div>
     <div class="sig-block">
       <div class="sig-label">Unterschrift, Stempel</div>
     </div>
     <div class="sig-block">
       <div class="sig-label">Name in Druckbuchstaben</div>
+      ${org.contactName ? `<div style="font-size:8.5pt;margin-top:4px;color:#374151">${h(org.contactName)}${org.contactPosition ? `<br/><span style="color:#9ca3af">${h(org.contactPosition)}</span>` : ""}</div>` : ""}
     </div>
   </div>
 
