@@ -467,9 +467,10 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         /* Stats row */
         .bl-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px; }
         @media (max-width:640px) { .bl-stats { grid-template-columns:repeat(2,1fr); } }
-        .bl-stat { background:#fff; border:1px solid #e5e7eb; padding:16px 18px; }
-        .bl-stat-num { font-family:"IBM Plex Mono",monospace; font-size:28px; font-weight:600; line-height:1; }
-        .bl-stat-label { font-size:11px; font-weight:700; letter-spacing:.06em; color:#9ca3af; text-transform:uppercase; margin-top:5px; }
+        .bl-stat { background:#fff; border:1px solid #e5e7eb; padding:16px 18px; position:relative; overflow:hidden; }
+        .bl-stat-num { font-family:"IBM Plex Mono",monospace; font-size:32px; font-weight:700; line-height:1; }
+        .bl-stat-label { font-size:11px; font-weight:700; letter-spacing:.06em; color:#9ca3af; text-transform:uppercase; margin-top:6px; }
+        .bl-stat-sub { font-size:10.5px; color:#c4c9d4; margin-top:5px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
         /* Heading row */
         .bl-heading-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
@@ -639,28 +640,39 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
           {/* Stats */}
           <div className="bl-stats">
-            {[
-              { num: stats.total,      label: "Ausschreibungen gesamt", color: "#0d1b2a" },
-              { num: stats.collection, label: "In Vorbereitung",        color: "#6b7280" },
-              { num: stats.active,     label: "Auktionen aktiv",        color: "#16a34a" },
-              { num: stats.concluded,  label: "Abgeschlossen",          color: "#154194" },
-            ].map((s) => (
-              <div className="bl-stat" key={s.label}>
-                <div className="bl-stat-num" style={{ color: s.color }}>{s.num}</div>
-                <div className="bl-stat-label">{s.label}</div>
-              </div>
-            ))}
+            {(() => {
+              const totalBids = lots.reduce((s, l) => s + l._count.bids, 0);
+              const totalRegs = lots.reduce((s, l) => s + l._count.registrations, 0);
+              const activeBids = lots.filter(l => l.phase === "PROPOSAL" || l.phase === "REDUCTION").reduce((s, l) => s + l._count.bids, 0);
+              const totalSavings = lots.filter(l => l.phase === "CONCLUSION" && l.startPrice && l.currentBest)
+                .reduce((s, l) => s + (Number(l.startPrice) - Number(l.currentBest)), 0);
+              return [
+                { num: stats.total,      label: "Ausschreibungen gesamt", color: "#0d1b2a", sub: totalRegs > 0 ? `${totalRegs} Registrierungen · ${totalBids} Gebote gesamt` : "Noch keine Gebote" },
+                { num: stats.collection, label: "In Vorbereitung",        color: "#6b7280", sub: "Auktion noch nicht gestartet" },
+                { num: stats.active,     label: "Auktionen aktiv",        color: "#16a34a", sub: activeBids > 0 ? `${activeBids} Gebote eingegangen` : "Warten auf Gebote" },
+                { num: stats.concluded,  label: "Abgeschlossen",          color: "#154194", sub: totalSavings > 0 ? `${totalSavings.toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 })} eingespart` : "Abwicklung abgeschlossen" },
+              ].map((s) => (
+                <div className="bl-stat" key={s.label} style={{ borderTop: `3px solid ${s.color}` }}>
+                  <div className="bl-stat-num" style={{ color: s.color }}>{s.num}</div>
+                  <div className="bl-stat-label">{s.label}</div>
+                  <div className="bl-stat-sub">{s.sub}</div>
+                </div>
+              ));
+            })()}
           </div>
 
           {/* CO₂-Widget */}
           {lotsWithCbam > 0 && (
             <div className="bl-co2-widget">
               <div className="bl-co2-main">
-                <div className="bl-co2-label">CBAM — CO₂-Fußabdruck</div>
+                <div className="bl-co2-label">CBAM — CO₂-Bilanz · Abgeschlossene Lots</div>
                 <div className="bl-co2-num">
                   {totalCo2Tonnes.toLocaleString("de-DE", { maximumFractionDigits: 2 })}
                 </div>
-                <div className="bl-co2-unit">Tonnen CO₂-Äq. (abgeschlossene Lots)</div>
+                <div className="bl-co2-unit">Tonnen CO₂-Äq. · CBAM-meldepflichtig ab 2026</div>
+                <div style={{ fontSize: 10.5, color: "#6b7280", marginTop: 5, fontWeight: 500 }}>
+                  ~{(totalCo2Tonnes * 75).toLocaleString("de-DE", { maximumFractionDigits: 0 })} € geschätzte Zertifikatkosten · Basis EU-ETS 75 €/t
+                </div>
               </div>
               <div className="bl-co2-breakdown">
                 <div className="bl-co2-item">
@@ -722,7 +734,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 { key: "active",     label: "Auktionen aktiv", count: stats.active     },
                 { key: "collection", label: "In Vorbereitung", count: stats.collection },
                 { key: "conclusion", label: "Abgeschlossen",   count: stats.concluded  },
-              ] as const).map((t) => (
+              ] as const).filter((t) => t.key === "all" || t.count > 0).map((t) => (
                 <button
                   key={t.key}
                   className={`bl-tab${activeTab === t.key ? " active" : ""}`}

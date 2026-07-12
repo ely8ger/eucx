@@ -89,10 +89,6 @@ const BREADCRUMB_MAP: Array<{
 }> = [
   // ── Käufer-Portal ──────────────────────────────────────────────────────────
   {
-    match:  (p) => p === "/dashboard/buyer",
-    config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Übersicht", pageHref: "/dashboard/buyer" }),
-  },
-  {
     match:  (p) => p.startsWith("/dashboard/buyer/auction/"),
     config: (p) => {
       const id = p.split("/").pop() ?? "";
