@@ -33,6 +33,8 @@ const PUBLIC_PREFIXES = [
   "/katalog",
   "/trading",
   "/api/market",
+  // Öffentliches Regelwerk
+  "/regelwerk",
 ];
 
 const ADMIN_ROLES = ["ADMIN", "COMPLIANCE", "SUPER_ADMIN"] as const;

@@ -24,6 +24,7 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
   const [open, setOpen] = useState(false);
   const [dropdown, setDropdown] = useState<string | null>(null);
   const [mobileInsights, setMobileInsights] = useState(false);
+  const [mobileRegelwerk, setMobileRegelwerk] = useState(false);
 
   const prefix = rootPage ? "" : "/";
 
@@ -39,6 +40,10 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
     activePath === "/insights" ||
     activePath.startsWith("/insights/") ||
     activePath === "/marktpreise";
+
+  const regelwerkActive =
+    activePath === "/regelwerk" ||
+    activePath.startsWith("/regelwerk/");
 
   const NAV: { label: string; href: string }[] = [
     { label: t("nav_katalog"),    href: "/katalog" },
@@ -109,6 +114,37 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
                 { label: "Rohstoff-Lexikon",    href: "/insights/lexikon" },
                 { label: "Händler-Akademie",    href: "/insights/akademie" },
                 { label: "EU-Regulatorik",      href: "/insights/regulatorik" },
+              ].map(item => (
+                <Link key={item.href} href={item.href} onClick={() => setOpen(false)}
+                  style={{
+                    fontSize: 14, color: "rgba(255,255,255,.6)", textDecoration: "none",
+                    padding: "10px 0", borderTop: "1px solid rgba(255,255,255,.04)", display: "block",
+                  }}>
+                  → {item.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div style={{ borderBottom: "1px solid rgba(255,255,255,.07)" }}>
+          <button
+            onClick={() => setMobileRegelwerk(v => !v)}
+            style={{
+              width: "100%", background: "none", border: "none", cursor: "pointer",
+              fontSize: 17, color: "rgba(255,255,255,.8)",
+              padding: "15px 0", display: "flex", alignItems: "center", justifyContent: "space-between",
+              fontFamily: SANS, fontWeight: 400,
+            }}>
+            Regelwerk
+            <span style={{ fontSize: 12, transition: "transform 200ms ease", transform: mobileRegelwerk ? "rotate(180deg)" : "rotate(0deg)" }}>▾</span>
+          </button>
+          {mobileRegelwerk && (
+            <div style={{ paddingBottom: 8, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 2 }}>
+              {[
+                { label: "Normative Dokumente", href: "/regelwerk/normative-dokumente" },
+                { label: "EU-Rechtsrahmen",     href: "/regelwerk/eu-rechtsrahmen" },
+                { label: "Formulare & Anträge", href: "/regelwerk/formulare" },
               ].map(item => (
                 <Link key={item.href} href={item.href} onClick={() => setOpen(false)}
                   style={{
@@ -288,6 +324,52 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
 
                   <div style={{ borderTop: "1px solid #f0f0f0", margin: "6px 0 0", padding: "8px 18px 4px" }}>
                     <Link href="/insights" style={{ fontSize: 11, color: BLUE, fontWeight: 600, textDecoration: "none" }}>Alle Inhalte →</Link>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Regelwerk Dropdown */}
+            <div
+              style={{ position: "relative", display: "flex", alignItems: "stretch" }}
+              onMouseEnter={() => setDropdown("regelwerk")}
+              onMouseLeave={() => setDropdown(null)}>
+              <Link href="/regelwerk"
+                style={{
+                  fontSize: 13,
+                  fontWeight: regelwerkActive ? 600 : 400,
+                  color: (regelwerkActive || dropdown === "regelwerk") ? BLUE : "#3a3a3a",
+                  padding: "0 18px", height: 68,
+                  display: "flex", alignItems: "center", gap: 5,
+                  borderBottom: regelwerkActive ? `2px solid ${BLUE}` : dropdown === "regelwerk" ? `2px solid rgba(21,65,148,.25)` : "2px solid transparent",
+                  textDecoration: "none", whiteSpace: "nowrap",
+                  transition: "color .15s",
+                }}>
+                Regelwerk
+                <span style={{ fontSize: 9, marginTop: 1 }}>▾</span>
+              </Link>
+              {dropdown === "regelwerk" && (
+                <div style={{
+                  position: "absolute", top: "100%", left: 0, zIndex: 300,
+                  backgroundColor: "#fff", border: "1px solid #e8e8e8",
+                  boxShadow: "0 8px 32px rgba(0,0,0,.12)",
+                  minWidth: 280, padding: "8px 0",
+                }}>
+                  {[
+                    { label: "Normative Dokumente", sub: "15 PDF-Dokumente zum Download",     href: "/regelwerk/normative-dokumente", color: "#154194" },
+                    { label: "EU-Rechtsrahmen",      sub: "Anwendbare Gesetze & Verordnungen", href: "/regelwerk/eu-rechtsrahmen",      color: "#1a5276" },
+                    { label: "Formulare & Anträge",  sub: "KYC, Mitgliedschaft, Schiedsklage", href: "/regelwerk/formulare",            color: "#145a32" },
+                  ].map(item => (
+                    <Link key={item.href} href={item.href} className="dd-item"
+                      style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "9px 18px", textDecoration: "none" }}>
+                      <div className="dd-bar" style={{ width: 3, height: 34, backgroundColor: item.color, flexShrink: 0, marginTop: 2 }} />
+                      <div>
+                        <p className="dd-title" style={{ fontSize: 13, fontWeight: 600, color: "#0d1b2a", margin: "0 0 2px" }}>{item.label}</p>
+                        <p style={{ fontSize: 11, color: "#888", margin: 0 }}>{item.sub}</p>
+                      </div>
+                    </Link>
+                  ))}
+                  <div style={{ borderTop: "1px solid #f0f0f0", margin: "6px 0 0", padding: "8px 18px 4px" }}>
+                    <Link href="/regelwerk" style={{ fontSize: 11, color: BLUE, fontWeight: 600, textDecoration: "none" }}>Regelwerk-Übersicht →</Link>
                   </div>
                 </div>
               )}
