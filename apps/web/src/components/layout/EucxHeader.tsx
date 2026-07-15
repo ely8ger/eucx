@@ -51,8 +51,8 @@ const NAV: Record<string, NavItem[]> = {
   buyer: [
     { label: "Übersicht",      href: "/dashboard/buyer",         activePrefix: "/dashboard/buyer" },
     { label: "Handelssitzung", href: "/dashboard/buyer/auctions", activePrefix: "/dashboard/buyer/auction" },
-    { label: "Aufträge",       href: "/dashboard/contracts",     activePrefix: "/dashboard/contracts" },
-    { label: "Portfolio",      href: "#", disabled: true },
+    { label: "Verträge",       href: "/dashboard/contracts",     activePrefix: "/dashboard/contracts" },
+    { label: "Portfolio",      href: "/dashboard/buyer/portfolio", activePrefix: "/dashboard/buyer/portfolio" },
     { label: "Abschlüsse",     href: "#", disabled: true },
   ],
   seller: [
@@ -68,6 +68,7 @@ const NAV: Record<string, NavItem[]> = {
     { label: "KYC-Verifikation",   href: "/dashboard/settings/verification", activePrefix: "/dashboard/settings/verification" },
     { label: "Sicherheit",         href: "/dashboard/settings/security",     activePrefix: "/dashboard/settings/security" },
     { label: "Benachrichtigungen", href: "/dashboard/settings/notifications",activePrefix: "/dashboard/settings/notifications" },
+    { label: "API-Schlüssel",      href: "/dashboard/settings/api-keys",     activePrefix: "/dashboard/settings/api-keys" },
   ],
   admin: [
     { label: "Analytik",          href: "/admin",                  activePrefix: "/admin" },
@@ -151,6 +152,14 @@ const BREADCRUMB_MAP: Array<{
   {
     match:  (p) => p === "/dashboard/settings/notifications",
     config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "Benachrichtigungen", pageHref: "/dashboard/settings/notifications" }),
+  },
+  {
+    match:  (p) => p.startsWith("/dashboard/settings/api-keys"),
+    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "API-Schlüssel", pageHref: "/dashboard/settings/api-keys" }),
+  },
+  {
+    match:  (p) => p.startsWith("/dashboard/buyer/portfolio"),
+    config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Portfolio", pageHref: "/dashboard/buyer/portfolio" }),
   },
   // ── Administration ─────────────────────────────────────────────────────────
   {
@@ -272,8 +281,12 @@ function NavLink({ item, active, accentColor }: { item: NavItem; active: boolean
 }
 
 // ─── Breadcrumb Bar ───────────────────────────────────────────────────────────
-function BreadcrumbBar({ pathname }: { pathname: string }) {
-  const crumb = resolveBreadcrumb(pathname);
+function BreadcrumbBar({ pathname, role }: { pathname: string; role?: string }) {
+  // Käufer auf Vertragsseite: bleibt im Käufer-Portal-Kontext
+  let crumb = resolveBreadcrumb(pathname);
+  if (crumb && pathname.startsWith("/dashboard/contracts") && role === "BUYER") {
+    crumb = { area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Verträge", pageHref: "/dashboard/contracts" };
+  }
   if (!crumb) return null;
 
   return (
@@ -505,7 +518,14 @@ export function EucxHeader() {
       .catch(() => {});
   }, []);
 
-  const context     = resolveContext(pathname);
+  // Käufer/Verkäufer bleiben im eigenen Nav-Kontext, auch auf /dashboard/contracts
+  const rawContext  = resolveContext(pathname);
+  const context: typeof rawContext = (
+    rawContext === "settings" &&
+    pathname.startsWith("/dashboard/contracts") &&
+    (me?.role === "BUYER" || me?.role === "SELLER")
+  ) ? (me.role === "SELLER" ? "seller" : "buyer") : rawContext;
+
   const navItems: NavItem[] = context ? (NAV[context] ?? []) : [];
   const accentColor = context === "seller" ? SELLER_CLR : BLUE;
 
@@ -612,7 +632,7 @@ export function EucxHeader() {
       </div>
 
       {/* ── Breadcrumb — scrollt mit der Seite, zeigt den exakten Pfad ─────── */}
-      <BreadcrumbBar pathname={pathname} />
+      <BreadcrumbBar pathname={pathname} role={me?.role} />
     </>
   );
 }
