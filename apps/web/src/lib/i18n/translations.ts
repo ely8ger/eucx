@@ -13,7 +13,7 @@ export type T = typeof de;
 
 const de = {
   // ── Topbar ──────────────────────────────────────────────────────────────
-  topbar:            "BaFin-regulierte Handelsplattform · Frankfurt am Main · MiFID II OTF",
+  topbar:            "Physische Spot-Warenhandelsplattform · Frankfurt am Main · GwG-konform",
   topbar_tls:        "TLS 1.3",
   topbar_dsgvo:      "DSGVO-konform",
 
@@ -30,10 +30,10 @@ const de = {
   // ── Hero ────────────────────────────────────────────────────────────────
   hero_trading_hours: "Handelssitzungen Mo–Fr 14:00–16:00 MEZ",
   hero_h1:           "Die institutionelle Warenbörse für die Europäische Union",
-  hero_sub:          "Transparentes Orderbuch, sofortige Abwicklung und BaFin-regulierter Marktbetrieb — für Metalle und Dünger & Agrarchemie.",
+  hero_sub:          "Transparentes Orderbuch, sofortige Abwicklung und physischer Spotwarenhandel — für Metalle und Dünger & Agrarchemie.",
   hero_cta_portal:   "Zum Teilnehmerportal",
   hero_cta_more:     "Mehr erfahren",
-  hero_bafin:        "BaFin-reguliert",
+  hero_bafin:        "GwG-konform",
   hero_eu:           "EU-weit zugelassen",
   hero_iso:          "ISO 27001 zertifiziert",
   hero_dsgvo:        "DSGVO-konform",
@@ -85,8 +85,8 @@ const de = {
   // ── Regulierung ─────────────────────────────────────────────────────────
   section_reg_label:     "Vertrauen & Sicherheit",
   section_reg_h2:        "Regulierung auf höchstem Niveau",
-  reg1_title:            "BaFin-regulierter Marktbetreiber",
-  reg1_desc:             "EUCX GmbH ist als Organisiertes Handelssystem (OTF) gemäß MiFID II bei der BaFin registriert und wird laufend geprüft.",
+  reg1_title:            "Physische Spot-Warenhandelsplattform",
+  reg1_desc:             "EUCX GmbH betreibt eine physische Spot-Warenhandelsplattform auf Basis von BGB/HGB und EU-Handelsrecht. Kein MiFID II-reguliertes Finanzinstitut.",
   reg2_title:            "Maximale Datensicherheit",
   reg2_desc:             "ISO 27001-zertifizierte Infrastruktur, TLS 1.3-Verschlüsselung, Zwei-Faktor-Authentifizierung für alle Teilnehmer.",
   reg3_title:            "DSGVO & EU-Compliance",
@@ -105,7 +105,7 @@ const de = {
   footer_members:        "Teilnehmer",
   footer_legal:          "Rechtliches",
   footer_copy:           "© 2026 EUCX GmbH · Frankfurt am Main · HRB 123456 AG Frankfurt",
-  footer_reg:            "Reguliert durch die BaFin · MiFID II OTF-Zulassung",
+  footer_reg:            "GwG-konforme Warenhandelsplattform · Frankfurt am Main",
   footer_wissen:         "Wissen",
   footer_support:        "Support",
   footer_registration:   "Registrierung",
@@ -210,7 +210,7 @@ const de = {
   lbl_no_products:         "Keine Produkte für die gewählten Filter gefunden.",
   lbl_no_items:            "Keine Artikel für diese Suche / Filter gefunden.",
   lbl_ab_lager:            "Nur ab Lager verfügbare Produkte anzeigen",
-  badge_bafin:             "✓ BaFin-reguliert",
+  badge_bafin:             "✓ GwG-konform",
   badge_en_normen:         "✓ EN-Normen",
   badge_sofort:            "✓ Sofortige Abwicklung",
   badge_eu_reg:            "✓ EU-Verordnung 2019/1009",
@@ -346,7 +346,7 @@ const de = {
 
   // ── Login Badges ─────────────────────────────────────────────────────
   auth_badge_tls:          "TLS 1.3 verschlüsselt",
-  auth_badge_bafin:        "BaFin-regulierter Markt",
+  auth_badge_bafin:        "GwG-konforme Handelsplattform",
 
   // ── Dashboard ────────────────────────────────────────────────────────
   dash_title:              "Handelsübersicht",
@@ -772,7 +772,7 @@ const de = {
 };
 
 const en: T = {
-  topbar:            "BaFin-regulated trading platform · Frankfurt am Main · MiFID II OTF",
+  topbar:            "Physical spot commodity platform · Frankfurt am Main · AML-compliant",
   topbar_tls:        "TLS 1.3",
   topbar_dsgvo:      "GDPR compliant",
   nav_markets:       "Market Sectors",
@@ -785,10 +785,10 @@ const en: T = {
   nav_marktpreise:   "Market Prices",
   hero_trading_hours:"Trading sessions Mon–Fri 14:00–16:00 CET",
   hero_h1:           "The Institutional Commodity Exchange for the European Union",
-  hero_sub:          "Transparent order book, instant settlement and BaFin-regulated market operations - for metals, timber, fertilizers & agrochemicals and industrial goods.",
+  hero_sub:          "Transparent order book, instant settlement and physical spot trading — for metals, timber, fertilizers & agrochemicals and industrial goods.",
   hero_cta_portal:   "Go to Member Portal",
   hero_cta_more:     "Learn More",
-  hero_bafin:        "BaFin-regulated",
+  hero_bafin:        "AML-compliant",
   hero_eu:           "EU-wide licensed",
   hero_iso:          "ISO 27001 certified",
   hero_dsgvo:        "GDPR compliant",
@@ -830,8 +830,8 @@ const en: T = {
   platform_kyc_desc:     "Full verification, audit trail and reporting",
   section_reg_label:     "Trust & Security",
   section_reg_h2:        "Regulation at the highest level",
-  reg1_title:            "BaFin-regulated market operator",
-  reg1_desc:             "EUCX GmbH is registered as an Organised Trading Facility (OTF) under MiFID II with BaFin and undergoes ongoing supervision.",
+  reg1_title:            "Physical spot commodity platform",
+  reg1_desc:             "EUCX GmbH operates a physical spot commodity platform under German and EU commercial law. Not a MiFID II-regulated financial institution.",
   reg2_title:            "Maximum data security",
   reg2_desc:             "ISO 27001-certified infrastructure, TLS 1.3 encryption, two-factor authentication for all participants.",
   reg3_title:            "GDPR & EU Compliance",
@@ -846,7 +846,7 @@ const en: T = {
   footer_members:        "Members",
   footer_legal:          "Legal",
   footer_copy:           "© 2026 EUCX GmbH · Frankfurt am Main · HRB 123456 AG Frankfurt",
-  footer_reg:            "Regulated by BaFin · MiFID II OTF licence",
+  footer_reg:            "AML-compliant commodity platform · Frankfurt am Main",
   footer_wissen:         "Knowledge",
   footer_support:        "Support",
   footer_registration:   "Registration",
@@ -945,7 +945,7 @@ const en: T = {
   lbl_no_products:         "No products found for the selected filters.",
   lbl_no_items:            "No items found for this search / filter.",
   lbl_ab_lager:            "Show only in-stock products",
-  badge_bafin:             "✓ BaFin-regulated",
+  badge_bafin:             "✓ AML-compliant",
   badge_en_normen:         "✓ EN Standards",
   badge_sofort:            "✓ Immediate Settlement",
   badge_eu_reg:            "✓ EU Regulation 2019/1009",
@@ -1081,7 +1081,7 @@ const en: T = {
 
   // ── Login Badges ─────────────────────────────────────────────────────
   auth_badge_tls:          "TLS 1.3 encrypted",
-  auth_badge_bafin:        "BaFin-regulated market",
+  auth_badge_bafin:        "AML-compliant trading platform",
 
   // ── Dashboard ────────────────────────────────────────────────────────
   dash_title:              "Trading Overview",
@@ -1503,7 +1503,7 @@ const en: T = {
 };
 
 const fr: T = {
-  topbar:            "Plateforme de trading régulée BaFin · Francfort-sur-le-Main · OTF MiFID II",
+  topbar:            "Plateforme physique de négoce de marchandises · Francfort-sur-le-Main · Conforme LBC",
   topbar_tls:        "TLS 1.3",
   topbar_dsgvo:      "Conforme RGPD",
   nav_markets:       "Marchés",
@@ -1516,10 +1516,10 @@ const fr: T = {
   nav_marktpreise:   "Prix du marché",
   hero_trading_hours:"Sessions de trading Lu–Ve 14:00–16:00 CET",
   hero_h1:           "La bourse institutionnelle de matières premières pour l'Union Européenne",
-  hero_sub:          "Carnet d'ordres transparent, règlement immédiat et opérations de marché régulées par la BaFin - pour les métaux, le bois, les engrais & agrochimie et les biens industriels.",
+  hero_sub:          "Carnet d'ordres transparent, règlement immédiat et négoce physique au comptant — pour les métaux, le bois, les engrais & agrochimie et les biens industriels.",
   hero_cta_portal:   "Accéder au portail",
   hero_cta_more:     "En savoir plus",
-  hero_bafin:        "Régulé par la BaFin",
+  hero_bafin:        "Conforme LBC",
   hero_eu:           "Agréé dans toute l'UE",
   hero_iso:          "Certifié ISO 27001",
   hero_dsgvo:        "Conforme RGPD",
@@ -1561,8 +1561,8 @@ const fr: T = {
   platform_kyc_desc:     "Vérification complète, piste d'audit et reporting",
   section_reg_label:     "Confiance & Sécurité",
   section_reg_h2:        "Réglementation au plus haut niveau",
-  reg1_title:            "Opérateur de marché régulé par la BaFin",
-  reg1_desc:             "EUCX GmbH est enregistrée comme Système de Trading Organisé (OTF) sous MiFID II auprès de la BaFin.",
+  reg1_title:            "Plateforme physique de négoce de marchandises",
+  reg1_desc:             "EUCX GmbH exploite une plateforme physique de négoce de marchandises au comptant selon le droit commercial allemand et européen.",
   reg2_title:            "Sécurité des données maximale",
   reg2_desc:             "Infrastructure certifiée ISO 27001, chiffrement TLS 1.3, authentification à deux facteurs pour tous les participants.",
   reg3_title:            "RGPD & Conformité UE",
@@ -1577,7 +1577,7 @@ const fr: T = {
   footer_members:        "Participants",
   footer_legal:          "Mentions légales",
   footer_copy:           "© 2026 EUCX GmbH · Francfort-sur-le-Main",
-  footer_reg:            "Régulé par la BaFin · Agrément OTF MiFID II",
+  footer_reg:            "Plateforme de marchandises conforme LBC · Francfort",
   footer_wissen:         "Ressources",
   footer_support:        "Support",
   footer_registration:   "Inscription",
@@ -1676,7 +1676,7 @@ const fr: T = {
   lbl_no_products:         "Aucun produit trouvé pour les filtres sélectionnés.",
   lbl_no_items:            "Aucun article trouvé.",
   lbl_ab_lager:            "Afficher uniquement les produits en stock",
-  badge_bafin:             "✓ Régulé BaFin",
+  badge_bafin:             "✓ Conforme LBC",
   badge_en_normen:         "✓ Normes EN",
   badge_sofort:            "✓ Règlement immédiat",
   badge_eu_reg:            "✓ Règlement UE 2019/1009",
@@ -1812,7 +1812,7 @@ const fr: T = {
 
   // ── Login Badges ─────────────────────────────────────────────────────
   auth_badge_tls:          "Chiffré TLS 1.3",
-  auth_badge_bafin:        "Marché régulé BaFin",
+  auth_badge_bafin:        "Plateforme conforme LBC",
 
   // ── Dashboard ────────────────────────────────────────────────────────
   dash_title:              "Aperçu du trading",
@@ -2234,7 +2234,7 @@ const fr: T = {
 };
 
 const es: T = {
-  topbar:            "Plataforma de trading regulada por BaFin · Fráncfort del Meno · OTF MiFID II",
+  topbar:            "Plataforma física de materias primas · Fráncfort del Meno · Conforme AML",
   topbar_tls:        "TLS 1.3",
   topbar_dsgvo:      "Conforme con el RGPD",
   nav_markets:       "Mercados",
@@ -2247,10 +2247,10 @@ const es: T = {
   nav_marktpreise:   "Precios de mercado",
   hero_trading_hours:"Sesiones de trading Lu–Vi 14:00–16:00 CET",
   hero_h1:           "La bolsa institucional de materias primas para la Unión Europea",
-  hero_sub:          "Libro de órdenes transparente, liquidación inmediata y operaciones de mercado reguladas por BaFin - para metales, madera, fertilizantes & agroquímicos y bienes industriales.",
+  hero_sub:          "Libro de órdenes transparente, liquidación inmediata y negociación física al contado — para metales, madera, fertilizantes & agroquímicos y bienes industriales.",
   hero_cta_portal:   "Ir al portal de miembros",
   hero_cta_more:     "Más información",
-  hero_bafin:        "Regulado por BaFin",
+  hero_bafin:        "Conforme AML",
   hero_eu:           "Autorizado en toda la UE",
   hero_iso:          "Certificado ISO 27001",
   hero_dsgvo:        "Conforme con el RGPD",
@@ -2292,8 +2292,8 @@ const es: T = {
   platform_kyc_desc:     "Verificación completa, rastro de auditoría e informes",
   section_reg_label:     "Confianza y Seguridad",
   section_reg_h2:        "Regulación al más alto nivel",
-  reg1_title:            "Operador de mercado regulado por BaFin",
-  reg1_desc:             "EUCX GmbH está registrada como Sistema de Trading Organizado (OTF) bajo MiFID II con la BaFin.",
+  reg1_title:            "Plataforma física de materias primas",
+  reg1_desc:             "EUCX GmbH opera una plataforma física de materias primas al contado conforme al derecho mercantil alemán y europeo.",
   reg2_title:            "Máxima seguridad de datos",
   reg2_desc:             "Infraestructura certificada ISO 27001, cifrado TLS 1.3, autenticación de dos factores para todos los participantes.",
   reg3_title:            "RGPD y Cumplimiento UE",
@@ -2308,7 +2308,7 @@ const es: T = {
   footer_members:        "Participantes",
   footer_legal:          "Legal",
   footer_copy:           "© 2026 EUCX GmbH · Fráncfort del Meno",
-  footer_reg:            "Regulado por BaFin · Licencia OTF MiFID II",
+  footer_reg:            "Plataforma conforme AML · Fráncfort del Meno",
   footer_wissen:         "Conocimiento",
   footer_support:        "Soporte",
   footer_registration:   "Registro",
@@ -2407,7 +2407,7 @@ const es: T = {
   lbl_no_products:         "No se encontraron productos para los filtros seleccionados.",
   lbl_no_items:            "No se encontraron artículos.",
   lbl_ab_lager:            "Mostrar solo productos en stock",
-  badge_bafin:             "✓ Regulado BaFin",
+  badge_bafin:             "✓ Conforme AML",
   badge_en_normen:         "✓ Normas EN",
   badge_sofort:            "✓ Liquidación inmediata",
   badge_eu_reg:            "✓ Reglamento UE 2019/1009",
@@ -2543,7 +2543,7 @@ const es: T = {
 
   // ── Login Badges ─────────────────────────────────────────────────────
   auth_badge_tls:          "Encriptado TLS 1.3",
-  auth_badge_bafin:        "Mercado regulado BaFin",
+  auth_badge_bafin:        "Plataforma conforme AML",
 
   // ── Dashboard ────────────────────────────────────────────────────────
   dash_title:              "Resumen de trading",
@@ -2965,7 +2965,7 @@ const es: T = {
 };
 
 const pl: T = {
-  topbar:            "Platforma handlowa regulowana przez BaFin · Frankfurt nad Menem · OTF MiFID II",
+  topbar:            "Fizyczna giełda towarowa · Frankfurt nad Menem · Zgodny z AML",
   topbar_tls:        "TLS 1.3",
   topbar_dsgvo:      "Zgodny z RODO",
   nav_markets:       "Sektory rynkowe",
@@ -2978,10 +2978,10 @@ const pl: T = {
   nav_marktpreise:   "Ceny rynkowe",
   hero_trading_hours:"Sesje handlowe Pn–Pt 14:00–16:00 CET",
   hero_h1:           "Instytucjonalna giełda towarowa dla Unii Europejskiej",
-  hero_sub:          "Przejrzysta księga zleceń, natychmiastowe rozliczenia i operacje rynkowe regulowane przez BaFin - dla metali, drewna, nawozów & agrochemikaliów i towarów przemysłowych.",
+  hero_sub:          "Przejrzysta księga zleceń, natychmiastowe rozliczenia i fizyczny handel towarami spot — dla metali, drewna, nawozów & agrochemikaliów i towarów przemysłowych.",
   hero_cta_portal:   "Przejdź do portalu",
   hero_cta_more:     "Dowiedz się więcej",
-  hero_bafin:        "Regulowany przez BaFin",
+  hero_bafin:        "Zgodny z AML",
   hero_eu:           "Licencjonowany w całej UE",
   hero_iso:          "Certyfikat ISO 27001",
   hero_dsgvo:        "Zgodny z RODO",
@@ -3023,8 +3023,8 @@ const pl: T = {
   platform_kyc_desc:     "Pełna weryfikacja, ścieżka audytu i raportowanie",
   section_reg_label:     "Zaufanie i Bezpieczeństwo",
   section_reg_h2:        "Regulacje na najwyższym poziomie",
-  reg1_title:            "Operator rynku regulowany przez BaFin",
-  reg1_desc:             "EUCX GmbH jest zarejestrowana jako Zorganizowany System Obrotu (OTF) zgodnie z MiFID II w BaFin.",
+  reg1_title:            "Fizyczna giełda towarowa spot",
+  reg1_desc:             "EUCX GmbH prowadzi fizyczną giełdę towarową spot zgodnie z niemieckim i europejskim prawem handlowym.",
   reg2_title:            "Maksymalne bezpieczeństwo danych",
   reg2_desc:             "Infrastruktura certyfikowana ISO 27001, szyfrowanie TLS 1.3, uwierzytelnianie dwuskładnikowe dla wszystkich uczestników.",
   reg3_title:            "RODO i zgodność z przepisami UE",
@@ -3039,7 +3039,7 @@ const pl: T = {
   footer_members:        "Uczestnicy",
   footer_legal:          "Informacje prawne",
   footer_copy:           "© 2026 EUCX GmbH · Frankfurt nad Menem",
-  footer_reg:            "Regulowany przez BaFin · Zezwolenie OTF MiFID II",
+  footer_reg:            "Giełda towarowa zgodna z AML · Frankfurt",
   footer_wissen:         "Wiedza",
   footer_support:        "Wsparcie",
   footer_registration:   "Rejestracja",
@@ -3138,7 +3138,7 @@ const pl: T = {
   lbl_no_products:         "Nie znaleziono produktów dla wybranych filtrów.",
   lbl_no_items:            "Nie znaleziono artykułów.",
   lbl_ab_lager:            "Pokaż tylko produkty na magazynie",
-  badge_bafin:             "✓ Regulowany BaFin",
+  badge_bafin:             "✓ Zgodny z AML",
   badge_en_normen:         "✓ Normy EN",
   badge_sofort:            "✓ Natychmiastowe rozliczenie",
   badge_eu_reg:            "✓ Rozporządzenie UE 2019/1009",
@@ -3274,7 +3274,7 @@ const pl: T = {
 
   // ── Login Badges ─────────────────────────────────────────────────────
   auth_badge_tls:          "Szyfrowane TLS 1.3",
-  auth_badge_bafin:        "Rynek regulowany BaFin",
+  auth_badge_bafin:        "Platforma zgodna z AML",
 
   // ── Dashboard ────────────────────────────────────────────────────────
   dash_title:              "Przegląd handlowy",
@@ -3696,7 +3696,7 @@ const pl: T = {
 };
 
 const ru: T = {
-  topbar:            "Торговая платформа под надзором BaFin · Франкфурт-на-Майне · OTF MiFID II",
+  topbar:            "Физическая товарная биржа · Франкфурт-на-Майне · AML-соответствие",
   topbar_tls:        "TLS 1.3",
   topbar_dsgvo:      "Соответствует GDPR",
   nav_markets:       "Рынки",
@@ -3709,10 +3709,10 @@ const ru: T = {
   nav_marktpreise:   "Рыночные цены",
   hero_trading_hours:"Торговые сессии Пн–Пт 14:00–16:00 CET",
   hero_h1:           "Институциональная товарная биржа Европейского Союза",
-  hero_sub:          "Прозрачный стакан заявок, мгновенный расчёт и рыночные операции под надзором BaFin - для металлов, древесины, удобрений & агрохимии и промышленных товаров.",
+  hero_sub:          "Прозрачный стакан заявок, мгновенный расчёт и физическая спотовая торговля товарами — для металлов, древесины, удобрений & агрохимии и промышленных товаров.",
   hero_cta_portal:   "Перейти на портал участников",
   hero_cta_more:     "Узнать больше",
-  hero_bafin:        "Надзор BaFin",
+  hero_bafin:        "Соответствие AML",
   hero_eu:           "Лицензия по всему ЕС",
   hero_iso:          "Сертификат ISO 27001",
   hero_dsgvo:        "Соответствует GDPR",
@@ -3754,8 +3754,8 @@ const ru: T = {
   platform_kyc_desc:     "Полная верификация, аудиторский след и отчётность",
   section_reg_label:     "Доверие и Безопасность",
   section_reg_h2:        "Регулирование на высшем уровне",
-  reg1_title:            "Оператор рынка под надзором BaFin",
-  reg1_desc:             "EUCX GmbH зарегистрирована как Организованная торговая система (OTF) согласно MiFID II в BaFin.",
+  reg1_title:            "Физическая товарная биржа спот",
+  reg1_desc:             "EUCX GmbH управляет физической спотовой товарной биржей в соответствии с немецким и европейским торговым законодательством.",
   reg2_title:            "Максимальная защита данных",
   reg2_desc:             "Инфраструктура с сертификатом ISO 27001, шифрование TLS 1.3, двухфакторная аутентификация для всех участников.",
   reg3_title:            "GDPR и соответствие требованиям ЕС",
@@ -3770,7 +3770,7 @@ const ru: T = {
   footer_members:        "Участники",
   footer_legal:          "Правовая информация",
   footer_copy:           "© 2026 EUCX GmbH · Франкфурт-на-Майне",
-  footer_reg:            "Под надзором BaFin · Лицензия OTF MiFID II",
+  footer_reg:            "Товарная биржа в соответствии с AML · Франкфурт",
   footer_wissen:         "База знаний",
   footer_support:        "Поддержка",
   footer_registration:   "Регистрация",
@@ -3869,7 +3869,7 @@ const ru: T = {
   lbl_no_products:         "Продукты не найдены.",
   lbl_no_items:            "Статьи не найдены.",
   lbl_ab_lager:            "Только в наличии",
-  badge_bafin:             "✓ Регулируется BaFin",
+  badge_bafin:             "✓ Соответствие AML",
   badge_en_normen:         "✓ Нормы EN",
   badge_sofort:            "✓ Мгновенный расчёт",
   badge_eu_reg:            "✓ Регламент ЕС 2019/1009",
@@ -4005,7 +4005,7 @@ const ru: T = {
 
   // ── Login Badges ─────────────────────────────────────────────────────
   auth_badge_tls:          "Шифрование TLS 1.3",
-  auth_badge_bafin:        "Рынок под надзором BaFin",
+  auth_badge_bafin:        "AML-совместимая платформа",
 
   // ── Dashboard ────────────────────────────────────────────────────────
   dash_title:              "Обзор торгов",
