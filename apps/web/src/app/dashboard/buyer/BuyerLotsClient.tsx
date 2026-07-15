@@ -670,8 +670,13 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   {totalCo2Tonnes.toLocaleString("de-DE", { maximumFractionDigits: 2 })}
                 </div>
                 <div className="bl-co2-unit">Tonnen CO₂-Äq. · CBAM-meldepflichtig ab 2026</div>
-                <div style={{ fontSize: 10.5, color: "#6b7280", marginTop: 5, fontWeight: 500 }}>
-                  ~{(totalCo2Tonnes * 75).toLocaleString("de-DE", { maximumFractionDigits: 0 })} € geschätzte Zertifikatkosten · Basis EU-ETS 75 €/t
+                <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid #e5e7eb" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".06em", color: "#9ca3af", textTransform: "uppercase" as const }}>
+                    Geschätzte Zertifikatkosten · EU-ETS 75 €/t
+                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 700, fontFamily: "'IBM Plex Mono',monospace", color: "#1e3a8a", marginTop: 2 }}>
+                    ~{(totalCo2Tonnes * 75).toLocaleString("de-DE", { maximumFractionDigits: 0 })} €
+                  </div>
                 </div>
               </div>
               <div className="bl-co2-breakdown">
@@ -1557,7 +1562,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                                   <div style={{ marginTop: 3, color: "#14532d", fontWeight: 700, fontSize: 12 }}>
                                     {fmtEur(lot.currentBest)}
                                     {savings !== null && savings > 0 && (
-                                      <div style={{ fontSize: 10, color: "#16a34a" }}>−{fmtEur(String(savings))}</div>
+                                      <div style={{ fontSize: 10, color: "#16a34a", fontWeight: 700 }}>✓ gespart: −{fmtEur(String(savings))}</div>
                                     )}
                                   </div>
                                 )}
@@ -1569,7 +1574,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                             <div>
                               <strong style={{ color: "#16a34a", fontSize: 12.5 }}>{fmtEur(lot.currentBest)}</strong>
                               {savings !== null && savings > 0 && (
-                                <div style={{ fontSize: 10, color: "#16a34a" }}>−{fmtEur(String(savings))}</div>
+                                <div style={{ fontSize: 10, color: "#16a34a", fontWeight: 700 }}>✓ gespart: −{fmtEur(String(savings))}</div>
                               )}
                             </div>
                           ) : (

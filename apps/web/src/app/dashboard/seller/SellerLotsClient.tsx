@@ -57,6 +57,13 @@ const PHASE_COLOR: Record<string, string> = {
   CONCLUSION: "#6b7280",
 };
 
+const PHASE_TOOLTIP: Record<string, string> = {
+  COLLECTION: "Sammelphase — Jetzt registrieren, um in der Angebotsphase mitzubieten",
+  PROPOSAL:   "Angebotsphase — Registrierte Verkäufer können Gebote abgeben",
+  REDUCTION:  "Reduktionsphase — Beste Gebote werden verglichen und optimiert",
+  CONCLUSION: "Abgeschlossen — Auktion beendet, Ergebnis festgestellt",
+};
+
 // ── Component ──────────────────────────────────────────────────────────────────
 
 export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "all" | "mine" | "active" }) {
@@ -135,6 +142,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
     return true;
   });
 
+  const hasCbam    = displayed.some(l => l.co2PerTonne);
   const isVerified = kyc?.verificationStatus === "VERIFIED";
 
   return (
@@ -192,6 +200,17 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
         /* Empty */
         .sl-empty { padding:60px 24px; text-align:center; color:#9ca3af; font-size:13px; background:#fff; border:1px solid #e5e7eb; }
 
+        /* Stats */
+        .sl-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px; }
+        @media(max-width:640px){.sl-stats{grid-template-columns:repeat(2,1fr);}}
+        .sl-stat { background:#fff; border:1px solid #e5e7eb; padding:16px 18px; }
+        .sl-stat-num { font-family:"IBM Plex Mono",monospace; font-size:28px; font-weight:700; line-height:1; }
+        .sl-stat-label { font-size:11px; font-weight:700; letter-spacing:.06em; color:#9ca3af; text-transform:uppercase; margin-top:6px; }
+        .sl-stat-sub { font-size:10.5px; color:#c4c9d4; margin-top:4px; }
+
+        /* Closed-registration badge */
+        .sl-badge-closed { display:inline-block; padding:4px 9px; background:#fffbeb; border:1px solid #fde68a; font-size:11px; color:#92400e; font-weight:500; }
+
         /* Loading */
         .sl-loading { color:#9ca3af; font-size:13px; padding:40px 24px; text-align:center; }
       `}</style>
@@ -240,6 +259,24 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
             </div>
           )}
 
+          {/* KPI-Statistiken */}
+          {!loading && (
+            <div className="sl-stats">
+              {[
+                { num: lots.length,                                                                      label: "Verfügbare Lots",       color: "#0d1b2a", sub: "Offene Ausschreibungen" },
+                { num: lots.filter(l => l.phase === "COLLECTION").length,                                label: "Registrierungsphase",   color: "#154194", sub: "Jetzt registrieren" },
+                { num: lots.filter(l => l.isRegistered).length,                                          label: "Meine Registrierungen", color: "#d97706", sub: "Gebote möglich" },
+                { num: lots.filter(l => (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && l.isRegistered).length, label: "Aktive Auktionen", color: "#dc2626", sub: "Gebote laufen" },
+              ].map(s => (
+                <div key={s.label} className="sl-stat" style={{ borderTop: `3px solid ${s.color}` }}>
+                  <div className="sl-stat-num" style={{ color: s.color }}>{s.num}</div>
+                  <div className="sl-stat-label">{s.label}</div>
+                  <div className="sl-stat-sub">{s.sub}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="sl-heading">Verfügbare Ausschreibungen</div>
           <div className="sl-sub">Registrieren Sie sich für Auktionen in der Sammelphase und geben Sie Angebote ab.</div>
 
@@ -285,7 +322,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                     <th>Menge</th>
                     <th>Phase</th>
                     <th>Limit / Bestes</th>
-                    <th>CBAM</th>
+                    {hasCbam && <th>CBAM</th>}
                     <th>Auktionsende</th>
                     <th>Bieter</th>
                     <th>Aktion</th>
@@ -304,7 +341,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                           {Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}
                         </td>
                         <td>
-                          <span className="sl-phase" style={{ background: phaseColor }}>
+                          <span className="sl-phase" style={{ background: phaseColor }} title={PHASE_TOOLTIP[lot.phase]}>
                             {PHASE_LABEL[lot.phase]}
                           </span>
                         </td>
@@ -317,21 +354,23 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                             <span style={{ color: "#9ca3af" }}>—</span>
                           )}
                         </td>
-                        <td style={{ fontSize: 11.5, color: "#374151", whiteSpace: "nowrap" }}>
-                          {lot.co2PerTonne ? (
-                            <div>
-                              <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 600, color: "#15803d" }}>
-                                {parseFloat(lot.co2PerTonne).toLocaleString("de-DE", { maximumFractionDigits: 1 })}
-                              </span>
-                              <span style={{ color: "#6b7280", fontSize: 10.5 }}> kg/t</span>
-                              {lot.countryOfOrigin && (
-                                <div style={{ fontSize: 10.5, color: "#9ca3af" }}>{lot.countryOfOrigin} · {lot.incoterms ?? "DAP"}</div>
-                              )}
-                            </div>
-                          ) : (
-                            <span style={{ color: "#d1d5db", fontSize: 11 }}>—</span>
-                          )}
-                        </td>
+                        {hasCbam && (
+                          <td style={{ fontSize: 11.5, color: "#374151", whiteSpace: "nowrap" }}>
+                            {lot.co2PerTonne ? (
+                              <div>
+                                <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 600, color: "#15803d" }}>
+                                  {parseFloat(lot.co2PerTonne).toLocaleString("de-DE", { maximumFractionDigits: 1 })}
+                                </span>
+                                <span style={{ color: "#6b7280", fontSize: 10.5 }}> kg/t</span>
+                                {lot.countryOfOrigin && (
+                                  <div style={{ fontSize: 10.5, color: "#9ca3af" }}>{lot.countryOfOrigin} · {lot.incoterms ?? "DAP"}</div>
+                                )}
+                              </div>
+                            ) : (
+                              <span style={{ color: "#d1d5db", fontSize: 11 }}>—</span>
+                            )}
+                          </td>
+                        )}
                         <td style={{ fontSize: 12, color: "#6b7280", whiteSpace: "nowrap" }}>
                           {lot.auctionEnd
                             ? new Date(lot.auctionEnd).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })
@@ -362,7 +401,9 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                             <span style={{ fontSize: 11.5, color: "#9ca3af" }}>KYC erforderlich</span>
                           )}
                           {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && !lot.isRegistered && (
-                            <span style={{ fontSize: 11.5, color: "#9ca3af" }}>Nicht registriert</span>
+                            <span className="sl-badge-closed" title="Registrierungsphase bereits abgeschlossen — Teilnahme an dieser Auktion nicht mehr möglich">
+                              Registrierung geschlossen
+                            </span>
                           )}
                           {lot.phase === "CONCLUSION" && lot.isRegistered && (
                             <a href={`/dashboard/seller/auction/${lot.id}`} className="sl-btn-goto" style={{ opacity: .7 }}>
