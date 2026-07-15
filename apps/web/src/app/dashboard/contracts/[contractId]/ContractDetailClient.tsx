@@ -487,10 +487,14 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
                   )}
 
                   {/* Aktion */}
-                  {(canAdvanceSeller || showCmrUpload || canConfirmBuyer || canSendPayment || (isBuyer && canDownloadCmr)) && (
+                  {(canAdvanceSeller || showCmrUpload || canConfirmBuyer || canSendPayment ||
+                    (isBuyer && canDownloadCmr) ||
+                    (isSeller && (contract.deliveryStatus === "DELIVERED" || contract.deliveryStatus === "COMPLETED"))) && (
                     <div className="cd-action">
                       {actionErr && <div className="cd-err">{actionErr}</div>}
-                      <div className="cd-action-title">Nächste Aktion</div>
+                      <div className="cd-action-title">
+                        {contract.deliveryStatus === "COMPLETED" ? "Dokumente" : "Nächste Aktion"}
+                      </div>
 
                       {/* Pickup-Code anzeigen (Seller + READY_FOR_PICKUP oder IN_TRANSIT) */}
                       {isSeller && contract.pickupCode && (
