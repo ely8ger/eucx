@@ -22,6 +22,7 @@ interface ContractDetail {
   deliveryStatus: DeliveryStatus;
   pickupCode:     string | null;
   cmrUploadedAt:  string | null;
+  paymentSentAt:  string | null;
   deliveredAt:    string | null;
   signedAtBuyer:  string | null;
   signedAtSeller: string | null;
@@ -57,12 +58,12 @@ interface ContractDetail {
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const STEPS: { key: DeliveryStatus; label: string; hint: string }[] = [
-  { key: "MATCHED",           label: "Vertrag generiert",   hint: "Kaufvertrag automatisch nach Auktionsabschluss" },
-  { key: "AWAITING_PAYMENT",  label: "Zahlung ausstehend",  hint: "Käufer überweist direkt an Verkäufer (keine Plattform)" },
-  { key: "READY_FOR_PICKUP",  label: "Bereit zur Abholung", hint: "Abholcode aktiv, Ware bereit" },
-  { key: "IN_TRANSIT",        label: "In Transport",        hint: "CMR hochgeladen, Lieferung unterwegs" },
-  { key: "DELIVERED",         label: "Geliefert",           hint: "Empfangsbestätigung durch Käufer" },
-  { key: "COMPLETED",         label: "Abgeschlossen",       hint: "CBAM-Zollquittung erhalten" },
+  { key: "MATCHED",           label: "Vertrag generiert",   hint: "Kaufvertrag automatisch nach Auktionsabschluss — beide Parteien können PDF herunterladen" },
+  { key: "AWAITING_PAYMENT",  label: "Zahlung ausstehend",  hint: "Käufer überweist direkt an Verkäufer · Käufer meldet Zahlung angewiesen · Verkäufer bestätigt Eingang" },
+  { key: "READY_FOR_PICKUP",  label: "Bereit zur Abholung", hint: "Abholcode aktiv — Verkäufer übergibt Code an Spediteur" },
+  { key: "IN_TRANSIT",        label: "In Transport",        hint: "CMR hochgeladen · Käufer bestätigt Wareneingang bei Lieferung" },
+  { key: "DELIVERED",         label: "Geliefert",           hint: "Empfangsbestätigung durch Käufer erfolgt — Verkäufer exportiert CBAM-Dokument" },
+  { key: "COMPLETED",         label: "Abgeschlossen",       hint: "Vorgang vollständig abgeschlossen" },
 ];
 
 const STATUS_IDX: Record<DeliveryStatus, number> = {
@@ -88,8 +89,8 @@ const STATUS_COLORS: Record<DeliveryStatus, string> = {
 };
 
 const NEXT_LABELS: Partial<Record<DeliveryStatus, string>> = {
-  MATCHED:          "Zahlung bestätigen",
-  AWAITING_PAYMENT: "Bereit zur Abholung melden",
+  MATCHED:          "Zahlung einfordern",
+  AWAITING_PAYMENT: "Zahlungseingang bestätigen",
   READY_FOR_PICKUP: "CMR hochgeladen — In Transport setzen",
   DELIVERED:        "Abschluss bestätigen (CBAM erhalten)",
 };
@@ -115,10 +116,11 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
   const [contract,  setContract]  = useState<ContractDetail | null>(null);
   const [loading,   setLoading]   = useState(true);
   const [error,     setError]     = useState<string | null>(null);
-  const [advancing, setAdvancing] = useState(false);
-  const [confirming,setConfirming]= useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [actionErr, setActionErr] = useState("");
+  const [advancing,      setAdvancing]      = useState(false);
+  const [confirming,     setConfirming]     = useState(false);
+  const [uploading,      setUploading]      = useState(false);
+  const [sendingPayment, setSendingPayment] = useState(false);
+  const [actionErr,      setActionErr]      = useState("");
 
   useEffect(() => {
     const tkn = localStorage.getItem("accessToken") ?? "";
@@ -149,10 +151,46 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
 
   useEffect(() => { void load(); }, [load]);
 
+  async function sendPaymentConfirmation() {
+    if (!contract) return;
+    setSendingPayment(true);
+    setActionErr("");
+    try {
+      const r = await fetch(`/api/auction/lots/${contract.lotId}/payment-sent`, {
+        method:  "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (r.ok) { await load(); }
+      else {
+        const d = await r.json() as { error?: string };
+        setActionErr(d.error ?? "Fehler beim Melden der Zahlung.");
+      }
+    } catch { setActionErr("Netzwerkfehler."); }
+    finally { setSendingPayment(false); }
+  }
+
+  async function downloadCmr() {
+    if (!contract) return;
+    try {
+      const r = await fetch(`/api/auction/lots/${contract.lotId}/cmr-download`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!r.ok) { alert("CMR nicht verfügbar."); return; }
+      const blob = await r.blob();
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement("a");
+      a.href     = url;
+      a.download = `CMR-${contract.contractNumber}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch { alert("CMR-Download fehlgeschlagen."); }
+  }
+
   async function advanceSeller() {
     if (!contract) return;
     const next = NEXT_STATUS[contract.deliveryStatus];
-    if (!next || next === "IN_TRANSIT") return;
+    // IN_TRANSIT via CMR-Upload; DELIVERED nur über Käufer-Bestätigung
+    if (!next || next === "IN_TRANSIT" || next === "DELIVERED") return;
     setAdvancing(true);
     setActionErr("");
     try {
@@ -262,14 +300,26 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
   const isSeller = contract.myRole === "seller";
   const isBuyer  = contract.myRole === "buyer";
 
-  // Seller action: all steps except IN_TRANSIT (handled via CMR upload)
+  // Seller: advance button (nicht IN_TRANSIT via CMR-Upload, nicht DELIVERED — nur Käufer)
+  const sellerNextStatus = NEXT_STATUS[contract.deliveryStatus];
   const canAdvanceSeller =
     isSeller &&
-    NEXT_STATUS[contract.deliveryStatus] !== null &&
-    NEXT_STATUS[contract.deliveryStatus] !== "IN_TRANSIT";
+    sellerNextStatus !== null &&
+    sellerNextStatus !== "IN_TRANSIT" &&
+    sellerNextStatus !== "DELIVERED";
+  // AWAITING_PAYMENT→READY_FOR_PICKUP erst wenn Käufer paymentSentAt gesetzt hat
+  const sellerAdvanceBlocked =
+    contract.deliveryStatus === "AWAITING_PAYMENT" && !contract.paymentSentAt;
 
   // Seller CMR: only READY_FOR_PICKUP → IN_TRANSIT
   const showCmrUpload = isSeller && contract.deliveryStatus === "READY_FOR_PICKUP";
+
+  // Buyer: Zahlung anweisen (nur wenn AWAITING_PAYMENT und noch nicht gemeldet)
+  const canSendPayment = isBuyer && contract.deliveryStatus === "AWAITING_PAYMENT" && !contract.paymentSentAt;
+
+  // Buyer: CMR herunterladen wenn vorhanden (IN_TRANSIT, DELIVERED, COMPLETED)
+  const canDownloadCmr = !!contract.cmrUploadedAt &&
+    ["IN_TRANSIT", "DELIVERED", "COMPLETED"].includes(contract.deliveryStatus);
 
   // Buyer: confirm receipt when IN_TRANSIT
   const canConfirmBuyer = isBuyer && contract.deliveryStatus === "IN_TRANSIT";
@@ -406,8 +456,38 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
                     {STEPS[idx]?.hint}
                   </div>
 
+                  {/* Seller: Zahlungsstatus wenn AWAITING_PAYMENT */}
+                  {isSeller && contract.deliveryStatus === "AWAITING_PAYMENT" && (
+                    <div style={{
+                      marginTop: 12,
+                      padding: "10px 14px",
+                      background: contract.paymentSentAt ? "#f0fdf4" : "#fffbeb",
+                      border: `1px solid ${contract.paymentSentAt ? "#bbf7d0" : "#fde68a"}`,
+                      fontSize: 12.5,
+                      color: contract.paymentSentAt ? "#14532d" : "#92400e",
+                    }}>
+                      {contract.paymentSentAt
+                        ? `Käufer hat Zahlung gemeldet am ${fmtDateTime(contract.paymentSentAt)} — Sie können jetzt den Zahlungseingang bestätigen.`
+                        : "Warten auf Zahlungsmeldung des Käufers. Der Käufer muss zuerst die Überweisung melden."}
+                    </div>
+                  )}
+
+                  {/* Buyer: Zahlungsinfo wenn AWAITING_PAYMENT */}
+                  {isBuyer && contract.deliveryStatus === "AWAITING_PAYMENT" && contract.paymentSentAt && (
+                    <div style={{
+                      marginTop: 12,
+                      padding: "10px 14px",
+                      background: "#f0fdf4",
+                      border: "1px solid #bbf7d0",
+                      fontSize: 12.5,
+                      color: "#14532d",
+                    }}>
+                      Zahlung gemeldet am {fmtDateTime(contract.paymentSentAt)} — Verkäufer bestätigt den Eingang.
+                    </div>
+                  )}
+
                   {/* Aktion */}
-                  {(canAdvanceSeller || showCmrUpload || canConfirmBuyer) && (
+                  {(canAdvanceSeller || showCmrUpload || canConfirmBuyer || canSendPayment || (isBuyer && canDownloadCmr)) && (
                     <div className="cd-action">
                       {actionErr && <div className="cd-err">{actionErr}</div>}
                       <div className="cd-action-title">Nächste Aktion</div>
@@ -423,7 +503,7 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
                         </div>
                       )}
 
-                      {/* CMR Upload */}
+                      {/* CMR Upload (Seller, READY_FOR_PICKUP) */}
                       {showCmrUpload && (
                         <div style={{ marginBottom: 10 }}>
                           {contract.cmrUploadedAt ? (
@@ -431,7 +511,7 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
                           ) : (
                             <>
                               <div style={{ fontSize: 12, color: "#374151", marginBottom: 6 }}>
-                                CMR-Frachtbrief hochladen (PDF) — danach In-Transit setzen:
+                                CMR-Frachtbrief hochladen (PDF) — danach wird Status automatisch auf In Transport gesetzt:
                               </div>
                               <input ref={fileRef} type="file" accept=".pdf" className="cd-file-input" />
                               <button className="cd-btn cd-btn-primary" disabled={uploading} onClick={uploadCmr}>
@@ -442,23 +522,58 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
                         </div>
                       )}
 
-                      {/* Seller advance (alle außer → IN_TRANSIT) */}
+                      {/* Seller advance */}
                       {canAdvanceSeller && (
                         <button
                           className="cd-btn cd-btn-primary"
-                          disabled={advancing}
+                          disabled={advancing || sellerAdvanceBlocked}
                           onClick={advanceSeller}
+                          title={sellerAdvanceBlocked ? "Warten Sie auf die Zahlungsmeldung des Käufers" : undefined}
                         >
                           {advancing ? "Wird gespeichert…" : NEXT_LABELS[contract.deliveryStatus] ?? "Weiter"}
                         </button>
                       )}
 
-                      {/* Buyer bestätigt Empfang */}
+                      {/* Seller: CBAM-Export wenn DELIVERED oder COMPLETED */}
+                      {isSeller && (contract.deliveryStatus === "DELIVERED" || contract.deliveryStatus === "COMPLETED") && (
+                        <button
+                          className="cd-btn"
+                          style={{ background: "#fff", color: "#374151", border: "1px solid #d1d5db", marginTop: 8 }}
+                          onClick={() => window.open(`/api/auction/lots/${contract.lotId}/cbam-export?token=${token}`, "_blank")}
+                        >
+                          CBAM-Zollquittung exportieren →
+                        </button>
+                      )}
+
+                      {/* Buyer: Zahlung anweisen */}
+                      {canSendPayment && (
+                        <button
+                          className="cd-btn cd-btn-primary"
+                          disabled={sendingPayment}
+                          onClick={sendPaymentConfirmation}
+                        >
+                          {sendingPayment ? "Wird gespeichert…" : "Zahlung angewiesen melden"}
+                        </button>
+                      )}
+
+                      {/* Buyer: CMR herunterladen */}
+                      {isBuyer && canDownloadCmr && (
+                        <button
+                          className="cd-btn"
+                          style={{ background: "#fff", color: "#374151", border: "1px solid #d1d5db", marginTop: 8 }}
+                          onClick={downloadCmr}
+                        >
+                          CMR-Frachtbrief herunterladen
+                        </button>
+                      )}
+
+                      {/* Buyer: Wareneingang bestätigen */}
                       {canConfirmBuyer && (
                         <button
                           className="cd-btn cd-btn-green"
                           disabled={confirming}
                           onClick={confirmDelivery}
+                          style={{ marginTop: 8 }}
                         >
                           {confirming ? "Wird gespeichert…" : "Wareneingang bestätigen"}
                         </button>
@@ -467,8 +582,11 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
                   )}
 
                   {/* Zeitstempel */}
-                  {(contract.deliveredAt || contract.cmrUploadedAt) && (
-                    <div style={{ marginTop: 12, fontSize: 12, color: "#6b7280", display: "flex", gap: 20 }}>
+                  {(contract.deliveredAt || contract.cmrUploadedAt || contract.paymentSentAt) && (
+                    <div style={{ marginTop: 12, fontSize: 12, color: "#6b7280", display: "flex", flexWrap: "wrap", gap: 16 }}>
+                      {contract.paymentSentAt && (
+                        <span>Zahlung gemeldet: {fmtDateTime(contract.paymentSentAt)}</span>
+                      )}
                       {contract.cmrUploadedAt && (
                         <span>CMR: {fmtDateTime(contract.cmrUploadedAt)}</span>
                       )}
@@ -550,10 +668,20 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
                       {contract.certificates.hasCbam ? "Vorhanden" : "Nicht verfügbar"}
                     </span>
                   </div>
-                  {contract.cmrUploadedAt && (
+                  {contract.cmrUploadedAt ? (
                     <div className="cd-doc-row">
                       <span className="cd-doc-name">CMR-Frachtbrief</span>
-                      <span className="cd-doc-badge-ok">Hochgeladen {fmtDate(contract.cmrUploadedAt)}</span>
+                      <button
+                        onClick={downloadCmr}
+                        style={{ padding: "4px 12px", background: "#f0fdf4", color: "#15803d", border: "1px solid #bbf7d0", fontSize: 11.5, fontWeight: 700, cursor: "pointer" }}
+                      >
+                        Herunterladen
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="cd-doc-row">
+                      <span className="cd-doc-name">CMR-Frachtbrief</span>
+                      <span className="cd-doc-badge-no">Noch nicht hochgeladen</span>
                     </div>
                   )}
                 </div>

@@ -46,8 +46,8 @@ export async function PATCH(
   catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
 
   const contract = await db.lotContract.findUnique({
-    where: { lotId },
-    select: { id: true, sellerId: true, deliveryStatus: true },
+    where:  { lotId },
+    select: { id: true, sellerId: true, deliveryStatus: true, paymentSentAt: true },
   });
   if (!contract) {
     return NextResponse.json({ error: "Kontrakt nicht gefunden" }, { status: 404 });
@@ -83,6 +83,22 @@ export async function PATCH(
   if (newIdx !== currentIdx + 1) {
     return NextResponse.json(
       { error: `Status muss schrittweise erhöht werden. Nächster erlaubter Status: '${DELIVERY_ORDER[currentIdx + 1]}'.` },
+      { status: 409 }
+    );
+  }
+
+  // IN_TRANSIT → DELIVERED: nur Käufer (via buyer-delivery-Endpunkt), nicht Verkäufer
+  if (newStatus === DeliveryStatus.DELIVERED && !isAdmin) {
+    return NextResponse.json(
+      { error: "Wareneingang kann nur vom Käufer bestätigt werden." },
+      { status: 403 }
+    );
+  }
+
+  // AWAITING_PAYMENT → READY_FOR_PICKUP: Käufer muss zuerst Zahlung gemeldet haben
+  if (newStatus === DeliveryStatus.READY_FOR_PICKUP && !contract.paymentSentAt && !isAdmin) {
+    return NextResponse.json(
+      { error: "Käufer hat die Zahlung noch nicht gemeldet. Bitte warten Sie, bis der Käufer die Überweisung bestätigt hat." },
       { status: 409 }
     );
   }

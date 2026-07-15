@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
       deliveryStatus: true,
       pickupCode:     true,
       cmrUploadedAt:  true,
+      paymentSentAt:  true,
       deliveredAt:    true,
       createdAt:      true,
       updatedAt:      true,

@@ -16,6 +16,7 @@ interface Delivery {
   deliveryStatus: DeliveryStatus;
   pickupCode:     string | null;
   cmrUploadedAt:  string | null;
+  paymentSentAt:  string | null;
   deliveredAt:    string | null;
   updatedAt:      string;
   buyer: {
@@ -30,12 +31,12 @@ interface Delivery {
 }
 
 const STEPS: { key: DeliveryStatus; label: string; hint: string }[] = [
-  { key: "MATCHED",          label: "Vertrag generiert",    hint: "Kaufvertrag nach Auktionsabschluss" },
-  { key: "AWAITING_PAYMENT",  label: "Zahlung ausstehend",   hint: "Käufer überweist direkt an Verkäufer" },
-  { key: "READY_FOR_PICKUP", label: "Bereit zur Abholung",  hint: "Ware bereit, Abholcode aktiv" },
-  { key: "IN_TRANSIT",       label: "In Transport",          hint: "CMR hochgeladen, Ware unterwegs" },
-  { key: "DELIVERED",        label: "Geliefert",             hint: "Empfangsbestätigung beim Käufer" },
-  { key: "COMPLETED",        label: "Abgeschlossen",         hint: "CBAM-Zollquittung erhalten" },
+  { key: "MATCHED",           label: "Vertrag generiert",    hint: "Kaufvertrag automatisch nach Auktionsabschluss" },
+  { key: "AWAITING_PAYMENT", label: "Zahlung ausstehend",   hint: "Käufer überweist — meldet Zahlung angewiesen, dann Verkäufer bestätigt Eingang" },
+  { key: "READY_FOR_PICKUP", label: "Bereit zur Abholung",  hint: "Abholcode aktiv, Ware bereit für Spediteur" },
+  { key: "IN_TRANSIT",       label: "In Transport",          hint: "CMR hochgeladen — Wareneingang wird vom Käufer bestätigt" },
+  { key: "DELIVERED",        label: "Geliefert",             hint: "Empfangsbestätigung durch Käufer erfolgt" },
+  { key: "COMPLETED",        label: "Abgeschlossen",         hint: "CBAM-Zollquittung exportieren und Vorgang abschließen" },
 ];
 
 const STATUS_IDX: Record<DeliveryStatus, number> = {
@@ -96,8 +97,8 @@ export function SellerLogisticsClient() {
   async function advanceStatus(delivery: Delivery) {
     const next = NEXT_STATUS[delivery.deliveryStatus];
     if (!next) return;
-    // CMR-Upload wird über separaten Button gemacht
-    if (next === "IN_TRANSIT") return;
+    // CMR-Upload via separaten Button; DELIVERED nur über Käufer-Bestätigung
+    if (next === "IN_TRANSIT" || next === "DELIVERED") return;
     setAdvancing(true);
     setError("");
     try {
@@ -364,18 +365,45 @@ export function SellerLogisticsClient() {
                     </div>
                   )}
 
+                  {/* Zahlungsstatus-Hinweis für AWAITING_PAYMENT */}
+                  {sel.deliveryStatus === "AWAITING_PAYMENT" && (
+                    <div style={{
+                      marginTop: 12,
+                      padding: "10px 14px",
+                      background: sel.paymentSentAt ? "#f0fdf4" : "#fffbeb",
+                      border: `1px solid ${sel.paymentSentAt ? "#bbf7d0" : "#fde68a"}`,
+                      fontSize: 12,
+                      color: sel.paymentSentAt ? "#14532d" : "#92400e",
+                    }}>
+                      {sel.paymentSentAt
+                        ? `Käufer hat Zahlung gemeldet: ${fmtDate(sel.paymentSentAt)}`
+                        : "Warten auf Zahlungsmeldung des Käufers…"}
+                    </div>
+                  )}
+
                   {/* Nächster Status Button */}
                   {(() => {
                     const next = NEXT_STATUS[sel.deliveryStatus];
-                    if (!next || next === "IN_TRANSIT") return null; // IN_TRANSIT via CMR-Upload
+                    // IN_TRANSIT via CMR-Upload; DELIVERED nur über Käufer
+                    if (!next || next === "IN_TRANSIT" || next === "DELIVERED") return null;
+                    // READY_FOR_PICKUP nur freischalten wenn Käufer Zahlung gemeldet hat
+                    const waitingForPayment = next === "READY_FOR_PICKUP" && !sel.paymentSentAt;
+                    const label = sel.deliveryStatus === "MATCHED"
+                      ? "Zahlung einfordern →"
+                      : sel.deliveryStatus === "AWAITING_PAYMENT"
+                        ? "Zahlungseingang bestätigen →"
+                        : sel.deliveryStatus === "DELIVERED"
+                          ? "Abschluss bestätigen →"
+                          : `→ ${STEPS[STATUS_IDX[next]]?.label ?? next}`;
                     return (
                       <button
                         className="log-btn log-btn-primary"
-                        disabled={advancing}
+                        disabled={advancing || waitingForPayment}
                         onClick={() => void advanceStatus(sel)}
                         style={{ marginTop: 14 }}
+                        title={waitingForPayment ? "Käufer muss zuerst Zahlung melden" : undefined}
                       >
-                        {advancing ? "Wird aktualisiert…" : `→ ${STEPS[STATUS_IDX[next]]?.label ?? next}`}
+                        {advancing ? "Wird aktualisiert…" : label}
                       </button>
                     );
                   })()}
@@ -404,7 +432,10 @@ export function SellerLogisticsClient() {
                   </div>
 
                   {(sel.deliveryStatus === "DELIVERED" || sel.deliveryStatus === "COMPLETED") && (
-                    <button className="log-btn log-btn-outline">
+                    <button
+                      className="log-btn log-btn-outline"
+                      onClick={() => window.open(`/api/auction/lots/${sel.lotId}/cbam-export?token=${token}`, "_blank")}
+                    >
                       CBAM-Zollquittung exportieren →
                     </button>
                   )}
