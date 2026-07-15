@@ -145,49 +145,6 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
   const hasCbam    = displayed.some(l => l.co2PerTonne);
   const isVerified = kyc?.verificationStatus === "VERIFIED";
 
-  // Marktdaten je Warengruppe aus allen geladenen Lots
-  const COMMODITY_SHORT: Record<string, string> = {
-    "Betonstahl BST 500 (Rebar)":                    "Betonstahl B500",
-    "Betonstahl BST 500S (seismisch)":               "Betonstahl B500S",
-    "Walzdraht (Wire Rod) SAE 1008":                 "Walzdraht SAE1008",
-    "Warmgewalzter Stahl S235JR (Blech / Coil)":    "S235JR Blech",
-    "Feinkornbaustahl S355JR (Blech)":               "S355JR Feinblech",
-    "HEA / HEB Stahlträger S235 / S355":            "HEA/HEB Träger",
-    "Nahtgeschweißte Hohlprofile S235JRH":          "Hohlprofile",
-    "Kupferkathoden Grade A":                        "Cu-CATH Grade A",
-    "Aluminiumbarren (Primär) EN AW-1050A":         "Al 1050A Barren",
-    "Stahlschrott HMS 1/2 (Heavy Melting Scrap)":   "HMS 1/2 Schrott",
-  };
-  interface MarketCard {
-    key: string; label: string; lotCount: number; totalQty: number; unit: string;
-    avgStart: number; bestBid: number | null; regs: number;
-    isActive: boolean; bidPct: number;
-  }
-  const mmap = new Map<string, { lots: LotRow[] }>();
-  for (const l of lots) {
-    const k = l.commodity;
-    const e = mmap.get(k) ?? { lots: [] };
-    e.lots.push(l);
-    mmap.set(k, e);
-  }
-  const marketCards: MarketCard[] = [...mmap.entries()].map(([k, { lots: ls }]) => {
-    const label    = COMMODITY_SHORT[k] ?? k.slice(0, 20);
-    const unit     = ls[0]?.unit ?? "TON";
-    const totalQty = ls.reduce((s, l) => s + Number(l.quantity), 0);
-    const withStart = ls.filter(l => l.startPrice);
-    const avgStart  = withStart.length > 0
-      ? withStart.reduce((s, l) => s + Number(l.startPrice), 0) / withStart.length
-      : 0;
-    const bids    = ls.flatMap(l => l.currentBest ? [Number(l.currentBest)] : []);
-    const bestBid = bids.length > 0 ? Math.min(...bids) : null;
-    const regs    = ls.reduce((s, l) => s + l._count.registrations, 0);
-    const isActive = ls.some(l => l.phase === "PROPOSAL" || l.phase === "REDUCTION");
-    // bidPct: wie weit das beste Gebot unter dem Startpreis liegt (0–100%)
-    const bidPct = bestBid && avgStart > 0
-      ? Math.max(0, Math.min(100, ((avgStart - bestBid) / avgStart) * 100))
-      : 0;
-    return { key: k, label, lotCount: ls.length, totalQty, unit, avgStart, bestBid, regs, isActive, bidPct };
-  }).sort((a, b) => (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0));
 
   return (
     <>
@@ -258,36 +215,6 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
         /* Loading */
         .sl-loading { color:#9ca3af; font-size:13px; padding:40px 24px; text-align:center; }
 
-        /* Markt-Panel */
-        .sl-market { margin-bottom:28px; }
-        .sl-market-head { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
-        .sl-market-title { font-size:10.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#d97706; }
-        .sl-market-line  { flex:1; height:1px; background:#e5e7eb; }
-        .sl-market-hint  { font-size:10.5px; color:#9ca3af; }
-        .sl-market-grid  { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-        @media(max-width:900px){.sl-market-grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:540px){.sl-market-grid{grid-template-columns:1fr;}}
-        .sl-mc { background:#0d1b2a; border:1px solid #1e3a5f; padding:18px 18px 14px; position:relative; overflow:hidden; }
-        .sl-mc::before { content:""; position:absolute; top:0; left:0; right:0; height:2px; background:#d97706; }
-        .sl-mc-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
-        .sl-mc-com { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#7ca4d4; }
-        .sl-mc-qty { font-size:11px; color:#4a6a8a; font-family:"IBM Plex Mono",monospace; }
-        .sl-mc-prices { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px; }
-        .sl-mc-cell { background:#0a1628; padding:8px 10px; }
-        .sl-mc-cell-lbl { font-size:9.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#4a6a8a; margin-bottom:4px; }
-        .sl-mc-cell-val { font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:700; color:#e2e8f0; font-variant-numeric:tabular-nums; white-space:nowrap; }
-        .sl-mc-cell-val.amber { color:#fbbf24; }
-        .sl-mc-cell-val.green { color:#34d399; }
-        .sl-mc-bar-wrap { margin-bottom:10px; }
-        .sl-mc-bar-lbl { display:flex; justify-content:space-between; font-size:9.5px; color:#4a6a8a; margin-bottom:4px; font-family:"IBM Plex Mono",monospace; }
-        .sl-mc-bar-track { height:4px; background:#0f2038; position:relative; }
-        .sl-mc-bar-fill  { position:absolute; top:0; left:0; height:4px; background:linear-gradient(90deg,#34d399,#d97706); transition:width .4s ease; }
-        .sl-mc-foot { display:flex; align-items:center; gap:10px; }
-        .sl-mc-status { display:flex; align-items:center; gap:5px; font-size:10.5px; color:#4a6a8a; }
-        .sl-mc-dot { width:6px; height:6px; border-radius:50%; }
-        .sl-mc-comp { margin-left:auto; font-size:10px; color:#4a6a8a; font-family:"IBM Plex Mono",monospace; }
-        .sl-mc-comp strong { color:#7ca4d4; }
-        .sl-market-empty { background:#0d1b2a; border:1px solid #1e3a5f; padding:24px; text-align:center; font-size:12px; color:#4a6a8a; }
       `}</style>
 
       <div className="sl-root">
@@ -352,94 +279,6 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                   </div>
                 );
               })}
-            </div>
-          )}
-
-          {/* Markt-Panel */}
-          {!loading && (
-            <div className="sl-market">
-              <div className="sl-market-head">
-                <span className="sl-market-title">Marktlage</span>
-                <div className="sl-market-line" />
-                <span className="sl-market-hint">Startlimit · Bestes Gebot · Biettiefe</span>
-              </div>
-
-              {marketCards.length === 0 ? (
-                <div className="sl-market-empty">
-                  Keine Marktdaten verfügbar — Ausschreibungen erscheinen hier sobald sie geladen sind.
-                </div>
-              ) : (
-                <div className="sl-market-grid">
-                  {marketCards.map((c) => {
-                    const fmtM = (n: number) =>
-                      n.toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
-                    return (
-                      <div key={c.key} className="sl-mc">
-                        {/* Kopfzeile */}
-                        <div className="sl-mc-top">
-                          <div>
-                            <div className="sl-mc-com">{c.label}</div>
-                            <div className="sl-mc-qty">
-                              {c.totalQty.toLocaleString("de-DE")} {c.unit} · {c.lotCount} Lot{c.lotCount !== 1 ? "s" : ""}
-                            </div>
-                          </div>
-                          <div className="sl-mc-status">
-                            <span className="sl-mc-dot" style={{ background: c.isActive ? "#34d399" : "#4a6a8a" }} />
-                            <span style={{ color: c.isActive ? "#34d399" : "#4a6a8a" }}>
-                              {c.isActive ? "Aktiv" : "Sammlung"}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Preiszellen */}
-                        <div className="sl-mc-prices">
-                          <div className="sl-mc-cell">
-                            <div className="sl-mc-cell-lbl">Startlimit €/t</div>
-                            <div className="sl-mc-cell-val amber">
-                              {c.avgStart > 0 ? fmtM(c.avgStart) : "—"}
-                            </div>
-                          </div>
-                          <div className="sl-mc-cell">
-                            <div className="sl-mc-cell-lbl">Bestes Gebot €/t</div>
-                            <div className="sl-mc-cell-val green">
-                              {c.bestBid !== null ? fmtM(c.bestBid) : "—"}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Biettiefe-Balken */}
-                        <div className="sl-mc-bar-wrap">
-                          <div className="sl-mc-bar-lbl">
-                            <span>Startlimit</span>
-                            <span>
-                              {c.bidPct > 0
-                                ? `−${c.bidPct.toFixed(1)}% unter Limit`
-                                : c.bestBid !== null ? "Gebot = Limit" : "Noch kein Gebot"}
-                            </span>
-                          </div>
-                          <div className="sl-mc-bar-track">
-                            <div className="sl-mc-bar-fill" style={{ width: `${Math.max(4, 100 - c.bidPct)}%` }} />
-                          </div>
-                        </div>
-
-                        {/* Fußzeile */}
-                        <div className="sl-mc-foot">
-                          <div className="sl-mc-status" style={{ fontSize: 10 }}>
-                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                              <circle cx="5" cy="5" r="4" stroke="#4a6a8a" strokeWidth="1.2"/>
-                              <path d="M5 3v2l1.2 1.2" stroke="#4a6a8a" strokeWidth="1.2" strokeLinecap="round"/>
-                            </svg>
-                            <span>Offene Auktion</span>
-                          </div>
-                          <div className="sl-mc-comp">
-                            <strong>{c.regs}</strong> Bieter registriert
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           )}
 
