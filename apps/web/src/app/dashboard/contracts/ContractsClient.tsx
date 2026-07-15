@@ -1,31 +1,58 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
+type DeliveryStatus =
+  | "MATCHED"
+  | "AWAITING_PAYMENT"
+  | "READY_FOR_PICKUP"
+  | "IN_TRANSIT"
+  | "DELIVERED"
+  | "COMPLETED";
+
 interface FeeInfo {
-  type:   "SELLER_FEE" | "BUYER_FEE";
+  type:   string;
   rate:   string;
   amount: string;
   status: "UNPAID" | "PAID";
 }
 
 interface ContractRow {
-  id:             string;
-  contractNumber: string;
-  lotId:          string;
-  commodity:      string;
-  quantity:       string;
-  unit:           string;
-  finalPrice:     string;
-  totalValue:     string;
-  buyerName:      string;
-  sellerName:     string;
-  myFee:          FeeInfo | null;
-  createdAt:      string;
+  id:              string;
+  contractNumber:  string;
+  lotId:           string;
+  commodity:       string;
+  quantity:        string;
+  unit:            string;
+  finalPrice:      string;
+  totalValue:      string;
+  deliveryStatus:  DeliveryStatus;
+  myRole:          "buyer" | "seller" | "admin";
+  counterpartyName: string;
+  myFee:           FeeInfo | null;
+  createdAt:       string;
 }
+
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+const STATUS_META: Record<DeliveryStatus, { label: string; color: string; bg: string }> = {
+  MATCHED:          { label: "Vertrag generiert",  color: "#374151", bg: "#f3f4f6" },
+  AWAITING_PAYMENT: { label: "Zahlung ausstehend", color: "#fff",    bg: "#154194" },
+  READY_FOR_PICKUP: { label: "Abholbereit",        color: "#fff",    bg: "#d97706" },
+  IN_TRANSIT:       { label: "In Transport",       color: "#fff",    bg: "#2563eb" },
+  DELIVERED:        { label: "Geliefert",          color: "#fff",    bg: "#16a34a" },
+  COMPLETED:        { label: "Abgeschlossen",      color: "#fff",    bg: "#7c3aed" },
+};
+
+const COUNTERPARTY_LABEL: Record<"buyer" | "seller" | "admin", string> = {
+  buyer:  "Verkäufer",
+  seller: "Käufer",
+  admin:  "Parteien",
+};
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -38,28 +65,25 @@ const fmtDate = (iso: string) =>
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export function ContractsClient() {
-  const [token,     setToken]     = useState("");
-  const [contracts, setContracts] = useState<ContractRow[]>([]);
-  const [loading,   setLoading]   = useState(true);
-  const [error,     setError]     = useState<string | null>(null);
+  const router = useRouter();
+  const [token,       setToken]       = useState("");
+  const [contracts,   setContracts]   = useState<ContractRow[]>([]);
+  const [loading,     setLoading]     = useState(true);
+  const [error,       setError]       = useState<string | null>(null);
   const [downloading, setDownloading] = useState<string | null>(null);
 
-  // Token aus localStorage
   useEffect(() => { setToken(localStorage.getItem("accessToken") ?? ""); }, []);
 
-  // Verträge laden
   useEffect(() => {
     if (!token) return;
-    fetch("/api/auction/contracts", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch("/api/auction/contracts", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.ok ? r.json() : Promise.reject(r.status))
       .then((d) => { setContracts(d.contracts ?? []); setLoading(false); })
       .catch(() => { setError("Verträge konnten nicht geladen werden."); setLoading(false); });
   }, [token]);
 
-  // PDF herunterladen
-  async function downloadPdf(lotId: string, contractNumber: string) {
+  async function downloadPdf(e: React.MouseEvent, lotId: string, contractNumber: string) {
+    e.stopPropagation();
     setDownloading(contractNumber);
     try {
       const r = await fetch(`/api/auction/lots/${lotId}/contract`, {
@@ -83,151 +107,78 @@ export function ContractsClient() {
   return (
     <>
       <style>{`
-        .cx-root {
-          font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
-          min-height: 100vh;
-          background: #f9fafb;
-          color: #1a1a1a;
-        }
-        .cx-header {
-          background: #154194;
-          padding: 0 32px;
-          height: 56px;
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-        .cx-logo {
-          font-size: 17px;
-          font-weight: 700;
-          color: #fff;
-          letter-spacing: 0.08em;
-        }
-        .cx-logo-sub {
-          font-size: 11px;
-          font-weight: 300;
-          color: rgba(255,255,255,0.6);
-        }
-        .cx-page {
-          max-width: 1100px;
-          margin: 0 auto;
-          padding: 32px 24px 60px;
-        }
-        .cx-title {
-          font-size: 22px;
-          font-weight: 700;
-          color: #111827;
-          margin-bottom: 6px;
-        }
-        .cx-sub {
-          font-size: 13px;
-          color: #6b7280;
-          margin-bottom: 28px;
-        }
-        .cx-empty {
-          text-align: center;
-          padding: 64px 0;
-          color: #9ca3af;
-          font-size: 14px;
-        }
-        .cx-table-wrap {
-          overflow-x: auto;
-        }
-        .cx-tbl {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: 13px;
-        }
+        .cx-root { font-family:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif; min-height:100vh; background:#f9fafb; color:#1a1a1a; }
+        .cx-page { max-width:1100px; margin:0 auto; padding:32px 24px 60px; }
+        .cx-back { display:inline-block; margin-bottom:20px; font-size:12.5px; color:#154194; cursor:pointer; letter-spacing:.02em; background:none; border:none; padding:0; }
+        .cx-back:hover { text-decoration:underline; }
+        .cx-title { font-size:22px; font-weight:700; color:#111827; margin-bottom:6px; }
+        .cx-sub   { font-size:13px; color:#6b7280; margin-bottom:28px; }
+        .cx-empty { text-align:center; padding:64px 0; color:#9ca3af; font-size:14px; }
+
+        /* Tabelle */
+        .cx-table-wrap { overflow-x:auto; }
+        .cx-tbl { width:100%; border-collapse:collapse; font-size:13px; background:#fff; border:1px solid #e5e7eb; }
         .cx-tbl th {
-          text-align: left;
-          padding: 10px 12px;
-          background: #154194;
-          color: #fff;
-          font-weight: 600;
-          font-size: 11.5px;
-          letter-spacing: 0.05em;
-          white-space: nowrap;
+          text-align:left; padding:10px 14px;
+          background:#154194; color:#fff;
+          font-size:10.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
+          white-space:nowrap;
         }
-        .cx-tbl td {
-          padding: 12px;
-          border-bottom: 1px solid #e5e7eb;
-          vertical-align: middle;
+        .cx-tbl td { padding:13px 14px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+        .cx-tbl tr:last-child td { border-bottom:none; }
+        .cx-tbl tbody tr { cursor:pointer; transition:background .1s; }
+        .cx-tbl tbody tr:hover td { background:#f0f4ff; }
+
+        /* Zellen */
+        .cx-nr   { font-family:"IBM Plex Mono","Courier New",monospace; font-size:11.5px; color:#374151; white-space:nowrap; }
+        .cx-ware { font-weight:600; color:#111827; white-space:nowrap; }
+        .cx-ware-sub { font-size:11.5px; color:#9ca3af; font-weight:400; margin-top:1px; }
+        .cx-amt  { font-variant-numeric:tabular-nums; font-weight:600; color:#154194; white-space:nowrap; }
+        .cx-cp   { font-size:12.5px; color:#374151; }
+
+        /* Status-Chip */
+        .cx-chip { display:inline-block; padding:3px 9px; font-size:10.5px; font-weight:700; letter-spacing:.04em; white-space:nowrap; }
+
+        /* Gebühr */
+        .cx-fee { font-size:12px; color:#374151; white-space:nowrap; }
+        .cx-fee-badge-unpaid { font-size:10px; font-weight:700; color:#dc2626; display:inline-block; margin-top:2px; }
+        .cx-fee-badge-paid   { font-size:10px; font-weight:700; color:#16a34a; display:inline-block; margin-top:2px; }
+
+        /* Aktionen */
+        .cx-actions { display:flex; align-items:center; gap:8px; justify-content:flex-end; }
+        .cx-btn-pdf {
+          padding:5px 12px; background:#fff; color:#374151;
+          border:1px solid #d1d5db; font-size:11.5px; font-weight:700;
+          cursor:pointer; white-space:nowrap; letter-spacing:.04em; transition:background .12s;
         }
-        .cx-tbl tr:hover td {
-          background: #f0f4ff;
+        .cx-btn-pdf:hover { background:#f3f4f6; }
+        .cx-btn-pdf:disabled { color:#9ca3af; cursor:default; }
+        .cx-btn-detail {
+          padding:5px 14px; background:#154194; color:#fff;
+          border:none; font-size:11.5px; font-weight:700;
+          cursor:pointer; white-space:nowrap; letter-spacing:.03em; transition:background .12s;
+          text-decoration:none; display:inline-block;
         }
-        .cx-contract-nr {
-          font-family: "IBM Plex Mono", "Courier New", monospace;
-          font-size: 12px;
-          color: #374151;
-        }
-        .cx-commodity {
-          font-weight: 600;
-          color: #111827;
-        }
-        .cx-amount {
-          font-variant-numeric: tabular-nums;
-          font-weight: 600;
-          color: #154194;
-        }
-        .cx-fee-unpaid {
-          font-size: 11px;
-          color: #dc2626;
-          font-weight: 600;
-        }
-        .cx-fee-paid {
-          font-size: 11px;
-          color: #16a34a;
-          font-weight: 600;
-        }
-        .cx-btn-dl {
-          padding: 6px 14px;
-          background: #154194;
-          color: #fff;
-          border: none;
-          font-size: 12px;
-          font-weight: 600;
-          cursor: pointer;
-          letter-spacing: 0.04em;
-          white-space: nowrap;
-          transition: background 0.15s;
-        }
-        .cx-btn-dl:hover { background: #0f3073; }
-        .cx-btn-dl:disabled { background: #9ca3af; cursor: default; }
-        .cx-back {
-          display: inline-block;
-          margin-bottom: 20px;
-          font-size: 12.5px;
-          color: #154194;
-          cursor: pointer;
-          letter-spacing: 0.02em;
-        }
-        .cx-back:hover { text-decoration: underline; }
+        .cx-btn-detail:hover { background:#0f3073; }
+
+        /* Aktions-erforderlich Indikator */
+        .cx-action-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#dc2626; margin-right:5px; vertical-align:middle; }
       `}</style>
 
       <div className="cx-root">
         <EucxHeader />
 
         <div className="cx-page">
-          <button className="cx-back" onClick={() => window.history.back()}>
-            ← Zurück
-          </button>
+          <button className="cx-back" onClick={() => window.history.back()}>← Zurück</button>
 
           <div className="cx-title">Vertragsarchiv</div>
           <div className="cx-sub">Alle Kaufverträge aus abgeschlossenen Auktionen</div>
 
-          {loading && (
-            <div className="cx-empty">Wird geladen…</div>
-          )}
-
-          {error && (
-            <div className="cx-empty" style={{ color: "#dc2626" }}>{error}</div>
-          )}
+          {loading && <div className="cx-empty">Wird geladen…</div>}
+          {error   && <div className="cx-empty" style={{ color: "#dc2626" }}>{error}</div>}
 
           {!loading && !error && contracts.length === 0 && (
-            <div className="cx-empty">
-              Noch keine Kaufverträge vorhanden.
-            </div>
+            <div className="cx-empty">Noch keine Kaufverträge vorhanden.</div>
           )}
 
           {!loading && !error && contracts.length > 0 && (
@@ -237,63 +188,80 @@ export function ContractsClient() {
                   <tr>
                     <th>Vertrag-Nr.</th>
                     <th>Datum</th>
-                    <th>Ware</th>
-                    <th>Menge</th>
+                    <th>Ware / Menge</th>
                     <th>Endpreis / Einheit</th>
                     <th>Gesamtwert</th>
-                    <th>Käufer</th>
-                    <th>Verkäufer</th>
+                    <th>{contracts[0] ? COUNTERPARTY_LABEL[contracts[0].myRole] : "Gegenpartei"}</th>
+                    <th>Lieferstatus</th>
                     <th>Meine Gebühr</th>
-                    <th></th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {contracts.map((c) => (
-                    <tr key={c.id}>
-                      <td><span className="cx-contract-nr">{c.contractNumber}</span></td>
-                      <td style={{ color: "#6b7280", fontSize: 12 }}>{fmtDate(c.createdAt)}</td>
-                      <td className="cx-commodity">{c.commodity}</td>
-                      <td style={{ fontVariantNumeric: "tabular-nums" }}>
-                        {parseFloat(c.quantity).toLocaleString("de-DE", { maximumFractionDigits: 4 })} {c.unit}
-                      </td>
-                      <td className="cx-amount">{fmtEur(c.finalPrice)}</td>
-                      <td className="cx-amount">{fmtEur(c.totalValue)}</td>
-                      <td style={{ fontSize: 12 }}>{c.buyerName}</td>
-                      <td style={{ fontSize: 12 }}>{c.sellerName}</td>
-                      <td>
-                        {c.myFee ? (
-                          <div>
-                            <div style={{ fontSize: 12 }}>
-                              {fmtEur(c.myFee.amount)} ({(parseFloat(c.myFee.rate) * 100).toFixed(2).replace(".", ",")} %)
-                            </div>
-                            <div className={c.myFee.status === "PAID" ? "cx-fee-paid" : "cx-fee-unpaid"}>
-                              {c.myFee.status === "PAID" ? "Bezahlt" : "Offen"}
-                            </div>
+                  {contracts.map((c) => {
+                    const status = STATUS_META[c.deliveryStatus];
+                    const needsAction =
+                      (c.myRole === "buyer"  && c.deliveryStatus === "AWAITING_PAYMENT") ||
+                      (c.myRole === "buyer"  && c.deliveryStatus === "IN_TRANSIT") ||
+                      (c.myRole === "seller" && c.deliveryStatus === "MATCHED") ||
+                      (c.myRole === "seller" && c.deliveryStatus === "DELIVERED");
+                    return (
+                      <tr key={c.id} onClick={() => router.push(`/dashboard/contracts/${c.id}`)}>
+                        <td><span className="cx-nr">{c.contractNumber}</span></td>
+                        <td style={{ color: "#6b7280", fontSize: 12, whiteSpace: "nowrap" }}>{fmtDate(c.createdAt)}</td>
+                        <td>
+                          <div className="cx-ware">{c.commodity}</div>
+                          <div className="cx-ware-sub">
+                            {parseFloat(c.quantity).toLocaleString("de-DE", { maximumFractionDigits: 4 })} {c.unit}
                           </div>
-                        ) : (
-                          <span style={{ color: "#9ca3af", fontSize: 12 }}>—</span>
-                        )}
-                      </td>
-                      <td>
-                        <button
-                          className="cx-btn-dl"
-                          disabled={downloading === c.contractNumber}
-                          onClick={() => downloadPdf(c.lotId, c.contractNumber)}
-                        >
-                          {downloading === c.contractNumber ? "…" : "PDF"}
-                        </button>
-                      </td>
-                      <td>
-                        <a
-                          href={`/dashboard/contracts/${c.id}`}
-                          style={{ padding: "6px 12px", background: "transparent", color: "#154194", border: "1px solid #154194", fontSize: 12, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", textDecoration: "none", display: "inline-block" }}
-                        >
-                          Abwicklung →
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="cx-amt">{fmtEur(c.finalPrice)}</td>
+                        <td className="cx-amt">{fmtEur(c.totalValue)}</td>
+                        <td className="cx-cp">{c.counterpartyName}</td>
+                        <td>
+                          <span className="cx-chip" style={{ background: status.bg, color: status.color }}>
+                            {needsAction && <span className="cx-action-dot" />}
+                            {status.label}
+                          </span>
+                        </td>
+                        <td>
+                          {c.myFee ? (
+                            <>
+                              <div className="cx-fee">
+                                {fmtEur(c.myFee.amount)}
+                                <span style={{ color: "#9ca3af", fontWeight: 400, marginLeft: 4 }}>
+                                  ({(parseFloat(c.myFee.rate) * 100).toFixed(2).replace(".", ",")} %)
+                                </span>
+                              </div>
+                              <div className={c.myFee.status === "PAID" ? "cx-fee-badge-paid" : "cx-fee-badge-unpaid"}>
+                                {c.myFee.status === "PAID" ? "Bezahlt" : "Offen"}
+                              </div>
+                            </>
+                          ) : (
+                            <span style={{ color: "#9ca3af", fontSize: 12 }}>—</span>
+                          )}
+                        </td>
+                        <td onClick={(e) => e.stopPropagation()}>
+                          <div className="cx-actions">
+                            <button
+                              className="cx-btn-pdf"
+                              disabled={downloading === c.contractNumber}
+                              onClick={(e) => void downloadPdf(e, c.lotId, c.contractNumber)}
+                            >
+                              {downloading === c.contractNumber ? "…" : "PDF"}
+                            </button>
+                            <a
+                              href={`/dashboard/contracts/${c.id}`}
+                              className="cx-btn-detail"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Details →
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

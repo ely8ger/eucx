@@ -44,6 +44,9 @@ export async function GET(req: NextRequest) {
       contractNumber: true,
       finalPrice:     true,
       totalValue:     true,
+      deliveryStatus: true,
+      buyerId:        true,
+      sellerId:       true,
       createdAt:      true,
       lot: {
         select: {
@@ -71,19 +74,30 @@ export async function GET(req: NextRequest) {
   });
 
   return NextResponse.json({
-    contracts: contracts.map((c) => ({
-      id:             c.id,
-      contractNumber: c.contractNumber,
-      lotId:          c.lot.id,
-      commodity:      c.lot.commodity,
-      quantity:       c.lot.quantity.toString(),
-      unit:           c.lot.unit,
-      finalPrice:     c.finalPrice.toString(),
-      totalValue:     c.totalValue.toString(),
-      buyerName:      c.buyer.organization.name,
-      sellerName:     c.seller.organization.name,
-      myFee:          c.fees[0] ?? null,
-      createdAt:      c.createdAt.toISOString(),
-    })),
+    contracts: contracts.map((c) => {
+      const myRole = c.buyerId === token.userId ? "buyer"
+        : c.sellerId === token.userId ? "seller"
+        : "admin";
+      const counterpartyName = myRole === "buyer"
+        ? (c.seller.organization?.name ?? "—")
+        : myRole === "seller"
+          ? (c.buyer.organization?.name ?? "—")
+          : `${c.buyer.organization?.name ?? "—"} / ${c.seller.organization?.name ?? "—"}`;
+      return {
+        id:              c.id,
+        contractNumber:  c.contractNumber,
+        lotId:           c.lot.id,
+        commodity:       c.lot.commodity,
+        quantity:        c.lot.quantity.toString(),
+        unit:            c.lot.unit,
+        finalPrice:      c.finalPrice.toString(),
+        totalValue:      c.totalValue.toString(),
+        deliveryStatus:  c.deliveryStatus,
+        myRole,
+        counterpartyName,
+        myFee:           c.fees[0] ?? null,
+        createdAt:       c.createdAt.toISOString(),
+      };
+    }),
   });
 }
