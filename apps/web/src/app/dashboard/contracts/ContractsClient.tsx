@@ -130,11 +130,12 @@ export function ContractsClient() {
         .cx-tbl tbody tr:hover td { background:#f0f4ff; }
 
         /* Zellen */
-        .cx-nr   { font-family:"IBM Plex Mono","Courier New",monospace; font-size:11.5px; color:#374151; white-space:nowrap; }
+        .cx-nr   { font-family:"IBM Plex Mono","Courier New",monospace; font-size:11px; color:#374151;
+                   white-space:nowrap; max-width:130px; overflow:hidden; text-overflow:ellipsis; display:block; }
         .cx-ware { font-weight:600; color:#111827; white-space:nowrap; }
-        .cx-ware-sub { font-size:11.5px; color:#9ca3af; font-weight:400; margin-top:1px; }
+        .cx-ware-sub { font-size:11.5px; color:#9ca3af; font-weight:400; margin-top:1px; white-space:nowrap; }
         .cx-amt  { font-variant-numeric:tabular-nums; font-weight:600; color:#154194; white-space:nowrap; }
-        .cx-cp   { font-size:12.5px; color:#374151; }
+        .cx-cp   { font-size:12.5px; color:#374151; white-space:nowrap; }
 
         /* Status-Chip */
         .cx-chip { display:inline-block; padding:3px 9px; font-size:10.5px; font-weight:700; letter-spacing:.04em; white-space:nowrap; }
@@ -189,11 +190,10 @@ export function ContractsClient() {
                     <th>Vertrag-Nr.</th>
                     <th>Datum</th>
                     <th>Ware / Menge</th>
-                    <th>Endpreis / Einheit</th>
                     <th>Gesamtwert</th>
                     <th>{contracts[0] ? COUNTERPARTY_LABEL[contracts[0].myRole] : "Gegenpartei"}</th>
                     <th>Lieferstatus</th>
-                    <th>Meine Gebühr</th>
+                    <th>Gebühr</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -215,7 +215,6 @@ export function ContractsClient() {
                             {parseFloat(c.quantity).toLocaleString("de-DE", { maximumFractionDigits: 4 })} {c.unit}
                           </div>
                         </td>
-                        <td className="cx-amt">{fmtEur(c.finalPrice)}</td>
                         <td className="cx-amt">{fmtEur(c.totalValue)}</td>
                         <td className="cx-cp">{c.counterpartyName}</td>
                         <td>
@@ -224,15 +223,10 @@ export function ContractsClient() {
                             {status.label}
                           </span>
                         </td>
-                        <td>
+                        <td style={{ whiteSpace: "nowrap" }}>
                           {c.myFee ? (
                             <>
-                              <div className="cx-fee">
-                                {fmtEur(c.myFee.amount)}
-                                <span style={{ color: "#9ca3af", fontWeight: 400, marginLeft: 4 }}>
-                                  ({(parseFloat(c.myFee.rate) * 100).toFixed(2).replace(".", ",")} %)
-                                </span>
-                              </div>
+                              <div className="cx-fee">{fmtEur(c.myFee.amount)}</div>
                               <div className={c.myFee.status === "PAID" ? "cx-fee-badge-paid" : "cx-fee-badge-unpaid"}>
                                 {c.myFee.status === "PAID" ? "Bezahlt" : "Offen"}
                               </div>
