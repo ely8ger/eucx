@@ -570,7 +570,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-cbam-hint { font-size:11.5px; color:#6b7280; margin-bottom:16px; }
 
         /* CO₂-Widget */
-        .bl-co2-widget { background:#fff; border:1px solid #e5e7eb; border-top:3px solid #16a34a; padding:16px 20px; margin-bottom:20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+        .bl-co2-widget { background:#fff; border:1px solid #e5e7eb; border-top:3px solid #154194; padding:16px 20px; margin-bottom:20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
         .bl-co2-main { flex:1; min-width:160px; }
         .bl-co2-num  { font-size:28px; font-weight:700; font-family:"IBM Plex Mono",monospace; color:#16a34a; line-height:1; }
         .bl-co2-unit { font-size:11px; color:#6b7280; font-weight:600; letter-spacing:.04em; margin-top:3px; }

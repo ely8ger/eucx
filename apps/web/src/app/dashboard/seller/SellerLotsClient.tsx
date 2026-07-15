@@ -159,7 +159,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
         .sl-hdr-link:hover { background:rgba(255,255,255,.15); }
 
         /* Page */
-        .sl-page { max-width:1080px; margin:0 auto; padding:32px 24px 80px; }
+        .sl-page { max-width:1100px; margin:0 auto; padding:32px 24px 80px; }
 
         /* KYC Banner */
         .sl-kyc-warn { background:#fffbeb; border:1px solid #fcd34d; padding:14px 20px; margin-bottom:24px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
@@ -263,17 +263,20 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
           {!loading && (
             <div className="sl-stats">
               {[
-                { num: lots.length,                                                                      label: "Verfügbare Lots",       color: "#0d1b2a", sub: "Offene Ausschreibungen" },
-                { num: lots.filter(l => l.phase === "COLLECTION").length,                                label: "Registrierungsphase",   color: "#154194", sub: "Jetzt registrieren" },
-                { num: lots.filter(l => l.isRegistered).length,                                          label: "Meine Registrierungen", color: "#d97706", sub: "Gebote möglich" },
-                { num: lots.filter(l => (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && l.isRegistered).length, label: "Aktive Auktionen", color: "#dc2626", sub: "Gebote laufen" },
-              ].map(s => (
-                <div key={s.label} className="sl-stat" style={{ borderTop: `3px solid ${s.color}` }}>
-                  <div className="sl-stat-num" style={{ color: s.color }}>{s.num}</div>
-                  <div className="sl-stat-label">{s.label}</div>
-                  <div className="sl-stat-sub">{s.sub}</div>
-                </div>
-              ))}
+                { num: lots.length,                                                                                     label: "Verfügbare Lots",       sub: "Offene Ausschreibungen" },
+                { num: lots.filter(l => l.phase === "COLLECTION").length,                                              label: "Registrierungsphase",   sub: "Jetzt registrieren" },
+                { num: lots.filter(l => l.isRegistered).length,                                                        label: "Meine Registrierungen", sub: "Gebote möglich" },
+                { num: lots.filter(l => (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && l.isRegistered).length, label: "Aktive Auktionen",      sub: "Gebote laufen" },
+              ].map(s => {
+                const highlight = s.label === "Aktive Auktionen" && s.num > 0;
+                return (
+                  <div key={s.label} className="sl-stat" style={{ borderTop: `3px solid ${highlight ? "#dc2626" : "#e5e7eb"}` }}>
+                    <div className="sl-stat-num" style={{ color: highlight ? "#dc2626" : "#111827" }}>{s.num}</div>
+                    <div className="sl-stat-label">{s.label}</div>
+                    <div className="sl-stat-sub">{s.sub}</div>
+                  </div>
+                );
+              })}
             </div>
           )}
 
