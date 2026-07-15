@@ -442,42 +442,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   }, 0);
   const lotsWithCbam = lots.filter((l) => l.co2PerTonne).length;
 
-  // Marktpreiswidget — Preis-Zusammenfassung je Ware aus abgeschlossenen Lots
-  const COMMODITY_SHORT: Record<string, string> = {
-    "Betonstahl BST 500 (Rebar)":             "BST 500 Rebar",
-    "Betonstahl BST 500S (seismisch)":        "BST 500S",
-    "Walzdraht (Wire Rod) SAE 1008":          "Wire Rod",
-    "Warmgewalzter Stahl S235JR (Blech / Coil)": "S235JR",
-    "Feinkornbaustahl S355JR (Blech)":        "S355JR",
-    "HEA / HEB Stahlträger S235 / S355":     "HEA/HEB",
-    "Nahtgeschweißte Hohlprofile S235JRH":   "Hohlprofile",
-    "Kupferkathoden Grade A":                 "Cu Grade A",
-    "Aluminiumbarren (Primär) EN AW-1050A":  "Al 1050A",
-    "Stahlschrott HMS 1/2 (Heavy Melting Scrap)": "HMS 1/2",
-  };
-  type MarketEntry = { com: string; avgFinal: number; savings: number; count: number; trend: "up" | "down" | "flat" };
-  const marketMap = new Map<string, { finals: number[]; starts: number[] }>();
-  for (const l of lots.filter((l) => l.phase === "CONCLUSION" && l.currentBest)) {
-    const key = COMMODITY_SHORT[l.commodity] ?? l.commodity.slice(0, 16);
-    const e = marketMap.get(key) ?? { finals: [], starts: [] };
-    e.finals.push(Number(l.currentBest));
-    if (l.startPrice) e.starts.push(Number(l.startPrice));
-    marketMap.set(key, e);
-  }
-  const marketData: MarketEntry[] = [...marketMap.entries()].map(([com, { finals, starts }]) => {
-    const avgFinal  = finals.reduce((a, b) => a + b, 0) / finals.length;
-    const avgStart  = starts.length > 0 ? starts.reduce((a, b) => a + b, 0) / starts.length : avgFinal;
-    const savings   = avgStart > 0 ? ((avgStart - avgFinal) / avgStart) * 100 : 0;
-    const trend: "up" | "down" | "flat" = savings > 1 ? "down" : savings < -1 ? "up" : "flat";
-    return { com, avgFinal, savings, count: finals.length, trend };
-  });
-  // Erg: aktive Lots (aktueller Marktpreis = currentBest wenn vorhanden)
-  for (const l of lots.filter((l) => (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && l.currentBest)) {
-    const key = COMMODITY_SHORT[l.commodity] ?? l.commodity.slice(0, 16);
-    if (!marketMap.has(key)) {
-      marketData.push({ com: key, avgFinal: Number(l.currentBest), savings: 0, count: 1, trend: "flat" });
-    }
-  }
+
 
   return (
     <>
@@ -632,20 +597,6 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-winner { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; background:#f0fdf4; border:1px solid #bbf7d0; font-size:11px; font-weight:700; color:#14532d; }
         .bl-no-winner { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; background:#f9fafb; border:1px solid #e5e7eb; font-size:11px; color:#6b7280; }
 
-        /* Markt-Ticker */
-        .bl-ticker { background:#0d1b2a; border-bottom:1px solid #1a3060; padding:0; margin-bottom:20px; overflow:hidden; position:relative; }
-        .bl-ticker-label { position:absolute; left:0; top:0; bottom:0; padding:0 16px; background:#154194; display:flex; align-items:center; font-size:10px; font-weight:700; letter-spacing:.1em; color:#bfdbfe; white-space:nowrap; z-index:2; }
-        .bl-ticker-scroll { display:flex; align-items:stretch; padding-left:120px; overflow-x:auto; scrollbar-width:none; }
-        .bl-ticker-scroll::-webkit-scrollbar { display:none; }
-        .bl-ticker-item { display:flex; flex-direction:column; justify-content:center; padding:0 20px; border-right:1px solid #1e3a5f; min-width:160px; height:48px; flex-shrink:0; cursor:default; transition:background .15s; }
-        .bl-ticker-item:hover { background:#0f2d6e; }
-        .bl-ticker-item:last-child { border-right:none; }
-        .bl-ticker-com { font-size:10px; font-weight:700; letter-spacing:.07em; color:#7ca4d4; text-transform:uppercase; white-space:nowrap; }
-        .bl-ticker-price { font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:700; color:#e2e8f0; font-variant-numeric:tabular-nums; white-space:nowrap; }
-        .bl-ticker-meta  { font-size:10px; color:#4a7a9e; margin-top:1px; white-space:nowrap; }
-        .bl-ticker-green { color:#34d399; }
-        .bl-ticker-red   { color:#f87171; }
-        .bl-ticker-empty { padding:0 20px; font-size:11px; color:#4a7a9e; display:flex; align-items:center; }
       `}</style>
 
       <div className="bl-root">
@@ -711,31 +662,6 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 </div>
               ));
             })()}
-          </div>
-
-          {/* Markt-Preis-Ticker */}
-          <div className="bl-ticker">
-            <div className="bl-ticker-label">MARKT</div>
-            <div className="bl-ticker-scroll">
-              {marketData.length === 0 ? (
-                <div className="bl-ticker-empty">
-                  Keine Marktpreisdaten verfügbar — abgeschlossene Lots erscheinen hier.
-                </div>
-              ) : (
-                marketData.map((e) => (
-                  <div key={e.com} className="bl-ticker-item" title={`${e.count} abgeschlossene${e.count === 1 ? "s" : ""} Lot${e.count === 1 ? "" : "s"}`}>
-                    <div className="bl-ticker-com">{e.com}</div>
-                    <div className="bl-ticker-price">
-                      {e.avgFinal.toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 2 })}
-                      {" "}
-                      {e.trend === "down" && <span className="bl-ticker-green" style={{ fontSize: 11 }}>▼ {e.savings.toFixed(1)}%</span>}
-                      {e.trend === "up"   && <span className="bl-ticker-red"   style={{ fontSize: 11 }}>▲ {Math.abs(e.savings).toFixed(1)}%</span>}
-                    </div>
-                    <div className="bl-ticker-meta">{e.count} Deal{e.count !== 1 ? "s" : ""} · Ø Finalpreis</div>
-                  </div>
-                ))
-              )}
-            </div>
           </div>
 
           {/* CO₂-Widget */}
