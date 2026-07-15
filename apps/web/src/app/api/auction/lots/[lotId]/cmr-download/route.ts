@@ -54,19 +54,19 @@ export async function GET(
 
   // cmrDocument format: "data:<mimeType>;base64,<data>"
   const match = contract.cmrDocument.match(/^data:([^;]+);base64,(.+)$/s);
-  if (!match) {
+  if (!match || !match[1] || !match[2]) {
     return NextResponse.json({ error: "CMR-Dokument ungültig" }, { status: 500 });
   }
 
-  const mimeType = match[1];
-  const buffer   = Buffer.from(match[2], "base64");
+  const mimeType  = match[1];
+  const arrayBuf  = Buffer.from(match[2], "base64").buffer as ArrayBuffer;
 
   const ext = mimeType === "application/pdf" ? "pdf"
     : mimeType === "image/jpeg" ? "jpg"
     : mimeType === "image/png"  ? "png"
     : "bin";
 
-  return new NextResponse(buffer, {
+  return new NextResponse(arrayBuf, {
     headers: {
       "Content-Type":        mimeType,
       "Content-Disposition": `attachment; filename="CMR-${contract.contractNumber}.${ext}"`,
