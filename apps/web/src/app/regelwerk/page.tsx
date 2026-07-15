@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BASE_URL } from "@/lib/seo/metadata";
 import { SiteNav } from "@/components/SiteNav";
-import { FileText, Scale, ClipboardList, ArrowRight, Shield, BookOpen } from "lucide-react";
+import { FileText, Scale, ClipboardList, ArrowRight, BookOpen } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Regelwerk – Normative Dokumente & Rechtsrahmen",
@@ -123,16 +123,6 @@ export default function RegelwerkPage() {
             transparent zugänglich.
           </p>
 
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            marginTop: 28, backgroundColor: "rgba(21,65,148,.25)",
-            border: "1px solid rgba(21,65,148,.5)", padding: "8px 16px",
-          }}>
-            <Shield size={13} color={BLUE} />
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,.7)", letterSpacing: "0.02em" }}>
-              Physische Spot-Warenbörse · Kein MiFID II · Kein OTF · GwG-konform
-            </span>
-          </div>
         </div>
       </section>
 
