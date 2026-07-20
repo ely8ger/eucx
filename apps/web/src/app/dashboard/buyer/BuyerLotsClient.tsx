@@ -1393,14 +1393,25 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                   <div className="bl-form-group">
                     <label className="bl-label">Max. Lieferzeit *</label>
-                    <input
-                      className="bl-input"
-                      type="text"
-                      placeholder="z.B. max. 6 Wochen ab Zuschlag"
+                    <select
+                      className="bl-select"
                       value={deliveryPeriod}
                       onChange={(e) => setDeliveryPeriod(e.target.value)}
                       required
-                    />
+                    >
+                      <option value="">— Bitte wählen —</option>
+                      <option value="max. 1 Woche ab Zuschlag">max. 1 Woche ab Zuschlag</option>
+                      <option value="max. 2 Wochen ab Zuschlag">max. 2 Wochen ab Zuschlag</option>
+                      <option value="max. 3 Wochen ab Zuschlag">max. 3 Wochen ab Zuschlag</option>
+                      <option value="max. 4 Wochen ab Zuschlag">max. 4 Wochen ab Zuschlag</option>
+                      <option value="max. 6 Wochen ab Zuschlag">max. 6 Wochen ab Zuschlag</option>
+                      <option value="max. 2 Monate ab Zuschlag">max. 2 Monate ab Zuschlag</option>
+                      <option value="max. 3 Monate ab Zuschlag">max. 3 Monate ab Zuschlag</option>
+                      <option value="max. 4 Monate ab Zuschlag">max. 4 Monate ab Zuschlag</option>
+                      <option value="max. 6 Monate ab Zuschlag">max. 6 Monate ab Zuschlag</option>
+                      <option value="max. 9 Monate ab Zuschlag">max. 9 Monate ab Zuschlag</option>
+                      <option value="max. 12 Monate ab Zuschlag">max. 12 Monate ab Zuschlag</option>
+                    </select>
                   </div>
 
                   <div className="bl-form-group">
@@ -1424,14 +1435,29 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       required
                     >
                       <option value="">— Bitte wählen —</option>
-                      <option value="Vorkasse 100 % vor Lieferung">Vorkasse — 100 % vor Lieferung</option>
-                      <option value="Anzahlung 10 % bei Zuschlag, Rest bei Lieferung">Anzahlung 10 % bei Zuschlag, Rest bei Lieferung</option>
-                      <option value="Anzahlung 25 % bei Zuschlag, Rest bei Lieferung">Anzahlung 25 % bei Zuschlag, Rest bei Lieferung</option>
-                      <option value="Anzahlung 50 % bei Zuschlag, Rest bei Lieferung">Anzahlung 50 % bei Zuschlag, Rest bei Lieferung</option>
-                      <option value="14 Tage netto nach Lieferung">14 Tage netto nach Lieferung</option>
-                      <option value="30 Tage netto nach Lieferung">30 Tage netto nach Lieferung</option>
-                      <option value="60 Tage netto nach Lieferung">60 Tage netto nach Lieferung</option>
-                      <option value="90 Tage netto nach Lieferung">90 Tage netto nach Lieferung</option>
+                      <optgroup label="Vorauszahlung">
+                        <option value="Vorkasse 100 % vor Lieferung">Vorkasse — 100 % vor Lieferung</option>
+                        <option value="Anzahlung 10 % bei Zuschlag, Rest bei Lieferung">Anzahlung 10 % bei Zuschlag, Rest bei Lieferung</option>
+                        <option value="Anzahlung 25 % bei Zuschlag, Rest bei Lieferung">Anzahlung 25 % bei Zuschlag, Rest bei Lieferung</option>
+                        <option value="Anzahlung 50 % bei Zuschlag, Rest bei Lieferung">Anzahlung 50 % bei Zuschlag, Rest bei Lieferung</option>
+                      </optgroup>
+                      <optgroup label="Bei Lieferung">
+                        <option value="Zahlung bei Lieferung (sofort)">Zahlung bei Lieferung (sofort)</option>
+                        <option value="20 Tage netto, Ende des Monats nach Lieferung">20 Tage netto, Ende des Monats nach Lieferung</option>
+                      </optgroup>
+                      <optgroup label="Netto-Zahlungsziele">
+                        <option value="14 Tage netto nach Lieferung">14 Tage netto nach Lieferung</option>
+                        <option value="30 Tage netto nach Lieferung">30 Tage netto nach Lieferung</option>
+                        <option value="45 Tage netto nach Lieferung">45 Tage netto nach Lieferung</option>
+                        <option value="60 Tage netto nach Lieferung">60 Tage netto nach Lieferung</option>
+                        <option value="90 Tage netto nach Lieferung">90 Tage netto nach Lieferung</option>
+                      </optgroup>
+                      <optgroup label="Ende des Monats (EOM)">
+                        <option value="20 Tage netto, Ende des Folgemonats">20 Tage netto, Ende des Folgemonats</option>
+                        <option value="30 Tage netto, Ende des Folgemonats">30 Tage netto, Ende des Folgemonats</option>
+                        <option value="45 Tage netto, Ende des Folgemonats">45 Tage netto, Ende des Folgemonats</option>
+                        <option value="60 Tage netto, Ende des Folgemonats">60 Tage netto, Ende des Folgemonats</option>
+                      </optgroup>
                     </select>
                   </div>
 
