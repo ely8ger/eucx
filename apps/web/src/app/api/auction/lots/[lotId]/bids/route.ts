@@ -86,7 +86,7 @@ async function _handlePost(
   // ── Lot laden (für CBAM + Deal-Limit Checks) ─────────────────────
   const lot = await db.lot.findUnique({
     where:  { id: lotId },
-    select: { quantity: true, co2PerTonne: true, phase: true, buyerId: true },
+    select: { quantity: true, co2PerTonne: true, phase: true, buyerId: true, buyerIp: true },
   });
   if (!lot) return NextResponse.json({ error: "Lot nicht gefunden" }, { status: 404 });
 
@@ -94,6 +94,17 @@ async function _handlePost(
   if (lot.buyerId === token.userId) {
     return NextResponse.json(
       { error: "Käufer dieses Lots kann kein Verkaufsgebot abgeben" },
+      { status: 409 }
+    );
+  }
+
+  // ── IP-Sperre: Käufer und Verkäufer dürfen nicht dieselbe IP haben ──
+  const sellerIp = req.headers.get("x-forwarded-for")?.split(",").at(0)?.trim()
+                ?? req.headers.get("x-real-ip")
+                ?? null;
+  if (sellerIp && lot.buyerIp && sellerIp === lot.buyerIp) {
+    return NextResponse.json(
+      { error: "Gebot von dieser IP-Adresse nicht möglich (Interessenkonflikt)" },
       { status: 409 }
     );
   }

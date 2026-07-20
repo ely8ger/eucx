@@ -34,7 +34,7 @@ export async function POST(
     }),
     db.lot.findUnique({
       where:  { id: lotId },
-      select: { id: true, phase: true, buyerId: true },
+      select: { id: true, phase: true, buyerId: true, buyerIp: true },
     }),
   ]);
 
@@ -52,6 +52,17 @@ export async function POST(
   }
   if (lot.buyerId === token.userId) {
     return NextResponse.json({ error: "Käufer kann sich nicht als Verkäufer registrieren" }, { status: 409 });
+  }
+
+  // ── IP-Sperre: Käufer und Verkäufer dürfen nicht dieselbe IP haben ──
+  const sellerIp = req.headers.get("x-forwarded-for")?.split(",").at(0)?.trim()
+                ?? req.headers.get("x-real-ip")
+                ?? null;
+  if (sellerIp && lot.buyerIp && sellerIp === lot.buyerIp) {
+    return NextResponse.json(
+      { error: "Registrierung von dieser IP-Adresse nicht möglich (Interessenkonflikt)" },
+      { status: 409 }
+    );
   }
   if (lot.phase !== "COLLECTION") {
     return NextResponse.json({ error: "Registrierung nur in Phase COLLECTION möglich" }, { status: 409 });

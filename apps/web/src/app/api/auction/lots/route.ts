@@ -77,11 +77,17 @@ export async function POST(req: NextRequest) {
   const { commodity, quantity, unit, startPrice, description,
           cbamCategory, co2PerTonne, countryOfOrigin, productionSiteId, incoterms,
           hsCode, qualityGrade, deliveryPeriod, deliveryLocation, paymentTerms, vatTreatment } = parsed.data;
+
+  const buyerIp = req.headers.get("x-forwarded-for")?.split(",").at(0)?.trim()
+               ?? req.headers.get("x-real-ip")
+               ?? null;
+
   let lot;
   try {
     lot = await db.lot.create({
       data: {
         buyerId:         user.id,
+        buyerIp,
         commodity,
         quantity:        quantity.toString(),
         unit,

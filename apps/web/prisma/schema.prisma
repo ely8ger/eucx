@@ -1193,6 +1193,7 @@ model Lot {
   paymentTerms     String?                       // Zahlungsbedingungen (z.B. "30 Tage netto")
   vatTreatment     String?                       // USt.-Behandlung (z.B. "§13b UStG Reverse Charge")
   deliveryLocation String?                       // Lieferort (vollständige Adresse des Lieferziels)
+  buyerIp          String?                       // IP des Käufers bei Lot-Erstellung (Betrugsschutz)
 
   buyer         User              @relation("LotBuyer",  fields: [buyerId],   references: [id])
   winner        User?             @relation("LotWinner", fields: [winnerId],   references: [id])
