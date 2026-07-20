@@ -705,9 +705,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
         /* Table */
         .bl-table-wrap { overflow-x:auto; }
-        .bl-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e5e7eb; font-size:13px; }
-        .bl-table th { padding:10px 14px; text-align:left; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#9ca3af; border-bottom:2px solid #154194; background:#fff; white-space:nowrap; }
-        .bl-table td { padding:14px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+        .bl-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e5e7eb; font-size:13px; table-layout:fixed; }
+        .bl-table th { padding:9px 12px; text-align:left; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#9ca3af; border-bottom:2px solid #154194; background:#fff; white-space:nowrap; }
+        .bl-table td { padding:11px 12px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
         .bl-table tr:last-child td { border-bottom:none; }
         .bl-table tr:hover td { background:#fafafa; }
 
@@ -1871,22 +1871,18 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
             );
             return (
             <div className="bl-table-wrap">
-              <table className="bl-table" style={{ tableLayout: "fixed", width: "100%" }}>
+              <table className="bl-table">
                 <colgroup>
-                  <col style={{ width: "34%" }} />
-                  <col style={{ width: "11%" }} />
-                  <col style={{ width: "13%" }} />
+                  <col style={{ width: "38%" }} />
+                  <col style={{ width: "22%" }} />
+                  <col style={{ width: "22%" }} />
                   <col style={{ width: "18%" }} />
-                  <col style={{ width: "12%" }} />
-                  <col style={{ width: "12%" }} />
                 </colgroup>
                 <thead>
                   <tr>
-                    <th>Ware</th>
-                    <th>Menge</th>
-                    <th>Status</th>
+                    <th>Ware / Menge</th>
+                    <th>Status / Ende</th>
                     <th>Preis / Ergebnis</th>
-                    <th>Auktionsende</th>
                     <th>Aktion</th>
                   </tr>
                 </thead>
@@ -1898,35 +1894,36 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                     return (
                       <tr key={lot.id}>
-                        {/* Ware */}
+                        {/* Ware + Menge */}
                         <td>
                           <div style={{ fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {lot.commodity}
                           </div>
-                          {lot.qualityGrade && (
-                            <div style={{ fontSize: 10.5, color: "#6b7280", marginTop: 2, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                              {lot.qualityGrade}
-                            </div>
-                          )}
+                          <div style={{ fontSize: 11.5, color: "#374151", marginTop: 2, whiteSpace: "nowrap" }}>
+                            {Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}
+                            {lot.qualityGrade && (
+                              <span style={{ color: "#9ca3af", marginLeft: 6 }}>· {lot.qualityGrade}</span>
+                            )}
+                          </div>
                           {lot.hsCode && (
-                            <div style={{ fontSize: 10, color: "#9ca3af", fontFamily: "'IBM Plex Mono',monospace" }}>
+                            <div style={{ fontSize: 10, color: "#c4c9d4", fontFamily: "'IBM Plex Mono',monospace", marginTop: 1 }}>
                               HS {lot.hsCode}
                             </div>
                           )}
                         </td>
-                        {/* Menge */}
-                        <td style={{ fontSize: 12.5, color: "#374151", whiteSpace: "nowrap" }}>
-                          {Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}
-                        </td>
-                        {/* Status + Bieter */}
+                        {/* Status + Ende + Bieter */}
                         <td>
                           <span className="bl-phase" style={{ background: PHASE_COLOR[lot.phase] }}>
                             {PHASE_LABEL[lot.phase]}
                           </span>
-                          <div style={{ fontSize: 10.5, color: "#9ca3af", marginTop: 5, lineHeight: 1.4 }}>
-                            {lot._count.registrations} angemeldet<br />
-                            {lot._count.bids} Gebote
+                          <div style={{ fontSize: 10.5, color: "#9ca3af", marginTop: 4, lineHeight: 1.5 }}>
+                            {lot._count.registrations} angemeldet · {lot._count.bids} Gebote
                           </div>
+                          {lot.auctionEnd && (
+                            <div style={{ fontSize: 10.5, color: "#6b7280", marginTop: 1 }}>
+                              Ende: {fmtDate(lot.auctionEnd)}
+                            </div>
+                          )}
                         </td>
                         {/* Preis / Ergebnis */}
                         <td style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12 }}>
@@ -1961,10 +1958,6 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           ) : (
                             <span style={{ color: "#d1d5db" }}>—</span>
                           )}
-                        </td>
-                        {/* Auktionsende */}
-                        <td style={{ fontSize: 11.5, color: "#6b7280" }}>
-                          {lot.auctionEnd ? fmtDate(lot.auctionEnd) : "—"}
                         </td>
                         {/* Aktion */}
                         <td style={{ whiteSpace: "nowrap" }}>
