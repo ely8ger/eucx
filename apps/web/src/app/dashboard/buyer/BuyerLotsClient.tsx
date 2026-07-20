@@ -65,18 +65,113 @@ interface LotRow {
   contractId?:        string | null;
 }
 
-const COUNTRIES = [
-  "DE - Deutschland", "AT - Österreich", "PL - Polen", "CZ - Tschechien",
-  "SK - Slowakei", "HU - Ungarn", "RO - Rumänien", "HR - Kroatien",
-  "IT - Italien", "FR - Frankreich", "ES - Spanien", "BE - Belgien",
-  "NL - Niederlande", "LU - Luxemburg", "SE - Schweden", "FI - Finnland",
-  "TR - Türkei", "UA - Ukraine", "BY - Weißrussland",
-  "CN - China", "IN - Indien", "KR - Südkorea", "JP - Japan",
-  "BR - Brasilien", "ZA - Südafrika", "EG - Ägypten", "DZ - Algerien",
-  "KZ - Kasachstan", "AZ - Aserbaidschan", "GE - Georgien",
-  "AM - Armenien", "TM - Turkmenistan", "RS - Serbien", "MK - Nordmazedonien",
-  "BA - Bosnien-Herzegowina", "ME - Montenegro", "AL - Albanien",
+interface CountryEntry { code: string; name: string }
+
+// ISO 3166-1 — alle UN-Mitgliedstaaten + wichtige Territorien (Deutsche Namen)
+const COUNTRY_LIST: CountryEntry[] = [
+  { code:"AF", name:"Afghanistan" },          { code:"EG", name:"Ägypten" },
+  { code:"AL", name:"Albanien" },             { code:"DZ", name:"Algerien" },
+  { code:"AD", name:"Andorra" },              { code:"AO", name:"Angola" },
+  { code:"AG", name:"Antigua und Barbuda" },  { code:"GQ", name:"Äquatorialguinea" },
+  { code:"AR", name:"Argentinien" },          { code:"AM", name:"Armenien" },
+  { code:"AZ", name:"Aserbaidschan" },        { code:"ET", name:"Äthiopien" },
+  { code:"AU", name:"Australien" },           { code:"BS", name:"Bahamas" },
+  { code:"BH", name:"Bahrain" },              { code:"BD", name:"Bangladesch" },
+  { code:"BB", name:"Barbados" },             { code:"BY", name:"Belarus" },
+  { code:"BE", name:"Belgien" },              { code:"BZ", name:"Belize" },
+  { code:"BJ", name:"Benin" },               { code:"BT", name:"Bhutan" },
+  { code:"BO", name:"Bolivien" },             { code:"BA", name:"Bosnien und Herzegowina" },
+  { code:"BW", name:"Botsuana" },             { code:"BR", name:"Brasilien" },
+  { code:"BN", name:"Brunei" },              { code:"BG", name:"Bulgarien" },
+  { code:"BF", name:"Burkina Faso" },         { code:"BI", name:"Burundi" },
+  { code:"CL", name:"Chile" },               { code:"CN", name:"China" },
+  { code:"CR", name:"Costa Rica" },           { code:"CI", name:"Côte d'Ivoire" },
+  { code:"DK", name:"Dänemark" },             { code:"DE", name:"Deutschland" },
+  { code:"DM", name:"Dominica" },             { code:"DO", name:"Dominikanische Republik" },
+  { code:"DJ", name:"Dschibuti" },            { code:"EC", name:"Ecuador" },
+  { code:"SV", name:"El Salvador" },          { code:"ER", name:"Eritrea" },
+  { code:"EE", name:"Estland" },              { code:"SZ", name:"Eswatini" },
+  { code:"FJ", name:"Fidschi" },              { code:"FI", name:"Finnland" },
+  { code:"FR", name:"Frankreich" },           { code:"GA", name:"Gabun" },
+  { code:"GM", name:"Gambia" },              { code:"GE", name:"Georgien" },
+  { code:"GH", name:"Ghana" },               { code:"GD", name:"Grenada" },
+  { code:"GR", name:"Griechenland" },         { code:"GT", name:"Guatemala" },
+  { code:"GN", name:"Guinea" },              { code:"GW", name:"Guinea-Bissau" },
+  { code:"GY", name:"Guyana" },              { code:"HT", name:"Haiti" },
+  { code:"HN", name:"Honduras" },             { code:"IN", name:"Indien" },
+  { code:"ID", name:"Indonesien" },           { code:"IQ", name:"Irak" },
+  { code:"IR", name:"Iran" },                { code:"IE", name:"Irland" },
+  { code:"IS", name:"Island" },              { code:"IL", name:"Israel" },
+  { code:"IT", name:"Italien" },              { code:"JM", name:"Jamaika" },
+  { code:"JP", name:"Japan" },               { code:"YE", name:"Jemen" },
+  { code:"JO", name:"Jordanien" },            { code:"KH", name:"Kambodscha" },
+  { code:"CM", name:"Kamerun" },              { code:"CA", name:"Kanada" },
+  { code:"CV", name:"Kap Verde" },            { code:"KZ", name:"Kasachstan" },
+  { code:"QA", name:"Katar" },               { code:"KE", name:"Kenia" },
+  { code:"KG", name:"Kirgisistan" },          { code:"KI", name:"Kiribati" },
+  { code:"CO", name:"Kolumbien" },            { code:"KM", name:"Komoren" },
+  { code:"CG", name:"Kongo" },               { code:"CD", name:"Kongo (Dem. Rep.)" },
+  { code:"XK", name:"Kosovo" },              { code:"HR", name:"Kroatien" },
+  { code:"CU", name:"Kuba" },               { code:"KW", name:"Kuwait" },
+  { code:"LA", name:"Laos" },               { code:"LS", name:"Lesotho" },
+  { code:"LV", name:"Lettland" },             { code:"LB", name:"Libanon" },
+  { code:"LR", name:"Liberia" },              { code:"LY", name:"Libyen" },
+  { code:"LI", name:"Liechtenstein" },        { code:"LT", name:"Litauen" },
+  { code:"LU", name:"Luxemburg" },            { code:"MG", name:"Madagaskar" },
+  { code:"MW", name:"Malawi" },              { code:"MY", name:"Malaysia" },
+  { code:"MV", name:"Malediven" },            { code:"ML", name:"Mali" },
+  { code:"MT", name:"Malta" },               { code:"MA", name:"Marokko" },
+  { code:"MH", name:"Marshallinseln" },       { code:"MR", name:"Mauretanien" },
+  { code:"MU", name:"Mauritius" },            { code:"MX", name:"Mexiko" },
+  { code:"FM", name:"Mikronesien" },          { code:"MD", name:"Moldau" },
+  { code:"MC", name:"Monaco" },              { code:"MN", name:"Mongolei" },
+  { code:"ME", name:"Montenegro" },           { code:"MZ", name:"Mosambik" },
+  { code:"MM", name:"Myanmar" },              { code:"NA", name:"Namibia" },
+  { code:"NR", name:"Nauru" },               { code:"NP", name:"Nepal" },
+  { code:"NZ", name:"Neuseeland" },           { code:"NI", name:"Nicaragua" },
+  { code:"NL", name:"Niederlande" },          { code:"NE", name:"Niger" },
+  { code:"NG", name:"Nigeria" },              { code:"KP", name:"Nordkorea" },
+  { code:"MK", name:"Nordmazedonien" },       { code:"NO", name:"Norwegen" },
+  { code:"OM", name:"Oman" },               { code:"AT", name:"Österreich" },
+  { code:"PK", name:"Pakistan" },             { code:"PW", name:"Palau" },
+  { code:"PS", name:"Palästina" },            { code:"PA", name:"Panama" },
+  { code:"PG", name:"Papua-Neuguinea" },      { code:"PY", name:"Paraguay" },
+  { code:"PE", name:"Peru" },               { code:"PH", name:"Philippinen" },
+  { code:"PL", name:"Polen" },               { code:"PT", name:"Portugal" },
+  { code:"RW", name:"Ruanda" },              { code:"RO", name:"Rumänien" },
+  { code:"RU", name:"Russland" },             { code:"SB", name:"Salomonen" },
+  { code:"ZM", name:"Sambia" },              { code:"WS", name:"Samoa" },
+  { code:"SM", name:"San Marino" },           { code:"ST", name:"São Tomé und Príncipe" },
+  { code:"SA", name:"Saudi-Arabien" },        { code:"SE", name:"Schweden" },
+  { code:"CH", name:"Schweiz" },              { code:"SN", name:"Senegal" },
+  { code:"RS", name:"Serbien" },              { code:"SL", name:"Sierra Leone" },
+  { code:"ZW", name:"Simbabwe" },             { code:"SG", name:"Singapur" },
+  { code:"SK", name:"Slowakei" },             { code:"SI", name:"Slowenien" },
+  { code:"SO", name:"Somalia" },              { code:"ES", name:"Spanien" },
+  { code:"LK", name:"Sri Lanka" },            { code:"KN", name:"St. Kitts und Nevis" },
+  { code:"LC", name:"St. Lucia" },            { code:"VC", name:"St. Vincent und die Grenadinen" },
+  { code:"ZA", name:"Südafrika" },            { code:"SD", name:"Sudan" },
+  { code:"KR", name:"Südkorea" },             { code:"SS", name:"Südsudan" },
+  { code:"SR", name:"Suriname" },             { code:"SY", name:"Syrien" },
+  { code:"TJ", name:"Tadschikistan" },        { code:"TZ", name:"Tansania" },
+  { code:"TH", name:"Thailand" },             { code:"TL", name:"Timor-Leste" },
+  { code:"TG", name:"Togo" },               { code:"TO", name:"Tonga" },
+  { code:"TT", name:"Trinidad und Tobago" },  { code:"TD", name:"Tschad" },
+  { code:"CZ", name:"Tschechien" },           { code:"TN", name:"Tunesien" },
+  { code:"TR", name:"Türkei" },              { code:"TM", name:"Turkmenistan" },
+  { code:"TV", name:"Tuvalu" },              { code:"UG", name:"Uganda" },
+  { code:"UA", name:"Ukraine" },              { code:"HU", name:"Ungarn" },
+  { code:"UY", name:"Uruguay" },              { code:"UZ", name:"Usbekistan" },
+  { code:"VU", name:"Vanuatu" },              { code:"VA", name:"Vatikanstadt" },
+  { code:"VE", name:"Venezuela" },            { code:"AE", name:"Vereinigte Arabische Emirate" },
+  { code:"US", name:"Vereinigte Staaten" },   { code:"GB", name:"Vereinigtes Königreich" },
+  { code:"VN", name:"Vietnam" },              { code:"CF", name:"Zentralafrikanische Republik" },
+  { code:"CY", name:"Zypern" },
 ];
+
+function countryFlag(code: string): string {
+  return [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65)).join("");
+}
 
 const INCOTERMS_LIST = [
   { code: "EXW", label: "EXW - Ex Works" },
@@ -194,6 +289,11 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [cbamCategory,     setCbamCategory]     = useState<CbamGroupId | "">("");
   const [co2PerTonne,      setCo2PerTonne]      = useState("");   // kg CO₂-Äq./t (EU-Default oder Werkswert)
   const [countryOfOrigin,  setCountryOfOrigin]  = useState("");
+  // Herkunftsland-Autocomplete
+  const [countryInput,     setCountryInput]     = useState("");
+  const [countryFiltered,  setCountryFiltered]  = useState<CountryEntry[]>([]);
+  const [countryConfirmed, setCountryConfirmed] = useState(false);
+  const countryRef = useRef<HTMLDivElement>(null);
   const [productionSiteId, setProductionSiteId] = useState("");
   const [incoterms,        setIncoterms]        = useState("DAP");
   // Handels- und Vertragsangaben
@@ -284,7 +384,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   function searchAddress(q: string) {
     if (q.length < 3) { setAddrSuggestions([]); return; }
     setAddrLoading(true);
-    fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=6&lang=de&layer=house&layer=street`)
+    fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=7&lang=de`)
       .then((r) => r.json())
       .then((d) => setAddrSuggestions((d.features ?? []) as PhotonFeature[]))
       .catch(() => {})
@@ -307,11 +407,44 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     setAddrConfirmed(true);
   }
 
-  // Klick außerhalb schließt Dropdown
+  // Klick außerhalb schließt Adress-Dropdown
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
       if (addrRef.current && !addrRef.current.contains(e.target as Node)) {
         setAddrSuggestions([]);
+      }
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
+  // ── Herkunftsland-Autocomplete (client-seitig, kein API-Call) ────────
+  function onCountryInput(v: string) {
+    setCountryInput(v);
+    setCountryOfOrigin("");
+    setCountryConfirmed(false);
+    if (v.length < 1) { setCountryFiltered([]); return; }
+    const q = v.toLowerCase();
+    setCountryFiltered(
+      COUNTRY_LIST.filter(c =>
+        c.name.toLowerCase().includes(q) || c.code.toLowerCase() === q.slice(0, 2)
+      ).slice(0, 8)
+    );
+  }
+
+  function selectCountry(c: CountryEntry) {
+    const val = `${c.code} — ${c.name}`;
+    setCountryInput(val);
+    setCountryOfOrigin(val);
+    setCountryConfirmed(true);
+    setCountryFiltered([]);
+  }
+
+  // Klick außerhalb schließt Länder-Dropdown
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (countryRef.current && !countryRef.current.contains(e.target as Node)) {
+        setCountryFiltered([]);
       }
     }
     document.addEventListener("mousedown", onClickOutside);
@@ -355,7 +488,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       // CBAM-Felder (optional)
       if (cbamCategory)     body.cbamCategory     = cbamCategory;
       if (co2PerTonne)      body.co2PerTonne      = parseFloat(co2PerTonne);
-      if (countryOfOrigin)  body.countryOfOrigin  = countryOfOrigin;
+      if (!countryConfirmed) { setFormError("Bitte wählen Sie ein gültiges Herkunftsland aus der Liste aus."); setSubmitting(false); return; }
+      body.countryOfOrigin = countryOfOrigin;
       if (productionSiteId) body.productionSiteId = productionSiteId.trim();
       if (incoterms)        body.incoterms        = incoterms;
       // Pflichtfelder — vertragswesentlich
@@ -1312,17 +1446,88 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">Herkunftsland <span>(optional)</span></label>
-                    <input
-                      className="bl-input"
-                      list="buyer-country-list"
-                      placeholder="z.B. DE - Deutschland"
-                      value={countryOfOrigin}
-                      onChange={(e) => setCountryOfOrigin(e.target.value)}
-                    />
-                    <datalist id="buyer-country-list">
-                      {COUNTRIES.map((c) => <option key={c} value={c} />)}
-                    </datalist>
+                    <label className="bl-label">Herkunftsland *</label>
+                    <div ref={countryRef} style={{ position: "relative" }}>
+                      <div style={{ position: "relative" }}>
+                        <input
+                          className="bl-input"
+                          type="text"
+                          placeholder="Land eingeben, z.B. Türkei, China, DE…"
+                          value={countryInput}
+                          onChange={(e) => onCountryInput(e.target.value)}
+                          autoComplete="off"
+                          style={{ paddingRight: countryConfirmed ? 36 : undefined }}
+                        />
+                        {countryConfirmed && (
+                          <span style={{ position:"absolute", right:10, top:"50%", transform:"translateY(-50%)", color:"#16a34a", fontSize:16 }}>✓</span>
+                        )}
+                      </div>
+
+                      {/* Vorschlags-Dropdown */}
+                      {countryFiltered.length > 0 && (
+                        <div style={{
+                          position:"absolute", zIndex:200, left:0, right:0,
+                          background:"#fff", border:"1px solid #154194",
+                          borderTop:"none", boxShadow:"0 4px 12px rgba(0,0,0,.10)",
+                          maxHeight:260, overflowY:"auto",
+                        }}>
+                          {countryFiltered.map((c) => (
+                            <div
+                              key={c.code}
+                              onMouseDown={(e) => { e.preventDefault(); selectCountry(c); }}
+                              style={{
+                                padding:"9px 14px", cursor:"pointer", borderBottom:"1px solid #f3f4f6",
+                                display:"flex", alignItems:"center", gap:10,
+                              }}
+                              onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f4ff")}
+                              onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
+                            >
+                              <span style={{ fontSize:20, lineHeight:1 }}>{countryFlag(c.code)}</span>
+                              <span style={{
+                                minWidth:32, fontFamily:"IBM Plex Mono,monospace",
+                                fontSize:11, fontWeight:700, color:"#154194",
+                              }}>{c.code}</span>
+                              <span style={{ fontSize:13 }}>{c.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Kein Treffer */}
+                      {countryInput.length >= 1 && countryFiltered.length === 0 && !countryConfirmed && (
+                        <div style={{
+                          position:"absolute", zIndex:200, left:0, right:0,
+                          background:"#fff", border:"1px solid #e5e7eb",
+                          borderTop:"none", padding:"10px 14px",
+                          fontSize:12.5, color:"#dc2626",
+                        }}>
+                          Kein anerkanntes Land gefunden — bitte aus der Liste wählen.
+                        </div>
+                      )}
+
+                      {/* Bestätigtes Land */}
+                      {countryConfirmed && (() => {
+                        const entry = COUNTRY_LIST.find(c => `${c.code} — ${c.name}` === countryOfOrigin);
+                        return entry ? (
+                          <div style={{
+                            marginTop:6, padding:"6px 10px",
+                            background:"#f0fdf4", border:"1px solid #bbf7d0",
+                            display:"flex", alignItems:"center", gap:10, fontSize:12.5,
+                          }}>
+                            <span style={{ fontSize:18 }}>{countryFlag(entry.code)}</span>
+                            <span style={{ background:"#15803d", color:"#fff", fontFamily:"IBM Plex Mono,monospace", fontWeight:700, fontSize:12, padding:"1px 8px" }}>{entry.code}</span>
+                            <span style={{ color:"#374151", fontWeight:600 }}>{entry.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => { setCountryInput(""); setCountryOfOrigin(""); setCountryConfirmed(false); setCountryFiltered([]); }}
+                              style={{ marginLeft:"auto", background:"none", border:"none", color:"#9ca3af", cursor:"pointer", fontSize:11, padding:0 }}
+                            >
+                              Ändern
+                            </button>
+                          </div>
+                        ) : null;
+                      })()}
+                    </div>
                   </div>
 
                   <div className="bl-form-group">
