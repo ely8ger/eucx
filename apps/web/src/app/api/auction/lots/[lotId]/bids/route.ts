@@ -86,9 +86,17 @@ async function _handlePost(
   // ── Lot laden (für CBAM + Deal-Limit Checks) ─────────────────────
   const lot = await db.lot.findUnique({
     where:  { id: lotId },
-    select: { quantity: true, co2PerTonne: true, phase: true },
+    select: { quantity: true, co2PerTonne: true, phase: true, buyerId: true },
   });
   if (!lot) return NextResponse.json({ error: "Lot nicht gefunden" }, { status: 404 });
+
+  // ── Interessenkonflikt-Sperre: Käufer darf nicht gleichzeitig bieten ──
+  if (lot.buyerId === token.userId) {
+    return NextResponse.json(
+      { error: "Käufer dieses Lots kann kein Verkaufsgebot abgeben" },
+      { status: 409 }
+    );
+  }
 
   // ── [TESTMODE-02] CBAM-Precheck — DEAKTIVIERT ────────────────────
   // Grund: Test-Seller hat keine SellerCharge. Wieder aktivieren wenn Chargen-Flow bereit.
