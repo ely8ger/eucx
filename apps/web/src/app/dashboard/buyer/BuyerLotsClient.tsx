@@ -6,12 +6,32 @@
  * Ausschreibung erstellen, eigene Lots verwalten, Auktion starten.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
 import { toast } from "sonner";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
+
+interface PhotonFeature {
+  properties: {
+    name?:        string;
+    housenumber?: string;
+    street?:      string;
+    postcode?:    string;
+    city?:        string;
+    state?:       string;
+    country?:     string;
+    countrycode?: string;
+  };
+}
+
+function formatPhotonAddress(p: PhotonFeature["properties"]): string {
+  const street = [p.street ?? p.name, p.housenumber].filter(Boolean).join(" ");
+  const city   = [p.postcode, p.city ?? p.state].filter(Boolean).join(" ");
+  const parts  = [street, city, p.country].filter(Boolean);
+  return parts.join(", ");
+}
 
 type Phase = "COLLECTION" | "PROPOSAL" | "REDUCTION" | "CONCLUSION";
 
@@ -181,6 +201,13 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [qualityGrade,     setQualityGrade]     = useState("");
   const [deliveryPeriod,   setDeliveryPeriod]   = useState("");
   const [deliveryLocation, setDeliveryLocation] = useState("");
+  // Adress-Autovervollständigung
+  const [addrInput,       setAddrInput]       = useState("");
+  const [addrSuggestions, setAddrSuggestions] = useState<PhotonFeature[]>([]);
+  const [addrConfirmed,   setAddrConfirmed]   = useState(false);
+  const [addrLoading,     setAddrLoading]     = useState(false);
+  const addrDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const addrRef      = useRef<HTMLDivElement>(null);
   const [paymentTerms,     setPaymentTerms]     = useState("");
   const [vatTreatment,     setVatTreatment]     = useState("");
   const [selectedPreset,   setSelectedPreset]   = useState("");
@@ -252,6 +279,44 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       .then((d) => setCatalogSizes(d.sizes?.map((s: { value: string }) => s.value) ?? []))
       .catch(() => {});
   }, [catalogProduct, token]);
+
+  // ── Adress-Autovervollständigung (Photon / OpenStreetMap) ────────────
+  function searchAddress(q: string) {
+    if (q.length < 3) { setAddrSuggestions([]); return; }
+    setAddrLoading(true);
+    fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=6&lang=de&layer=house&layer=street`)
+      .then((r) => r.json())
+      .then((d) => setAddrSuggestions((d.features ?? []) as PhotonFeature[]))
+      .catch(() => {})
+      .finally(() => setAddrLoading(false));
+  }
+
+  function onAddrInput(v: string) {
+    setAddrInput(v);
+    setAddrConfirmed(false);
+    setDeliveryLocation("");
+    if (addrDebounce.current) clearTimeout(addrDebounce.current);
+    addrDebounce.current = setTimeout(() => searchAddress(v), 350);
+  }
+
+  function selectAddress(f: PhotonFeature) {
+    const formatted = formatPhotonAddress(f.properties);
+    setAddrInput(formatted);
+    setDeliveryLocation(formatted);
+    setAddrSuggestions([]);
+    setAddrConfirmed(true);
+  }
+
+  // Klick außerhalb schließt Dropdown
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (addrRef.current && !addrRef.current.contains(e.target as Node)) {
+        setAddrSuggestions([]);
+      }
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
 
   // ── CO₂-Faktor aus CBAM-Gruppe laden wenn Kategorie gewählt ─────────
   useEffect(() => {
@@ -1416,14 +1481,96 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                   <div className="bl-form-group">
                     <label className="bl-label">Lieferort *</label>
-                    <input
-                      className="bl-input"
-                      type="text"
-                      placeholder="z.B. Musterstraße 12, 10115 Berlin, Deutschland"
-                      value={deliveryLocation}
-                      onChange={(e) => setDeliveryLocation(e.target.value)}
-                      required
-                    />
+                    <div ref={addrRef} style={{ position: "relative" }}>
+                      <div style={{ position: "relative" }}>
+                        <input
+                          className="bl-input"
+                          type="text"
+                          placeholder="Straße, PLZ Stadt, Land eingeben…"
+                          value={addrInput}
+                          onChange={(e) => onAddrInput(e.target.value)}
+                          autoComplete="off"
+                          style={{ paddingRight: addrConfirmed ? 36 : undefined }}
+                          required
+                        />
+                        {addrLoading && (
+                          <span style={{ position:"absolute", right:10, top:"50%", transform:"translateY(-50%)", fontSize:11, color:"#9ca3af" }}>…</span>
+                        )}
+                        {addrConfirmed && (
+                          <span style={{ position:"absolute", right:10, top:"50%", transform:"translateY(-50%)", color:"#16a34a", fontSize:16 }}>✓</span>
+                        )}
+                      </div>
+
+                      {/* Vorschlags-Dropdown */}
+                      {addrSuggestions.length > 0 && (
+                        <div style={{
+                          position:"absolute", zIndex:200, left:0, right:0,
+                          background:"#fff", border:"1px solid #154194",
+                          borderTop:"none", boxShadow:"0 4px 12px rgba(0,0,0,.10)",
+                          maxHeight:280, overflowY:"auto",
+                        }}>
+                          {addrSuggestions.map((f, i) => {
+                            const p   = f.properties;
+                            const plz = p.postcode ?? "";
+                            const str = [p.street ?? p.name, p.housenumber].filter(Boolean).join(" ");
+                            const ort = [p.city ?? p.state, p.country].filter(Boolean).join(", ");
+                            return (
+                              <div
+                                key={i}
+                                onMouseDown={(e) => { e.preventDefault(); selectAddress(f); }}
+                                style={{
+                                  padding:"10px 14px", cursor:"pointer", borderBottom:"1px solid #f3f4f6",
+                                  display:"flex", alignItems:"center", gap:12,
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f4ff")}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
+                              >
+                                {/* PLZ-Badge */}
+                                <span style={{
+                                  minWidth:54, textAlign:"center",
+                                  background:"#154194", color:"#fff",
+                                  fontSize:12, fontWeight:700, fontFamily:"IBM Plex Mono,monospace",
+                                  padding:"2px 6px", letterSpacing:".04em", flexShrink:0,
+                                }}>
+                                  {plz || "—"}
+                                </span>
+                                <span style={{ fontSize:13 }}>
+                                  <span style={{ fontWeight:600 }}>{str}</span>
+                                  {ort && <span style={{ color:"#6b7280", marginLeft:6 }}>{ort}</span>}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Bestätigte Adresse — PLZ-Verifikationszeile */}
+                      {addrConfirmed && (() => {
+                        const plz = addrInput.match(/\b\d{4,6}\b/)?.[0];
+                        return plz ? (
+                          <div style={{
+                            marginTop:6, padding:"6px 10px",
+                            background:"#f0fdf4", border:"1px solid #bbf7d0",
+                            display:"flex", alignItems:"center", gap:10, fontSize:12.5,
+                          }}>
+                            <span style={{ color:"#15803d", fontWeight:700 }}>PLZ verifiziert:</span>
+                            <span style={{
+                              background:"#15803d", color:"#fff",
+                              fontFamily:"IBM Plex Mono,monospace", fontWeight:700,
+                              fontSize:14, padding:"1px 8px", letterSpacing:".06em",
+                            }}>{plz}</span>
+                            <span style={{ color:"#374151" }}>{addrInput.replace(plz, "").replace(/^,?\s*/, "").trim()}</span>
+                            <button
+                              type="button"
+                              onClick={() => { setAddrInput(""); setDeliveryLocation(""); setAddrConfirmed(false); setAddrSuggestions([]); }}
+                              style={{ marginLeft:"auto", background:"none", border:"none", color:"#9ca3af", cursor:"pointer", fontSize:11, padding:0 }}
+                            >
+                              Ändern
+                            </button>
+                          </div>
+                        ) : null;
+                      })()}
+                    </div>
                   </div>
 
                   <div className="bl-form-group">
