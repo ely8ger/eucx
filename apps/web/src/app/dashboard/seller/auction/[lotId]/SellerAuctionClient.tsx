@@ -341,7 +341,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         .sa-page-hdr { display:flex; align-items:center; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
         .sa-page-title { font-size:20px; font-weight:700; color:#111827; }
         .sa-page-sub { font-size:13px; color:#6b7280; }
-        .sa-chip { display:inline-block; padding:3px 9px; font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#fff; }
+        .sa-chip { display:inline-block; padding:3px 9px; font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#fff; white-space:nowrap; }
         .sa-dot { width:8px; height:8px; border-radius:50%; background:#16a34a; display:inline-block; animation:sa-dot 2s infinite; }
         .sa-dot.off { background:#9ca3af; animation:none; }
 

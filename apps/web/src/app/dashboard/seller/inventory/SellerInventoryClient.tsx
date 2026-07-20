@@ -262,7 +262,7 @@ export function SellerInventoryClient() {
         .inv-table td { padding:13px 14px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
         .inv-table tr:last-child td { border-bottom:none; }
         .inv-table tr:hover td { background:#fffbf5; }
-        .inv-status { display:inline-block; padding:3px 8px; font-size:10.5px; font-weight:700; color:#fff; }
+        .inv-status { display:inline-block; padding:3px 8px; font-size:10.5px; font-weight:700; color:#fff; white-space:nowrap; }
         .inv-co2-val { font-family:"IBM Plex Mono",monospace; color:#16a34a; font-weight:700; }
         .inv-warn { display:inline-flex; align-items:center; gap:4px; font-size:10.5px; color:#dc2626; font-weight:600; }
         .inv-action { font-size:12px; font-weight:700; color:${A}; text-decoration:none; cursor:pointer; background:none; border:none; padding:0; }

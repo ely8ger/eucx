@@ -118,8 +118,8 @@ export function ContractsClient() {
 
         /* Gebühr */
         .cx-fee { font-size:12px; color:#374151; white-space:nowrap; }
-        .cx-fee-badge-unpaid { font-size:10px; font-weight:700; color:#dc2626; display:inline-block; margin-top:2px; }
-        .cx-fee-badge-paid   { font-size:10px; font-weight:700; color:#16a34a; display:inline-block; margin-top:2px; }
+        .cx-fee-badge-unpaid { font-size:10px; font-weight:700; color:#dc2626; display:inline-block; margin-top:2px; white-space:nowrap; }
+        .cx-fee-badge-paid   { font-size:10px; font-weight:700; color:#16a34a; display:inline-block; margin-top:2px; white-space:nowrap; }
 
         /* Aktionen */
         .cx-btn-detail {

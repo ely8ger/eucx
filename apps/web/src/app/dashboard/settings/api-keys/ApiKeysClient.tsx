@@ -228,7 +228,7 @@ export function ApiKeysClient() {
         .ak-table tr:hover td { background:#fafafa; }
 
         /* Scope badges */
-        .ak-sbadge { display:inline-block; padding:2px 8px; font-size:10.5px; font-weight:700; font-family:"IBM Plex Mono",monospace; margin:2px; }
+        .ak-sbadge { display:inline-block; padding:2px 8px; font-size:10.5px; font-weight:700; font-family:"IBM Plex Mono",monospace; margin:2px; white-space:nowrap; }
 
         /* Status */
         .ak-status-on  { display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600; color:${GREEN}; }

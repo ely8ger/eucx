@@ -169,7 +169,7 @@ export function SellerLogisticsClient() {
         .log-table tr:last-child td { border-bottom:none; }
         .log-table tr:hover td { background:#fffbf5; }
         .log-table tr.selected td { background:#fffbeb; }
-        .log-status { display:inline-block; padding:3px 9px; font-size:10.5px; font-weight:700; color:#fff; }
+        .log-status { display:inline-block; padding:3px 9px; font-size:10.5px; font-weight:700; color:#fff; white-space:nowrap; }
         .log-detail { background:#fff; border:1px solid #e5e7eb; border-top:3px solid ${A}; padding:20px; position:sticky; top:20px; }
         .log-detail-title { font-size:13px; font-weight:700; color:#111827; margin-bottom:16px; }
         .log-step { display:flex; align-items:flex-start; gap:12px; margin-bottom:14px; }

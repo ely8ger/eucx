@@ -338,7 +338,7 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
         .cd-head-left { }
         .cd-title { font-size:20px; font-weight:700; color:#111827; }
         .cd-nr { font-family:"IBM Plex Mono","Courier New",monospace; font-size:12px; color:#6b7280; margin-top:3px; }
-        .cd-status-chip { display:inline-block; padding:4px 12px; font-size:11.5px; font-weight:700; color:#fff; letter-spacing:.04em; }
+        .cd-status-chip { display:inline-block; padding:4px 12px; font-size:11.5px; font-weight:700; color:#fff; letter-spacing:.04em; white-space:nowrap; }
         .cd-layout { display:grid; grid-template-columns:1fr 310px; gap:20px; }
         @media(max-width:768px) { .cd-layout { grid-template-columns:1fr; } }
         .cd-card { background:#fff; border:1px solid #e5e7eb; }

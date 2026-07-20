@@ -180,14 +180,14 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
 
         /* Table */
         .sl-table-wrap { overflow-x:auto; }
-        .sl-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e5e7eb; font-size:13px; }
-        .sl-table th { padding:11px 14px; text-align:left; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#9ca3af; border-bottom:2px solid #d97706; background:#fff; white-space:nowrap; }
-        .sl-table td { padding:14px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+        .sl-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e5e7eb; font-size:13px; table-layout:fixed; }
+        .sl-table th { padding:9px 12px; text-align:left; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#9ca3af; border-bottom:2px solid #d97706; background:#fff; white-space:nowrap; }
+        .sl-table td { padding:11px 12px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
         .sl-table tr:last-child td { border-bottom:none; }
         .sl-table tr:hover td { background:#fffbf5; }
 
         /* Phase badge */
-        .sl-phase { display:inline-block; padding:3px 9px; font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#fff; }
+        .sl-phase { display:inline-block; padding:3px 9px; font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#fff; white-space:nowrap; }
 
         /* Action button */
         .sl-btn-reg { padding:7px 14px; background:#d97706; color:#fff; font-size:12px; font-weight:700; border:none; cursor:pointer; white-space:nowrap; transition:background .15s,transform .1s; }
@@ -210,7 +210,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
         .sl-stat-sub { font-size:10.5px; color:#c4c9d4; margin-top:4px; }
 
         /* Closed-registration badge */
-        .sl-badge-closed { display:inline-block; padding:4px 9px; background:#fffbeb; border:1px solid #fde68a; font-size:11px; color:#92400e; font-weight:500; }
+        .sl-badge-closed { display:inline-block; padding:4px 9px; background:#fffbeb; border:1px solid #fde68a; font-size:11px; color:#92400e; font-weight:500; white-space:nowrap; }
 
         /* Loading */
         .sl-loading { color:#9ca3af; font-size:13px; padding:40px 24px; text-align:center; }
@@ -321,15 +321,17 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
           ) : (
             <div className="sl-table-wrap">
               <table className="sl-table">
+                <colgroup>
+                  <col style={{ width: "36%" }} />
+                  <col style={{ width: "24%" }} />
+                  <col style={{ width: "20%" }} />
+                  <col style={{ width: "20%" }} />
+                </colgroup>
                 <thead>
                   <tr>
-                    <th>Ware</th>
-                    <th>Menge</th>
-                    <th>Phase</th>
+                    <th>Ware / Menge</th>
+                    <th>Phase / Ende</th>
                     <th>Limit / Bestes</th>
-                    {hasCbam && <th>CBAM</th>}
-                    <th>Auktionsende</th>
-                    <th>Bieter</th>
                     <th>Aktion</th>
                   </tr>
                 </thead>
@@ -341,48 +343,48 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
 
                     return (
                       <tr key={lot.id}>
-                        <td style={{ fontWeight: 600, color: "#111827" }}>{lot.commodity}</td>
-                        <td style={{ color: "#374151" }}>
-                          {Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}
+                        {/* Ware + Menge + CBAM */}
+                        <td>
+                          <div style={{ fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {lot.commodity}
+                          </div>
+                          <div style={{ fontSize: 11.5, color: "#374151", marginTop: 2, whiteSpace: "nowrap" }}>
+                            {Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}
+                            {lot.co2PerTonne && (
+                              <span style={{ color: "#15803d", marginLeft: 8, fontFamily: "'IBM Plex Mono',monospace", fontSize: 11 }}>
+                                {parseFloat(lot.co2PerTonne).toLocaleString("de-DE", { maximumFractionDigits: 0 })} kg CO₂/t
+                              </span>
+                            )}
+                          </div>
+                          {lot.countryOfOrigin && (
+                            <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 1 }}>
+                              {lot.countryOfOrigin} · {lot.incoterms ?? "DAP"}
+                            </div>
+                          )}
                         </td>
+                        {/* Phase + Ende + Bieter */}
                         <td>
                           <span className="sl-phase" style={{ background: phaseColor }} title={PHASE_TOOLTIP[lot.phase]}>
                             {PHASE_LABEL[lot.phase]}
                           </span>
+                          <div style={{ fontSize: 10.5, color: "#9ca3af", marginTop: 4, lineHeight: 1.5 }}>
+                            {lot._count.bids} Gebote
+                          </div>
+                          {lot.auctionEnd && (
+                            <div style={{ fontSize: 10.5, color: "#6b7280", whiteSpace: "nowrap" }}>
+                              {new Date(lot.auctionEnd).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                            </div>
+                          )}
                         </td>
+                        {/* Preis */}
                         <td style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12.5 }}>
                           {lot.currentBest ? (
-                            <><strong>{fmtEur(lot.currentBest)}</strong></>
+                            <strong>{fmtEur(lot.currentBest)}</strong>
                           ) : lot.startPrice ? (
                             <span style={{ color: "#6b7280" }}>{fmtEur(lot.startPrice)}</span>
                           ) : (
                             <span style={{ color: "#9ca3af" }}>—</span>
                           )}
-                        </td>
-                        {hasCbam && (
-                          <td style={{ fontSize: 11.5, color: "#374151", whiteSpace: "nowrap" }}>
-                            {lot.co2PerTonne ? (
-                              <div>
-                                <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 600, color: "#15803d" }}>
-                                  {parseFloat(lot.co2PerTonne).toLocaleString("de-DE", { maximumFractionDigits: 1 })}
-                                </span>
-                                <span style={{ color: "#6b7280", fontSize: 10.5 }}> kg/t</span>
-                                {lot.countryOfOrigin && (
-                                  <div style={{ fontSize: 10.5, color: "#9ca3af" }}>{lot.countryOfOrigin} · {lot.incoterms ?? "DAP"}</div>
-                                )}
-                              </div>
-                            ) : (
-                              <span style={{ color: "#d1d5db", fontSize: 11 }}>—</span>
-                            )}
-                          </td>
-                        )}
-                        <td style={{ fontSize: 12, color: "#6b7280", whiteSpace: "nowrap" }}>
-                          {lot.auctionEnd
-                            ? new Date(lot.auctionEnd).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })
-                            : "—"}
-                        </td>
-                        <td style={{ fontSize: 12, color: "#6b7280", textAlign: "center" }}>
-                          {lot._count.bids}
                         </td>
                         <td>
                           {lot.isRegistered && (lot.phase === "COLLECTION") && (

@@ -294,7 +294,7 @@ export function SellerControlCenter() {
         .scc-table td { padding:13px 14px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
         .scc-table tr:last-child td { border-bottom:none; }
         .scc-table tr:hover td { background:#fffbf5; }
-        .scc-phase { display:inline-block; padding:3px 8px; font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#fff; }
+        .scc-phase { display:inline-block; padding:3px 8px; font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#fff; white-space:nowrap; }
         .scc-reg-btn { padding:7px 14px; background:${A}; color:#fff; font-size:12px; font-weight:700; border:none; cursor:pointer; transition:background .15s; }
         .scc-reg-btn:hover:not(:disabled) { background:${A2}; }
         .scc-reg-btn:disabled { opacity:.4; cursor:not-allowed; }
