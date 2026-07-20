@@ -13,11 +13,22 @@ interface Lot {
   phase: string; startPrice: string | null; currentBest: string | null;
   auctionEnd: string | null; auctionStart: string | null;
   createdAt: string; description: string | null;
+  cbamCategory: string | null;
   incoterms: string | null; countryOfOrigin: string | null;
   co2PerTonne: string | null; productionSiteId: string | null;
   hsCode: string | null; qualityGrade: string | null;
   deliveryPeriod: string | null; deliveryLocation: string | null;
   paymentTerms: string | null; vatTreatment: string | null;
+}
+
+interface CbamData {
+  cbamCountryOfOrigin:     string;
+  cbamCountryOfExport:     string;
+  cbamProductionSiteId:    string;
+  cbamCo2DirectPerTonne:   string;
+  cbamCo2IndirectPerTonne: string;
+  cbamCarbonPricePaid:     string;
+  cbamVerificationRef:     string;
 }
 
 interface MyBid   { price: string; rank: number; createdAt: string; }
@@ -71,6 +82,8 @@ function useCountdown(endIso: string | null) {
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export function SellerAuctionClient({ lot }: { lot: Lot }) {
+  const CBAM_STORAGE_KEY = `cbam_data_seller`;
+
   const [token,       setToken]       = useState("");
   const [priceInput,  setPriceInput]  = useState("");
   const [submitting,  setSubmitting]  = useState(false);
@@ -80,11 +93,21 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   const [kyc,         setKyc]         = useState<KycInfo | null>(null);
   const [depositReq,  setDepositReq]  = useState<string | null>(null);
   const [flash,       setFlash]       = useState<"good" | "bad" | null>(null);
+  const [cbamOpen,    setCbamOpen]    = useState(false);
+  const [cbamData,    setCbamData]    = useState<CbamData>({
+    cbamCountryOfOrigin: "", cbamCountryOfExport: "", cbamProductionSiteId: "",
+    cbamCo2DirectPerTonne: "", cbamCo2IndirectPerTonne: "",
+    cbamCarbonPricePaid: "", cbamVerificationRef: "",
+  });
 
   const prevBest = useRef<string | null>(lot.currentBest);
 
   // ── Init ──────────────────────────────────────────────────────────
-  useEffect(() => { setToken(localStorage.getItem("accessToken") ?? ""); }, []);
+  useEffect(() => {
+    setToken(localStorage.getItem("accessToken") ?? "");
+    const saved = localStorage.getItem(CBAM_STORAGE_KEY);
+    if (saved) { try { setCbamData(JSON.parse(saved) as CbamData); } catch { /* ignore */ } }
+  }, [CBAM_STORAGE_KEY]);
 
   // ── KYC ──────────────────────────────────────────────────────────
   const loadKyc = useCallback(async (tkn: string) => {
@@ -150,10 +173,20 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
     if (!token || submitting || price <= 0) return;
     setSubmitting(true);
     try {
+      const cbamPayload = lot.cbamCategory ? {
+        cbamCountryOfOrigin:     cbamData.cbamCountryOfOrigin     || undefined,
+        cbamCountryOfExport:     cbamData.cbamCountryOfExport     || undefined,
+        cbamProductionSiteId:    cbamData.cbamProductionSiteId    || undefined,
+        cbamCo2DirectPerTonne:   cbamData.cbamCo2DirectPerTonne   ? Number(cbamData.cbamCo2DirectPerTonne)   : undefined,
+        cbamCo2IndirectPerTonne: cbamData.cbamCo2IndirectPerTonne ? Number(cbamData.cbamCo2IndirectPerTonne) : undefined,
+        cbamCarbonPricePaid:     cbamData.cbamCarbonPricePaid     ? Number(cbamData.cbamCarbonPricePaid)     : undefined,
+        cbamVerificationRef:     cbamData.cbamVerificationRef     || undefined,
+      } : undefined;
+      if (cbamPayload) localStorage.setItem(CBAM_STORAGE_KEY, JSON.stringify(cbamData));
       const r = await fetch(`/api/auction/lots/${lot.id}/bids`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ price }),
+        body: JSON.stringify({ price, cbam: cbamPayload }),
       });
       const d = await r.json();
       if (!r.ok) {
@@ -663,6 +696,95 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                 <div style={{ background: "#fffbeb", border: "1px solid #fcd34d", padding: "12px 18px", fontSize: 13, color: "#92400e" }}>
                   Sicherheitsleistung (5%) erforderlich — fehlend:{" "}
                   <strong style={{ color: "#dc2626" }}>{Number(depositReq).toLocaleString("de-DE", { minimumFractionDigits: 2 })} €</strong>
+                </div>
+              )}
+
+              {/* CBAM-Angaben (nur bei CBAM-pflichtiger Ware) */}
+              {canBid && lot.cbamCategory && (
+                <div className="sa-card" style={{ overflow: "hidden" }}>
+                  <button
+                    onClick={() => setCbamOpen(o => !o)}
+                    style={{
+                      width: "100%", padding: "13px 22px", border: "none", background: "none",
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
+                      cursor: "pointer", fontFamily: "'IBM Plex Sans',Arial,sans-serif",
+                      borderLeft: "4px solid #d97706",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 3h18M3 8h18M3 13h9M3 18h6"/>
+                        <path d="M18 13l2 2 4-4" strokeWidth="2.2"/>
+                      </svg>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "#92400e", letterSpacing: ".04em", textTransform: "uppercase" }}>
+                        CBAM-Angaben — Pflichtfelder für meldepflichtige Ware
+                      </span>
+                      {(cbamData.cbamCountryOfOrigin || cbamData.cbamCo2DirectPerTonne) && (
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "#16a34a", background: "#f0fdf4", padding: "2px 7px", border: "1px solid #bbf7d0" }}>
+                          Ausgefüllt
+                        </span>
+                      )}
+                    </div>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                      style={{ transform: cbamOpen ? "rotate(180deg)" : "none", transition: "transform .2s" }}>
+                      <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                  </button>
+                  {cbamOpen && (
+                    <div style={{ padding: "0 22px 20px", borderTop: "1px solid #fde68a" }}>
+                      <p style={{ margin: "12px 0 14px", fontSize: 11.5, color: "#78350f", lineHeight: 1.6, fontFamily: "'IBM Plex Sans',Arial,sans-serif" }}>
+                        Gemäß EU-Verordnung 2023/956 (CBAM) ist der Importeur verpflichtet, Herkunft und CO₂-Emissionen der Ware zu melden.
+                        Bitte füllen Sie die Angaben für Ihre Lieferung aus. Diese werden mit Ihrem Gebot gespeichert.
+                      </p>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 16px" }}>
+                        {([
+                          { key: "cbamCountryOfOrigin",     label: "Produktionsland (ISO)",        placeholder: "z.B. TR, UA, IN",  note: "Herstellungsland" },
+                          { key: "cbamCountryOfExport",     label: "Ausfuhrland (ISO)",             placeholder: "z.B. TR, BG, PL",  note: "Falls ≠ Produktionsland" },
+                          { key: "cbamCo2DirectPerTonne",   label: "Direkte CO₂-Emissionen (kg/t)", placeholder: "z.B. 1850.00",     note: "kg CO₂-Äq. pro Tonne" },
+                          { key: "cbamCo2IndirectPerTonne", label: "Indirekte CO₂-Em. (kg/t)",      placeholder: "z.B. 420.00",      note: "Aus Stromverbrauch" },
+                          { key: "cbamCarbonPricePaid",     label: "CO₂-Preis gezahlt (€/t)",       placeholder: "z.B. 12.50",       note: "Art. 9 — Abzug möglich" },
+                          { key: "cbamProductionSiteId",    label: "CBAM-Stätten-ID",               placeholder: "EU-CBAM-000000",   note: "EU-Produktionsstätten-ID" },
+                        ] as { key: keyof CbamData; label: string; placeholder: string; note: string }[]).map(({ key, label, placeholder, note }) => (
+                          <div key={key}>
+                            <label style={{ display: "block", fontSize: 10.5, fontWeight: 700, color: "#92400e", letterSpacing: ".04em", textTransform: "uppercase", marginBottom: 4, fontFamily: "'IBM Plex Sans',Arial,sans-serif" }}>
+                              {label}
+                            </label>
+                            <input
+                              value={cbamData[key]}
+                              onChange={e => setCbamData(d => ({ ...d, [key]: e.target.value }))}
+                              placeholder={placeholder}
+                              style={{
+                                width: "100%", height: 36, border: "1px solid #fde68a", background: "#fffbeb",
+                                padding: "0 10px", fontSize: 13, fontFamily: "'IBM Plex Mono',monospace",
+                                outline: "none", color: "#0d1b2a",
+                              }}
+                              onFocus={e => (e.currentTarget.style.borderColor = "#d97706")}
+                              onBlur={e => (e.currentTarget.style.borderColor = "#fde68a")}
+                            />
+                            <p style={{ margin: "3px 0 0", fontSize: 10, color: "#b45309", fontFamily: "'IBM Plex Sans',Arial,sans-serif" }}>{note}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ marginTop: 10, gridColumn: "1/-1" }}>
+                        <label style={{ display: "block", fontSize: 10.5, fontWeight: 700, color: "#92400e", letterSpacing: ".04em", textTransform: "uppercase", marginBottom: 4, fontFamily: "'IBM Plex Sans',Arial,sans-serif" }}>
+                          Prüfbescheinigung (Referenz)
+                        </label>
+                        <input
+                          value={cbamData.cbamVerificationRef}
+                          onChange={e => setCbamData(d => ({ ...d, cbamVerificationRef: e.target.value }))}
+                          placeholder="z.B. Cert-2026-VER-001234"
+                          style={{
+                            width: "100%", height: 36, border: "1px solid #fde68a", background: "#fffbeb",
+                            padding: "0 10px", fontSize: 13, fontFamily: "'IBM Plex Mono',monospace",
+                            outline: "none", color: "#0d1b2a",
+                          }}
+                          onFocus={e => (e.currentTarget.style.borderColor = "#d97706")}
+                          onBlur={e => (e.currentTarget.style.borderColor = "#fde68a")}
+                        />
+                        <p style={{ margin: "3px 0 0", fontSize: 10, color: "#b45309", fontFamily: "'IBM Plex Sans',Arial,sans-serif" }}>Akkreditierter Prüfer (für verifizierte Emissionswerte)</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

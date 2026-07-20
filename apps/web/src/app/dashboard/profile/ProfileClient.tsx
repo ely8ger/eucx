@@ -42,6 +42,8 @@ interface OrgData {
   contactName:         string | null;
   contactPosition:     string | null;
   isGeschaeftsfuehrer: boolean | null;
+  eoriNumber:          string | null;
+  cbamAccountNumber:   string | null;
 }
 
 interface MeData {
@@ -51,13 +53,14 @@ interface MeData {
   organization:       OrgData;
 }
 
-type Tab = "unternehmen" | "ansprechpartner";
+type Tab = "unternehmen" | "ansprechpartner" | "zoll";
 
 // ── Sub-Navigation ─────────────────────────────────────────────────────────────
 
 const PROFILE_TABS: { id: Tab; label: string }[] = [
   { id: "unternehmen",    label: "Unternehmen"    },
   { id: "ansprechpartner", label: "Ansprechpartner" },
+  { id: "zoll",           label: "Zoll & CBAM"    },
 ];
 
 const EXTERNAL_LINKS = [
@@ -85,15 +88,24 @@ function RoField({ label, value, note }: { label: string; value?: string | null;
 // ── Hauptkomponente ────────────────────────────────────────────────────────────
 
 export function ProfileClient() {
-  const [me,  setMe]  = useState<MeData | null>(null);
-  const [tab, setTab] = useState<Tab>("unternehmen");
+  const [me,              setMe]              = useState<MeData | null>(null);
+  const [tab,             setTab]             = useState<Tab>("unternehmen");
+  const [eoriInput,       setEoriInput]       = useState("");
+  const [cbamAccInput,    setCbamAccInput]    = useState("");
+  const [zollSaving,      setZollSaving]      = useState(false);
+  const [zollSaved,       setZollSaved]       = useState(false);
+  const [zollError,       setZollError]       = useState("");
 
   useEffect(() => {
     const tkn = getToken();
     if (!tkn) return;
     fetch("/api/auth/me", { headers: { Authorization: `Bearer ${tkn}` } })
       .then((r) => r.json() as Promise<MeData>)
-      .then((d) => setMe(d))
+      .then((d) => {
+        setMe(d);
+        setEoriInput(d.organization?.eoriNumber ?? "");
+        setCbamAccInput(d.organization?.cbamAccountNumber ?? "");
+      })
       .catch(() => {});
   }, []);
 
@@ -101,6 +113,22 @@ export function ProfileClient() {
 
   const fmtDate = (iso: string | null) =>
     iso ? new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }) : null;
+
+  const saveZoll = async () => {
+    const tkn = getToken();
+    if (!tkn || zollSaving) return;
+    setZollSaving(true); setZollError(""); setZollSaved(false);
+    try {
+      const r = await fetch("/api/profile/cbam", {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${tkn}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ eoriNumber: eoriInput || null, cbamAccountNumber: cbamAccInput || null }),
+      });
+      if (!r.ok) { const d = await r.json(); setZollError(d.error ?? "Fehler beim Speichern"); }
+      else { setZollSaved(true); setTimeout(() => setZollSaved(false), 3000); }
+    } catch { setZollError("Netzwerkfehler"); }
+    finally { setZollSaving(false); }
+  };
 
   return (
     <>
@@ -317,6 +345,100 @@ export function ProfileClient() {
                 >
                   Änderung anfragen →
                 </a>
+              </div>
+            </>
+          )}
+
+          {/* ── Zoll & CBAM ──────────────────────────────────────────────── */}
+          {tab === "zoll" && (
+            <>
+              <div style={{ padding: "16px 0 4px" }}>
+                <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: ".06em" }}>
+                  Zoll & CBAM — Carbon Border Adjustment Mechanism
+                </p>
+              </div>
+
+              <div style={{ margin: "12px 0 20px", padding: "12px 14px", background: "#eff6ff", border: "1px solid #bfdbfe", borderLeft: "4px solid #154194" }}>
+                <p style={{ margin: "0 0 4px", fontSize: 13, fontWeight: 700, color: "#1e40af", fontFamily: F }}>Pflichtangaben ab 2026</p>
+                <p style={{ margin: 0, fontSize: 12, color: "#1e3a8a", fontFamily: F, lineHeight: 1.6 }}>
+                  EORI-Nummer und CBAM-Kontonummer sind ab Januar 2026 für jede CBAM-Meldung (EU-Verordnung 2023/956)
+                  verpflichtend. Diese Angaben werden automatisch in alle CBAM-Exporte übernommen.
+                </p>
+              </div>
+
+              {/* EORI */}
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 6, fontFamily: F }}>
+                  EORI-Nummer
+                </label>
+                <input
+                  value={eoriInput}
+                  onChange={e => setEoriInput(e.target.value.toUpperCase())}
+                  placeholder="z.B. DE123456789012345"
+                  maxLength={17}
+                  style={{
+                    width: "100%", height: 42, border: `1px solid ${BORDER}`, padding: "0 12px",
+                    fontSize: 14, fontFamily: "'IBM Plex Mono',monospace", outline: "none", color: TEXT,
+                  }}
+                  onFocus={e => (e.currentTarget.style.borderColor = BLUE)}
+                  onBlur={e => (e.currentTarget.style.borderColor = BORDER)}
+                />
+                <p style={{ margin: "4px 0 0", fontSize: 11, color: MUTED, fontFamily: F }}>
+                  Economic Operators Registration and Identification — EU-Zollregistrierung. Format: Länderkürzel + 15 Stellen (z.B. DE123456789012345).
+                </p>
+              </div>
+
+              {/* CBAM-Kontonummer */}
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 6, fontFamily: F }}>
+                  CBAM-Kontonummer (EU-Register)
+                </label>
+                <input
+                  value={cbamAccInput}
+                  onChange={e => setCbamAccInput(e.target.value)}
+                  placeholder="z.B. EU-CBAM-000123456"
+                  style={{
+                    width: "100%", height: 42, border: `1px solid ${BORDER}`, padding: "0 12px",
+                    fontSize: 14, fontFamily: "'IBM Plex Mono',monospace", outline: "none", color: TEXT,
+                  }}
+                  onFocus={e => (e.currentTarget.style.borderColor = BLUE)}
+                  onBlur={e => (e.currentTarget.style.borderColor = BORDER)}
+                />
+                <p style={{ margin: "4px 0 0", fontSize: 11, color: MUTED, fontFamily: F }}>
+                  Kontonummer aus dem EU-CBAM-Register (cbam.ec.europa.eu). Nur für zugelassene CBAM-Anmelder (Käufer/Importeure).
+                </p>
+              </div>
+
+              {/* Statuszeile + Speichern */}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                <button
+                  onClick={saveZoll}
+                  disabled={zollSaving}
+                  style={{
+                    height: 38, padding: "0 22px", background: zollSaving ? "#9ca3af" : BLUE,
+                    color: "#fff", border: "none", fontSize: 13, fontWeight: 700, fontFamily: F,
+                    cursor: zollSaving ? "not-allowed" : "pointer", transition: "background .15s",
+                  }}
+                  onMouseEnter={e => { if (!zollSaving) e.currentTarget.style.background = BLUE2; }}
+                  onMouseLeave={e => { if (!zollSaving) e.currentTarget.style.background = BLUE; }}
+                >
+                  {zollSaving ? "Wird gespeichert…" : "Speichern"}
+                </button>
+                {zollSaved  && <span style={{ fontSize: 12, color: GREEN, fontWeight: 600, fontFamily: F }}>Gespeichert</span>}
+                {zollError  && <span style={{ fontSize: 12, color: RED,   fontWeight: 600, fontFamily: F }}>{zollError}</span>}
+              </div>
+
+              {/* Trennlinie + Infos für Verkäufer */}
+              <div style={{ marginTop: 28, paddingTop: 20, borderTop: `1px solid ${BORDER}` }}>
+                <p style={{ margin: "0 0 8px", fontSize: 11, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: ".06em", fontFamily: F }}>
+                  Verkäufer — CBAM-Produktangaben
+                </p>
+                <p style={{ margin: 0, fontSize: 12, color: MUTED, fontFamily: F, lineHeight: 1.65 }}>
+                  Als Verkäufer geben Sie Herkunftsland, Produktionsstätte und CO₂-Emissionswerte
+                  <strong style={{ color: TEXT }}> direkt beim Gebot</strong> an — in der Auktions-Ansicht
+                  erscheint ein CBAM-Bereich wenn das Lot meldepflichtig ist. Die Angaben werden
+                  mit Ihrem Gebot gespeichert und fließen bei Zuschlag in die CBAM-Meldung des Käufers ein.
+                </p>
               </div>
             </>
           )}

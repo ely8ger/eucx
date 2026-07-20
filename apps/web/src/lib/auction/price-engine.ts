@@ -21,10 +21,21 @@ export type BidResult =
   | { ok: true;  bidId: string; newBest: string }
   | { ok: false; error: string; code: number };
 
+export interface BidCbamData {
+  cbamCountryOfOrigin?:     string;
+  cbamCountryOfExport?:     string;
+  cbamProductionSiteId?:    string;
+  cbamCo2DirectPerTonne?:   number;
+  cbamCo2IndirectPerTonne?: number;
+  cbamCarbonPricePaid?:     number;
+  cbamVerificationRef?:     string;
+}
+
 export async function placeBid(
   lotId: string,
   sellerId: string,
-  priceRaw: string | number
+  priceRaw: string | number,
+  cbam?: BidCbamData
 ): Promise<BidResult> {
   const price = new Decimal(priceRaw);
 
@@ -114,7 +125,18 @@ export async function placeBid(
 
     // ── 6. Gebot speichern ────────────────────────────────────────────
     const bid = await tx.bid.create({
-      data: { lotId, sellerId, price: price.toFixed(2) },
+      data: {
+        lotId, sellerId, price: price.toFixed(2),
+        ...(cbam ? {
+          cbamCountryOfOrigin:     cbam.cbamCountryOfOrigin,
+          cbamCountryOfExport:     cbam.cbamCountryOfExport,
+          cbamProductionSiteId:    cbam.cbamProductionSiteId,
+          cbamCo2DirectPerTonne:   cbam.cbamCo2DirectPerTonne,
+          cbamCo2IndirectPerTonne: cbam.cbamCo2IndirectPerTonne,
+          cbamCarbonPricePaid:     cbam.cbamCarbonPricePaid,
+          cbamVerificationRef:     cbam.cbamVerificationRef,
+        } : {}),
+      },
     });
 
     // ── 7. Lot aktualisieren ──────────────────────────────────────────

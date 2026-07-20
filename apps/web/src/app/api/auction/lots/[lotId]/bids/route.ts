@@ -10,7 +10,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken } from "@/lib/auth/jwt";
-import { placeBid } from "@/lib/auction/price-engine";
+import { placeBid, type BidCbamData } from "@/lib/auction/price-engine";
 // import { checkBidEligibility } from "@/lib/auction/kyc-guard"; // [TESTMODE-01]
 import { notifyOutbid, notifyLeading } from "@/lib/notifications/notification-service";
 import { db } from "@/lib/db/client";
@@ -21,7 +21,16 @@ export const dynamic = "force-dynamic";
 
 const bidSchema = z.object({
   price:    z.number().positive(),
-  chargeId: z.string().optional(), // Optionale Verknüpfung mit SellerCharge
+  chargeId: z.string().optional(),
+  cbam: z.object({
+    cbamCountryOfOrigin:     z.string().length(2).optional(),
+    cbamCountryOfExport:     z.string().length(2).optional(),
+    cbamProductionSiteId:    z.string().optional(),
+    cbamCo2DirectPerTonne:   z.number().nonnegative().optional(),
+    cbamCo2IndirectPerTonne: z.number().nonnegative().optional(),
+    cbamCarbonPricePaid:     z.number().nonnegative().optional(),
+    cbamVerificationRef:     z.string().optional(),
+  }).optional(),
 });
 
 export async function POST(
@@ -123,7 +132,7 @@ async function _handlePost(
 
   let result;
   try {
-    result = await placeBid(lotId, token.userId, parsed.data.price);
+    result = await placeBid(lotId, token.userId, parsed.data.price, parsed.data.cbam as BidCbamData | undefined);
   } catch (err) {
     console.error("[bids/route] placeBid threw:", err);
     return NextResponse.json(

@@ -49,6 +49,8 @@ export async function GET(req: NextRequest) {
           contactName:         true,
           contactPosition:     true,
           isGeschaeftsfuehrer: true,
+          eoriNumber:          true,
+          cbamAccountNumber:   true,
           wallet: {
             select: { balance: true, reservedBalance: true },
           },
@@ -88,6 +90,8 @@ export async function GET(req: NextRequest) {
       contactName:         user.organization.contactName ?? null,
       contactPosition:     user.organization.contactPosition ?? null,
       isGeschaeftsfuehrer: user.organization.isGeschaeftsfuehrer ?? null,
+      eoriNumber:          user.organization.eoriNumber ?? null,
+      cbamAccountNumber:   user.organization.cbamAccountNumber ?? null,
     },
     walletBalance:  user.organization.wallet?.balance?.toString()         ?? "0",
     walletReserved: user.organization.wallet?.reservedBalance?.toString() ?? "0",

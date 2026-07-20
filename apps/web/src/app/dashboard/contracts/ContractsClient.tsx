@@ -60,7 +60,7 @@ const fmtEur = (v: string) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
 
 const fmtDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+  new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit" });
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
@@ -70,8 +70,6 @@ export function ContractsClient() {
   const [contracts,   setContracts]   = useState<ContractRow[]>([]);
   const [loading,     setLoading]     = useState(true);
   const [error,       setError]       = useState<string | null>(null);
-  const [downloading, setDownloading] = useState<string | null>(null);
-
   useEffect(() => { setToken(localStorage.getItem("accessToken") ?? ""); }, []);
 
   useEffect(() => {
@@ -81,28 +79,6 @@ export function ContractsClient() {
       .then((d) => { setContracts(d.contracts ?? []); setLoading(false); })
       .catch(() => { setError("Verträge konnten nicht geladen werden."); setLoading(false); });
   }, [token]);
-
-  async function downloadPdf(e: React.MouseEvent, lotId: string, contractNumber: string) {
-    e.stopPropagation();
-    setDownloading(contractNumber);
-    try {
-      const r = await fetch(`/api/auction/lots/${lotId}/contract`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!r.ok) { alert("PDF nicht verfügbar."); return; }
-      const blob = await r.blob();
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement("a");
-      a.href     = url;
-      a.download = `${contractNumber}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch {
-      alert("Download fehlgeschlagen.");
-    } finally {
-      setDownloading(null);
-    }
-  }
 
   return (
     <>
@@ -119,12 +95,12 @@ export function ContractsClient() {
         .cx-table-wrap { overflow-x:auto; }
         .cx-tbl { width:100%; border-collapse:collapse; font-size:13px; background:#fff; border:1px solid #e5e7eb; }
         .cx-tbl th {
-          text-align:left; padding:10px 14px;
+          text-align:left; padding:9px 10px;
           background:#154194; color:#fff;
           font-size:10.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
           white-space:nowrap;
         }
-        .cx-tbl td { padding:13px 14px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+        .cx-tbl td { padding:11px 10px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
         .cx-tbl tr:last-child td { border-bottom:none; }
         .cx-tbl tbody tr { cursor:pointer; transition:background .1s; }
         .cx-tbl tbody tr:hover td { background:#f0f4ff; }
@@ -146,14 +122,6 @@ export function ContractsClient() {
         .cx-fee-badge-paid   { font-size:10px; font-weight:700; color:#16a34a; display:inline-block; margin-top:2px; }
 
         /* Aktionen */
-        .cx-actions { display:flex; align-items:center; gap:8px; justify-content:flex-end; }
-        .cx-btn-pdf {
-          padding:5px 12px; background:#fff; color:#374151;
-          border:1px solid #d1d5db; font-size:11.5px; font-weight:700;
-          cursor:pointer; white-space:nowrap; letter-spacing:.04em; transition:background .12s;
-        }
-        .cx-btn-pdf:hover { background:#f3f4f6; }
-        .cx-btn-pdf:disabled { color:#9ca3af; cursor:default; }
         .cx-btn-detail {
           padding:5px 14px; background:#154194; color:#fff;
           border:none; font-size:11.5px; font-weight:700;
@@ -236,22 +204,13 @@ export function ContractsClient() {
                           )}
                         </td>
                         <td onClick={(e) => e.stopPropagation()}>
-                          <div className="cx-actions">
-                            <button
-                              className="cx-btn-pdf"
-                              disabled={downloading === c.contractNumber}
-                              onClick={(e) => void downloadPdf(e, c.lotId, c.contractNumber)}
-                            >
-                              {downloading === c.contractNumber ? "…" : "PDF"}
-                            </button>
-                            <a
-                              href={`/dashboard/contracts/${c.id}`}
-                              className="cx-btn-detail"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              Details →
-                            </a>
-                          </div>
+                          <a
+                            href={`/dashboard/contracts/${c.id}`}
+                            className="cx-btn-detail"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Details →
+                          </a>
                         </td>
                       </tr>
                     );
