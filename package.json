@@ -26,5 +26,8 @@
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
   },
-  "packageManager": "npm@11.11.0"
+  "packageManager": "npm@11.11.0",
+  "dependencies": {
+    "flag-icons": "^7.5.0"
+  }
 }

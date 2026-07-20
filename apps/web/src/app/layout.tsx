@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "@/styles/globals.css";
+import "flag-icons/css/flag-icons.min.css";
 import { BASE_URL } from "@/lib/seo/metadata";
 import { I18nProvider } from "@/lib/i18n/context";
 import { CookieBanner } from "@/components/CookieBanner";

@@ -169,8 +169,8 @@ const COUNTRY_LIST: CountryEntry[] = [
   { code:"CY", name:"Zypern" },
 ];
 
-function countryFlag(code: string): string {
-  return [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65)).join("");
+function CountryFlag({ code }: { code: string }) {
+  return <span className={`fi fi-${code.toLowerCase()}`} style={{ fontSize: 18, borderRadius: 2, flexShrink: 0 }} />;
 }
 
 const INCOTERMS_LIST = [
@@ -1482,7 +1482,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                               onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f4ff")}
                               onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
                             >
-                              <span style={{ fontSize:20, lineHeight:1 }}>{countryFlag(c.code)}</span>
+                              <CountryFlag code={c.code} />
                               <span style={{
                                 minWidth:32, fontFamily:"IBM Plex Mono,monospace",
                                 fontSize:11, fontWeight:700, color:"#154194",
@@ -1514,7 +1514,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                             background:"#f0fdf4", border:"1px solid #bbf7d0",
                             display:"flex", alignItems:"center", gap:10, fontSize:12.5,
                           }}>
-                            <span style={{ fontSize:18 }}>{countryFlag(entry.code)}</span>
+                            <CountryFlag code={entry.code} />
                             <span style={{ background:"#15803d", color:"#fff", fontFamily:"IBM Plex Mono,monospace", fontWeight:700, fontSize:12, padding:"1px 8px" }}>{entry.code}</span>
                             <span style={{ color:"#374151", fontWeight:600 }}>{entry.name}</span>
                             <button
