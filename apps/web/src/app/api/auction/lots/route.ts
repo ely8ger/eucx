@@ -77,27 +77,34 @@ export async function POST(req: NextRequest) {
   const { commodity, quantity, unit, startPrice, description,
           cbamCategory, co2PerTonne, countryOfOrigin, productionSiteId, incoterms,
           hsCode, qualityGrade, deliveryPeriod, deliveryLocation, paymentTerms, vatTreatment } = parsed.data;
-  const lot = await db.lot.create({
-    data: {
-      buyerId:         user.id,
-      commodity,
-      quantity:        quantity.toString(),
-      unit,
-      startPrice:      startPrice?.toString(),
-      description,
-      cbamCategory,
-      co2PerTonne:     co2PerTonne?.toString(),
-      countryOfOrigin,
-      productionSiteId,
-      incoterms,
-      hsCode,
-      qualityGrade,
-      deliveryPeriod,
-      deliveryLocation,
-      paymentTerms,
-      vatTreatment,
-    },
-  });
+  let lot;
+  try {
+    lot = await db.lot.create({
+      data: {
+        buyerId:         user.id,
+        commodity,
+        quantity:        quantity.toString(),
+        unit,
+        startPrice:      startPrice?.toString(),
+        description,
+        cbamCategory,
+        co2PerTonne:     co2PerTonne?.toString(),
+        countryOfOrigin,
+        productionSiteId,
+        incoterms,
+        hsCode,
+        qualityGrade,
+        deliveryPeriod,
+        deliveryLocation,
+        paymentTerms,
+        vatTreatment,
+      },
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[POST /api/auction/lots] DB error:", msg);
+    return NextResponse.json({ error: "Datenbankfehler beim Erstellen des Lots", detail: msg.slice(0, 200) }, { status: 500 });
+  }
 
   return NextResponse.json({ lotId: lot.id, phase: lot.phase }, { status: 201 });
 }

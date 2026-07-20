@@ -511,9 +511,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body:    JSON.stringify(body),
       });
-      const d = await r.json();
+      const d = await r.json().catch(() => ({})) as { error?: string; detail?: string };
       if (!r.ok) {
-        setFormError(d.error ?? "Fehler beim Erstellen.");
+        setFormError(d.error ? (d.detail ? `${d.error}: ${d.detail}` : d.error) : "Fehler beim Erstellen. Bitte erneut versuchen.");
       } else {
         toast.success("Ausschreibung erstellt", {
           description: "Jetzt Verkäufer einladen und Auktion starten.",
