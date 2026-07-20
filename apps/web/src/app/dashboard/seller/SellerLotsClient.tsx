@@ -64,10 +64,34 @@ const PHASE_TOOLTIP: Record<string, string> = {
   CONCLUSION: "Abgeschlossen — Auktion beendet, Ergebnis festgestellt",
 };
 
+// ── Countdown Helper ───────────────────────────────────────────────────────────
+
+function useCountdown() {
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick(t => t + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return tick;
+}
+
+function formatCountdown(endIso: string | null): { text: string; color: string } {
+  if (!endIso) return { text: "—", color: "#9ca3af" };
+  const ms = new Date(endIso).getTime() - Date.now();
+  if (ms <= 0) return { text: "Abgelaufen", color: "#dc2626" };
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  if (h > 0)  return { text: `${h}h ${m}m`, color: "#374151" };
+  if (m >= 5) return { text: `${m}m ${s}s`, color: "#d97706" };
+  return { text: `${m}m ${s}s`, color: "#dc2626" };
+}
+
 // ── Component ──────────────────────────────────────────────────────────────────
 
 export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "all" | "mine" | "active" }) {
   const router = useRouter();
+  useCountdown(); // Sekunden-Tick für Live-Countdown
   const [token,        setToken]        = useState("");
   const [hydrated,     setHydrated]     = useState(false);
   const [lots,         setLots]         = useState<LotRow[]>([]);
@@ -187,7 +211,14 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
         .sl-table tr:hover td { background:#fffbf5; }
 
         /* Phase badge */
-        .sl-phase { display:inline-block; padding:3px 9px; font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#fff; white-space:nowrap; }
+        .sl-phase { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#fff; white-space:nowrap; word-break:normal; overflow-wrap:normal; }
+
+        /* Live-Indikator (pulsierender Punkt) */
+        @keyframes sl-pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+        .sl-live-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.9); flex-shrink:0; animation:sl-pulse 1.4s ease-in-out infinite; }
+
+        /* Countdown */
+        .sl-countdown { font-family:"IBM Plex Mono",monospace; font-size:11.5px; font-weight:600; letter-spacing:.02em; margin-top:3px; }
 
         /* Action button */
         .sl-btn-reg { padding:7px 14px; background:#d97706; color:#fff; font-size:12px; font-weight:700; border:none; cursor:pointer; white-space:nowrap; transition:background .15s,transform .1s; }
@@ -362,19 +393,30 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                             </div>
                           )}
                         </td>
-                        {/* Phase + Ende + Bieter */}
+                        {/* Phase + Countdown + Bieter */}
                         <td>
                           <span className="sl-phase" style={{ background: phaseColor }} title={PHASE_TOOLTIP[lot.phase]}>
+                            {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && (
+                              <span className="sl-live-dot" />
+                            )}
                             {PHASE_LABEL[lot.phase]}
                           </span>
-                          <div style={{ fontSize: 10.5, color: "#9ca3af", marginTop: 4, lineHeight: 1.5 }}>
-                            {lot._count.bids} Gebote
-                          </div>
-                          {lot.auctionEnd && (
-                            <div style={{ fontSize: 10.5, color: "#6b7280", whiteSpace: "nowrap" }}>
-                              {new Date(lot.auctionEnd).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                          {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && lot.auctionEnd && (() => {
+                            const cd = formatCountdown(lot.auctionEnd);
+                            return (
+                              <div className="sl-countdown" style={{ color: cd.color, marginTop: 4 }}>
+                                {cd.text}
+                              </div>
+                            );
+                          })()}
+                          {lot.auctionEnd && lot.phase === "COLLECTION" && (
+                            <div style={{ fontSize: 10.5, color: "#9ca3af", marginTop: 3, whiteSpace: "nowrap" }}>
+                              {new Date(lot.auctionEnd).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
                             </div>
                           )}
+                          <div style={{ fontSize: 10.5, color: "#9ca3af", marginTop: 2 }}>
+                            {lot._count.bids} Gebote
+                          </div>
                         </td>
                         {/* Preis */}
                         <td style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12.5 }}>
