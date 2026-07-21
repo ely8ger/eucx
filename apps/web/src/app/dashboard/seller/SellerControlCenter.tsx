@@ -473,7 +473,7 @@ export function SellerControlCenter() {
                     <div className="scc-pos-qty">
                       {Number(pos.quantity).toLocaleString("de-DE")} {pos.unit}
                       <span style={{ marginLeft: 8 }}>
-                        <span className="scc-phase" style={{ background: PHASE_COLOR[pos.phase] ?? "#6b7280", fontSize: 9 }}>
+                        <span className="scc-phase eucx-badge" style={{ background: PHASE_COLOR[pos.phase] ?? "#6b7280", fontSize: 9 }}>
                           {PHASE_LABEL[pos.phase]}
                         </span>
                       </span>
@@ -573,7 +573,7 @@ export function SellerControlCenter() {
                           {Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}
                         </td>
                         <td>
-                          <span className="scc-phase" style={{ background: PHASE_COLOR[lot.phase] ?? "#6b7280" }}>
+                          <span className="scc-phase eucx-badge" style={{ background: PHASE_COLOR[lot.phase] ?? "#6b7280" }}>
                             {PHASE_LABEL[lot.phase]}
                           </span>
                         </td>

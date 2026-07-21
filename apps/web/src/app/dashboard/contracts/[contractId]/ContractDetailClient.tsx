@@ -424,7 +424,7 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
               <div className="cd-title">{contract.lot.commodity}</div>
               <div className="cd-nr">{contract.contractNumber} · erstellt {fmtDate(contract.createdAt)}</div>
             </div>
-            <span className="cd-status-chip" style={{ background: STATUS_COLORS[contract.deliveryStatus] }}>
+            <span className="cd-status-chip eucx-badge" style={{ background: STATUS_COLORS[contract.deliveryStatus] }}>
               {STEPS[idx]?.label ?? contract.deliveryStatus}
             </span>
           </div>

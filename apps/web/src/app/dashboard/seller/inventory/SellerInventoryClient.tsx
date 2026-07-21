@@ -548,7 +548,7 @@ export function SellerInventoryClient() {
                       <td style={{ fontSize: 12.5 }}>{c.countryOfOrigin || "-"}</td>
                       <td style={{ fontSize: 12, fontFamily: "'IBM Plex Mono',monospace" }}>{c.incoterms || "-"}</td>
                       <td>
-                        <span className="inv-status" style={{ background: STATUS_COLOR[c.status] ?? "#6b7280" }}>
+                        <span className="inv-status eucx-badge" style={{ background: STATUS_COLOR[c.status] ?? "#6b7280" }}>
                           {STATUS_LABEL[c.status] ?? c.status}
                         </span>
                         {c.lot && (

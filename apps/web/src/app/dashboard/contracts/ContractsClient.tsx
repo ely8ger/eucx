@@ -186,7 +186,7 @@ export function ContractsClient() {
                         <td className="cx-amt">{fmtEur(c.totalValue)}</td>
                         <td className="cx-cp">{c.counterpartyName}</td>
                         <td>
-                          <span className="cx-chip" style={{ background: status.bg, color: status.color }}>
+                          <span className="cx-chip eucx-badge" style={{ background: status.bg, color: status.color }}>
                             {needsAction && <span className="cx-action-dot" />}
                             {status.label}
                           </span>

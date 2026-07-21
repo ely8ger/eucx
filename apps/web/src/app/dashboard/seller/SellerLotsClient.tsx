@@ -395,7 +395,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                         </td>
                         {/* Phase + Countdown + Bieter */}
                         <td>
-                          <span className="sl-phase" style={{ background: phaseColor }} title={PHASE_TOOLTIP[lot.phase]}>
+                          <span className="sl-phase eucx-badge" style={{ background: phaseColor }} title={PHASE_TOOLTIP[lot.phase]}>
                             {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && (
                               <span className="sl-live-dot" />
                             )}
@@ -450,7 +450,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                             <span style={{ fontSize: 11.5, color: "#9ca3af" }}>KYC erforderlich</span>
                           )}
                           {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && !lot.isRegistered && (
-                            <span className="sl-badge-closed" title="Registrierungsphase bereits abgeschlossen — Teilnahme an dieser Auktion nicht mehr möglich">
+                            <span className="sl-badge-closed eucx-badge" title="Registrierungsphase bereits abgeschlossen — Teilnahme an dieser Auktion nicht mehr möglich">
                               Registrierung geschlossen
                             </span>
                           )}

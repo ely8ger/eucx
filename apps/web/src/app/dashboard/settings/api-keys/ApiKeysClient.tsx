@@ -472,7 +472,7 @@ export function ApiKeysClient() {
                             return (
                               <span
                                 key={s}
-                                className="ak-sbadge"
+                                className="ak-sbadge eucx-badge"
                                 style={{ background: `${color}1a`, color, border: `1px solid ${color}40` }}
                               >
                                 {s}

@@ -469,7 +469,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
               <div className="sa-page-title">{lot.commodity}</div>
               <div className="sa-page-sub">{lot.quantity} {lot.unit}{lot.startPrice ? ` · Limit ${fmtEur(lot.startPrice)}` : ""}</div>
             </div>
-            <span className="sa-chip" style={{ background: PHASE_COLOR[livePhase] ?? "#6b7280" }}>
+            <span className="sa-chip eucx-badge" style={{ background: PHASE_COLOR[livePhase] ?? "#6b7280" }}>
               {PHASE_LABEL[livePhase] ?? livePhase}
             </span>
           </div>

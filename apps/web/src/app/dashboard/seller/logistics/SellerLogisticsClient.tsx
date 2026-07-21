@@ -276,7 +276,7 @@ export function SellerLogisticsClient() {
                               {fmtEur(d.totalValue)}
                             </td>
                             <td>
-                              <span className="log-status" style={{ background: colors[idx] ?? "#6b7280" }}>
+                              <span className="log-status eucx-badge" style={{ background: colors[idx] ?? "#6b7280" }}>
                                 {STEPS[idx]?.label ?? d.deliveryStatus}
                               </span>
                             </td>

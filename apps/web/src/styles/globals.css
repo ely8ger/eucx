@@ -544,15 +544,30 @@ body { overflow-x: hidden; }
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── 1. Globale Silbentrennung & Wortumbruch ─────────────────────────────── */
-body, p, h1, h2, h3, h4, li, td, th, span, a, div {
+/* NUR Fließtext-Elemente — span/div/a bewusst ausgeschlossen (würde Badges zerstören) */
+p, h1, h2, h3, h4, li {
   overflow-wrap: break-word;
   word-break: break-word;
 }
+td, th {
+  overflow-wrap: break-word;
+  /* KEIN word-break: break-word auf td/th — Badge-Zellen würden umbrechen */
+}
 @media (max-width: 768px) {
-  body, p, h1, h2, h3, h4, li, td, th {
+  p, h1, h2, h3, h4, li, td, th {
     hyphens: auto;
     -webkit-hyphens: auto;
   }
+}
+
+/* ── Badge-Schutz (globale Pflicht-Regel) ────────────────────────────────── */
+/* Jedes Status-Badge/Chip in der App muss .eucx-badge erhalten.             */
+/* Schützt unabhängig von Spaltenbreite und parent-Regeln.                   */
+.eucx-badge {
+  display: inline-block;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 /* ── 2. Inline-Container: Padding auf Mobile ──────────────────────────────── */
