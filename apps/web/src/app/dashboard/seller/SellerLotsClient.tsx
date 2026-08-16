@@ -280,7 +280,9 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
               VERKÄUFER-PORTAL
             </span>
             <span style={{ fontSize: 11, color: "rgba(253,230,138,.7)", letterSpacing: "0.02em" }}>
-              Ausschreibungen einsehen · Gebote abgeben · Umsatz generieren
+              {initialFilter === "mine"
+                ? "Meine Registrierungen · Laufende & abgelaufene Auktionen · Ergebnisse"
+                : "Ausschreibungen einsehen · Gebote abgeben · Umsatz generieren"}
             </span>
           </div>
         </div>
@@ -325,8 +327,14 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
             </div>
           )}
 
-          <div className="sl-heading">Verfügbare Ausschreibungen</div>
-          <div className="sl-sub">Registrieren Sie sich für Auktionen in der Sammelphase und geben Sie Angebote ab.</div>
+          <div className="sl-heading">
+            {initialFilter === "mine" ? "Meine Auktionen" : "Verfügbare Ausschreibungen"}
+          </div>
+          <div className="sl-sub">
+            {initialFilter === "mine"
+              ? "Alle Ausschreibungen, für die Sie registriert sind — aktiv und abgelaufen."
+              : "Registrieren Sie sich für Auktionen in der Sammelphase und geben Sie Angebote ab."}
+          </div>
 
           {/* Filter-Tabs */}
           <div className="sl-filters">

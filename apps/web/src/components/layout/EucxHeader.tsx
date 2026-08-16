@@ -58,7 +58,7 @@ const NAV: Record<string, NavItem[]> = {
   seller: [
     { label: "Ausschreibungen",    href: "/dashboard/seller/auctions",   activePrefix: "/dashboard/seller/auctions" },
     { label: "Lagerbestand",       href: "/dashboard/seller/inventory",  activePrefix: "/dashboard/seller/inventory" },
-    { label: "Aktive Gebote",      href: "/dashboard/seller/active-bids", activePrefix: "/dashboard/seller/active-bids" },
+    { label: "Meine Auktionen",     href: "/dashboard/seller/active-bids", activePrefix: "/dashboard/seller/active-bids" },
     { label: "Lieferungen",        href: "/dashboard/seller/logistics",  activePrefix: "/dashboard/seller/logistics" },
     { label: "Abrechnung",         href: "/dashboard/seller/billing",    activePrefix: "/dashboard/seller/billing" },
   ],
@@ -125,12 +125,12 @@ const BREADCRUMB_MAP: Array<{
     match:  (p) => p.startsWith("/dashboard/seller/auction/"),
     config: (p) => {
       const id = p.split("/").pop() ?? "";
-      return { area: "Verkäufer-Portal", areaHref: "/dashboard/seller", page: "Aktive Gebote", pageHref: "/dashboard/seller", detail: `Los ${id.slice(0, 8).toUpperCase()}` };
+      return { area: "Verkäufer-Portal", areaHref: "/dashboard/seller/active-bids", page: "Meine Auktionen", pageHref: "/dashboard/seller/active-bids", detail: `Los ${id.slice(0, 8).toUpperCase()}` };
     },
   },
   {
     match:  (p) => p.startsWith("/dashboard/seller/auction"),
-    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller", page: "Aktive Gebote", pageHref: "/dashboard/seller" }),
+    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/active-bids", page: "Meine Auktionen", pageHref: "/dashboard/seller/active-bids" }),
   },
   // ── Konto & Compliance ─────────────────────────────────────────────────────
   {
