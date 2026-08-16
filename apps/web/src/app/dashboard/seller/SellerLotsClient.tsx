@@ -159,12 +159,24 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
     }
   }
 
+  // ── Abgelaufene Lots erkennen (client-seitig, sekundengenau) ─────
+  const now = Date.now();
+  const isLotExpired = (l: LotRow) =>
+    (l.phase === "PROPOSAL" || l.phase === "REDUCTION") &&
+    !!l.auctionEnd && new Date(l.auctionEnd).getTime() < now;
+
   // ── Filter ────────────────────────────────────────────────────────
   const displayed = lots.filter((l) => {
     if (filter === "mine")   return l.isRegistered;
-    if (filter === "active") return l.phase === "PROPOSAL" || l.phase === "REDUCTION";
+    if (filter === "active") return (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && !isLotExpired(l);
     return true;
   });
+
+  // ── Stat-Zähler (alle abgelaufenen ausschließen) ──────────────────
+  const availableCount = lots.filter(l => !isLotExpired(l)).length;
+  const activeCount    = lots.filter(l => (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && !isLotExpired(l)).length;
+  const myActiveCount  = lots.filter(l => (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && l.isRegistered && !isLotExpired(l)).length;
+  const myRegsCount    = lots.filter(l => l.isRegistered).length;
 
   const hasCbam    = displayed.some(l => l.co2PerTonne);
   const isVerified = kyc?.verificationStatus === "VERIFIED";
@@ -296,12 +308,12 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
           {!loading && (
             <div className="sl-stats">
               {[
-                { num: lots.length,                                                                                     label: "Verfügbare Lots",       sub: "Offene Ausschreibungen" },
-                { num: lots.filter(l => l.phase === "COLLECTION").length,                                              label: "Registrierungsphase",   sub: "Jetzt registrieren" },
-                { num: lots.filter(l => l.isRegistered).length,                                                        label: "Meine Registrierungen", sub: "Gebote möglich" },
-                { num: lots.filter(l => (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && l.isRegistered).length, label: "Aktive Auktionen",      sub: "Gebote laufen" },
+                { num: availableCount,                                 label: "Verfügbare Lots",       sub: "Aktive Ausschreibungen" },
+                { num: lots.filter(l => l.phase === "COLLECTION").length, label: "Registrierungsphase", sub: "Jetzt registrieren" },
+                { num: myRegsCount,                                    label: "Meine Registrierungen", sub: "Teilnahme bestätigt" },
+                { num: myActiveCount,                                  label: "Ich kann bieten",       sub: "Laufende Auktionen" },
               ].map(s => {
-                const highlight = s.label === "Aktive Auktionen" && s.num > 0;
+                const highlight = s.label === "Ich kann bieten" && s.num > 0;
                 return (
                   <div key={s.label} className="sl-stat" style={{ borderTop: `3px solid ${highlight ? "#dc2626" : "#e5e7eb"}` }}>
                     <div className="sl-stat-num" style={{ color: highlight ? "#dc2626" : "#111827" }}>{s.num}</div>
@@ -325,8 +337,8 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                 onClick={() => setFilter(f)}
               >
                 {f === "all"    && `Alle (${lots.length})`}
-                {f === "active" && `Aktiv (${lots.filter((l) => l.phase === "PROPOSAL" || l.phase === "REDUCTION").length})`}
-                {f === "mine"   && `Meine Registrierungen (${lots.filter((l) => l.isRegistered).length})`}
+                {f === "active" && `Aktiv (${activeCount})`}
+                {f === "mine"   && `Meine Registrierungen (${myRegsCount})`}
               </button>
             ))}
             <button
@@ -362,15 +374,19 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                   <tr>
                     <th>Ware / Menge</th>
                     <th>Phase / Ende</th>
-                    <th>Limit / Bestes</th>
+                    <th>Limit · Bestes Gebot</th>
                     <th>Aktion</th>
                   </tr>
                 </thead>
                 <tbody>
                   {displayed.map((lot) => {
+                    const expired       = isLotExpired(lot);
+                    const priceUnit     = lot.unit === "TON" ? "/t" : lot.unit === "KG" ? "/kg" : "";
                     const canRegister   = lot.phase === "COLLECTION" && !lot.isRegistered && isVerified;
-                    const canGoToAction = (lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && lot.isRegistered;
-                    const phaseColor    = PHASE_COLOR[lot.phase] ?? "#6b7280";
+                    const canGoToAction = (lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && lot.isRegistered && !expired;
+                    const canSeeResult  = (lot.phase === "CONCLUSION" || expired) && lot.isRegistered;
+                    const phaseColor    = expired ? "#6b7280" : (PHASE_COLOR[lot.phase] ?? "#6b7280");
+                    const phaseLabel    = expired ? "Beendet" : PHASE_LABEL[lot.phase];
 
                     return (
                       <tr key={lot.id}>
@@ -396,12 +412,12 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                         {/* Phase + Countdown + Bieter */}
                         <td>
                           <span className="sl-phase eucx-badge" style={{ background: phaseColor }} title={PHASE_TOOLTIP[lot.phase]}>
-                            {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && (
+                            {!expired && (lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && (
                               <span className="sl-live-dot" />
                             )}
-                            {PHASE_LABEL[lot.phase]}
+                            {phaseLabel}
                           </span>
-                          {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && lot.auctionEnd && (() => {
+                          {!expired && (lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && lot.auctionEnd && (() => {
                             const cd = formatCountdown(lot.auctionEnd);
                             return (
                               <div className="sl-countdown" style={{ color: cd.color, marginTop: 4 }}>
@@ -409,6 +425,11 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                               </div>
                             );
                           })()}
+                          {expired && lot.auctionEnd && (
+                            <div style={{ fontSize: 10.5, color: "#9ca3af", marginTop: 3, whiteSpace: "nowrap" }}>
+                              Ende: {new Date(lot.auctionEnd).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                            </div>
+                          )}
                           {lot.auctionEnd && lot.phase === "COLLECTION" && (
                             <div style={{ fontSize: 10.5, color: "#9ca3af", marginTop: 3, whiteSpace: "nowrap" }}>
                               {new Date(lot.auctionEnd).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
@@ -418,23 +439,31 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                             {lot._count.bids} Gebote
                           </div>
                         </td>
-                        {/* Preis */}
-                        <td style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12.5 }}>
+                        {/* Preis: Limit + Bestes getrennt mit Einheit */}
+                        <td style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12 }}>
+                          {lot.startPrice && (
+                            <div style={{ color: "#9ca3af", fontSize: 10.5, marginBottom: 2 }}>
+                              Limit: {fmtEur(lot.startPrice)}{priceUnit}
+                            </div>
+                          )}
                           {lot.currentBest ? (
-                            <strong>{fmtEur(lot.currentBest)}</strong>
-                          ) : lot.startPrice ? (
-                            <span style={{ color: "#6b7280" }}>{fmtEur(lot.startPrice)}</span>
+                            <strong style={{ color: "#111827" }}>{fmtEur(lot.currentBest)}{priceUnit}</strong>
                           ) : (
-                            <span style={{ color: "#9ca3af" }}>—</span>
+                            <span style={{ color: "#d1d5db" }}>—</span>
                           )}
                         </td>
                         <td>
-                          {lot.isRegistered && (lot.phase === "COLLECTION") && (
+                          {lot.isRegistered && lot.phase === "COLLECTION" && (
                             <span className="sl-badge-reg">✓ Registriert</span>
                           )}
                           {canGoToAction && (
                             <a href={`/dashboard/seller/auction/${lot.id}`} className="sl-btn-goto">
                               Zur Auktion →
+                            </a>
+                          )}
+                          {canSeeResult && (
+                            <a href={`/dashboard/seller/auction/${lot.id}`} className="sl-btn-goto" style={{ opacity: .75 }}>
+                              Ergebnis →
                             </a>
                           )}
                           {canRegister && (
@@ -446,18 +475,16 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                               {registering === lot.id ? "…" : "Registrieren"}
                             </button>
                           )}
-                          {!canRegister && !canGoToAction && !lot.isRegistered && lot.phase === "COLLECTION" && !isVerified && (
+                          {!canRegister && !canGoToAction && !canSeeResult && !lot.isRegistered && lot.phase === "COLLECTION" && !isVerified && (
                             <span style={{ fontSize: 11.5, color: "#9ca3af" }}>KYC erforderlich</span>
                           )}
-                          {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && !lot.isRegistered && (
-                            <span className="sl-badge-closed eucx-badge" title="Registrierungsphase bereits abgeschlossen — Teilnahme an dieser Auktion nicht mehr möglich">
+                          {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && !lot.isRegistered && !expired && (
+                            <span className="sl-badge-closed eucx-badge" title="Registrierungsphase bereits abgeschlossen">
                               Registrierung geschlossen
                             </span>
                           )}
-                          {lot.phase === "CONCLUSION" && lot.isRegistered && (
-                            <a href={`/dashboard/seller/auction/${lot.id}`} className="sl-btn-goto" style={{ opacity: .7 }}>
-                              Ergebnis →
-                            </a>
+                          {expired && !lot.isRegistered && (
+                            <span style={{ fontSize: 11.5, color: "#9ca3af" }}>Beendet</span>
                           )}
                         </td>
                       </tr>
