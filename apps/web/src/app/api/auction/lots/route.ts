@@ -11,6 +11,7 @@ import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { z } from "zod";
 import { CbamCategory } from "@prisma/client";
+import { runAuctionTimer } from "@/lib/auction/auction-timer";
 
 export const dynamic = "force-dynamic";
 
@@ -134,6 +135,9 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const phase   = searchParams.get("phase");
   const mine    = searchParams.get("mine") === "true";
+
+  // Fällige Auktionen on-demand abschließen (Backup für Cron-Ausfälle)
+  runAuctionTimer().catch(() => {});
 
   const lots = await db.lot.findMany({
     where: mine

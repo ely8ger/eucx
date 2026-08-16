@@ -242,7 +242,7 @@ const UNITS = ["TON", "KG", "CBM", "LITER", "PIECE", "SQM", "MWH"] as const;
 
 const PHASE_LABEL: Record<Phase, string> = {
   COLLECTION: "Registrierung",
-  PROPOSAL:   "Erstgebote",
+  PROPOSAL:   "Angebotsphase",
   REDUCTION:  "Auktion läuft",
   CONCLUSION: "Abgeschlossen",
 };
@@ -639,7 +639,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     // co2PerTonne ist kg/t → ×qty ergibt kg → /1000 ergibt Tonnen CO₂
     return sum + (qty * co2) / 1000;
   }, 0);
-  const lotsWithCbam = lots.filter((l) => l.co2PerTonne).length;
+  // lotsWithCbam: nur abgeschlossene Lots (konsistent mit totalCo2Tonnes)
+  const lotsWithCbam = co2Lots.length;
 
 
 
@@ -1929,7 +1930,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         <td style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12 }}>
                           {lot.startPrice && (
                             <div style={{ color: "#9ca3af", fontSize: 10.5, marginBottom: 2 }}>
-                              Max: {fmtEur(lot.startPrice)}
+                              Max: {fmtEur(lot.startPrice)}{lot.unit === "TON" ? "/t" : lot.unit === "KG" ? "/kg" : ""}
                             </div>
                           )}
                           {lot.phase === "CONCLUSION" ? (
@@ -1938,9 +1939,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                                 <span className="bl-winner">✓ Zuschlag</span>
                                 {lot.currentBest && (
                                   <div style={{ marginTop: 3, color: "#14532d", fontWeight: 700, fontSize: 12 }}>
-                                    {fmtEur(lot.currentBest)}
+                                    {fmtEur(lot.currentBest)}{lot.unit === "TON" ? "/t" : lot.unit === "KG" ? "/kg" : ""}
                                     {savings !== null && savings > 0 && (
-                                      <div style={{ fontSize: 10, color: "#16a34a", fontWeight: 700 }}>✓ gespart: −{fmtEur(String(savings))}</div>
+                                      <div style={{ fontSize: 10, color: "#16a34a", fontWeight: 700 }}>✓ {fmtEur(String(savings))} gespart</div>
                                     )}
                                   </div>
                                 )}
@@ -1950,9 +1951,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                             )
                           ) : lot.currentBest ? (
                             <div>
-                              <strong style={{ color: "#16a34a", fontSize: 12.5 }}>{fmtEur(lot.currentBest)}</strong>
+                              <strong style={{ color: "#16a34a", fontSize: 12.5 }}>{fmtEur(lot.currentBest)}{lot.unit === "TON" ? "/t" : lot.unit === "KG" ? "/kg" : ""}</strong>
                               {savings !== null && savings > 0 && (
-                                <div style={{ fontSize: 10, color: "#16a34a", fontWeight: 700 }}>✓ gespart: −{fmtEur(String(savings))}</div>
+                                <div style={{ fontSize: 10, color: "#16a34a", fontWeight: 700 }}>✓ {fmtEur(String(savings))} gespart</div>
                               )}
                             </div>
                           ) : (

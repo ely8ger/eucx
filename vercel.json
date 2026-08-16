@@ -21,5 +21,12 @@
     "deploymentEnabled": {
       "main": true
     }
-  }
+  },
+
+  "crons": [
+    {
+      "path": "/api/auction/cron",
+      "schedule": "* * * * *"
+    }
+  ]
 }
