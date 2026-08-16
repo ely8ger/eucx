@@ -256,6 +256,9 @@ const PHASE_COLOR: Record<Phase, string> = {
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
+const isLotExpired = (l: { phase: string; auctionEnd: string | null }): boolean =>
+  (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && !!l.auctionEnd && new Date(l.auctionEnd).getTime() < Date.now();
+
 const fmtEur = (v: string | null) =>
   v == null ? "—"
   : new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
@@ -626,7 +629,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   // Lot-Statistiken
   const stats = {
     total:      lots.length,
-    active:     lots.filter((l) => l.phase === "PROPOSAL" || l.phase === "REDUCTION").length,
+    active:     lots.filter((l) => (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && !isLotExpired(l)).length,
     collection: lots.filter((l) => l.phase === "COLLECTION").length,
     concluded:  lots.filter((l) => l.phase === "CONCLUSION").length,
   };
@@ -1855,7 +1858,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
           ) : (() => {
             const filtered = lots.filter((l) => {
               if (activeTab === "all")        return true;
-              if (activeTab === "active")     return l.phase === "PROPOSAL" || l.phase === "REDUCTION";
+              if (activeTab === "active")     return (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && !isLotExpired(l);
               if (activeTab === "collection") return l.phase === "COLLECTION";
               if (activeTab === "conclusion") return l.phase === "CONCLUSION";
               return true;
@@ -1914,8 +1917,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         </td>
                         {/* Status + Ende + Bieter */}
                         <td>
-                          <span className="bl-phase" style={{ background: PHASE_COLOR[lot.phase] }}>
-                            {PHASE_LABEL[lot.phase]}
+                          <span className="bl-phase eucx-badge" style={{ background: isLotExpired(lot) ? "#6b7280" : PHASE_COLOR[lot.phase] }}>
+                            {isLotExpired(lot) ? "Beendet" : PHASE_LABEL[lot.phase]}
                           </span>
                           <div style={{ fontSize: 10.5, color: "#9ca3af", marginTop: 4, lineHeight: 1.5 }}>
                             {lot._count.registrations} angemeldet · {lot._count.bids} Gebote
@@ -1973,10 +1976,13 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                               {opening === lot.id ? "…" : nextSlotStartLabel()}
                             </button>
                           )}
-                          {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && (
+                          {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && !isLotExpired(lot) && (
                             <a href={`/dashboard/buyer/auction/${lot.id}`} className="bl-btn-watch">
                               Live →
                             </a>
+                          )}
+                          {isLotExpired(lot) && (
+                            <span style={{ fontSize: 11, color: "#9ca3af", fontWeight: 600 }}>Beendet</span>
                           )}
                           {lot.phase === "CONCLUSION" && (
                             <a

@@ -215,7 +215,8 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   };
 
   // ── Derived state ────────────────────────────────────────────────
-  const canBid    = livePhase === "PROPOSAL" || livePhase === "REDUCTION";
+  const isExpired = (livePhase === "PROPOSAL" || livePhase === "REDUCTION") && !!liveEnd && new Date(liveEnd).getTime() < Date.now();
+  const canBid    = (livePhase === "PROPOSAL" || livePhase === "REDUCTION") && !isExpired;
   const bestNum   = liveBest ? Number(liveBest) : null;
   const isLeading = myRank === 1;
 
@@ -455,8 +456,8 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
               Ref. {lot.id.slice(0, 8).toUpperCase()} · {lot.commodity} · {lot.quantity} {lot.unit}
             </span>
             <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
-              <span className={`sa-dot${connected ? "" : " off"}`} />
-              <span style={{ fontSize: 11, color: "rgba(253,230,138,.6)" }}>{connected ? "Live" : "Verbinde…"}</span>
+              <span className={`sa-dot${connected && !isExpired ? "" : " off"}`} />
+              <span style={{ fontSize: 11, color: "rgba(253,230,138,.6)" }}>{isExpired ? "Beendet" : connected ? "Live" : "Verbinde…"}</span>
             </div>
           </div>
         </div>
@@ -469,8 +470,8 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
               <div className="sa-page-title">{lot.commodity}</div>
               <div className="sa-page-sub">{lot.quantity} {lot.unit}{lot.startPrice ? ` · Limit ${fmtEur(lot.startPrice)}` : ""}</div>
             </div>
-            <span className="sa-chip eucx-badge" style={{ background: PHASE_COLOR[livePhase] ?? "#6b7280" }}>
-              {PHASE_LABEL[livePhase] ?? livePhase}
+            <span className="sa-chip eucx-badge" style={{ background: isExpired ? "#6b7280" : (PHASE_COLOR[livePhase] ?? "#6b7280") }}>
+              {isExpired ? "Beendet" : (PHASE_LABEL[livePhase] ?? livePhase)}
             </span>
           </div>
 
@@ -603,10 +604,11 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                 <div className="sa-kpi-label">Verbleibend</div>
                 <div className={`sa-kpi-val${isUrgent ? " urgent" : ""}`}>{liveEnd ? countdown : "—"}</div>
                 <div className="sa-kpi-sub">
-                  {livePhase === "PROPOSAL"   && "Erstgebote laufen"}
-                  {livePhase === "REDUCTION"  && "Bieterwettbewerb aktiv"}
-                  {livePhase === "CONCLUSION" && "Auktion beendet"}
-                  {livePhase === "COLLECTION" && "Noch nicht gestartet"}
+                  {isExpired                                               && "Bieterwettbewerb beendet"}
+                  {!isExpired && livePhase === "PROPOSAL"                  && "Erstgebote laufen"}
+                  {!isExpired && livePhase === "REDUCTION"                 && "Bieterwettbewerb aktiv"}
+                  {livePhase === "CONCLUSION"                              && "Auktion beendet"}
+                  {livePhase === "COLLECTION"                              && "Noch nicht gestartet"}
                 </div>
               </div>
 
@@ -617,8 +619,8 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                   <div className="sa-kpi-val" style={{ color: "#154194" }}>{fmtEur(myBids[0]!.price)}</div>
                   <div className="sa-kpi-sub">
                     {myRank === 1
-                      ? <span style={{ color: "#16a34a", fontWeight: 600 }}>Rang 1 — Führend</span>
-                      : <span style={{ color: "#d97706", fontWeight: 600 }}>Rang #{myRank} — Überboten</span>
+                      ? <span style={{ color: "#16a34a", fontWeight: 600 }}>{isExpired ? "Rang 1 bei Auktionsende" : "Rang 1 — Führend"}</span>
+                      : <span style={{ color: "#d97706", fontWeight: 600 }}>{isExpired ? `Rang #${myRank} bei Auktionsende` : `Rang #${myRank} — Überboten`}</span>
                     }
                   </div>
                 </div>
@@ -665,6 +667,25 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                   </div>
                   <div className={`sa-status-price${isLeading ? " leading" : myRank !== null ? " trailing" : " none"}${flash ? " flash" : ""}`}>
                     {fmtEur(liveBest)}
+                  </div>
+                </div>
+              )}
+
+              {/* Abgelaufen — DB-Phase noch nicht aktualisiert */}
+              {isExpired && (
+                <div className={`sa-card sa-conclusion${isLeading ? " won" : " lost"}`}>
+                  <div className={`sa-conclusion-title${isLeading ? " won" : " lost"}`}>
+                    {isLeading ? "Bestes Angebot bei Auktionsende" : "Auktion beendet"}
+                  </div>
+                  <div className={`sa-conclusion-price${isLeading ? " won" : " lost"}`}>
+                    {isLeading ? fmtEur(myBids[0]?.price ?? null) : fmtEur(liveBest)}
+                  </div>
+                  <div className="sa-conclusion-sub">
+                    {isLeading
+                      ? "Ihr Gebot war das beste — Ergebnis wird ausgewertet."
+                      : myRank !== null
+                        ? "Sie wurden überboten — Ergebnis wird ausgewertet."
+                        : "Die Auktion ist abgelaufen. Ergebnis wird ausgewertet."}
                   </div>
                 </div>
               )}
