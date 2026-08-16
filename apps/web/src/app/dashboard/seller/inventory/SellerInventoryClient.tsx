@@ -305,7 +305,7 @@ export function SellerInventoryClient() {
               if (!isTotp || !isKyc) { setShowPreflight(true); }
               else { setShowForm(true); }
             }}>
-              {showForm ? "✕ Abbrechen" : "+ Neue Charge melden"}
+              {showForm ? "✕ Abbrechen" : "+ Neue Charge anlegen"}
             </button>
           </div>
 
@@ -358,18 +358,22 @@ export function SellerInventoryClient() {
 
           <div className="inv-kpi">
             <div className="inv-kpi-card">
-              <div className="inv-kpi-num">{totalQty.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</div>
+              <div className="inv-kpi-num" style={{ color: charges.length === 0 ? "#d1d5db" : undefined }}>
+                {charges.length === 0 ? "—" : totalQty.toLocaleString("de-DE", { maximumFractionDigits: 2 })}
+              </div>
               <div className="inv-kpi-label">Tonnen verfügbar</div>
             </div>
             <div className="inv-kpi-card">
-              <div className="inv-kpi-num" style={{ color: "#16a34a" }}>
-                {avgCo2.toLocaleString("de-DE", { maximumFractionDigits: 2 })} t
+              <div className="inv-kpi-num" style={{ color: co2Vals.length === 0 ? "#d1d5db" : "#16a34a" }}>
+                {co2Vals.length === 0
+                  ? "—"
+                  : `${avgCo2.toLocaleString("de-DE", { maximumFractionDigits: 2 })} kg/t`}
               </div>
-              <div className="inv-kpi-label">Ø CO₂-Fußabdruck / Tonne</div>
+              <div className="inv-kpi-label">Ø CO₂-Äq. / Tonne (kg/t)</div>
             </div>
             <div className="inv-kpi-card">
-              <div className="inv-kpi-num" style={{ color: noCbam > 0 ? "#dc2626" : "#16a34a" }}>
-                {charges.length - noCbam} / {charges.length}
+              <div className="inv-kpi-num" style={{ color: charges.length === 0 ? "#d1d5db" : noCbam > 0 ? "#dc2626" : "#16a34a" }}>
+                {charges.length === 0 ? "—" : `${charges.length - noCbam} / ${charges.length}`}
               </div>
               <div className="inv-kpi-label">Chargen mit CBAM-Nachweis</div>
             </div>
@@ -491,7 +495,17 @@ export function SellerInventoryClient() {
             <div className="inv-loading">Chargen werden geladen…</div>
           ) : charges.length === 0 ? (
             <div className="inv-empty">
-              Noch keine Chargen erfasst. Klicken Sie auf „+ Neue Charge melden" um Ihre erste Lagercharge anzulegen.
+              <div style={{ marginBottom: 14 }}>Noch keine Chargen erfasst.</div>
+              <button
+                className="inv-btn"
+                onClick={() => {
+                  const isTotp = userStatus?.totpEnabled ?? false;
+                  const isKyc  = userStatus?.verificationStatus === "VERIFIED";
+                  if (!isTotp || !isKyc) { setShowPreflight(true); } else { setShowForm(true); }
+                }}
+              >
+                + Erste Charge anlegen
+              </button>
             </div>
           ) : (
             <div className="inv-table-wrap">
