@@ -85,6 +85,10 @@ export function SellerLogisticsClient() {
       if (r.ok) {
         const data = await r.json() as Delivery[];
         setDeliveries(data);
+        // Auto-select when exactly one delivery exists
+        if (data.length === 1 && data[0]) {
+          setSelected(data[0].id);
+        }
       }
     } catch { /* ignore */ }
     finally { setLoading(false); }
@@ -166,9 +170,11 @@ export function SellerLogisticsClient() {
         .log-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e5e7eb; font-size:13px; }
         .log-table th { padding:10px 14px; text-align:left; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#9ca3af; border-bottom:2px solid ${A}; white-space:nowrap; }
         .log-table td { padding:13px 14px; border-bottom:1px solid #f3f4f6; vertical-align:middle; cursor:pointer; }
+        .log-table tr { cursor:pointer; transition:background .1s; }
         .log-table tr:last-child td { border-bottom:none; }
         .log-table tr:hover td { background:#fffbf5; }
-        .log-table tr.selected td { background:#fffbeb; }
+        .log-table tr.selected td { background:#fff7ed; }
+        .log-table tr.selected td:first-child { border-left:3px solid ${A}; }
         .log-status { display:inline-block; padding:3px 9px; font-size:10.5px; font-weight:700; color:#fff; white-space:nowrap; }
         .log-detail { background:#fff; border:1px solid #e5e7eb; border-top:3px solid ${A}; padding:20px; position:sticky; top:20px; }
         .log-detail-title { font-size:13px; font-weight:700; color:#111827; margin-bottom:16px; }
@@ -242,7 +248,7 @@ export function SellerLogisticsClient() {
                         <th>Kontrakt</th>
                         <th>Ware</th>
                         <th>Käufer / Ort</th>
-                        <th>Wert</th>
+                        <th>Auftragswert</th>
                         <th>Status</th>
                         <th></th>
                       </tr>
@@ -250,7 +256,7 @@ export function SellerLogisticsClient() {
                     <tbody>
                       {deliveries.map((d) => {
                         const idx    = STATUS_IDX[d.deliveryStatus];
-                        const colors = ["#6b7280", "#154194", "#d97706", "#2563eb", "#16a34a", "#9333ea"];
+                        const colors = ["#154194", "#d97706", "#16a34a", "#2563eb", "#16a34a", "#9333ea"];
                         return (
                           <tr
                             key={d.id}
@@ -258,7 +264,7 @@ export function SellerLogisticsClient() {
                             onClick={() => setSelected(d.id === selected ? null : d.id)}
                           >
                             <td>
-                              <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: 11, color: "#9ca3af" }}>
+                              <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: 11.5, color: "#374151", letterSpacing: ".02em", whiteSpace: "nowrap" }}>
                                 {d.contractNumber}
                               </div>
                             </td>
@@ -301,7 +307,9 @@ export function SellerLogisticsClient() {
             <div className="log-detail">
               {!sel ? (
                 <div className="log-empty-detail">
-                  Lieferung aus der Tabelle auswählen um den Status-Tracker anzuzeigen.
+                  {deliveries.length === 0
+                    ? "Keine Lieferungen vorhanden."
+                    : "Zeile anklicken um den Status-Tracker anzuzeigen."}
                 </div>
               ) : (
                 <>
