@@ -128,12 +128,12 @@ export function NotificationBell({ token }: Props) {
           position:     "relative",
           display:      "flex",
           alignItems:   "center",
-          color:        "rgba(255,255,255,0.85)",
+          color:        "#374151",
           lineHeight:   1,
           transition:   "color .15s",
         }}
-        onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
-        onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.85)")}
+        onMouseEnter={e => (e.currentTarget.style.color = "#154194")}
+        onMouseLeave={e => (e.currentTarget.style.color = "#374151")}
         aria-label="Benachrichtigungen"
         title="Benachrichtigungen"
       >
