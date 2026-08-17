@@ -45,7 +45,7 @@ const STATUS_META: Record<DeliveryStatus, { label: string; color: string; bg: st
   READY_FOR_PICKUP: { label: "Abholbereit",        color: "#fff",    bg: "#d97706" },
   IN_TRANSIT:       { label: "In Transport",       color: "#fff",    bg: "#2563eb" },
   DELIVERED:        { label: "Geliefert",          color: "#fff",    bg: "#16a34a" },
-  COMPLETED:        { label: "Abgeschlossen",      color: "#fff",    bg: "#7c3aed" },
+  COMPLETED:        { label: "Abgeschlossen",      color: "#fff",    bg: "#15803d" },
 };
 
 const COUNTERPARTY_LABEL: Record<"buyer" | "seller" | "admin", string> = {
@@ -60,7 +60,7 @@ const fmtEur = (v: string) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
 
 const fmtDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit" });
+  new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
@@ -118,17 +118,17 @@ export function ContractsClient() {
 
         /* Gebühr */
         .cx-fee { font-size:12px; color:#374151; white-space:nowrap; }
-        .cx-fee-badge-unpaid { font-size:10px; font-weight:700; color:#dc2626; display:inline-block; margin-top:2px; white-space:nowrap; }
+        .cx-fee-badge-unpaid { font-size:10px; font-weight:700; color:#d97706; display:inline-block; margin-top:2px; white-space:nowrap; }
         .cx-fee-badge-paid   { font-size:10px; font-weight:700; color:#16a34a; display:inline-block; margin-top:2px; white-space:nowrap; }
 
         /* Aktionen */
         .cx-btn-detail {
-          padding:5px 14px; background:#154194; color:#fff;
-          border:none; font-size:11.5px; font-weight:700;
-          cursor:pointer; white-space:nowrap; letter-spacing:.03em; transition:background .12s;
+          padding:4px 12px; background:transparent; color:#154194;
+          border:1px solid #154194; font-size:11px; font-weight:600;
+          cursor:pointer; white-space:nowrap; letter-spacing:.02em; transition:background .12s, color .12s;
           text-decoration:none; display:inline-block;
         }
-        .cx-btn-detail:hover { background:#0f3073; }
+        .cx-btn-detail:hover { background:#154194; color:#fff; }
 
         /* Aktions-erforderlich Indikator */
         .cx-action-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#dc2626; margin-right:5px; vertical-align:middle; }
@@ -140,8 +140,8 @@ export function ContractsClient() {
         <div className="cx-page">
           <button className="cx-back" onClick={() => window.history.back()}>← Zurück</button>
 
-          <div className="cx-title">Vertragsarchiv</div>
-          <div className="cx-sub">Alle Kaufverträge aus abgeschlossenen Auktionen</div>
+          <div className="cx-title">Meine Verträge</div>
+          <div className="cx-sub">Kaufverträge aus laufenden und abgeschlossenen Auktionen</div>
 
           {loading && <div className="cx-empty">Wird geladen…</div>}
           {error   && <div className="cx-empty" style={{ color: "#dc2626" }}>{error}</div>}
@@ -161,7 +161,7 @@ export function ContractsClient() {
                     <th>Gesamtwert</th>
                     <th>{contracts[0] ? COUNTERPARTY_LABEL[contracts[0].myRole] : "Gegenpartei"}</th>
                     <th>Lieferstatus</th>
-                    <th>Gebühr</th>
+                    <th>Gebühr / Zahlstatus</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -175,7 +175,7 @@ export function ContractsClient() {
                       (c.myRole === "seller" && c.deliveryStatus === "DELIVERED");
                     return (
                       <tr key={c.id} onClick={() => router.push(`/dashboard/contracts/${c.id}`)}>
-                        <td><span className="cx-nr">{c.contractNumber}</span></td>
+                        <td><span className="cx-nr" title={c.contractNumber}>{c.contractNumber}</span></td>
                         <td style={{ color: "#6b7280", fontSize: 12, whiteSpace: "nowrap" }}>{fmtDate(c.createdAt)}</td>
                         <td>
                           <div className="cx-ware">{c.commodity}</div>
