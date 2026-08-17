@@ -1093,8 +1093,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   <div style={{ position: "relative" }}>
                     <input
                       className="bl-input"
-                      style={{ paddingRight: 42 }}
-                      placeholder='Produkt suchen oder ▼ klicken - "Beton", "pipe", "angle", "B240A" …'
+                      placeholder='Produkt suchen - "Beton", "pipe", "angle", "B240A" …'
                       value={catalogQuery}
                       autoComplete="off"
                       onChange={(e) => {
@@ -1104,33 +1103,6 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       onFocus={() => { if (catalogResults.length > 0) setCatalogOpen(true); }}
                       onBlur={() => setTimeout(() => setCatalogOpen(false), 200)}
                     />
-                    {/* Dropdown-Pfeil */}
-                    <button
-                      type="button"
-                      aria-label="Alle Produkte anzeigen"
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        if (catalogOpen) {
-                          setCatalogOpen(false);
-                        } else {
-                          fetch(`/api/catalog?browse=1`, { headers: { Authorization: `Bearer ${token}` } })
-                            .then((r) => r.json())
-                            .then((d) => { setCatalogResults(d.products ?? []); setCatalogBrowseMode(true); setCatalogOpen(true); })
-                            .catch(() => {});
-                        }
-                      }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#e8edf8"; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "#f0f5ff"; }}
-                      style={{
-                        position: "absolute", right: 0, top: 0, height: "100%", width: 40,
-                        background: "#f0f5ff", border: "none", borderLeft: "1px solid #c7d7fc",
-                        cursor: "pointer", color: "#154194", fontSize: 10, fontWeight: 700,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        transition: "background .12s", letterSpacing: ".02em",
-                      }}
-                    >
-                      {catalogOpen ? "▲" : "▼"}
-                    </button>
 
                   {/* Ergebnis-Dropdown */}
                   {catalogOpen && catalogResults.length > 0 && (
