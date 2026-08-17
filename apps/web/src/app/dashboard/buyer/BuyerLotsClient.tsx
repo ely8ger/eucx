@@ -1724,7 +1724,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 {/* Handels- und Vertragsangaben */}
                 <div className="bl-cbam-header" style={{ marginTop: 24 }}>
                   <span className="bl-cbam-title">Handels- und Vertragsangaben</span>
-                  <span className="bl-cbam-badge" style={{ background: "#154194" }}>Rechtlich relevant</span>
+                  <span className="bl-cbam-badge" style={{ background: "#154194", color: "#fff" }}>Rechtlich relevant</span>
                 </div>
                 <div className="bl-cbam-hint">
                   Pflichtangaben - Bestandteil des Kaufvertrags (§§ 433, 434 BGB). Werden Bietern vor Gebotsabgabe vollständig angezeigt.
