@@ -34,12 +34,12 @@ interface ApiKey {
 const fmtDate = (iso: string | null) =>
   iso
     ? new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })
-    : "—";
+    : "-";
 
 const fmtDateTime = (iso: string | null) =>
   iso
     ? new Date(iso).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })
-    : "—";
+    : "-";
 
 export function ApiKeysClient() {
   const router = useRouter();
@@ -109,7 +109,7 @@ export function ApiKeysClient() {
       setName(""); setScopes(["market:read"]); setExpiryDate(""); setIpInput(""); setIpList([]);
       await load();
     } catch {
-      setFormError("Netzwerkfehler — bitte erneut versuchen.");
+      setFormError("Netzwerkfehler - bitte erneut versuchen.");
     } finally {
       setCreating(false);
     }
@@ -273,7 +273,7 @@ export function ApiKeysClient() {
             <div className="ak-notice-icon">🔑</div>
             <div className="ak-notice-text">
               <strong>API-Schlüssel ermöglichen programmatischen Zugriff auf die EUCX-Plattform.</strong>{" "}
-              Behandeln Sie jeden Schlüssel wie ein Passwort — teilen Sie ihn niemals in Code-Repositories,
+              Behandeln Sie jeden Schlüssel wie ein Passwort - teilen Sie ihn niemals in Code-Repositories,
               öffentlichen Chats oder unverschlüsselten Konfigurationsdateien. Jeder Schlüssel ist
               einem Scope zugeordnet, der den Zugriff auf bestimmte Ressourcen begrenzt.
               Alle API-Aufrufe werden protokolliert und sind im Sicherheitsprotokoll einsehbar.
@@ -351,7 +351,7 @@ export function ApiKeysClient() {
                           <div>
                             <div className="ak-scope-name">{scope}</div>
                             <div className="ak-scope-desc">
-                              <strong>{info.label}</strong> — {info.desc}
+                              <strong>{info.label}</strong> - {info.desc}
                             </div>
                           </div>
                         </label>
@@ -363,7 +363,7 @@ export function ApiKeysClient() {
                 {/* Ablaufdatum */}
                 <div className="ak-field">
                   <label className="ak-label">
-                    Ablaufdatum <span className="ak-label-hint">(optional — leer lassen für unbegrenzten Schlüssel)</span>
+                    Ablaufdatum <span className="ak-label-hint">(optional - leer lassen für unbegrenzten Schlüssel)</span>
                   </label>
                   <input
                     className="ak-input"
@@ -378,7 +378,7 @@ export function ApiKeysClient() {
                 {/* IP-Whitelist */}
                 <div className="ak-field">
                   <label className="ak-label">
-                    IP-Whitelist <span className="ak-label-hint">(optional — leer = alle IPs erlaubt; max. 20 Einträge)</span>
+                    IP-Whitelist <span className="ak-label-hint">(optional - leer = alle IPs erlaubt; max. 20 Einträge)</span>
                   </label>
                   <div className="ak-ip-row">
                     <input
@@ -602,7 +602,7 @@ export function ApiKeysClient() {
             <div className="ak-modal-t">✓ API-Schlüssel erstellt</div>
             <div className="ak-modal-w">
               <strong>⚠ Dieser Schlüssel wird nur jetzt einmalig angezeigt</strong> und kann nicht
-              erneut abgerufen werden. Kopieren Sie ihn sofort und speichern Sie ihn sicher —
+              erneut abgerufen werden. Kopieren Sie ihn sofort und speichern Sie ihn sicher -
               z.B. in Ihrem Password-Manager, einem Secret-Vault (HashiCorp Vault, AWS Secrets Manager)
               oder Ihrer CI/CD-Umgebung als verschlüsselte Variable.
             </div>
@@ -621,7 +621,7 @@ export function ApiKeysClient() {
               className="ak-btn-close"
               onClick={() => { setNewKey(null); setCopied(false); }}
             >
-              Ich habe den Schlüssel gespeichert — Fenster schließen
+              Ich habe den Schlüssel gespeichert - Fenster schließen
             </button>
           </div>
         </div>

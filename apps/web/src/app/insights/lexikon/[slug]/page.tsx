@@ -55,7 +55,7 @@ export default async function LexikonEntryPage({ params }: { params: Promise<{ s
   const jsonLdArticle = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: `${entry.term} — Definition, ${entry.category} & EU-Marktpraxis`,
+    headline: `${entry.term} - Definition, ${entry.category} & EU-Marktpraxis`,
     description: entry.description,
     datePublished: entry.published,
     dateModified: entry.updated,
@@ -63,7 +63,7 @@ export default async function LexikonEntryPage({ params }: { params: Promise<{ s
       "@type": "Organization",
       name: "EUCX Fachredaktion",
       url: "https://eucx.eu",
-      description: "Redaktionsteam der European Union Commodity Exchange — spezialisiert auf EU-Rohstoffrecht, Handelsregulierung und institutionellen Warenbörsenhandel.",
+      description: "Redaktionsteam der European Union Commodity Exchange - spezialisiert auf EU-Rohstoffrecht, Handelsregulierung und institutionellen Warenbörsenhandel.",
     },
     publisher: {
       "@type": "Organization",

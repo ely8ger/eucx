@@ -1,6 +1,6 @@
 /**
- * GET  /api/settings/phone  — Aktuelle Telefonnummer der Organisation
- * PUT  /api/settings/phone  — Telefonnummer speichern + phoneVerified setzen
+ * GET  /api/settings/phone  - Aktuelle Telefonnummer der Organisation
+ * PUT  /api/settings/phone  - Telefonnummer speichern + phoneVerified setzen
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";

@@ -79,10 +79,10 @@ export async function GET(req: NextRequest) {
         : c.sellerId === token.userId ? "seller"
         : "admin";
       const counterpartyName = myRole === "buyer"
-        ? (c.seller.organization?.name ?? "—")
+        ? (c.seller.organization?.name ?? "-")
         : myRole === "seller"
-          ? (c.buyer.organization?.name ?? "—")
-          : `${c.buyer.organization?.name ?? "—"} / ${c.seller.organization?.name ?? "—"}`;
+          ? (c.buyer.organization?.name ?? "-")
+          : `${c.buyer.organization?.name ?? "-"} / ${c.seller.organization?.name ?? "-"}`;
       return {
         id:              c.id,
         contractNumber:  c.contractNumber,

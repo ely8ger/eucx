@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * NotificationBell — Glocken-Icon mit rotem Badge + Dropdown
+ * NotificationBell - Glocken-Icon mit rotem Badge + Dropdown
  *
  * Polling: alle 30s via /api/notifications?limit=10
  * Badge: rote Zahl für ungelesene Benachrichtigungen

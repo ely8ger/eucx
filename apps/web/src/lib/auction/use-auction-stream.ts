@@ -1,5 +1,5 @@
 /**
- * useAuctionStream — SSE-Hook für Live-Lot-Updates + Realtime-Notifications
+ * useAuctionStream - SSE-Hook für Live-Lot-Updates + Realtime-Notifications
  *
  * Verbindet sich mit /api/auction/lots/[lotId]/stream und gibt:
  *   state        → aktueller Lot-Status (Phase, Preis, Timer, Bieter-Anzahl)

@@ -200,7 +200,7 @@ export function ContractsClient() {
                               </div>
                             </>
                           ) : (
-                            <span style={{ color: "#9ca3af", fontSize: 12 }}>—</span>
+                            <span style={{ color: "#9ca3af", fontSize: 12 }}>-</span>
                           )}
                         </td>
                         <td onClick={(e) => e.stopPropagation()}>

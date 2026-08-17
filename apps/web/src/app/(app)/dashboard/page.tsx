@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 /**
- * /dashboard — Legacy-Route
+ * /dashboard - Legacy-Route
  *
  * Liest die Rolle aus dem JWT und leitet sofort auf die
  * rollenspezifische Seite weiter. Middleware macht dasselbe,

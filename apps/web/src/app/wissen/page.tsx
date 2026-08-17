@@ -30,7 +30,7 @@ export default function WissenPage() {
   return (
     <main style={{ fontFamily: F, backgroundColor: BG, minHeight: "100vh" }}>
 
-      {/* ── Header — Standard SiteNav ──────────────────────────────────────── */}
+      {/* ── Header - Standard SiteNav ──────────────────────────────────────── */}
       <SiteNav />
 
       {/* ── Hero ──────────────────────────────────────────────────────────── */}

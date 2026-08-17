@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * UserManagement — Vollständige Nutzerverwaltung mit Ampelsystem
+ * UserManagement - Vollständige Nutzerverwaltung mit Ampelsystem
  *
  * Ampel-Logik (kombiniert Account-Status + KYC-Status):
- *   🟢 Grün  — status=ACTIVE + verificationStatus=VERIFIED
- *   🟡 Gelb  — status=ACTIVE + verificationStatus=PENDING_VERIFICATION|GUEST
- *   🔴 Rot   — status=SUSPENDED | REJECTED | lockedUntil aktiv
- *   ⚪ Grau  — status=PENDING (noch nicht freigeschaltet)
+ *   🟢 Grün  - status=ACTIVE + verificationStatus=VERIFIED
+ *   🟡 Gelb  - status=ACTIVE + verificationStatus=PENDING_VERIFICATION|GUEST
+ *   🔴 Rot   - status=SUSPENDED | REJECTED | lockedUntil aktiv
+ *   ⚪ Grau  - status=PENDING (noch nicht freigeschaltet)
  */
 
 import { useState, useMemo }         from "react";
@@ -224,10 +224,10 @@ export function UserManagement() {
       {/* ─── KPI-Leiste ───────────────────────────────────────────────────── */}
       <div className="grid grid-cols-4 gap-3">
         {[
-          { label: "Gesamt",       value: counts?.total     ?? "—", color: "#154194" },
-          { label: "Aktiv",        value: counts?.active    ?? "—", color: "#16a34a" },
-          { label: "Ausstehend",   value: counts?.pending   ?? "—", color: "#d97706" },
-          { label: "Verifiziert",  value: counts?.verified  ?? "—", color: "#154194" },
+          { label: "Gesamt",       value: counts?.total     ?? "-", color: "#154194" },
+          { label: "Aktiv",        value: counts?.active    ?? "-", color: "#16a34a" },
+          { label: "Ausstehend",   value: counts?.pending   ?? "-", color: "#d97706" },
+          { label: "Verifiziert",  value: counts?.verified  ?? "-", color: "#154194" },
         ].map((kpi) => (
           <Card key={kpi.label} className="p-4">
             <p className="text-xs text-cb-gray-500 mb-1">{kpi.label}</p>
@@ -429,7 +429,7 @@ export function UserManagement() {
                 {[
                   ["E-Mail",        selectedUser.email],
                   ["Rolle",         ROLE_LABEL[selectedUser.role] ?? selectedUser.role],
-                  ["Land / Stadt",  `${selectedUser.orgCountry} — ${selectedUser.orgCity}`],
+                  ["Land / Stadt",  `${selectedUser.orgCountry} - ${selectedUser.orgCity}`],
                   ["E-Mail best.",  selectedUser.emailVerified ? "Ja" : "Nein"],
                   ["Fehlversuche",  String(selectedUser.failedLoginCount)],
                   ["Registriert",   new Date(selectedUser.createdAt).toLocaleDateString("de-DE")],

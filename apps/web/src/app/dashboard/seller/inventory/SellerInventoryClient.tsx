@@ -127,7 +127,7 @@ export function SellerInventoryClient() {
       });
       if (r.status === 401) {
         const fresh = await tryRefresh();
-        if (!fresh) { setError("Sitzung abgelaufen — bitte neu anmelden."); router.replace("/login"); return; }
+        if (!fresh) { setError("Sitzung abgelaufen - bitte neu anmelden."); router.replace("/login"); return; }
         r = await fetch("/api/seller/inventory", {
           headers: { Authorization: `Bearer ${fresh}` },
         });
@@ -174,7 +174,7 @@ export function SellerInventoryClient() {
       });
       if (r.status === 401) {
         const fresh = await tryRefresh();
-        if (!fresh) { setError("Sitzung abgelaufen — bitte neu anmelden."); router.replace("/login"); return; }
+        if (!fresh) { setError("Sitzung abgelaufen - bitte neu anmelden."); router.replace("/login"); return; }
         tkn = fresh;
         r = await fetch("/api/seller/inventory", {
           method:  "POST",
@@ -193,7 +193,7 @@ export function SellerInventoryClient() {
         try {
           const d = await r.json() as { error?: string; details?: unknown };
           msg = d.error ?? msg;
-          if (d.details) msg += ` — ${JSON.stringify(d.details)}`;
+          if (d.details) msg += ` - ${JSON.stringify(d.details)}`;
         } catch { /* non-JSON body */ }
         setError(msg);
       }
@@ -322,8 +322,8 @@ export function SellerInventoryClient() {
                 <div style={{ fontSize: 12.5, color: "#6b7280", marginBottom: 20 }}>Alle Punkte müssen erfüllt sein bevor Sie Ware ins System eintragen können.</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
                   {[
-                    { ok: isKyc,  label: "Identitätsprüfung (KYC)", desc: isKyc ? "Identität bestätigt — vollständig handelsberechtigt." : "KYC noch nicht abgeschlossen. Unterlagen einreichen.", href: "/dashboard/settings/verification" },
-                    { ok: isTotp, label: "Zwei-Faktor-Authentifizierung", desc: isTotp ? "2FA aktiv — Konto zusätzlich gesichert." : "2FA noch nicht eingerichtet. Bitte jetzt aktivieren.", href: "/dashboard/settings/security" },
+                    { ok: isKyc,  label: "Identitätsprüfung (KYC)", desc: isKyc ? "Identität bestätigt - vollständig handelsberechtigt." : "KYC noch nicht abgeschlossen. Unterlagen einreichen.", href: "/dashboard/settings/verification" },
+                    { ok: isTotp, label: "Zwei-Faktor-Authentifizierung", desc: isTotp ? "2FA aktiv - Konto zusätzlich gesichert." : "2FA noch nicht eingerichtet. Bitte jetzt aktivieren.", href: "/dashboard/settings/security" },
                   ].map((row) => (
                     <div key={row.label} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", background: row.ok ? "#f0fdf4" : "#fef2f2", border: `1px solid ${row.ok ? "#bbf7d0" : "#fecaca"}` }}>
                       <div style={{ width: 28, height: 28, borderRadius: "50%", background: row.ok ? "#16a34a" : "#dc2626", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
@@ -359,21 +359,21 @@ export function SellerInventoryClient() {
           <div className="inv-kpi">
             <div className="inv-kpi-card">
               <div className="inv-kpi-num" style={{ color: charges.length === 0 ? "#d1d5db" : undefined }}>
-                {charges.length === 0 ? "—" : totalQty.toLocaleString("de-DE", { maximumFractionDigits: 2 })}
+                {charges.length === 0 ? "-" : totalQty.toLocaleString("de-DE", { maximumFractionDigits: 2 })}
               </div>
               <div className="inv-kpi-label">Tonnen verfügbar</div>
             </div>
             <div className="inv-kpi-card">
               <div className="inv-kpi-num" style={{ color: co2Vals.length === 0 ? "#d1d5db" : "#16a34a" }}>
                 {co2Vals.length === 0
-                  ? "—"
+                  ? "-"
                   : `${avgCo2.toLocaleString("de-DE", { maximumFractionDigits: 2 })} kg/t`}
               </div>
               <div className="inv-kpi-label">Ø CO₂-Äq. / Tonne (kg/t)</div>
             </div>
             <div className="inv-kpi-card">
               <div className="inv-kpi-num" style={{ color: charges.length === 0 ? "#d1d5db" : noCbam > 0 ? "#dc2626" : "#16a34a" }}>
-                {charges.length === 0 ? "—" : `${charges.length - noCbam} / ${charges.length}`}
+                {charges.length === 0 ? "-" : `${charges.length - noCbam} / ${charges.length}`}
               </div>
               <div className="inv-kpi-label">Chargen mit CBAM-Nachweis</div>
             </div>

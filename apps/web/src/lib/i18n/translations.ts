@@ -30,7 +30,7 @@ const de = {
   // ── Hero ────────────────────────────────────────────────────────────────
   hero_trading_hours: "Handelssitzungen Mo–Fr 14:00–16:00 MEZ",
   hero_h1:           "Die institutionelle Warenbörse für die Europäische Union",
-  hero_sub:          "Transparentes Orderbuch, sofortige Abwicklung und physischer Spotwarenhandel — für Metalle und Dünger & Agrarchemie.",
+  hero_sub:          "Transparentes Orderbuch, sofortige Abwicklung und physischer Spotwarenhandel - für Metalle und Dünger & Agrarchemie.",
   hero_cta_portal:   "Zum Teilnehmerportal",
   hero_cta_more:     "Mehr erfahren",
   hero_bafin:        "GwG-konform",
@@ -350,7 +350,7 @@ const de = {
 
   // ── Dashboard ────────────────────────────────────────────────────────
   dash_title:              "Handelsübersicht",
-  dash_market_today:       "MARKTÜBERSICHT — HEUTE",
+  dash_market_today:       "MARKTÜBERSICHT - HEUTE",
   dash_trade_phase:        "HANDELSPHASE",
   dash_session_end:        "SITZUNGSENDE",
   dash_open:               "GEÖFFNET",
@@ -359,14 +359,14 @@ const de = {
   dash_kpi_members:        "REGISTRIERTE TEILNEHMER",
   dash_kpi_deals:          "ABSCHLÜSSE HEUTE",
   dash_trade_history:      "HANDELSVERLAUF",
-  dash_daily_chart:        "Tagesumsatz — stündlicher Verlauf",
+  dash_daily_chart:        "Tagesumsatz - stündlicher Verlauf",
   dash_spotmarket:         "EUR · Spotmarkt Frankfurt · Echtzeit",
   dash_top_sections:       "Top-Sektionen",
   dash_by_volume:          "NACH VOLUMEN",
   dash_all_groups:         "ALLE WARENGRUPPEN →",
   dash_sections:           "WARENSEKTIONEN",
 
-  // ── Dashboard — zusätzliche UI-Labels ────────────────────────────────
+  // ── Dashboard - zusätzliche UI-Labels ────────────────────────────────
   dash_active_sessions:    "Aktive Handelssitzungen",
   dash_show_all:           "Alle anzeigen →",
   dash_th_session:         "Sitzung",
@@ -411,11 +411,11 @@ const de = {
   session_aluminiumschrott: "Aluminiumschrott 6061",
   cat_badge_duenger:        "Dünger",
   trading_ses_betonstahl:   "Betonstahl / Walzdraht Spotmarkt",
-  trading_ses_traeger:      "Träger & Profile — Export",
-  trading_ses_harnstoff:    "Harnstoff 46 % N — Spotmarkt",
-  trading_ses_flachstahl:   "Flachstahl / Bleche — Inlandsmarkt",
-  trading_ses_npk:          "NPK 15-15-15 — Frühjahrsware",
-  trading_ses_rundrohre:    "Rundrohre / Vierkantrohr — Export",
+  trading_ses_traeger:      "Träger & Profile - Export",
+  trading_ses_harnstoff:    "Harnstoff 46 % N - Spotmarkt",
+  trading_ses_flachstahl:   "Flachstahl / Bleche - Inlandsmarkt",
+  trading_ses_npk:          "NPK 15-15-15 - Frühjahrsware",
+  trading_ses_rundrohre:    "Rundrohre / Vierkantrohr - Export",
   session_product_betonstahl: "Betonstahl A1 · Ø12mm · B500B",
   session_warengruppe:      "Warengruppe",
   session_tab_deposit:      "Kautionskonto",
@@ -439,7 +439,7 @@ const de = {
   session_msg_placeholder:  "Nachricht an Maklerin …",
   session_btn_send:         "Senden",
 
-  // ── Login — Validierungsmeldungen & Labels ────────────────────────────
+  // ── Login - Validierungsmeldungen & Labels ────────────────────────────
   login_email_req:         "Bitte geben Sie Ihre E-Mail-Adresse ein.",
   login_pw_req:            "Bitte geben Sie Ihr Passwort ein.",
   login_code_req:          "Bitte geben Sie einen 6-stelligen Code ein.",
@@ -449,12 +449,12 @@ const de = {
   login_pw_show:           "Passwort anzeigen",
   login_pw_hide:           "Passwort verbergen",
 
-  // ── Startseite — Prozess ──────────────────────────────────────────────
+  // ── Startseite - Prozess ──────────────────────────────────────────────
   step_prefix:             "SCHRITT",
   lbl_produkt:             "Produkt",
   lbl_produkte:            "Produkte",
 
-  // ── Katalog Sidebar — Gruppenüberschriften ────────────────────────────
+  // ── Katalog Sidebar - Gruppenüberschriften ────────────────────────────
   sidebar_stabstahl:          "Stabstahl",
   sidebar_traeger_profile:    "Träger & Profile",
   sidebar_rohre:              "Rohre",
@@ -464,7 +464,7 @@ const de = {
   sidebar_befestigung:        "Befestigungstechnik",
   sidebar_spezial:            "Spezial",
 
-  // ── Katalog Sidebar — Kategorie-Labels ───────────────────────────────
+  // ── Katalog Sidebar - Kategorie-Labels ───────────────────────────────
   kat_betonstahl:             "Betonstahl",
   kat_rundstahl:              "Rundstahl",
   kat_vierkant:               "Vierkant",
@@ -785,7 +785,7 @@ const en: T = {
   nav_marktpreise:   "Market Prices",
   hero_trading_hours:"Trading sessions Mon–Fri 14:00–16:00 CET",
   hero_h1:           "The Institutional Commodity Exchange for the European Union",
-  hero_sub:          "Transparent order book, instant settlement and physical spot trading — for metals, timber, fertilizers & agrochemicals and industrial goods.",
+  hero_sub:          "Transparent order book, instant settlement and physical spot trading - for metals, timber, fertilizers & agrochemicals and industrial goods.",
   hero_cta_portal:   "Go to Member Portal",
   hero_cta_more:     "Learn More",
   hero_bafin:        "AML-compliant",
@@ -1085,7 +1085,7 @@ const en: T = {
 
   // ── Dashboard ────────────────────────────────────────────────────────
   dash_title:              "Trading Overview",
-  dash_market_today:       "MARKET OVERVIEW — TODAY",
+  dash_market_today:       "MARKET OVERVIEW - TODAY",
   dash_trade_phase:        "TRADING PHASE",
   dash_session_end:        "SESSION END",
   dash_open:               "OPEN",
@@ -1094,7 +1094,7 @@ const en: T = {
   dash_kpi_members:        "REGISTERED MEMBERS",
   dash_kpi_deals:          "DEALS TODAY",
   dash_trade_history:      "TRADING HISTORY",
-  dash_daily_chart:        "Daily volume — hourly chart",
+  dash_daily_chart:        "Daily volume - hourly chart",
   dash_spotmarket:         "EUR · Spot market Frankfurt · Real-time",
   dash_top_sections:       "Top Sectors",
   dash_by_volume:          "BY VOLUME",
@@ -1144,11 +1144,11 @@ const en: T = {
   session_aluminiumschrott: "Aluminium Scrap 6061",
   cat_badge_duenger:        "Fertilizer",
   trading_ses_betonstahl:   "Rebar / Wire Rod Spot Market",
-  trading_ses_traeger:      "Beams & Sections — Export",
-  trading_ses_harnstoff:    "Urea 46 % N — Spot Market",
-  trading_ses_flachstahl:   "Flat Steel / Sheet — Domestic Market",
-  trading_ses_npk:          "NPK 15-15-15 — Spring Stock",
-  trading_ses_rundrohre:    "Round / Square Tubes — Export",
+  trading_ses_traeger:      "Beams & Sections - Export",
+  trading_ses_harnstoff:    "Urea 46 % N - Spot Market",
+  trading_ses_flachstahl:   "Flat Steel / Sheet - Domestic Market",
+  trading_ses_npk:          "NPK 15-15-15 - Spring Stock",
+  trading_ses_rundrohre:    "Round / Square Tubes - Export",
   session_product_betonstahl: "Rebar A1 · Ø12mm · B500B",
   session_warengruppe:      "Category",
   session_tab_deposit:      "Margin Account",
@@ -1185,7 +1185,7 @@ const en: T = {
   lbl_produkt:             "Product",
   lbl_produkte:            "Products",
 
-  // ── Katalog Sidebar — Gruppenüberschriften ────────────────────────────
+  // ── Katalog Sidebar - Gruppenüberschriften ────────────────────────────
   sidebar_stabstahl:          "Rebar & Bars",
   sidebar_traeger_profile:    "Beams & Profiles",
   sidebar_rohre:              "Pipes & Tubes",
@@ -1195,7 +1195,7 @@ const en: T = {
   sidebar_befestigung:        "Fasteners",
   sidebar_spezial:            "Special",
 
-  // ── Katalog Sidebar — Kategorie-Labels ───────────────────────────────
+  // ── Katalog Sidebar - Kategorie-Labels ───────────────────────────────
   kat_betonstahl:             "Rebar",
   kat_rundstahl:              "Round bar",
   kat_vierkant:               "Square bar",
@@ -1516,7 +1516,7 @@ const fr: T = {
   nav_marktpreise:   "Prix du marché",
   hero_trading_hours:"Sessions de trading Lu–Ve 14:00–16:00 CET",
   hero_h1:           "La bourse institutionnelle de matières premières pour l'Union Européenne",
-  hero_sub:          "Carnet d'ordres transparent, règlement immédiat et négoce physique au comptant — pour les métaux, le bois, les engrais & agrochimie et les biens industriels.",
+  hero_sub:          "Carnet d'ordres transparent, règlement immédiat et négoce physique au comptant - pour les métaux, le bois, les engrais & agrochimie et les biens industriels.",
   hero_cta_portal:   "Accéder au portail",
   hero_cta_more:     "En savoir plus",
   hero_bafin:        "Conforme LBC",
@@ -1816,7 +1816,7 @@ const fr: T = {
 
   // ── Dashboard ────────────────────────────────────────────────────────
   dash_title:              "Aperçu du trading",
-  dash_market_today:       "APERÇU DU MARCHÉ — AUJOURD'HUI",
+  dash_market_today:       "APERÇU DU MARCHÉ - AUJOURD'HUI",
   dash_trade_phase:        "PHASE DE TRADING",
   dash_session_end:        "FIN DE SESSION",
   dash_open:               "OUVERT",
@@ -1825,7 +1825,7 @@ const fr: T = {
   dash_kpi_members:        "PARTICIPANTS ENREGISTRÉS",
   dash_kpi_deals:          "TRANSACTIONS AUJOURD'HUI",
   dash_trade_history:      "HISTORIQUE DES TRANSACTIONS",
-  dash_daily_chart:        "Volume journalier — graphique horaire",
+  dash_daily_chart:        "Volume journalier - graphique horaire",
   dash_spotmarket:         "EUR · Marché spot Frankfurt · Temps réel",
   dash_top_sections:       "Top secteurs",
   dash_by_volume:          "PAR VOLUME",
@@ -1874,12 +1874,12 @@ const fr: T = {
   session_fichtenstammholz: "Grumes d'épicéa I/II",
   session_aluminiumschrott: "Ferraille aluminium 6061",
   cat_badge_duenger:        "Engrais",
-  trading_ses_betonstahl:   "Rond à béton / Fil machine — Marché spot",
-  trading_ses_traeger:      "Poutres & Profilés — Export",
-  trading_ses_harnstoff:    "Urée 46 % N — Marché spot",
-  trading_ses_flachstahl:   "Acier plat / Tôles — Marché intérieur",
-  trading_ses_npk:          "NPK 15-15-15 — Stock de printemps",
-  trading_ses_rundrohre:    "Tubes ronds / carrés — Export",
+  trading_ses_betonstahl:   "Rond à béton / Fil machine - Marché spot",
+  trading_ses_traeger:      "Poutres & Profilés - Export",
+  trading_ses_harnstoff:    "Urée 46 % N - Marché spot",
+  trading_ses_flachstahl:   "Acier plat / Tôles - Marché intérieur",
+  trading_ses_npk:          "NPK 15-15-15 - Stock de printemps",
+  trading_ses_rundrohre:    "Tubes ronds / carrés - Export",
   session_product_betonstahl: "Rond à béton A1 · Ø12mm · B500B",
   session_warengruppe:      "Catégorie",
   session_tab_deposit:      "Compte de garantie",
@@ -1916,7 +1916,7 @@ const fr: T = {
   lbl_produkt:             "Produit",
   lbl_produkte:            "Produits",
 
-  // ── Katalog Sidebar — Gruppenüberschriften ────────────────────────────
+  // ── Katalog Sidebar - Gruppenüberschriften ────────────────────────────
   sidebar_stabstahl:          "Barres & Ronds",
   sidebar_traeger_profile:    "Profilés & Poutrelles",
   sidebar_rohre:              "Tubes & Tuyaux",
@@ -1926,7 +1926,7 @@ const fr: T = {
   sidebar_befestigung:        "Fixations",
   sidebar_spezial:            "Spécial",
 
-  // ── Katalog Sidebar — Kategorie-Labels ───────────────────────────────
+  // ── Katalog Sidebar - Kategorie-Labels ───────────────────────────────
   kat_betonstahl:             "Acier à béton",
   kat_rundstahl:              "Barre ronde",
   kat_vierkant:               "Barre carrée",
@@ -2247,7 +2247,7 @@ const es: T = {
   nav_marktpreise:   "Precios de mercado",
   hero_trading_hours:"Sesiones de trading Lu–Vi 14:00–16:00 CET",
   hero_h1:           "La bolsa institucional de materias primas para la Unión Europea",
-  hero_sub:          "Libro de órdenes transparente, liquidación inmediata y negociación física al contado — para metales, madera, fertilizantes & agroquímicos y bienes industriales.",
+  hero_sub:          "Libro de órdenes transparente, liquidación inmediata y negociación física al contado - para metales, madera, fertilizantes & agroquímicos y bienes industriales.",
   hero_cta_portal:   "Ir al portal de miembros",
   hero_cta_more:     "Más información",
   hero_bafin:        "Conforme AML",
@@ -2547,7 +2547,7 @@ const es: T = {
 
   // ── Dashboard ────────────────────────────────────────────────────────
   dash_title:              "Resumen de trading",
-  dash_market_today:       "RESUMEN — HOY",
+  dash_market_today:       "RESUMEN - HOY",
   dash_trade_phase:        "FASE DE TRADING",
   dash_session_end:        "FIN DE SESIÓN",
   dash_open:               "ABIERTO",
@@ -2556,7 +2556,7 @@ const es: T = {
   dash_kpi_members:        "PARTICIPANTES REGISTRADOS",
   dash_kpi_deals:          "TRANSACCIONES HOY",
   dash_trade_history:      "HISTORIAL DE TRADING",
-  dash_daily_chart:        "Volumen diario — gráfico horario",
+  dash_daily_chart:        "Volumen diario - gráfico horario",
   dash_spotmarket:         "EUR · Mercado spot Frankfurt · Tiempo real",
   dash_top_sections:       "Sectores principales",
   dash_by_volume:          "POR VOLUMEN",
@@ -2605,12 +2605,12 @@ const es: T = {
   session_fichtenstammholz: "Troncos de abeto I/II",
   session_aluminiumschrott: "Chatarra aluminio 6061",
   cat_badge_duenger:        "Fertilizante",
-  trading_ses_betonstahl:   "Acero corrugado / Alambrón — Mercado spot",
-  trading_ses_traeger:      "Vigas & Perfiles — Exportación",
-  trading_ses_harnstoff:    "Urea 46 % N — Mercado spot",
-  trading_ses_flachstahl:   "Acero plano / Chapas — Mercado interior",
-  trading_ses_npk:          "NPK 15-15-15 — Mercancía de primavera",
-  trading_ses_rundrohre:    "Tubos redondos / cuadrados — Exportación",
+  trading_ses_betonstahl:   "Acero corrugado / Alambrón - Mercado spot",
+  trading_ses_traeger:      "Vigas & Perfiles - Exportación",
+  trading_ses_harnstoff:    "Urea 46 % N - Mercado spot",
+  trading_ses_flachstahl:   "Acero plano / Chapas - Mercado interior",
+  trading_ses_npk:          "NPK 15-15-15 - Mercancía de primavera",
+  trading_ses_rundrohre:    "Tubos redondos / cuadrados - Exportación",
   session_product_betonstahl: "Acero corrugado A1 · Ø12mm · B500B",
   session_warengruppe:      "Categoría",
   session_tab_deposit:      "Cuenta de garantía",
@@ -2647,7 +2647,7 @@ const es: T = {
   lbl_produkt:             "Producto",
   lbl_produkte:            "Productos",
 
-  // ── Katalog Sidebar — Gruppenüberschriften ────────────────────────────
+  // ── Katalog Sidebar - Gruppenüberschriften ────────────────────────────
   sidebar_stabstahl:          "Barras de Acero",
   sidebar_traeger_profile:    "Vigas & Perfiles",
   sidebar_rohre:              "Tubos",
@@ -2657,7 +2657,7 @@ const es: T = {
   sidebar_befestigung:        "Fijaciones",
   sidebar_spezial:            "Especial",
 
-  // ── Katalog Sidebar — Kategorie-Labels ───────────────────────────────
+  // ── Katalog Sidebar - Kategorie-Labels ───────────────────────────────
   kat_betonstahl:             "Acero de refuerzo",
   kat_rundstahl:              "Barra redonda",
   kat_vierkant:               "Barra cuadrada",
@@ -2978,7 +2978,7 @@ const pl: T = {
   nav_marktpreise:   "Ceny rynkowe",
   hero_trading_hours:"Sesje handlowe Pn–Pt 14:00–16:00 CET",
   hero_h1:           "Instytucjonalna giełda towarowa dla Unii Europejskiej",
-  hero_sub:          "Przejrzysta księga zleceń, natychmiastowe rozliczenia i fizyczny handel towarami spot — dla metali, drewna, nawozów & agrochemikaliów i towarów przemysłowych.",
+  hero_sub:          "Przejrzysta księga zleceń, natychmiastowe rozliczenia i fizyczny handel towarami spot - dla metali, drewna, nawozów & agrochemikaliów i towarów przemysłowych.",
   hero_cta_portal:   "Przejdź do portalu",
   hero_cta_more:     "Dowiedz się więcej",
   hero_bafin:        "Zgodny z AML",
@@ -3278,7 +3278,7 @@ const pl: T = {
 
   // ── Dashboard ────────────────────────────────────────────────────────
   dash_title:              "Przegląd handlowy",
-  dash_market_today:       "PRZEGLĄD RYNKU — DZIŚ",
+  dash_market_today:       "PRZEGLĄD RYNKU - DZIŚ",
   dash_trade_phase:        "FAZA HANDLU",
   dash_session_end:        "KONIEC SESJI",
   dash_open:               "OTWARTE",
@@ -3287,7 +3287,7 @@ const pl: T = {
   dash_kpi_members:        "ZAREJESTROWANI UCZESTNICY",
   dash_kpi_deals:          "TRANSAKCJE DZIŚ",
   dash_trade_history:      "HISTORIA HANDLU",
-  dash_daily_chart:        "Obrót dzienny — wykres godzinowy",
+  dash_daily_chart:        "Obrót dzienny - wykres godzinowy",
   dash_spotmarket:         "EUR · Rynek spot Frankfurt · Czas rzeczywisty",
   dash_top_sections:       "Wiodące sektory",
   dash_by_volume:          "WEDŁUG WOLUMENU",
@@ -3336,12 +3336,12 @@ const pl: T = {
   session_fichtenstammholz: "Kłody świerkowe I/II",
   session_aluminiumschrott: "Złom aluminium 6061",
   cat_badge_duenger:        "Nawóz",
-  trading_ses_betonstahl:   "Stal zbrojeniowa / Walcówka — Rynek spot",
-  trading_ses_traeger:      "Dźwigary & Profile — Eksport",
-  trading_ses_harnstoff:    "Mocznik 46 % N — Rynek spot",
-  trading_ses_flachstahl:   "Stal płaska / Blachy — Rynek krajowy",
-  trading_ses_npk:          "NPK 15-15-15 — Towar wiosenny",
-  trading_ses_rundrohre:    "Rury okrągłe / kwadratowe — Eksport",
+  trading_ses_betonstahl:   "Stal zbrojeniowa / Walcówka - Rynek spot",
+  trading_ses_traeger:      "Dźwigary & Profile - Eksport",
+  trading_ses_harnstoff:    "Mocznik 46 % N - Rynek spot",
+  trading_ses_flachstahl:   "Stal płaska / Blachy - Rynek krajowy",
+  trading_ses_npk:          "NPK 15-15-15 - Towar wiosenny",
+  trading_ses_rundrohre:    "Rury okrągłe / kwadratowe - Eksport",
   session_product_betonstahl: "Stal zbrojeniowa A1 · Ø12mm · B500B",
   session_warengruppe:      "Kategoria",
   session_tab_deposit:      "Konto kaucji",
@@ -3378,7 +3378,7 @@ const pl: T = {
   lbl_produkt:             "Produkt",
   lbl_produkte:            "Produkty",
 
-  // ── Katalog Sidebar — Gruppenüberschriften ────────────────────────────
+  // ── Katalog Sidebar - Gruppenüberschriften ────────────────────────────
   sidebar_stabstahl:          "Stal Zbrojeniowa",
   sidebar_traeger_profile:    "Dźwigary & Profile",
   sidebar_rohre:              "Rury",
@@ -3388,7 +3388,7 @@ const pl: T = {
   sidebar_befestigung:        "Technika Mocowań",
   sidebar_spezial:            "Specjalne",
 
-  // ── Katalog Sidebar — Kategorie-Labels ───────────────────────────────
+  // ── Katalog Sidebar - Kategorie-Labels ───────────────────────────────
   kat_betonstahl:             "Stal zbrojeniowa",
   kat_rundstahl:              "Pręt okrągły",
   kat_vierkant:               "Pręt kwadratowy",
@@ -3709,7 +3709,7 @@ const ru: T = {
   nav_marktpreise:   "Рыночные цены",
   hero_trading_hours:"Торговые сессии Пн–Пт 14:00–16:00 CET",
   hero_h1:           "Институциональная товарная биржа Европейского Союза",
-  hero_sub:          "Прозрачный стакан заявок, мгновенный расчёт и физическая спотовая торговля товарами — для металлов, древесины, удобрений & агрохимии и промышленных товаров.",
+  hero_sub:          "Прозрачный стакан заявок, мгновенный расчёт и физическая спотовая торговля товарами - для металлов, древесины, удобрений & агрохимии и промышленных товаров.",
   hero_cta_portal:   "Перейти на портал участников",
   hero_cta_more:     "Узнать больше",
   hero_bafin:        "Соответствие AML",
@@ -4009,7 +4009,7 @@ const ru: T = {
 
   // ── Dashboard ────────────────────────────────────────────────────────
   dash_title:              "Обзор торгов",
-  dash_market_today:       "ОБЗОР РЫНКА — СЕГОДНЯ",
+  dash_market_today:       "ОБЗОР РЫНКА - СЕГОДНЯ",
   dash_trade_phase:        "ТОРГОВАЯ ФАЗА",
   dash_session_end:        "КОНЕЦ СЕССИИ",
   dash_open:               "ОТКРЫТО",
@@ -4018,7 +4018,7 @@ const ru: T = {
   dash_kpi_members:        "УЧАСТНИКОВ",
   dash_kpi_deals:          "СДЕЛКИ СЕГОДНЯ",
   dash_trade_history:      "ИСТОРИЯ ТОРГОВ",
-  dash_daily_chart:        "Дневной объём — почасовой",
+  dash_daily_chart:        "Дневной объём - почасовой",
   dash_spotmarket:         "EUR · Спот-рынок Франкфурт · Реальное время",
   dash_top_sections:       "Ведущие секторы",
   dash_by_volume:          "ПО ОБЪЁМУ",
@@ -4067,12 +4067,12 @@ const ru: T = {
   session_fichtenstammholz: "Еловый пиловочник I/II",
   session_aluminiumschrott: "Алюминиевый лом 6061",
   cat_badge_duenger:        "Удобрение",
-  trading_ses_betonstahl:   "Арматура / Катанка — Спот-рынок",
-  trading_ses_traeger:      "Балки & Профили — Экспорт",
-  trading_ses_harnstoff:    "Карбамид 46 % N — Спот-рынок",
-  trading_ses_flachstahl:   "Листовая сталь / Прокат — Внутренний рынок",
-  trading_ses_npk:          "NPK 15-15-15 — Весенняя партия",
-  trading_ses_rundrohre:    "Круглые / квадратные трубы — Экспорт",
+  trading_ses_betonstahl:   "Арматура / Катанка - Спот-рынок",
+  trading_ses_traeger:      "Балки & Профили - Экспорт",
+  trading_ses_harnstoff:    "Карбамид 46 % N - Спот-рынок",
+  trading_ses_flachstahl:   "Листовая сталь / Прокат - Внутренний рынок",
+  trading_ses_npk:          "NPK 15-15-15 - Весенняя партия",
+  trading_ses_rundrohre:    "Круглые / квадратные трубы - Экспорт",
   session_product_betonstahl: "Арматура A1 · Ø12мм · B500B",
   session_warengruppe:      "Категория",
   session_tab_deposit:      "Залоговый счёт",
@@ -4109,7 +4109,7 @@ const ru: T = {
   lbl_produkt:             "Продукт",
   lbl_produkte:            "Продукты",
 
-  // ── Katalog Sidebar — Gruppenüberschriften ────────────────────────────
+  // ── Katalog Sidebar - Gruppenüberschriften ────────────────────────────
   sidebar_stabstahl:          "Арматура & Прутки",
   sidebar_traeger_profile:    "Балки & Профили",
   sidebar_rohre:              "Трубы",
@@ -4119,7 +4119,7 @@ const ru: T = {
   sidebar_befestigung:        "Крепёжная техника",
   sidebar_spezial:            "Специальное",
 
-  // ── Katalog Sidebar — Kategorie-Labels ───────────────────────────────
+  // ── Katalog Sidebar - Kategorie-Labels ───────────────────────────────
   kat_betonstahl:             "Арматура",
   kat_rundstahl:              "Прутки круглые",
   kat_vierkant:               "Квадрат",

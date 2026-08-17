@@ -78,7 +78,7 @@ function RoField({ label, value, note }: { label: string; value?: string | null;
         {label}
       </p>
       <p style={{ margin: 0, fontSize: 14, color: value ? TEXT : MUTED, fontFamily: F, fontStyle: value ? "normal" : "italic" }}>
-        {value ?? "—"}
+        {value ?? "-"}
       </p>
       {note && <p style={{ margin: "3px 0 0", fontSize: 11, color: MUTED, fontFamily: F }}>{note}</p>}
     </div>
@@ -231,7 +231,7 @@ export function ProfileClient() {
                 </div>
                 <div>
                   <RoField label="USt-IdNr."    value={org.taxId} />
-                  <RoField label="LEI"          value={org.lei} note="MiFID II — Legal Entity Identifier" />
+                  <RoField label="LEI"          value={org.lei} note="MiFID II - Legal Entity Identifier" />
                   <RoField label="Telefon"      value={org.phone} />
                   <RoField label="Land"         value={COUNTRY_NAMES[org.country] ?? org.country} />
                 </div>
@@ -308,7 +308,7 @@ export function ProfileClient() {
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                   <p style={{ margin: 0, fontSize: 12.5, color: GREEN, fontFamily: F, fontWeight: 600 }}>
-                    Einzelvertretungsmacht bestätigt — keine Vollmacht erforderlich
+                    Einzelvertretungsmacht bestätigt - keine Vollmacht erforderlich
                   </p>
                 </div>
               )}
@@ -354,7 +354,7 @@ export function ProfileClient() {
             <>
               <div style={{ padding: "16px 0 4px" }}>
                 <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: ".06em" }}>
-                  Zoll & CBAM — Carbon Border Adjustment Mechanism
+                  Zoll & CBAM - Carbon Border Adjustment Mechanism
                 </p>
               </div>
 
@@ -384,7 +384,7 @@ export function ProfileClient() {
                   onBlur={e => (e.currentTarget.style.borderColor = BORDER)}
                 />
                 <p style={{ margin: "4px 0 0", fontSize: 11, color: MUTED, fontFamily: F }}>
-                  Economic Operators Registration and Identification — EU-Zollregistrierung. Format: Länderkürzel + 15 Stellen (z.B. DE123456789012345).
+                  Economic Operators Registration and Identification - EU-Zollregistrierung. Format: Länderkürzel + 15 Stellen (z.B. DE123456789012345).
                 </p>
               </div>
 
@@ -431,11 +431,11 @@ export function ProfileClient() {
               {/* Trennlinie + Infos für Verkäufer */}
               <div style={{ marginTop: 28, paddingTop: 20, borderTop: `1px solid ${BORDER}` }}>
                 <p style={{ margin: "0 0 8px", fontSize: 11, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: ".06em", fontFamily: F }}>
-                  Verkäufer — CBAM-Produktangaben
+                  Verkäufer - CBAM-Produktangaben
                 </p>
                 <p style={{ margin: 0, fontSize: 12, color: MUTED, fontFamily: F, lineHeight: 1.65 }}>
                   Als Verkäufer geben Sie Herkunftsland, Produktionsstätte und CO₂-Emissionswerte
-                  <strong style={{ color: TEXT }}> direkt beim Gebot</strong> an — in der Auktions-Ansicht
+                  <strong style={{ color: TEXT }}> direkt beim Gebot</strong> an - in der Auktions-Ansicht
                   erscheint ein CBAM-Bereich wenn das Lot meldepflichtig ist. Die Angaben werden
                   mit Ihrem Gebot gespeichert und fließen bei Zuschlag in die CBAM-Meldung des Käufers ein.
                 </p>

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     template: "%s | EUCX",
   },
   description:
-    "Institutionelle B2B-Rohstoffbörse der EU — Metalle, Stahl, Agrar, Energie. " +
+    "Institutionelle B2B-Rohstoffbörse der EU - Metalle, Stahl, Agrar, Energie. " +
     "Transparentes Orderbuch, sofortige Abwicklung für verifizierte Händler.",
   keywords: [
     "European Commodity Exchange",

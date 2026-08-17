@@ -100,7 +100,7 @@ export function CookieBanner() {
           display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap",
           padding: "16px 28px", borderBottom: "1px solid #e8e8e8", backgroundColor: "#fafafa",
         }}>
-          {/* Notwendig — immer an */}
+          {/* Notwendig - immer an */}
           <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333", cursor: "default" }}>
             <Toggle checked={true} onChange={() => {}} />
             <span>Notwendig</span>

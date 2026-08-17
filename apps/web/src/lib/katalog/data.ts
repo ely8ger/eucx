@@ -718,18 +718,18 @@ const SCHROTT: KatalogProdukt[] = [
 // ─── Kategorien-Map ───────────────────────────────────────────────────────────
 
 export const KATALOG: Record<string, KatalogKategorie> = {
-  "betonstahl":         { id:"betonstahl",         label:"Betonstahl",             dimLabel:"Ø mm",      dimUnit:"",    description:"Bewehrungsstahl nach EN 10080 / DIN 488 — BSt 500S und B500B für Stahlbetonkonstruktionen",         produkte: BETONSTAHL },
+  "betonstahl":         { id:"betonstahl",         label:"Betonstahl",             dimLabel:"Ø mm",      dimUnit:"",    description:"Bewehrungsstahl nach EN 10080 / DIN 488 - BSt 500S und B500B für Stahlbetonkonstruktionen",         produkte: BETONSTAHL },
   "rundstahl":          { id:"rundstahl",           label:"Rundstahl",              dimLabel:"Ø mm",      dimUnit:"",    description:"Vollmaterial Rund · Blankstahl, Vergütungsstahl, Edelstahl, Aluminium nach EN 10277 / EN 10088",    produkte: RUNDSTAHL },
   "vierkant":           { id:"vierkant",            label:"Vierkant",               dimLabel:"Seite mm",  dimUnit:"",    description:"Vollmaterial Vierkant · kaltgezogen, warmgewalzt, Edelstahl, Aluminium nach EN 10277",               produkte: VIERKANT },
   "sechskant":          { id:"sechskant",           label:"Sechskant",              dimLabel:"SW mm",     dimUnit:"",    description:"Vollmaterial Sechskant · Stahl, Edelstahl, Messing nach EN 10278 / EN 12164",                       produkte: SECHSKANT },
   "flachstahl":         { id:"flachstahl",          label:"Flachstahl",             dimLabel:"Dicke mm",  dimUnit:"",    description:"Flachstahl / Flachprofil · blank und verzinkt nach EN 10058",                                       produkte: FLACHSTAHL },
-  "walzdraht":          { id:"walzdraht",           label:"Walzdraht",              dimLabel:"Ø mm",      dimUnit:"",    description:"Walzdraht · warmgewalzt, Coil nach EN 10016 — S235JR, S355J2, C15",                                 produkte: WALZDRAHT },
-  "traeger":            { id:"traeger",             label:"Träger (IPE/HEA/HEB)",   dimLabel:"Höhe mm",   dimUnit:"",    description:"I-Träger · IPE, HEA, HEB nach EN 10025 — S235JR und S355J2",                                        produkte: TRAEGER },
-  "t-traeger":          { id:"t-traeger",           label:"T-Träger",               dimLabel:"Höhe mm",   dimUnit:"",    description:"T-Profile nach EN 10055 — S235JR und S355J2",                                                       produkte: T_TRAEGER },
+  "walzdraht":          { id:"walzdraht",           label:"Walzdraht",              dimLabel:"Ø mm",      dimUnit:"",    description:"Walzdraht · warmgewalzt, Coil nach EN 10016 - S235JR, S355J2, C15",                                 produkte: WALZDRAHT },
+  "traeger":            { id:"traeger",             label:"Träger (IPE/HEA/HEB)",   dimLabel:"Höhe mm",   dimUnit:"",    description:"I-Träger · IPE, HEA, HEB nach EN 10025 - S235JR und S355J2",                                        produkte: TRAEGER },
+  "t-traeger":          { id:"t-traeger",           label:"T-Träger",               dimLabel:"Höhe mm",   dimUnit:"",    description:"T-Profile nach EN 10055 - S235JR und S355J2",                                                       produkte: T_TRAEGER },
   "winkelstahl":        { id:"winkelstahl",         label:"Winkelstahl",            dimLabel:"Seite mm",  dimUnit:"",    description:"Gleichschenkliger Winkelstahl · blank, verzinkt, Edelstahl nach EN 10056",                           produkte: WINKELSTAHL },
-  "u-profile":          { id:"u-profile",           label:"U-Profile",              dimLabel:"Höhe mm",   dimUnit:"",    description:"U-Profile / Schienen nach EN 10279 — S235JR, blank und verzinkt",                                    produkte: U_PROFILE },
-  "leichtstahlprofile": { id:"leichtstahlprofile",  label:"Leichtstahlprofile",     dimLabel:"Höhe mm",   dimUnit:"",    description:"Kaltgeformte Profile LSTK — C, Z, Sigma, U nach EN 10346 / EN 10162",                               produkte: LEICHTSTAHLPROFILE },
-  "trockenbauprofile":  { id:"trockenbauprofile",   label:"Trockenbauprofile",      dimLabel:"Höhe mm",   dimUnit:"",    description:"Stahlprofile für Trockenbau — UD, CD, UA, CW nach EN 14195",                                         produkte: TROCKENBAUPROFILE },
+  "u-profile":          { id:"u-profile",           label:"U-Profile",              dimLabel:"Höhe mm",   dimUnit:"",    description:"U-Profile / Schienen nach EN 10279 - S235JR, blank und verzinkt",                                    produkte: U_PROFILE },
+  "leichtstahlprofile": { id:"leichtstahlprofile",  label:"Leichtstahlprofile",     dimLabel:"Höhe mm",   dimUnit:"",    description:"Kaltgeformte Profile LSTK - C, Z, Sigma, U nach EN 10346 / EN 10162",                               produkte: LEICHTSTAHLPROFILE },
+  "trockenbauprofile":  { id:"trockenbauprofile",   label:"Trockenbauprofile",      dimLabel:"Höhe mm",   dimUnit:"",    description:"Stahlprofile für Trockenbau - UD, CD, UA, CW nach EN 14195",                                         produkte: TROCKENBAUPROFILE },
   "nahtlosrohr":        { id:"nahtlosrohr",         label:"Nahtlosrohr",            dimLabel:"Ø mm",      dimUnit:"",    description:"Nahtlose Stahlrohre warmgewalzt und kaltgezogen nach EN 10210 / EN 10216",                            produkte: NAHTLOSROHR },
   "geschweisstes-rohr": { id:"geschweisstes-rohr",  label:"Geschweißtes Rohr",      dimLabel:"Ø mm",      dimUnit:"",    description:"Elektrogeschweißte Rohre (ERW / WGP) nach EN 10219 / EN 10217",                                      produkte: GESCHWEISSTES_ROHR },
   "quadratrohr":        { id:"quadratrohr",         label:"Quadratrohr",            dimLabel:"Seite mm",  dimUnit:"",    description:"Quadratische Hohlprofile · blank und verzinkt nach EN 10219",                                         produkte: QUADRATROHR },
@@ -744,7 +744,7 @@ export const KATALOG: Record<string, KatalogKategorie> = {
   "riffelblech":        { id:"riffelblech",         label:"Riffelblech",            dimLabel:"Dicke mm",  dimUnit:"",    description:"Riffelbleche Tränenblech · S235JR, verzinkt, Edelstahl nach EN 10025",                               produkte: RIFFELBLECH },
   "band-streifen":      { id:"band-streifen",       label:"Band / Streifen",        dimLabel:"Dicke mm",  dimUnit:"",    description:"Stahlband und Streifen · blank, verzinkt, lackiert, perforiert nach EN 10139 / EN 10346",            produkte: BAND },
   "trapezblech":        { id:"trapezblech",         label:"Trapezblech",            dimLabel:"Dicke mm",  dimUnit:"",    description:"Trapezprofilbleche T-20, T-35, T-60 · verzinkt und lackiert nach EN 10346",                          produkte: TRAPEZBLECH },
-  "metallziegel":       { id:"metallziegel",        label:"Metallziegel",           dimLabel:"Dicke mm",  dimUnit:"",    description:"Metallziegel / Dachpfannen · Monterrey, Cascade — verzinkt und lackiert",                            produkte: METALLZIEGEL },
+  "metallziegel":       { id:"metallziegel",        label:"Metallziegel",           dimLabel:"Dicke mm",  dimUnit:"",    description:"Metallziegel / Dachpfannen · Monterrey, Cascade - verzinkt und lackiert",                            produkte: METALLZIEGEL },
   "sandwichpaneele":    { id:"sandwichpaneele",     label:"Sandwichpaneele",        dimLabel:"Dicke mm",  dimUnit:"",    description:"Sandwichpaneele für Wand und Dach · Mineralwolle- und PIR-Kern nach EN 14509",                       produkte: SANDWICHPANEELE },
   "stahldraht":         { id:"stahldraht",          label:"Stahldraht",             dimLabel:"Ø mm",      dimUnit:"",    description:"Stahldraht blank und verzinkt · Coil nach EN 10016 / EN 10244",                                      produkte: STAHLDRAHT },
   "schweissdraht":      { id:"schweissdraht",       label:"Schweißdraht",           dimLabel:"Ø mm",      dimUnit:"",    description:"MIG/MAG und WIG-Schweißdrähte · SG2, SG3, ER308L, ER316L nach EN 756 / EN 12072",                  produkte: SCHWEISSDRAHT },
@@ -777,7 +777,7 @@ export function formatTonne(eurKg: number): string {
 }
 
 export function formatDim(dim: number, unit: string): string {
-  if (dim === 0) return "—";
+  if (dim === 0) return "-";
   return `${unit}${dim}`;
 }
 

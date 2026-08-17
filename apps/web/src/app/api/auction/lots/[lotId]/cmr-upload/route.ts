@@ -5,7 +5,7 @@
  * Akzeptiert multipart/form-data mit Feld "file" (PDF, max. 5 MB).
  * Setzt deliveryStatus automatisch auf IN_TRANSIT nach erfolgreichem Upload.
  *
- * Auth: Bearer JWT — Seller (Eigentümer) oder Admin
+ * Auth: Bearer JWT - Seller (Eigentümer) oder Admin
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
@@ -45,7 +45,7 @@ export async function POST(
     return NextResponse.json({ error: "Kein Zugriff" }, { status: 403 });
   }
 
-  // CMR-Upload nur ab READY_FOR_PICKUP (Ware bereit) — nicht nach DELIVERED
+  // CMR-Upload nur ab READY_FOR_PICKUP (Ware bereit) - nicht nach DELIVERED
   const allowedStatuses: DeliveryStatus[] = [
     DeliveryStatus.READY_FOR_PICKUP,
     DeliveryStatus.IN_TRANSIT,

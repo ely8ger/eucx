@@ -1,20 +1,20 @@
 /**
  * EUCX E-Mail-Templates
  *
- * Stil: "Förderdatenbank-Look" — viel Weißraum, klare blaue Buttons, kein Schnickschnack.
+ * Stil: "Förderdatenbank-Look" - viel Weißraum, klare blaue Buttons, kein Schnickschnack.
  * Farben: #154194 (Gov-Blue), #f8f9fa (Hintergrund), #1a1a1a (Text)
  * Font-Stack: -apple-system, Helvetica Neue, Arial (E-Mail-safe)
  *
  * Templates:
- *   outbid               — Überboten-Warnung (Verkäufer)
- *   auction_won          — Sieger-Bestätigung (Verkäufer)
- *   auction_lost         — Auktion verloren (Verkäufer)
- *   auction_closed_buyer — Abschluss-Bestätigung (Käufer)
- *   email_verification   — Bestätigungscode bei Registrierung
- *   password_reset       — Passwort-Reset (auf Wunsch oder nach Sperre)
- *   account_locked       — Hinweis: Account nach 5 Fehlversuchen gesperrt
- *   registration_approved — Admin hat Registrierung freigeschalten
- *   registration_rejected — Admin hat Registrierung abgelehnt
+ *   outbid               - Überboten-Warnung (Verkäufer)
+ *   auction_won          - Sieger-Bestätigung (Verkäufer)
+ *   auction_lost         - Auktion verloren (Verkäufer)
+ *   auction_closed_buyer - Abschluss-Bestätigung (Käufer)
+ *   email_verification   - Bestätigungscode bei Registrierung
+ *   password_reset       - Passwort-Reset (auf Wunsch oder nach Sperre)
+ *   account_locked       - Hinweis: Account nach 5 Fehlversuchen gesperrt
+ *   registration_approved - Admin hat Registrierung freigeschalten
+ *   registration_rejected - Admin hat Registrierung abgelehnt
  */
 
 export function buildEmailHtml(template: string, data: Record<string, string>): string {
@@ -108,30 +108,30 @@ function alertBox(text: string, color = "#dc2626"): string {
 const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
 
   outbid: (d) => `
-    ${alertBox("Sie wurden überboten — Handeln Sie jetzt!")}
+    ${alertBox("Sie wurden überboten - Handeln Sie jetzt!")}
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Neues Bestgebot</h2>
     <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
       Ein anderer Bieter hat Ihr Gebot unterschritten. Um in der Auktion zu bleiben, geben Sie ein neues Gebot ab.
     </p>
     ${infoTable(
-      infoRow("Neuer Bestpreis:", d.newBestPrice ?? "—") +
-      infoRow("Lot-ID:", (d.lotId ?? "—").slice(0, 12).toUpperCase())
+      infoRow("Neuer Bestpreis:", d.newBestPrice ?? "-") +
+      infoRow("Lot-ID:", (d.lotId ?? "-").slice(0, 12).toUpperCase())
     )}
     ${primaryBtn(`https://eucx.eu/dashboard/seller/auction/${d.lotId ?? ""}`, "Jetzt Gebot abgeben →")}
   `,
 
   auction_won: (d) => `
     <div style="background:#f0fdf4;border-left:4px solid #16a34a;padding:14px 16px;margin-bottom:20px;">
-      <p style="margin:0;font-size:13px;color:#16a34a;font-weight:600;">Herzlichen Glückwunsch — Sie haben die Auktion gewonnen!</p>
+      <p style="margin:0;font-size:13px;color:#16a34a;font-weight:600;">Herzlichen Glückwunsch - Sie haben die Auktion gewonnen!</p>
     </div>
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Zuschlag erteilt</h2>
     <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
       Ihr Angebot war das niedrigste in dieser Auktion. Der Kaufvertrag wurde automatisch generiert.
     </p>
     ${infoTable(
-      infoRow("Ware:", d.commodity ?? "—") +
-      infoRow("Siegergebot:", d.finalPrice ?? "—") +
-      infoRow("Vertrags-Nr.:", d.contractNumber ?? "—")
+      infoRow("Ware:", d.commodity ?? "-") +
+      infoRow("Siegergebot:", d.finalPrice ?? "-") +
+      infoRow("Vertrags-Nr.:", d.contractNumber ?? "-")
     )}
     ${primaryBtn(`https://eucx.eu/dashboard/contracts`, "Kaufvertrag herunterladen →")}
   `,
@@ -142,8 +142,8 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
       Die Auktion wurde abgeschlossen. Ihr Gebot war leider nicht das niedrigste.
     </p>
     ${infoTable(
-      infoRow("Ware:", d.commodity ?? "—") +
-      infoRow("Siegergebot:", d.finalPrice ?? "—")
+      infoRow("Ware:", d.commodity ?? "-") +
+      infoRow("Siegergebot:", d.finalPrice ?? "-")
     )}
     ${primaryBtn("https://eucx.eu/dashboard/seller/auction/" + (d.lotId ?? ""), "Andere Auktionen ansehen →")}
   `,
@@ -154,9 +154,9 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
       Ihre Ausschreibung wurde erfolgreich abgeschlossen. Der Kaufvertrag wurde generiert und steht zum Download bereit.
     </p>
     ${infoTable(
-      infoRow("Ware:", d.commodity ?? "—") +
-      infoRow("Siegergebot:", d.finalPrice ?? "—") +
-      infoRow("Vertrags-Nr.:", d.contractNumber ?? "—")
+      infoRow("Ware:", d.commodity ?? "-") +
+      infoRow("Siegergebot:", d.finalPrice ?? "-") +
+      infoRow("Vertrags-Nr.:", d.contractNumber ?? "-")
     )}
     ${primaryBtn("https://eucx.eu/dashboard/contracts", "Kaufvertrag herunterladen →")}
   `,
@@ -170,7 +170,7 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
     </p>
     <div style="background:#f1f5fe;border:2px solid #154194;padding:24px;text-align:center;margin-bottom:24px;">
       <p style="margin:0 0 8px;font-size:12px;color:#6b7280;letter-spacing:0.08em;text-transform:uppercase;">Bestätigungscode</p>
-      <p style="margin:0;font-size:40px;font-weight:700;color:#154194;letter-spacing:0.25em;font-family:monospace;">${d.code ?? "——"}</p>
+      <p style="margin:0;font-size:40px;font-weight:700;color:#154194;letter-spacing:0.25em;font-family:monospace;">${d.code ?? "--"}</p>
     </div>
     <p style="margin:0;font-size:13px;color:#9ca3af;line-height:1.5;">
       Der Code ist <strong>15 Minuten</strong> gültig. Bitte geben Sie ihn auf der Registrierungsseite ein.<br>
@@ -185,7 +185,7 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
         ? "Ihr Konto wurde nach zu vielen fehlgeschlagenen Anmeldeversuchen vorübergehend gesperrt. Bitte setzen Sie Ihr Passwort zurück, um den Zugang wiederherzustellen."
         : "Wir haben eine Anfrage zum Zurücksetzen Ihres Passworts erhalten."}
     </p>
-    ${d.reason === "BRUTE_FORCE_LOCK" ? alertBox("Konto gesperrt — zu viele Fehlversuche", "#e67e22") : ""}
+    ${d.reason === "BRUTE_FORCE_LOCK" ? alertBox("Konto gesperrt - zu viele Fehlversuche", "#e67e22") : ""}
     ${primaryBtn(`https://eucx.eu/reset-password?token=${d.token ?? ""}`, "Passwort jetzt zurücksetzen →")}
     <p style="margin:16px 0 0;font-size:12px;color:#9ca3af;">
       Dieser Link ist <strong>1 Stunde</strong> gültig. Falls Sie keine Anfrage gestellt haben, ignorieren Sie diese E-Mail.
@@ -198,7 +198,7 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
     <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
       Ihr Konto wurde nach <strong>5 fehlgeschlagenen Anmeldeversuchen</strong> gesperrt. Eine E-Mail mit einem Link zum Zurücksetzen Ihres Passworts wurde an diese Adresse gesendet.
     </p>
-    ${infoTable(infoRow("Konto:", d.email ?? "—"))}
+    ${infoTable(infoRow("Konto:", d.email ?? "-"))}
     <p style="margin:20px 0 0;font-size:13px;color:#9ca3af;">
       Falls Sie das nicht waren, empfehlen wir das sofortige Zurücksetzen Ihres Passworts und die Überprüfung Ihrer Zugangsdaten.
     </p>
@@ -215,9 +215,9 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
       Sie können sich ab sofort mit Ihren Zugangsdaten anmelden.
     </p>
     ${infoTable(
-      infoRow("Organisation:", d.orgName ?? "—") +
-      infoRow("E-Mail:", d.email ?? "—") +
-      infoRow("Rolle:", d.role ?? "—")
+      infoRow("Organisation:", d.orgName ?? "-") +
+      infoRow("E-Mail:", d.email ?? "-") +
+      infoRow("Rolle:", d.role ?? "-")
     )}
     ${primaryBtn("https://eucx.eu/login", "Jetzt anmelden →")}
     <p style="margin:20px 0 0;font-size:13px;color:#9ca3af;">

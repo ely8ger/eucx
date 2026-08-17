@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * RegistrationCenter — Admin-Ansicht für Registrierungsanfragen
+ * RegistrationCenter - Admin-Ansicht für Registrierungsanfragen
  *
  * Tabs: Offen (PENDING) | Geprüft (ACTIVE) | Abgelehnt (REJECTED)
  * Aktionen: Freischalten (APPROVE) | Ablehnen (REJECT + Pflichtbegründung)
@@ -253,7 +253,7 @@ export function RegistrationCenter() {
                 ["Stadt",        selectedUser.orgCity],
                 ["Land",         selectedUser.orgCountry.toUpperCase()],
                 ["Registriert",  new Date(selectedUser.createdAt).toLocaleString("de-DE")],
-                ["E-Mail bestätigt", selectedUser.emailVerified ? "Ja" : "Nein — noch ausstehend"],
+                ["E-Mail bestätigt", selectedUser.emailVerified ? "Ja" : "Nein - noch ausstehend"],
               ].map(([label, value]) => (
                 <div key={label} className="flex justify-between gap-2">
                   <dt className="text-cb-gray-500 shrink-0">{label}</dt>
@@ -269,7 +269,7 @@ export function RegistrationCenter() {
               </div>
             )}
 
-            {/* Aktionen — nur für PENDING */}
+            {/* Aktionen - nur für PENDING */}
             {selectedUser.status === "PENDING" && (
               <div className="flex flex-col gap-2 pt-2 border-t border-cb-gray-100">
                 {!showRejectForm ? (

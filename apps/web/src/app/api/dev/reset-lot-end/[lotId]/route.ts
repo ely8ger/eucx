@@ -2,7 +2,7 @@
  * POST /api/dev/reset-lot-end/[lotId]
  *
  * [TESTMODE] Setzt auctionEnd des Lots auf heute 22:00 Berlin.
- * Nur für Testbetrieb — VOR PRODUKTIONSSTART ENTFERNEN.
+ * Nur für Testbetrieb - VOR PRODUKTIONSSTART ENTFERNEN.
  *
  * Auth: Bearer JWT (Lot-Besitzer)
  */

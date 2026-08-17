@@ -1,7 +1,7 @@
 /**
  * /dashboard/settings/verification
  *
- * KYC-Upload-Seite — Drag & Drop Dokument-Upload
+ * KYC-Upload-Seite - Drag & Drop Dokument-Upload
  * Mobile-First: funktioniert auf iPad + Schrottplatz
  *
  * Server Component: lädt aktuellen Status

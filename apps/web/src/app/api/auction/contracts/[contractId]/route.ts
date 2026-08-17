@@ -141,7 +141,7 @@ export async function GET(
     counterparty: {
       id:      counterparty.id,
       email:   counterparty.email,
-      name:    counterparty.organization?.name    ?? "—",
+      name:    counterparty.organization?.name    ?? "-",
       phone:   counterparty.organization?.phone   ?? null,
       city:    counterparty.organization?.city    ?? null,
       country: counterparty.organization?.country ?? null,

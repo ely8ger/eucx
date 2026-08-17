@@ -1,5 +1,5 @@
 /**
- * AuctionTimer — Phasen-Übergänge zeitgesteuert ausführen
+ * AuctionTimer - Phasen-Übergänge zeitgesteuert ausführen
  *
  * Wird von /api/auction/cron (CRON_SECRET geschützt) aufgerufen.
  * Empfohlenes Intervall: jede Minute.
@@ -69,7 +69,7 @@ export async function runAuctionTimer(): Promise<{
                 result.winnerId,
                 lot.buyerId,
                 lot.commodity,
-                lot.currentBest?.toString() ?? "—",
+                lot.currentBest?.toString() ?? "-",
                 contract.contractNumber,
               ).catch(console.error);
             }

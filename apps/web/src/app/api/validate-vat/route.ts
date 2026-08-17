@@ -61,7 +61,7 @@ async function queryVies(country: string, vatNumber: string): Promise<SourceResu
 
 // ── BZSt eVatR (nur DE) ───────────────────────────────────────────────────────
 async function queryBzst(vatNumber: string): Promise<SourceResult> {
-  // Eigene USt-IdNr. aus ENV — ohne diese kann BZSt nicht abgefragt werden
+  // Eigene USt-IdNr. aus ENV - ohne diese kann BZSt nicht abgefragt werden
   const ownId = process.env.EUCX_VAT_ID;
   if (!ownId) return { valid: false, unavailable: true, source: "bzst" };
 
@@ -206,7 +206,7 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  // Alle ungültig — aber mindestens einer war nur nicht erreichbar?
+  // Alle ungültig - aber mindestens einer war nur nicht erreichbar?
   const anyUnavailable = results.some((r) => r.unavailable);
   if (anyUnavailable) {
     return NextResponse.json({ valid: false, unavailable: true });

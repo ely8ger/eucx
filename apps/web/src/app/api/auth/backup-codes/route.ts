@@ -1,6 +1,6 @@
 /**
- * GET  /api/auth/backup-codes  — prüft ob Codes vorhanden sind
- * POST /api/auth/backup-codes  — generiert 8 neue Backup-Codes (löscht alte)
+ * GET  /api/auth/backup-codes  - prüft ob Codes vorhanden sind
+ * POST /api/auth/backup-codes  - generiert 8 neue Backup-Codes (löscht alte)
  */
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes, createHash }   from "crypto";

@@ -1,11 +1,11 @@
 /**
- * Post-Trade Engine — Wird nach CONCLUSION eines Lots aufgerufen.
+ * Post-Trade Engine - Wird nach CONCLUSION eines Lots aufgerufen.
  *
  * Ablauf:
  *   1. Lot + Sieger-Bid + Parteien aus DB laden
  *   2. Plattformgebühren berechnen (FeeEngine)
  *   3. PDF generieren (LotContractGenerator)
- *   4. LotContract + LotFees in DB schreiben (idempotent — @unique lotId)
+ *   4. LotContract + LotFees in DB schreiben (idempotent - @unique lotId)
  *   5. Bestätigungs-E-Mail an Käufer und Verkäufer senden
  *
  * Idempotenz: Wenn für lotId bereits ein LotContract existiert, wird die
@@ -27,7 +27,7 @@ async function generateContractNumber(): Promise<string> {
 }
 
 // ─── E-Mail Stub ─────────────────────────────────────────────────────────────
-// Kein SMTP-Paket installiert — Stub loggt und kann später mit Resend/Nodemailer
+// Kein SMTP-Paket installiert - Stub loggt und kann später mit Resend/Nodemailer
 // vervollständigt werden. Struktur bleibt stabil.
 
 async function sendContractEmail(params: {
@@ -45,7 +45,7 @@ async function sendContractEmail(params: {
   //   await resend.emails.send({
   //     from: "noreply@eucx.eu",
   //     to: params.to,
-  //     subject: `Kaufvertrag ${params.contractNumber} — EUCX`,
+  //     subject: `Kaufvertrag ${params.contractNumber} - EUCX`,
   //     html: buildEmailHtml(params),
   //   });
   console.log(`[PostTrade] E-Mail würde gesendet an ${params.to}`, {
@@ -105,16 +105,16 @@ export async function processLotConclusion(lotId: string): Promise<void> {
 
   if (!lot) throw new Error(`Lot ${lotId} nicht gefunden`);
 
-  // Keine Gebote oder keine Parteien mit Organisation — kein Vertrag
+  // Keine Gebote oder keine Parteien mit Organisation - kein Vertrag
   if (!lot.winner || !lot.currentBest) {
-    console.log(`[PostTrade] Lot ${lotId}: keine Gebote eingegangen — kein Vertrag erstellt.`);
+    console.log(`[PostTrade] Lot ${lotId}: keine Gebote eingegangen - kein Vertrag erstellt.`);
     await db.notification.create({
       data: {
         userId:  lot.buyer.id,
         lotId,
         type:    "CLOSED_BUYER",
         title:   `Auktion ohne Ergebnis: ${lot.commodity}`,
-        message: "Die Auktion wurde beendet. Es sind keine Gebote eingegangen — kein Kaufvertrag wird erstellt.",
+        message: "Die Auktion wurde beendet. Es sind keine Gebote eingegangen - kein Kaufvertrag wird erstellt.",
       },
     });
     return;
@@ -142,11 +142,11 @@ export async function processLotConclusion(lotId: string): Promise<void> {
     // Käufer
     buyerName:       lot.buyer.organization?.name    ?? lot.buyer.email,
     buyerCountry:    lot.buyer.organization?.country ?? "DE",
-    buyerTaxId:      lot.buyer.organization?.taxId   ?? "—",
+    buyerTaxId:      lot.buyer.organization?.taxId   ?? "-",
     // Verkäufer
     sellerName:      lot.winner.organization?.name    ?? lot.winner.email,
     sellerCountry:   lot.winner.organization?.country ?? "DE",
-    sellerTaxId:     lot.winner.organization?.taxId   ?? "—",
+    sellerTaxId:     lot.winner.organization?.taxId   ?? "-",
     // Ware
     commodity:       lot.commodity,
     quantity:        lot.quantity.toString(),
@@ -165,7 +165,7 @@ export async function processLotConclusion(lotId: string): Promise<void> {
     deliveryPeriod:   lot.deliveryPeriod ?? undefined,
     paymentTerms:     lot.paymentTerms   ?? undefined,
     vatTreatment:     lot.vatTreatment   ?? undefined,
-    // CBAM-Felder (nullable — undefined wenn nicht gesetzt)
+    // CBAM-Felder (nullable - undefined wenn nicht gesetzt)
     co2PerTonne:      lot.co2PerTonne?.toString(),
     countryOfOrigin:  lot.countryOfOrigin ?? undefined,
     productionSiteId: lot.productionSiteId ?? undefined,
@@ -226,7 +226,7 @@ export async function processLotConclusion(lotId: string): Promise<void> {
     });
   });
 
-  // E-Mails senden (fire-and-forget — kein await um Haupt-Flow nicht zu blockieren)
+  // E-Mails senden (fire-and-forget - kein await um Haupt-Flow nicht zu blockieren)
   const tv = totalValue.toLocaleString();
 
   sendContractEmail({

@@ -1,5 +1,5 @@
 /**
- * NotificationService — zentrale Schnittstelle für alle Benachrichtigungen
+ * NotificationService - zentrale Schnittstelle für alle Benachrichtigungen
  *
  * Erstellt Notification-Datensätze in der DB und löst bei Bedarf
  * E-Mail-Versand aus (abhängig von NotificationPreference des Users).
@@ -16,7 +16,7 @@ import { sendAuctionMail } from "./mailer";
 // ─── Öffentliche API ──────────────────────────────────────────────────────────
 
 /**
- * Verkäufer wurde überboten — neues Bestgebot liegt unter seinem Gebot.
+ * Verkäufer wurde überboten - neues Bestgebot liegt unter seinem Gebot.
  * @param outbidSellerId  User-ID des überbotenen Verkäufers
  * @param lotId
  * @param newBestPrice    Neuer Bestpreis (€/Einheit) als String
@@ -35,12 +35,12 @@ export async function notifyOutbid(
     lotId,
     type:    "OUTBID",
     title:   "Sie wurden überboten!",
-    message: `Neuer Bestpreis: ${formatEur(newBestPrice)} — Reagieren Sie jetzt.`,
+    message: `Neuer Bestpreis: ${formatEur(newBestPrice)} - Reagieren Sie jetzt.`,
   });
 
   // E-Mail wenn Präferenz aktiv (fire-and-forget)
   sendMailIfEnabled(outbidSellerId, "emailOnOutbid", {
-    subject: "Achtung: Sie wurden überboten — EUCX Auktion",
+    subject: "Achtung: Sie wurden überboten - EUCX Auktion",
     template: "outbid",
     data: { newBestPrice, lotId, notifId: notif.id },
   }).catch(console.error);
@@ -86,22 +86,22 @@ export async function notifyDepositWarn(
 }
 
 /**
- * 10 Minuten vor Auktionsende — für alle registrierten Teilnehmer + Käufer.
+ * 10 Minuten vor Auktionsende - für alle registrierten Teilnehmer + Käufer.
  * Idempotent: erstellt max. eine URGENCY_10M-Notification pro User+Lot.
  */
 export async function notifyUrgency10m(lotId: string): Promise<void> {
-  await notifyUrgency(lotId, "URGENCY_10M", "Finale Phase beginnt!", "Noch 10 Minuten bis Auktionsende — reagieren Sie jetzt.");
+  await notifyUrgency(lotId, "URGENCY_10M", "Finale Phase beginnt!", "Noch 10 Minuten bis Auktionsende - reagieren Sie jetzt.");
 }
 
 /**
  * 5 Minuten vor Auktionsende.
  */
 export async function notifyUrgency5m(lotId: string): Promise<void> {
-  await notifyUrgency(lotId, "URGENCY_5M", "Nur noch 5 Minuten!", "Letzte Chance — Auktion endet in 5 Minuten.");
+  await notifyUrgency(lotId, "URGENCY_5M", "Nur noch 5 Minuten!", "Letzte Chance - Auktion endet in 5 Minuten.");
 }
 
 /**
- * Auktion abgeschlossen — Gewinner, Verlierer und Käufer benachrichtigen.
+ * Auktion abgeschlossen - Gewinner, Verlierer und Käufer benachrichtigen.
  */
 export async function notifyAuctionClosed(
   lotId:          string,
@@ -135,7 +135,7 @@ export async function notifyAuctionClosed(
     // E-Mail an Gewinner + Verlierer (emailOnAuctionEnd-Präferenz)
     sendMailIfEnabled(sellerId, "emailOnAuctionEnd", {
       subject: isWinner
-        ? `Glückwunsch — Sie haben gewonnen: ${commodity}`
+        ? `Glückwunsch - Sie haben gewonnen: ${commodity}`
         : `Auktion beendet: ${commodity}`,
       template: isWinner ? "auction_won" : "auction_lost",
       data: { commodity, finalPrice, contractNumber, lotId, notifId: notif.id },
@@ -148,11 +148,11 @@ export async function notifyAuctionClosed(
     lotId,
     type:    "CLOSED_BUYER",
     title:   `Auktion abgeschlossen: ${commodity}`,
-    message: `Siegergebot: ${formatEur(finalPrice)} — Kaufvertrag ${contractNumber} wurde generiert.`,
+    message: `Siegergebot: ${formatEur(finalPrice)} - Kaufvertrag ${contractNumber} wurde generiert.`,
   });
 
   sendMailIfEnabled(buyerId, "emailOnAuctionEnd", {
-    subject: `Auktionsergebnis: ${commodity} — EUCX`,
+    subject: `Auktionsergebnis: ${commodity} - EUCX`,
     template: "auction_closed_buyer",
     data: { commodity, finalPrice, contractNumber, lotId, notifId: buyerNotif.id },
   }).catch(console.error);

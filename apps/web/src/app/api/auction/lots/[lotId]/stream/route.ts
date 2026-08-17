@@ -1,7 +1,7 @@
 /**
  * GET /api/auction/lots/[lotId]/stream
  *
- * Server-Sent Events (SSE) — schickt alle 2 Sekunden:
+ * Server-Sent Events (SSE) - schickt alle 2 Sekunden:
  *   (unnamed event / default)  → aktueller Lot-Status (Phase, Preis, Timer)
  *   event: notification        → neue ungelesene Benachrichtigungen für diesen User
  *
@@ -19,7 +19,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> }
 ) {
-  // Auth via URL-Parameter (SSE-Limitation — kein Authorization-Header möglich)
+  // Auth via URL-Parameter (SSE-Limitation - kein Authorization-Header möglich)
   const rawToken = req.nextUrl.searchParams.get("token");
   if (!rawToken) {
     return new Response("Nicht autorisiert", { status: 401 });

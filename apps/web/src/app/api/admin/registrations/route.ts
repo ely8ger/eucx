@@ -73,10 +73,10 @@ export async function GET(req: NextRequest) {
         emailVerified:   u.emailVerified,
         rejectionReason: u.rejectionReason ?? null,
         createdAt:       u.createdAt.toISOString(),
-        orgName:         u.organization?.name  ?? "—",
-        orgTaxId:        u.organization?.taxId ?? "—",
-        orgCountry:      u.organization?.country ?? "—",
-        orgCity:         u.organization?.city    ?? "—",
+        orgName:         u.organization?.name  ?? "-",
+        orgTaxId:        u.organization?.taxId ?? "-",
+        orgCountry:      u.organization?.country ?? "-",
+        orgCity:         u.organization?.city    ?? "-",
       })),
     });
   } catch (err) {

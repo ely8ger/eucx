@@ -2,7 +2,7 @@
  * POST /api/auction/lots
  *
  * Käufer erstellt ein neues Lot (Ausschreibung).
- * Phase startet mit COLLECTION — Verkäufer können sich registrieren.
+ * Phase startet mit COLLECTION - Verkäufer können sich registrieren.
  *
  * Auth: Bearer JWT (role === BUYER)
  */
@@ -30,7 +30,7 @@ const createLotSchema = z.object({
   countryOfOrigin:  z.string().max(100).optional(),
   productionSiteId: z.string().max(50).optional(),
   incoterms:        z.enum(INCOTERMS_VALUES).optional(),
-  // Handels- und Vertragsangaben (Pflichtfelder — vertragswesentlich nach §§ 433, 434 BGB)
+  // Handels- und Vertragsangaben (Pflichtfelder - vertragswesentlich nach §§ 433, 434 BGB)
   hsCode:           z.string().min(1, "HS-Code ist erforderlich").max(20),
   qualityGrade:     z.string().min(1, "Güte / Qualitätsnorm ist erforderlich").max(120),
   deliveryPeriod:   z.string().min(1, "Max. Lieferzeit ist erforderlich").max(120),
@@ -141,7 +141,7 @@ export async function GET(req: NextRequest) {
 
   const lots = await db.lot.findMany({
     where: mine
-      // Käufer sieht nur eigene Lots — alle Phasen inkl. CONCLUSION
+      // Käufer sieht nur eigene Lots - alle Phasen inkl. CONCLUSION
       ? { buyerId: userId, ...(phase ? { phase: phase as never } : {}) }
       // Alle anderen sehen offene Lots (COLLECTION/PROPOSAL/REDUCTION)
       : phase

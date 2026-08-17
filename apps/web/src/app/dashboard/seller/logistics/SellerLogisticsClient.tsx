@@ -32,9 +32,9 @@ interface Delivery {
 
 const STEPS: { key: DeliveryStatus; label: string; hint: string }[] = [
   { key: "MATCHED",           label: "Vertrag generiert",    hint: "Kaufvertrag automatisch nach Auktionsabschluss" },
-  { key: "AWAITING_PAYMENT", label: "Zahlung ausstehend",   hint: "Käufer überweist — meldet Zahlung angewiesen, dann Verkäufer bestätigt Eingang" },
+  { key: "AWAITING_PAYMENT", label: "Zahlung ausstehend",   hint: "Käufer überweist - meldet Zahlung angewiesen, dann Verkäufer bestätigt Eingang" },
   { key: "READY_FOR_PICKUP", label: "Bereit zur Abholung",  hint: "Abholcode aktiv, Ware bereit für Spediteur" },
-  { key: "IN_TRANSIT",       label: "In Transport",          hint: "CMR hochgeladen — Wareneingang wird vom Käufer bestätigt" },
+  { key: "IN_TRANSIT",       label: "In Transport",          hint: "CMR hochgeladen - Wareneingang wird vom Käufer bestätigt" },
   { key: "DELIVERED",        label: "Geliefert",             hint: "Empfangsbestätigung durch Käufer erfolgt" },
   { key: "COMPLETED",        label: "Abgeschlossen",         hint: "CBAM-Zollquittung exportieren und Vorgang abschließen" },
 ];
@@ -269,14 +269,14 @@ export function SellerLogisticsClient() {
                               </div>
                             </td>
                             <td>
-                              <div style={{ fontWeight: 600 }}>{d.lot?.commodity ?? "—"}</div>
+                              <div style={{ fontWeight: 600 }}>{d.lot?.commodity ?? "-"}</div>
                               <div style={{ fontSize: 11.5, color: "#6b7280" }}>
-                                {d.lot?.quantity ? parseFloat(d.lot.quantity).toLocaleString("de-DE") : "—"} {d.lot?.unit ?? ""} · {d.lot?.incoterms ?? "—"}
+                                {d.lot?.quantity ? parseFloat(d.lot.quantity).toLocaleString("de-DE") : "-"} {d.lot?.unit ?? ""} · {d.lot?.incoterms ?? "-"}
                               </div>
                             </td>
                             <td>
-                              <div style={{ fontSize: 12.5 }}>{d.buyer?.organization?.name ?? "—"}</div>
-                              <div style={{ fontSize: 11, color: "#9ca3af" }}>{d.buyer?.organization?.city ?? "—"}</div>
+                              <div style={{ fontSize: 12.5 }}>{d.buyer?.organization?.name ?? "-"}</div>
+                              <div style={{ fontSize: 11, color: "#9ca3af" }}>{d.buyer?.organization?.city ?? "-"}</div>
                             </td>
                             <td style={{ fontFamily: "'IBM Plex Mono',monospace", fontWeight: 700 }}>
                               {fmtEur(d.totalValue)}
@@ -343,7 +343,7 @@ export function SellerLogisticsClient() {
                   {sel.pickupCode && (
                     <div className="log-pickup-box">
                       <div className="log-pickup-code">{sel.pickupCode}</div>
-                      <div className="log-pickup-label">Abholcode — für Käufer sichtbar</div>
+                      <div className="log-pickup-label">Abholcode - für Käufer sichtbar</div>
                     </div>
                   )}
 
@@ -420,10 +420,10 @@ export function SellerLogisticsClient() {
                   <div className="log-meta">
                     {[
                       ["Kontrakt",    sel.contractNumber],
-                      ["Käufer",      sel.buyer?.organization?.name ?? "—"],
-                      ["Lieferort",   sel.buyer?.organization?.city ?? "—"],
-                      ["Incoterms",   sel.lot?.incoterms ?? "—"],
-                      ["Menge",       sel.lot ? `${parseFloat(sel.lot.quantity).toLocaleString("de-DE")} ${sel.lot.unit}` : "—"],
+                      ["Käufer",      sel.buyer?.organization?.name ?? "-"],
+                      ["Lieferort",   sel.buyer?.organization?.city ?? "-"],
+                      ["Incoterms",   sel.lot?.incoterms ?? "-"],
+                      ["Menge",       sel.lot ? `${parseFloat(sel.lot.quantity).toLocaleString("de-DE")} ${sel.lot.unit}` : "-"],
                       ["Gesamtwert",  fmtEur(sel.totalValue)],
                       ["Aktualisiert", fmtDate(sel.updatedAt)],
                     ].map(([l, v]) => (

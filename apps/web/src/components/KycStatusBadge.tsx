@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * KycStatusBadge — globaler Header-Badge für Verifizierungsstatus
+ * KycStatusBadge - globaler Header-Badge für Verifizierungsstatus
  *
  * GUEST / REJECTED       → Grau  "Nicht verifiziert" + Link
  * PENDING_VERIFICATION   → Gelb  "Dokumente in Prüfung"
@@ -81,7 +81,7 @@ export function KycStatusBadge({ status, isYoungCompany, walletBalance, depositR
             border:     "1px solid #fcd34d",
           }}
         >
-          Junges Unternehmen — 5% Sicherheitsleistung erforderlich.{" "}
+          Junges Unternehmen - 5% Sicherheitsleistung erforderlich.{" "}
           Depot: <strong>{walletBalance ? `${Number(walletBalance).toLocaleString("de-DE")} €` : "0 €"}</strong>
           {depositRequired && Number(depositRequired) > 0 && (
             <>{" "}· Noch fehlend: <strong style={{ color: "#dc2626" }}>{Number(depositRequired).toLocaleString("de-DE")} €</strong></>

@@ -411,7 +411,7 @@ export default function KatalogPage() {
                     </td>
                     {showBreite && (
                       <td style={{ ...TD, textAlign: "center", color: "#555" }}>
-                        {p.breite != null ? `${p.breite} mm` : "—"}
+                        {p.breite != null ? `${p.breite} mm` : "-"}
                       </td>
                     )}
                     <td style={{ ...TD, textAlign: "center", color: "#555" }}>{formatLaenge(p.laenge)}</td>

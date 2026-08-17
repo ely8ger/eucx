@@ -1,7 +1,7 @@
 /**
  * POST /api/auction/cron
  *
- * Interner Endpunkt — wird von einem Cron-Job (z.B. Vercel Cron, GitHub Actions,
+ * Interner Endpunkt - wird von einem Cron-Job (z.B. Vercel Cron, GitHub Actions,
  * oder externem Scheduler) jede Minute aufgerufen.
  *
  * Schließt alle Auktionen, deren auctionEnd in der Vergangenheit liegt.

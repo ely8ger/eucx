@@ -30,7 +30,7 @@ interface Props { lot: Lot; initialBids: Bid[]; }
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const fmtEur = (v: string | null | number) =>
-  v == null || v === "" ? "—"
+  v == null || v === "" ? "-"
   : new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
 
 const fmtPct = (pct: number) =>
@@ -235,7 +235,7 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
         /* Main */
         .b-main { display:flex; flex-direction:column; gap:20px; }
 
-        /* Savings Card — the star of the show */
+        /* Savings Card - the star of the show */
         .b-savings { background:#fff; border:2px solid #16a34a; padding:28px 32px; display:grid; grid-template-columns:1fr auto; gap:20px; align-items:center; }
         .b-savings.no-data { border-color:#e5e7eb; }
         .b-savings-left {}
@@ -337,7 +337,7 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
               <div className="b-kpi">
                 <div className="b-kpi-label">Verbleibend</div>
                 <div className="b-kpi-val" style={{ color: isUrgent ? "#dc2626" : "#0d1b2a" }}>
-                  {liveEnd ? countdown : "—"}
+                  {liveEnd ? countdown : "-"}
                 </div>
                 <div className="b-kpi-sub">
                   {livePhase === "COLLECTION" && "Auktion noch nicht gestartet"}
@@ -360,7 +360,7 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
             {/* Sidebar toggle */}
             {!sidebarOpen && (
               <button className="b-toggle" onClick={() => setSidebar(true)}>
-                ▶ Details einblenden — {lot.commodity} · {PHASE_LABEL[livePhase]}
+                ▶ Details einblenden - {lot.commodity} · {PHASE_LABEL[livePhase]}
               </button>
             )}
             {sidebarOpen && livePhase === "REDUCTION" && (
@@ -389,7 +389,7 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
                   <div style={{ fontSize: 16, color: "#9ca3af", marginTop: 8 }}>
                     {lot.startPrice
                       ? "Warten auf erstes Gebot …"
-                      : "Kein Maximalpreis hinterlegt — Ersparnis kann nicht berechnet werden."}
+                      : "Kein Maximalpreis hinterlegt - Ersparnis kann nicht berechnet werden."}
                   </div>
                 )}
               </div>
@@ -416,7 +416,7 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
                   {state?.registrationCount ?? 0} Verkäufer angemeldet · {liveCnt} Gebote insgesamt
                 </div>
               </div>
-              <div className="b-activity-cnt">{liveActive > 0 ? liveActive : "—"}</div>
+              <div className="b-activity-cnt">{liveActive > 0 ? liveActive : "-"}</div>
             </div>
 
             {/* ── KPI-Grid ── */}
@@ -429,7 +429,7 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
               <div className="b-kpi" style={{ borderLeft: `3px solid ${isUrgent ? "#dc2626" : "#6b7280"}` }}>
                 <div className="b-kpi-label">Verbleibend</div>
                 <div className="b-kpi-val" style={{ color: isUrgent ? "#dc2626" : "#0d1b2a" }}>
-                  {liveEnd ? countdown : "—"}
+                  {liveEnd ? countdown : "-"}
                 </div>
                 <div className="b-kpi-sub">
                   {livePhase === "CONCLUSION" ? "Auktion beendet" : `Phase: ${PHASE_LABEL[livePhase]}`}

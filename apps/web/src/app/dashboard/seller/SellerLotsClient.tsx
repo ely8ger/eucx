@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * /dashboard/seller — Seller Hub
+ * /dashboard/seller - Seller Hub
  *
  * Zeigt alle offenen Lots, erlaubt Registrierung in COLLECTION-Phase,
  * verlinkt auf Auktionsseite in PROPOSAL/REDUCTION.
@@ -40,7 +40,7 @@ interface KycInfo {
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 const fmtEur = (v: string | null) =>
-  v == null ? "—"
+  v == null ? "-"
   : new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
 
 const PHASE_LABEL: Record<string, string> = {
@@ -58,10 +58,10 @@ const PHASE_COLOR: Record<string, string> = {
 };
 
 const PHASE_TOOLTIP: Record<string, string> = {
-  COLLECTION: "Sammelphase — Jetzt registrieren, um in der Angebotsphase mitzubieten",
-  PROPOSAL:   "Angebotsphase — Registrierte Verkäufer können Gebote abgeben",
-  REDUCTION:  "Reduktionsphase — Beste Gebote werden verglichen und optimiert",
-  CONCLUSION: "Abgeschlossen — Auktion beendet, Ergebnis festgestellt",
+  COLLECTION: "Sammelphase - Jetzt registrieren, um in der Angebotsphase mitzubieten",
+  PROPOSAL:   "Angebotsphase - Registrierte Verkäufer können Gebote abgeben",
+  REDUCTION:  "Reduktionsphase - Beste Gebote werden verglichen und optimiert",
+  CONCLUSION: "Abgeschlossen - Auktion beendet, Ergebnis festgestellt",
 };
 
 // ── Countdown Helper ───────────────────────────────────────────────────────────
@@ -76,7 +76,7 @@ function useCountdown() {
 }
 
 function formatCountdown(endIso: string | null): { text: string; color: string } {
-  if (!endIso) return { text: "—", color: "#9ca3af" };
+  if (!endIso) return { text: "-", color: "#9ca3af" };
   const ms = new Date(endIso).getTime() - Date.now();
   if (ms <= 0) return { text: "Abgelaufen", color: "#dc2626" };
   const h = Math.floor(ms / 3600000);
@@ -293,10 +293,10 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
           {kyc && !isVerified && (
             <div className="sl-kyc-warn">
               <div className="sl-kyc-warn-text">
-                {kyc.verificationStatus === "GUEST" && "Identitätsprüfung noch nicht gestartet — Gebote sind erst nach KYC-Verifizierung möglich."}
-                {kyc.verificationStatus === "PENDING_VERIFICATION" && "KYC-Dokumente eingereicht — Prüfung läuft (in der Regel unter 24h). Lots können Sie bereits einsehen."}
-                {kyc.verificationStatus === "REJECTED" && "KYC abgelehnt — bitte kontaktieren Sie den Support oder laden Sie neue Dokumente hoch."}
-                {kyc.verificationStatus === "SUSPENDED" && "Konto gesperrt — bitte kontaktieren Sie den Support."}
+                {kyc.verificationStatus === "GUEST" && "Identitätsprüfung noch nicht gestartet - Gebote sind erst nach KYC-Verifizierung möglich."}
+                {kyc.verificationStatus === "PENDING_VERIFICATION" && "KYC-Dokumente eingereicht - Prüfung läuft (in der Regel unter 24h). Lots können Sie bereits einsehen."}
+                {kyc.verificationStatus === "REJECTED" && "KYC abgelehnt - bitte kontaktieren Sie den Support oder laden Sie neue Dokumente hoch."}
+                {kyc.verificationStatus === "SUSPENDED" && "Konto gesperrt - bitte kontaktieren Sie den Support."}
               </div>
               {(kyc.verificationStatus === "GUEST" || kyc.verificationStatus === "REJECTED") && (
                 <a href="/dashboard/settings/verification" className="sl-kyc-warn-link">
@@ -332,7 +332,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
           </div>
           <div className="sl-sub">
             {initialFilter === "mine"
-              ? "Alle Ausschreibungen, für die Sie registriert sind — aktiv und abgelaufen."
+              ? "Alle Ausschreibungen, für die Sie registriert sind - aktiv und abgelaufen."
               : "Registrieren Sie sich für Auktionen in der Sammelphase und geben Sie Angebote ab."}
           </div>
 
@@ -457,7 +457,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                           {lot.currentBest ? (
                             <strong style={{ color: "#111827" }}>{fmtEur(lot.currentBest)}{priceUnit}</strong>
                           ) : (
-                            <span style={{ color: "#d1d5db" }}>—</span>
+                            <span style={{ color: "#d1d5db" }}>-</span>
                           )}
                         </td>
                         <td>

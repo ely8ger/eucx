@@ -8,7 +8,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 
 /* ── SEO Metadata ─────────────────────────────────────────────────────────── */
 export const metadata: Metadata = {
-  title: "Aktuelle Rohstoffpreise 2026 — Stahl, Schrott, Dünger",
+  title: "Aktuelle Rohstoffpreise 2026 - Stahl, Schrott, Dünger",
   description:
     "Tagesaktuelle Marktpreise für Betonstahl, Walzdraht, Schrott, Harnstoff und NPK-Dünger. Direkt an der EUCX institutionell handeln. BaFin-reguliert.",
   keywords: [
@@ -27,12 +27,12 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "https://eucx.eu/marktpreise" },
   openGraph: {
-    title: "Aktuelle Rohstoffpreise — EUCX Marktübersicht",
+    title: "Aktuelle Rohstoffpreise - EUCX Marktübersicht",
     description:
       "Tagesaktuelle Preise für Stahl, Schrott, Dünger und Holz. An der EUCX handeln.",
     type: "website",
     url: "https://eucx.eu/marktpreise",
-    siteName: "EUCX — European Union Commodity Exchange",
+    siteName: "EUCX - European Union Commodity Exchange",
   },
 };
 
@@ -40,13 +40,13 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Dataset",
-  name: "EUCX Rohstoffpreise — Tagesaktuelle Marktübersicht",
+  name: "EUCX Rohstoffpreise - Tagesaktuelle Marktübersicht",
   description:
     "Marktpreise für Industrierohstoffe: Stahl, Schrott, Dünger, Holz. Daten der European Union Commodity Exchange, Frankfurt am Main.",
   url: "https://eucx.eu/marktpreise",
   creator: {
     "@type": "Organization",
-    name: "EUCX — European Union Commodity Exchange",
+    name: "EUCX - European Union Commodity Exchange",
     url: "https://eucx.eu",
   },
   temporalCoverage: "2026",
@@ -153,7 +153,7 @@ export default function MarktpreisePage() {
                   <span style={{ fontWeight: 700 }}>Rohstoffpreise</span>
                 </h1>
                 <p style={{ fontSize: 15, color: "#8aa8cc", maxWidth: 520, lineHeight: 1.7, margin: 0 }}>
-                  Tagesaktuelle Marktpreise für Stahl, Schrott, Dünger und Holz —
+                  Tagesaktuelle Marktpreise für Stahl, Schrott, Dünger und Holz -
                   direkt aus den Handelssitzungen der EUCX. BaFin-reguliert,
                   Frankfurt am Main.
                 </p>
@@ -185,7 +185,7 @@ export default function MarktpreisePage() {
           {/* Preistabelle (Client-Komponente) */}
           <section aria-label="Rohstoffpreise Tabelle">
             <h2 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#888", marginBottom: 24 }}>
-              Marktübersicht — {COMMODITIES.length} Rohstoffe
+              Marktübersicht - {COMMODITIES.length} Rohstoffe
             </h2>
             <PriceTable />
           </section>
@@ -200,7 +200,7 @@ export default function MarktpreisePage() {
                     Marktkommentar · KW 12 / 2026
                   </span>
                   <h2 style={{ fontSize: 22, fontWeight: 600, color: "#1a1a1a", margin: "0 0 16px", lineHeight: 1.3 }}>
-                    Betonstahl stabilisiert — Kupfer auf 3-Monats-Hoch
+                    Betonstahl stabilisiert - Kupfer auf 3-Monats-Hoch
                   </h2>
                   <p style={{ fontSize: 14, color: "#505050", lineHeight: 1.8, margin: "0 0 12px" }}>
                     Nach dem scharfen Preisrückgang im Februar zeigt sich der Betonstahl-Markt in KW 12 stabilisiert (+3,2 % WoW).
@@ -210,13 +210,13 @@ export default function MarktpreisePage() {
                   </p>
                   <p style={{ fontSize: 14, color: "#505050", lineHeight: 1.8, margin: "0 0 12px" }}>
                     Kupfer notiert auf einem 3-Monats-Hoch bei 9.847 $/t (LME Cash). Die LME-Lagerbestände sind auf 87.450 t
-                    gefallen — ein Rückgang von 12 % gegenüber der Vorwoche. Anhaltende Nachfrage aus dem Elektrifizierungssektor
+                    gefallen - ein Rückgang von 12 % gegenüber der Vorwoche. Anhaltende Nachfrage aus dem Elektrifizierungssektor
                     (EV-Batterien, Windkraftanlagen, Smart-Grid-Infrastruktur) und Produktionsausfälle in chilenischen Kupferminen
                     (Codelco: −4,3 % YoY) stützen die Notierungen.
                   </p>
                   <p style={{ fontSize: 14, color: "#505050", lineHeight: 1.8, margin: 0 }}>
                     <strong>Ausblick KW 13:</strong> Seitwärtsbewegung bei Baustahl erwartet. CBAM-Effekte werden ab Q3 2026
-                    Importpreise spürbar anheben — strukturell bullisch für EU-produzierte Ware.
+                    Importpreise spürbar anheben - strukturell bullisch für EU-produzierte Ware.
                   </p>
                 </div>
                 {/* Sidebar: Top-Mover */}
@@ -278,7 +278,7 @@ export default function MarktpreisePage() {
               </h2>
               <p style={{ fontSize: 14, color: "#505050", maxWidth: 480, lineHeight: 1.7, margin: 0 }}>
                 Registrieren Sie sich kostenlos an der EUCX und handeln Sie direkt zu
-                Börsenpreisen — ohne Mittler, ohne versteckte Gebühren. Als registriertes
+                Börsenpreisen - ohne Mittler, ohne versteckte Gebühren. Als registriertes
                 Mitglied erhalten Sie Preisalarme per E-Mail und Zugang zu allen
                 Handelssitzungen.
               </p>
@@ -313,7 +313,7 @@ export default function MarktpreisePage() {
                 </div>
                 <div style={{ fontSize: 14, color: "#505050", lineHeight: 1.85, display: "flex", flexDirection: "column", gap: 16 }}>
                   <p>
-                    Die <strong>EUCX — European Union Commodity Exchange</strong> ist eine
+                    Die <strong>EUCX - European Union Commodity Exchange</strong> ist eine
                     BaFin-regulierte Handelsplattform (OTF, MiFID II) mit Sitz in Frankfurt am Main.
                     Täglich ab 10:00 Uhr finden strukturierte Handelssitzungen für Industrierohstoffe
                     statt, deren Abschlusspreise die Grundlage der hier veröffentlichten
@@ -322,8 +322,8 @@ export default function MarktpreisePage() {
                   <p>
                     Die Preise für <strong>Betonstahl</strong>, <strong>Walzdraht</strong> und
                     Stahlprofile richten sich nach den tatsächlichen Matchingpreisen aus dem
-                    Orderbuch. Für <strong>Schrottpreise</strong> — insbesondere Shredder, Schwerschrott
-                    und Aluminiumschrott — geben wir gewichtete Durchschnitte der jüngsten
+                    Orderbuch. Für <strong>Schrottpreise</strong> - insbesondere Shredder, Schwerschrott
+                    und Aluminiumschrott - geben wir gewichtete Durchschnitte der jüngsten
                     Sitzungsabschlüsse an.
                   </p>
                   <p>
@@ -374,7 +374,7 @@ export default function MarktpreisePage() {
               {[
                 {
                   title: "Angebot & Nachfrage",
-                  body: "Der wichtigste Preistreiber: Überschreitet die Nachfrage das Angebot, steigen die Preise — und umgekehrt. Baukonjunktur, Industrieproduktion und Exportmengen sind für Stahlpreise entscheidend. Bei Düngemitteln bestimmen Anbauzyklen und Ernteschätzungen die saisonale Nachfrage.",
+                  body: "Der wichtigste Preistreiber: Überschreitet die Nachfrage das Angebot, steigen die Preise - und umgekehrt. Baukonjunktur, Industrieproduktion und Exportmengen sind für Stahlpreise entscheidend. Bei Düngemitteln bestimmen Anbauzyklen und Ernteschätzungen die saisonale Nachfrage.",
                   icon: "⚖",
                 },
                 {
@@ -399,7 +399,7 @@ export default function MarktpreisePage() {
                 },
                 {
                   title: "Regulierung & Zertifizierung",
-                  body: "Normen wie EN 10080 (Betonstahl) oder ISRI-Klassifikationen (Schrott) definieren Qualitätsstandards und damit unterschiedliche Preisstufen. Neue Umweltauflagen erhöhen Produktionskosten — besonders für energieintensive Prozesse wie Stahlerzeugung.",
+                  body: "Normen wie EN 10080 (Betonstahl) oder ISRI-Klassifikationen (Schrott) definieren Qualitätsstandards und damit unterschiedliche Preisstufen. Neue Umweltauflagen erhöhen Produktionskosten - besonders für energieintensive Prozesse wie Stahlerzeugung.",
                   icon: "📋",
                 },
               ].map(item => (
@@ -461,7 +461,7 @@ export default function MarktpreisePage() {
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "3fr 1fr", gap: 40, alignItems: "start" }}>
                   <div style={{ fontSize: 13, color: "#505050", lineHeight: 1.8, display: "flex", flexDirection: "column", gap: 12 }}>
-                    <p>Stahlschrott ist das wichtigste Sekundärrohstoff Europas. Über 80 % des deutschen Stahls werden heute in Elektrolichtbogenöfen aus Schrott erschmolzen — ein entscheidender Vorteil gegenüber der energieintensiven Hochofenroute.</p>
+                    <p>Stahlschrott ist das wichtigste Sekundärrohstoff Europas. Über 80 % des deutschen Stahls werden heute in Elektrolichtbogenöfen aus Schrott erschmolzen - ein entscheidender Vorteil gegenüber der energieintensiven Hochofenroute.</p>
                     <p><strong>Shredder-Schrott</strong> (ISRI 210) stammt aus der Zerkleinerung von PKW-Karosserien und Konsumgütern. Seine Qualität ist standardisiert und er ist an Elektrostahlwerken besonders gefragt. Schrottpreise korrelieren stark mit dem weltweiten Stahlproduktionsvolumen.</p>
                     <p><strong>Schwerschrott 1A</strong> (ISRI 200, Wandstärke ≥ 6 mm) umfasst schwere Stahlteile aus Maschinenbau und Schwerindustrie. Er hat einen höheren Schrottanteil und ist häufig günstiger als Shredder-Material zu beschaffen.</p>
                     <p><strong>Aluminiumschrott</strong> ist ein besonders wertvoller Sekundärrohstoff. Aluminium-Recycling benötigt nur 5 % der Energie der Primärproduktion. Der EN AW-6082 Standard (Knetlegierung) ist für die Automobilindustrie besonders relevant.</p>
@@ -500,11 +500,11 @@ export default function MarktpreisePage() {
                   <div style={{ backgroundColor: "#fafafa", border: "1px solid #e8e8e8", padding: "16px" }}>
                     <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#888", marginBottom: 12 }}>Nährstoffe</p>
                     {[
-                      ["N", "Stickstoff — Wachstum"],
-                      ["P", "Phosphor — Wurzeln"],
-                      ["K", "Kalium — Festigkeit"],
-                      ["S", "Schwefel — Protein"],
-                      ["Mg", "Magnesium — Chloro."],
+                      ["N", "Stickstoff - Wachstum"],
+                      ["P", "Phosphor - Wurzeln"],
+                      ["K", "Kalium - Festigkeit"],
+                      ["S", "Schwefel - Protein"],
+                      ["Mg", "Magnesium - Chloro."],
                     ].map(([elem, desc]) => (
                       <div key={elem} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #f0f0f0" }}>
                         <span style={{ fontSize: 13, fontFamily: MONO, color: GREEN, fontWeight: 700 }}>{elem}</span>
@@ -523,9 +523,9 @@ export default function MarktpreisePage() {
                 </div>
                 <div style={{ fontSize: 13, color: "#505050", lineHeight: 1.8, display: "flex", flexDirection: "column", gap: 12 }}>
                   <p>Der europäische Holzmarkt hat seit der Borkenkäfer-Krise (2018–2021) und dem COVID-Bauboom strukturelle Veränderungen erfahren. Überangebote durch Schadholz haben die Preise für Rundholz belastet, während Schnittholzpreise eine hohe Volatilität zeigen.</p>
-                  <p><strong>Fichte Rundholz</strong> ist das mengenmäßig wichtigste Sortiment in Deutschland, Österreich und Tschechien. Qualitätsstufen (A/B/C-Holz) bestimmen die Verwendung (Sägewerk, Furnier, Industrieholz). Die Preise werden regional zwischen Waldeigentümern und Sägewerken frei verhandelt — die EUCX gibt gewichtete Durchschnitte für die DACH-Region an.</p>
+                  <p><strong>Fichte Rundholz</strong> ist das mengenmäßig wichtigste Sortiment in Deutschland, Österreich und Tschechien. Qualitätsstufen (A/B/C-Holz) bestimmen die Verwendung (Sägewerk, Furnier, Industrieholz). Die Preise werden regional zwischen Waldeigentümern und Sägewerken frei verhandelt - die EUCX gibt gewichtete Durchschnitte für die DACH-Region an.</p>
                   <p><strong>Kiefer KVH (Konstruktionsvollholz)</strong> ist ein industriell gefertigtes Schnittholz mit definiertem Restfeuchtegehalt (≤ 20 %). Es wird im Holzrahmenbau, für Dachstuhlkonstruktionen und im Zimmerei-Bereich eingesetzt.</p>
-                  <p>Aktuell: Die Belebung im Wohnungsbau steht aus — Zinsniveau und Baukostenentwicklung bremsen neue Projekte. Erst wenn die Baugenehmigungen wieder steigen, ist mit einer Preisstabilisierung bei Schnittholz zu rechnen.</p>
+                  <p>Aktuell: Die Belebung im Wohnungsbau steht aus - Zinsniveau und Baukostenentwicklung bremsen neue Projekte. Erst wenn die Baugenehmigungen wieder steigen, ist mit einer Preisstabilisierung bei Schnittholz zu rechnen.</p>
                 </div>
               </div>
 
@@ -537,7 +537,7 @@ export default function MarktpreisePage() {
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
               <div style={{ width: 3, height: 16, backgroundColor: BLUE }} />
               <h2 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#888", margin: 0 }}>
-                Preisentwicklung — Ausgewählte Rohstoffe 2025–2026
+                Preisentwicklung - Ausgewählte Rohstoffe 2025–2026
               </h2>
             </div>
             <div style={{ backgroundColor: "#fff", border: "1px solid #e8e8e8", overflowX: "auto" }}>
@@ -587,7 +587,7 @@ export default function MarktpreisePage() {
             <h2 style={{ fontSize: 24, fontWeight: 300, color: "#1a1a1a", margin: "0 0 6px" }}>
               Holz- &amp; Forstprodukte
             </h2>
-            <p style={{ fontSize: 13, color: "#666", margin: "0 0 24px" }}>Schnittholz, Rundholz und Holzwerkstoffe — Preise ab Sägewerk (EXW) bzw. frei Haus (DAP)</p>
+            <p style={{ fontSize: 13, color: "#666", margin: "0 0 24px" }}>Schnittholz, Rundholz und Holzwerkstoffe - Preise ab Sägewerk (EXW) bzw. frei Haus (DAP)</p>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: SANS }}>
                 <thead>
@@ -626,7 +626,7 @@ export default function MarktpreisePage() {
               <h2 style={{ fontSize: 24, fontWeight: 300, color: "#1a1a1a", margin: "0 0 6px" }}>
                 Energie &amp; CO₂-Zertifikate
               </h2>
-              <p style={{ fontSize: 13, color: "#666", margin: "0 0 24px" }}>Energieträger und EU-ETS-Preise — entscheidend für Produktionskosten im Rohstoffsektor</p>
+              <p style={{ fontSize: 13, color: "#666", margin: "0 0 24px" }}>Energieträger und EU-ETS-Preise - entscheidend für Produktionskosten im Rohstoffsektor</p>
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                   <thead>
@@ -714,7 +714,7 @@ export default function MarktpreisePage() {
                 },
                 {
                   q: "Gibt es Preisgarantien oder Festpreisverträge an der EUCX?",
-                  a: "Nein — die EUCX ist ein Spot-Markt mit tagesaktuellen Preisen. Festpreisverträge (Forwards) werden bilateral zwischen den Parteien vereinbart, nicht über das EUCX-Orderbuch. Für Preisabsicherung empfehlen wir, mit einem zugelassenen Rohstoff-Broker zu sprechen oder die EUCX-Beratungshotline zu kontaktieren.",
+                  a: "Nein - die EUCX ist ein Spot-Markt mit tagesaktuellen Preisen. Festpreisverträge (Forwards) werden bilateral zwischen den Parteien vereinbart, nicht über das EUCX-Orderbuch. Für Preisabsicherung empfehlen wir, mit einem zugelassenen Rohstoff-Broker zu sprechen oder die EUCX-Beratungshotline zu kontaktieren.",
                 },
               ].map(({ q, a }, i) => (
                 <details key={i} style={{ backgroundColor: "#fff" }}>
@@ -784,8 +784,8 @@ export default function MarktpreisePage() {
               <div style={{ backgroundColor: "#fff", padding: "28px 32px" }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: "#0d1b2a", margin: "0 0 14px" }}>Düngemittelpreise Europa</h3>
                 <div style={{ fontSize: 13, color: "#505050", lineHeight: 1.85, display: "flex", flexDirection: "column", gap: 10 }}>
-                  <p>Europäische Düngemittelpreise sind eng mit dem Gasmarkt (TTF) verknüpft. Seit der Energiekrise 2022 haben viele europäische Stickstoffdüngerwerke ihre Kapazität dauerhaft zurückgefahren — mit dem Ergebnis höherer Importabhängigkeit und tendenziell erhöhter Preisniveaus gegenüber dem Vor-2022-Schnitt.</p>
-                  <p>Landwirtschaftliche Genossenschaften sichern sich Jahresmengen oft per Festpreisvertrag (Sommer-Eindeckung). Freie Händler, die auf Spotmärkte setzen, profitieren von Preisdellen — tragen aber das volle Preisänderungsrisiko.</p>
+                  <p>Europäische Düngemittelpreise sind eng mit dem Gasmarkt (TTF) verknüpft. Seit der Energiekrise 2022 haben viele europäische Stickstoffdüngerwerke ihre Kapazität dauerhaft zurückgefahren - mit dem Ergebnis höherer Importabhängigkeit und tendenziell erhöhter Preisniveaus gegenüber dem Vor-2022-Schnitt.</p>
+                  <p>Landwirtschaftliche Genossenschaften sichern sich Jahresmengen oft per Festpreisvertrag (Sommer-Eindeckung). Freie Händler, die auf Spotmärkte setzen, profitieren von Preisdellen - tragen aber das volle Preisänderungsrisiko.</p>
                 </div>
               </div>
               <div style={{ backgroundColor: "#fff", padding: "28px 32px" }}>

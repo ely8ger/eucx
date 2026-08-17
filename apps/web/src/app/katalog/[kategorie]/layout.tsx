@@ -6,8 +6,8 @@ export async function generateMetadata({ params }: { params: Promise<{ kategorie
   const kat = KATALOG[kategorie];
   const label = kat?.label ?? kategorie;
   const desc  = kat?.description
-    ? `${kat.description} — Institutionell handeln auf EUCX.`
-    : `${label} — Stahlprodukte institutionell kaufen und verkaufen auf EUCX.`;
+    ? `${kat.description} - Institutionell handeln auf EUCX.`
+    : `${label} - Stahlprodukte institutionell kaufen und verkaufen auf EUCX.`;
 
   return {
     title: `${label} kaufen | EUCX Stahlkatalog`,

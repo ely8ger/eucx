@@ -2,7 +2,7 @@
  * POST /api/auth/forgot-password
  *
  * Generiert einen Reset-Token und sendet ihn per E-Mail.
- * Immer HTTP 200 zurückgeben — kein User-Enumeration.
+ * Immer HTTP 200 zurückgeben - kein User-Enumeration.
  *
  * Body: { email: string }
  */
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     const email = body.email.toLowerCase().trim();
 
-    // Immer dieselbe Antwort — verhindert Nutzer-Enumeration
+    // Immer dieselbe Antwort - verhindert Nutzer-Enumeration
     const genericResponse = NextResponse.json({
       data: { message: "Falls ein Konto mit dieser E-Mail existiert, erhalten Sie in Kürze eine E-Mail mit einem Reset-Link." },
     });
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     await sendAuctionMail({
       to:       email,
-      subject:  "EUCX — Passwort zurücksetzen",
+      subject:  "EUCX - Passwort zurücksetzen",
       template: "password_reset",
       data:     { token: rawToken, reason: "USER_REQUEST", email },
     });

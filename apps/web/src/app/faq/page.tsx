@@ -363,7 +363,7 @@ export default function FaqPage() {
 
       <div style={{ backgroundColor: "#f7f9fc", minHeight: "100vh", fontFamily: F }}>
 
-        {/* ── Header — Standard SiteNav ── */}
+        {/* ── Header - Standard SiteNav ── */}
         <SiteNav />
 
         {/* ── Hero ── */}
@@ -532,7 +532,7 @@ export default function FaqPage() {
         <div style={{ backgroundColor: "#0b1e36", borderTop: "3px solid #154194", padding: "28px 40px" }}>
           <div style={{ maxWidth: 1180, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" as const, gap: 12 }}>
             <p style={{ fontSize: 12, color: "rgba(255,255,255,.35)", margin: 0, fontFamily: F }}>
-              © 2026 EUCX GmbH — Frankfurt am Main — BaFin-regulierter OTF gemäß MiFID II
+              © 2026 EUCX GmbH - Frankfurt am Main - BaFin-regulierter OTF gemäß MiFID II
             </p>
             <div style={{ display: "flex", gap: 20 }}>
               {[["Impressum", "/impressum"], ["Datenschutz", "/datenschutz"], ["FAQ", "/faq"], ["Wissen", "/wissen"]].map(([l, h]) => (

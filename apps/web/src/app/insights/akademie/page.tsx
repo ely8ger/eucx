@@ -33,7 +33,7 @@ export default function AkademiePage() {
             Händler-<strong style={{ fontWeight: 700 }}>Akademie</strong>
           </h1>
           <p style={{ fontSize: 15, color: "#8aa8cc", margin: "0 0 28px", lineHeight: 1.6, maxWidth: 620 }}>
-            Von der Registrierung zum ersten Trade — alles was Sie als neuer Marktteilnehmer wissen müssen
+            Von der Registrierung zum ersten Trade - alles was Sie als neuer Marktteilnehmer wissen müssen
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" as const }}>
             <span style={{ backgroundColor: "rgba(21,65,148,0.35)", color: "#a8c4f0", fontSize: 12, fontWeight: 700, padding: "6px 14px", letterSpacing: "0.06em" }}>
@@ -154,7 +154,7 @@ export default function AkademiePage() {
           <ul style={{ fontSize: 14, color: "#444", lineHeight: 2, margin: "0 0 20px", paddingLeft: 24, maxWidth: 820 }}>
             <li><strong>Initial Margin:</strong> Einmalige Hinterlegung bei Kontoeröffnung auf Basis des zugelassenen Jahresvolumens</li>
             <li><strong>Variation Margin:</strong> Tägliche Anpassung der Sicherheit basierend auf Marktpreisveränderungen offener Positionen</li>
-            <li><strong>Maintenance Margin:</strong> Mindestpegel (80 % der Initial Margin) — bei Unterschreitung erfolgt automatisch ein Margin Call</li>
+            <li><strong>Maintenance Margin:</strong> Mindestpegel (80 % der Initial Margin) - bei Unterschreitung erfolgt automatisch ein Margin Call</li>
           </ul>
 
           <h3 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: "0 0 12px" }}>
@@ -351,7 +351,7 @@ export default function AkademiePage() {
             Warenprüfung
           </h3>
           <p style={{ fontSize: 14, color: "#444", lineHeight: 1.8, margin: "0 0 20px", maxWidth: 820 }}>
-            Alle auf EUCX gehandelten Waren unterliegen einer optionalen, aber empfohlenen Qualitätsprüfung durch akkreditierte Prüfinstitute (SGS, Bureau Veritas, TÜV SÜD). Die Kosten trägt der Verkäufer — bei EXW-Geschäften der Käufer.
+            Alle auf EUCX gehandelten Waren unterliegen einer optionalen, aber empfohlenen Qualitätsprüfung durch akkreditierte Prüfinstitute (SGS, Bureau Veritas, TÜV SÜD). Die Kosten trägt der Verkäufer - bei EXW-Geschäften der Käufer.
           </p>
 
           <h3 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: "0 0 16px" }}>
@@ -482,7 +482,7 @@ export default function AkademiePage() {
                 name: "Was ist der Unterschied zwischen English Auction und Dutch Auction?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Bei der English Auction (Aufwärtsauktion) steigt der Preis — der höchste Bieter gewinnt. Bei der Dutch Auction (Abwärtsauktion) fällt der Preis automatisch ab einem Startpreis — der erste Bieter, der den aktuellen Preis akzeptiert, gewinnt. Die Dutch Auction wird typischerweise bei großen Standardwarenmengen eingesetzt.",
+                  text: "Bei der English Auction (Aufwärtsauktion) steigt der Preis - der höchste Bieter gewinnt. Bei der Dutch Auction (Abwärtsauktion) fällt der Preis automatisch ab einem Startpreis - der erste Bieter, der den aktuellen Preis akzeptiert, gewinnt. Die Dutch Auction wird typischerweise bei großen Standardwarenmengen eingesetzt.",
                 },
               },
               {
@@ -490,7 +490,7 @@ export default function AkademiePage() {
                 name: "Wann wird meine Margin freigegeben?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Nach vollständiger Abwicklung der Transaktion — typisch am 8. Werktag (T+8), sobald Zahlung eingegangen und physische Lieferung bestätigt ist.",
+                  text: "Nach vollständiger Abwicklung der Transaktion - typisch am 8. Werktag (T+8), sobald Zahlung eingegangen und physische Lieferung bestätigt ist.",
                 },
               },
             ],

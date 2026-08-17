@@ -258,10 +258,10 @@ export default function RegulatoriePage() {
           {/* ── CBAM in der Praxis ─────────────────────────────────── */}
           <div style={{ marginBottom: 64 }}>
             <h2 style={{ fontSize: 28, fontWeight: 300, color: "#1a1a1a", margin: "0 0 8px" }}>
-              CBAM in der Praxis — Was Händler wissen müssen
+              CBAM in der Praxis - Was Händler wissen müssen
             </h2>
             <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 24px", maxWidth: 780 }}>
-              Der Carbon Border Adjustment Mechanism (CBAM) — Verordnung (EU) 2023/956 — tritt ab{" "}
+              Der Carbon Border Adjustment Mechanism (CBAM) - Verordnung (EU) 2023/956 - tritt ab{" "}
               <strong>1. Januar 2026</strong> in seiner kostenpflichtigen Phase in Kraft. Die Übergangsphase
               (Oktober 2023 – Dezember 2025) verpflichtete Importeure bereits zur Quartalsberichterstattung
               ohne Zahlungspflicht. Ab 2026 müssen CBAM-Importeure (definiert als in der EU ansässige
@@ -275,7 +275,7 @@ export default function RegulatoriePage() {
               Zollregister als CBAM-Anmelder registrieren, bis zum 31. Mai jedes Jahres eine Jahreserklärung
               über die im Vorjahr eingeführten Waren und deren eingebettete Emissionen einreichen und eine
               ausreichende Anzahl von CBAM-Zertifikaten auf ihrem Konto vorhalten. Händler, die auf EUCX
-              Waren importieren, sind unmittelbar betroffen — die Kosten fließen direkt in die Preiskalkulation
+              Waren importieren, sind unmittelbar betroffen - die Kosten fließen direkt in die Preiskalkulation
               ein und beeinflussen die Wettbewerbsfähigkeit gegenüber EU-produzierter Ware.
             </p>
 
@@ -316,7 +316,7 @@ export default function RegulatoriePage() {
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 0, marginBottom: 28 }}>
               {[
-                { datum: "Okt 2023", text: "Übergangsphase beginnt — nur Berichtspflicht (quartalsweise), keine Zahlungspflicht", aktiv: false },
+                { datum: "Okt 2023", text: "Übergangsphase beginnt - nur Berichtspflicht (quartalsweise), keine Zahlungspflicht", aktiv: false },
                 { datum: "Jan 2026", text: "Kostenpflichtige Phase: CBAM-Zertifikate werden Pflicht. Preis orientiert sich am EU-ETS.", aktiv: true },
                 { datum: "2026–2034", text: "EU-ETS-Freiallokationen für betroffene Sektoren werden schrittweise abgebaut (ca. −10 % p.a.)", aktiv: false },
                 { datum: "Ab 2034", text: "Vollimplementierung: 100 % kostenpflichtig, keine Freiallokationen mehr für CBAM-Waren", aktiv: false },
@@ -347,16 +347,16 @@ export default function RegulatoriePage() {
               ESG-Reporting für Rohstoffhändler
             </h2>
             <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 20px", maxWidth: 780 }}>
-              Mit der <strong>CSRD (Corporate Sustainability Reporting Directive)</strong> — Richtlinie
-              2022/2464/EU — hat die EU eine umfassende Berichtspflicht für Nachhaltigkeitsinformationen
+              Mit der <strong>CSRD (Corporate Sustainability Reporting Directive)</strong> - Richtlinie
+              2022/2464/EU - hat die EU eine umfassende Berichtspflicht für Nachhaltigkeitsinformationen
               eingeführt. Für große Unternehmen (mehr als 500 Mitarbeiter) gilt die Pflicht seit dem
               Geschäftsjahr 2024, für kapitalmarktorientierte KMU stufenweise ab 2026–2027. Unternehmen,
               die auf EUCX handeln und in diese Schwellenwerte fallen, müssen ihren Nachhaltigkeitsbericht
               nach den European Sustainability Reporting Standards (ESRS) erstellen.
             </p>
             <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 20px", maxWidth: 780 }}>
-              Die <strong>SFDR (Sustainable Finance Disclosure Regulation)</strong> — Verordnung
-              (EU) 2019/2088 — betrifft primär Finanzmarktteilnehmer und Finanzberater. Wer
+              Die <strong>SFDR (Sustainable Finance Disclosure Regulation)</strong> - Verordnung
+              (EU) 2019/2088 - betrifft primär Finanzmarktteilnehmer und Finanzberater. Wer
               Rohstoff-Fonds oder strukturierte Produkte auf Rohstoffbasis anbietet, muss die
               Nachhaltigkeitseigenschaften seiner Produkte offenlegen (Artikel-6-, 8- oder
               9-Produkte gemäß SFDR-Klassifizierung).
@@ -365,7 +365,7 @@ export default function RegulatoriePage() {
               Im Rohstoffhandel sind die <strong>Scope-Emissionen</strong> besonders relevant:
               Scope 1 umfasst direkte Emissionen aus eigenen Anlagen (z.B. Lagerhaltung, Fuhrpark),
               Scope 2 die indirekten Emissionen aus eingekaufter Energie. Für Rohstoffhändler
-              entscheidend ist Scope 3 — die vor- und nachgelagerten Emissionen entlang der
+              entscheidend ist Scope 3 - die vor- und nachgelagerten Emissionen entlang der
               Lieferkette. Beim Kauf und Verkauf von Stahl, Dünger oder Aluminium entstehen die
               größten CO₂-Äquivalente in Produktion und Transport, die dem Händler als Scope-3-Emissionen
               zuzurechnen sind.
@@ -397,18 +397,18 @@ export default function RegulatoriePage() {
             </div>
           </div>
 
-          {/* ── MAR — Marktmissbrauch ──────────────────────────────────── */}
+          {/* ── MAR - Marktmissbrauch ──────────────────────────────────── */}
           <div style={{ marginBottom: 64 }}>
             <h2 style={{ fontSize: 28, fontWeight: 300, color: "#1a1a1a", margin: "0 0 8px" }}>
-              MAR — Marktmissbrauch im Rohstoffhandel
+              MAR - Marktmissbrauch im Rohstoffhandel
             </h2>
             <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 20px", maxWidth: 780 }}>
-              Die <strong>Marktmissbrauchsverordnung (MAR)</strong> — Verordnung (EU) 596/2014 —
+              Die <strong>Marktmissbrauchsverordnung (MAR)</strong> - Verordnung (EU) 596/2014 -
               verbietet Insiderhandel, Marktmanipulation und die unrechtmäßige Weitergabe von
               Insiderinformationen. Im Rohstoffhandel gilt: Wer über nicht-öffentliche Informationen
               verfügt, die den Preis eines an der EUCX gehandelten Rohstoffs erheblich beeinflussen
-              könnten — etwa Ernteausfälle, bevorstehende Antidumping-Entscheidungen oder
-              Produktionsausfälle — und auf Basis dieser Informationen handelt, begeht Insiderhandel
+              könnten - etwa Ernteausfälle, bevorstehende Antidumping-Entscheidungen oder
+              Produktionsausfälle - und auf Basis dieser Informationen handelt, begeht Insiderhandel
               im Sinne von Art. 8 MAR.
             </p>
             <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 20px", maxWidth: 780 }}>
@@ -482,7 +482,7 @@ export default function RegulatoriePage() {
       <section style={{ backgroundColor: "#f9fafb", borderTop: "1px solid #e8e8e8", padding: "64px 0" }}>
         <div style={{ maxWidth: 1180, margin: "0 auto", padding: "0 40px" }}>
           <h2 style={{ fontSize: 28, fontWeight: 300, color: "#1a1a1a", margin: "0 0 8px" }}>
-            Häufige Fragen — Regulatorik
+            Häufige Fragen - Regulatorik
           </h2>
           <p style={{ fontSize: 14, color: "#666", margin: "0 0 36px" }}>
             Die wichtigsten Fragen zum regulatorischen Rahmen des EUCX-Handels.
@@ -491,7 +491,7 @@ export default function RegulatoriePage() {
             {[
               {
                 q: "Was ist CBAM und wen betrifft es?",
-                a: "CBAM (Carbon Border Adjustment Mechanism) ist ein EU-Grenzausgleichsmechanismus für CO₂-Kosten, der auf Importe von Stahl, Aluminium, Zement, Düngemitteln und Strom aus Drittstaaten erhoben wird. Betroffen sind alle in der EU ansässigen Unternehmen und Personen, die diese Waren einführen — unabhängig von der Unternehmensgröße.",
+                a: "CBAM (Carbon Border Adjustment Mechanism) ist ein EU-Grenzausgleichsmechanismus für CO₂-Kosten, der auf Importe von Stahl, Aluminium, Zement, Düngemitteln und Strom aus Drittstaaten erhoben wird. Betroffen sind alle in der EU ansässigen Unternehmen und Personen, die diese Waren einführen - unabhängig von der Unternehmensgröße.",
               },
               {
                 q: "Ab wann ist CBAM kostenpflichtig?",
@@ -503,7 +503,7 @@ export default function RegulatoriePage() {
               },
               {
                 q: "Was ist der Unterschied zwischen MiFID II und MiFIR?",
-                a: "MiFID II (Richtlinie 2014/65/EU) ist eine EU-Richtlinie, die von den Mitgliedstaaten in nationales Recht umgesetzt wird — in Deutschland als WpHG. MiFIR (Verordnung 600/2014) ist eine EU-Verordnung, die unmittelbar und einheitlich in allen Mitgliedstaaten gilt. MiFIR regelt insbesondere die Transparenzpflichten (Pre-Trade, Post-Trade) und die Transaktionsmeldepflichten an die Aufsichtsbehörden.",
+                a: "MiFID II (Richtlinie 2014/65/EU) ist eine EU-Richtlinie, die von den Mitgliedstaaten in nationales Recht umgesetzt wird - in Deutschland als WpHG. MiFIR (Verordnung 600/2014) ist eine EU-Verordnung, die unmittelbar und einheitlich in allen Mitgliedstaaten gilt. MiFIR regelt insbesondere die Transparenzpflichten (Pre-Trade, Post-Trade) und die Transaktionsmeldepflichten an die Aufsichtsbehörden.",
               },
               {
                 q: "Welche ESG-Reportingpflichten habe ich als Rohstoffhändler?",

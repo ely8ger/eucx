@@ -109,18 +109,18 @@ export async function PATCH(
     if (body.status === "ACTIVE" && user.status !== "ACTIVE") {
       await sendAuctionMail({
         to:       user.email,
-        subject:  "EUCX — Ihr Konto wurde freigeschaltet",
+        subject:  "EUCX - Ihr Konto wurde freigeschaltet",
         template: "registration_approved",
         data:     {
           email:   user.email,
-          orgName: user.organization?.name ?? "—",
+          orgName: user.organization?.name ?? "-",
           role:    ROLE_LABEL[user.role] ?? user.role,
         },
       });
     } else if (body.status === "SUSPENDED" && user.status !== "SUSPENDED") {
       await sendAuctionMail({
         to:       user.email,
-        subject:  "EUCX — Ihr Konto wurde gesperrt",
+        subject:  "EUCX - Ihr Konto wurde gesperrt",
         template: "account_locked",
         data:     { email: user.email },
       });

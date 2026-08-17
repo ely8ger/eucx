@@ -590,7 +590,7 @@ export function SecuritySettingsClient() {
                 Wir empfehlen eine Authenticator-App
               </p>
               <p style={{ margin: "0 0 14px", fontSize: 12, color: MUTED, lineHeight: 1.6 }}>
-                Authenticator-Apps generieren einmalige 6-stellige Codes, die nur 30 Sekunden gültig sind — unabhängig von Ihrer Internetverbindung.
+                Authenticator-Apps generieren einmalige 6-stellige Codes, die nur 30 Sekunden gültig sind - unabhängig von Ihrer Internetverbindung.
               </p>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 {[
@@ -693,7 +693,7 @@ export function SecuritySettingsClient() {
                     Wichtig: Speichern Sie diese Codes sicher
                   </p>
                   <p style={{ margin: 0, fontSize: 12, color: MUTED, lineHeight: 1.6 }}>
-                    Diese Codes werden nur einmal angezeigt. Speichern Sie sie an einem sicheren Ort — z. B. in einem Passwort-Manager.
+                    Diese Codes werden nur einmal angezeigt. Speichern Sie sie an einem sicheren Ort - z. B. in einem Passwort-Manager.
                   </p>
                 </div>
                 <div style={{

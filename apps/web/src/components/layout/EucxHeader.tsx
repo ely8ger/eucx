@@ -45,7 +45,7 @@ interface BreadcrumbConfig {
 // ─── Navigation Contexts ──────────────────────────────────────────────────────
 //
 // Regel: Der Header definiert den BEREICH (5 Punkte), die Breadcrumb den PFAD.
-// Egal wie tief man in einer Unterseite ist — die 5 Hauptpunkte bleiben stabil.
+// Egal wie tief man in einer Unterseite ist - die 5 Hauptpunkte bleiben stabil.
 //
 const NAV: Record<string, NavItem[]> = {
   buyer: [
@@ -550,7 +550,7 @@ export function EucxHeader() {
       {/* ── Sticky block: TopBar + MainBar ────────────────────────────────── */}
       <div style={{ position: "sticky", top: 0, zIndex: 50, fontFamily: F }}>
 
-        {/* TopBar — regulatorische Info + Utility-Leiste */}
+        {/* TopBar - regulatorische Info + Utility-Leiste */}
         <div style={{ backgroundColor: "#1a1a1a", height: 36 }}>
           <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 28px", display: "flex", alignItems: "center", height: "100%" }}>
             <span style={{ fontSize: 11, color: "rgba(255,255,255,.4)", letterSpacing: "0.03em" }}>
@@ -583,7 +583,7 @@ export function EucxHeader() {
           </div>
         </div>
 
-        {/* MainBar — Logo | Dynamische Nav | Profil-Icons */}
+        {/* MainBar - Logo | Dynamische Nav | Profil-Icons */}
         <div style={{
           backgroundColor: "#fff",
           borderTop: `3px solid ${accentColor}`,
@@ -592,7 +592,7 @@ export function EucxHeader() {
         }}>
           <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 28px", display: "flex", alignItems: "center", height: "100%" }}>
 
-            {/* Logo — fixe Position links, statisch */}
+            {/* Logo - fixe Position links, statisch */}
             <a
               href={me?.role === "SELLER" ? "/dashboard/seller" : me?.role ? "/dashboard/buyer" : "/"}
               style={{ textDecoration: "none", flexShrink: 0, marginRight: 24 }}
@@ -601,14 +601,14 @@ export function EucxHeader() {
             </a>
             <div style={{ width: 1, height: 20, background: "#e0e4ea", flexShrink: 0, marginRight: 4 }} />
 
-            {/* Dynamische Nav — Mitte, kontextabhängig */}
+            {/* Dynamische Nav - Mitte, kontextabhängig */}
             <nav style={{ flex: 1, display: "flex", alignItems: "center", height: 56, overflowX: "auto", overflowY: "hidden", scrollbarWidth: "none" }}>
               {navItems.map((item) => (
                 <NavLink key={item.label} item={item} active={isActive(item)} accentColor={accentColor} />
               ))}
             </nav>
 
-            {/* Profil-Icons — fixe Position rechts, statisch */}
+            {/* Profil-Icons - fixe Position rechts, statisch */}
             <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8, marginLeft: 16 }}>
               {token && <NotificationBell token={token} />}
               <a
@@ -631,7 +631,7 @@ export function EucxHeader() {
         </div>
       </div>
 
-      {/* ── Breadcrumb — scrollt mit der Seite, zeigt den exakten Pfad ─────── */}
+      {/* ── Breadcrumb - scrollt mit der Seite, zeigt den exakten Pfad ─────── */}
       <BreadcrumbBar pathname={pathname} role={me?.role} />
     </>
   );

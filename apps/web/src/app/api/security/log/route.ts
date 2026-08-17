@@ -1,5 +1,5 @@
 /**
- * GET /api/security/log — letzte 15 sicherheitsrelevante Aktionen des Nutzers
+ * GET /api/security/log - letzte 15 sicherheitsrelevante Aktionen des Nutzers
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";

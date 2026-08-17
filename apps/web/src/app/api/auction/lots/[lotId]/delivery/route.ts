@@ -7,7 +7,7 @@
  * Bei READY_FOR_PICKUP: pickupCode wird automatisch generiert (6-stellig numerisch).
  * Bei DELIVERED: deliveredAt wird gesetzt.
  *
- * Auth: Bearer JWT — Seller (Eigentümer) oder Admin
+ * Auth: Bearer JWT - Seller (Eigentümer) oder Admin
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";

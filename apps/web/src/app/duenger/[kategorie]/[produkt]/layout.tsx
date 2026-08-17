@@ -7,7 +7,7 @@ export async function generateMetadata({ params }: { params: Promise<{ kategorie
   const prod = getFertiProduct(kategorie, produkt);
   const label = prod?.name ?? produkt;
   const katLabel = kat?.label ?? kategorie;
-  const desc = `${label} — ${katLabel} institutionell kaufen auf EUCX. B2B-Handel für verifizierte Händler in der EU.`;
+  const desc = `${label} - ${katLabel} institutionell kaufen auf EUCX. B2B-Handel für verifizierte Händler in der EU.`;
 
   return {
     title: `${label} | EUCX Düngemittelmarkt`,

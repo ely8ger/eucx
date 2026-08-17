@@ -100,9 +100,9 @@ export async function GET(req: NextRequest) {
         createdAt:          u.createdAt.toISOString(),
         updatedAt:          u.updatedAt.toISOString(),
         orgId:              u.organization?.id      ?? null,
-        orgName:            u.organization?.name    ?? "—",
-        orgCountry:         u.organization?.country ?? "—",
-        orgCity:            u.organization?.city    ?? "—",
+        orgName:            u.organization?.name    ?? "-",
+        orgCountry:         u.organization?.country ?? "-",
+        orgCity:            u.organization?.city    ?? "-",
         orgVerified:        u.organization?.isVerified ?? false,
       })),
     });

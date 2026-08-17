@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { refreshAccessToken, scheduleAutoLogout } from "@/store/authStore";
 
 /**
- * AuthGuard — Token-Validierung + stiller Refresh beim Seitenaufruf.
+ * AuthGuard - Token-Validierung + stiller Refresh beim Seitenaufruf.
  *
  * Problem: Nach Browser-Schließung ist sessionStorage leer, aber das (möglicherweise
  * abgelaufene) Access Token liegt noch im localStorage. Der Refresh Token im
- * HttpOnly Cookie ist bis zu 7 Tage gültig — wird aber ohne diesen Guard nie genutzt.
+ * HttpOnly Cookie ist bis zu 7 Tage gültig - wird aber ohne diesen Guard nie genutzt.
  *
  * Ablauf:
  *  1. Kein Token → /login

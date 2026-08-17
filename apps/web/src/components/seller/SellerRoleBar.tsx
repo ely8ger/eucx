@@ -1,1 +1,1 @@
-export { } // placeholder — seller-specific components go here
+export { } // placeholder - seller-specific components go here

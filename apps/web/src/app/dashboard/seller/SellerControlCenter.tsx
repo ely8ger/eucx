@@ -65,19 +65,19 @@ interface LotRow {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const A  = "#d97706";  // amber — seller accent
+const A  = "#d97706";  // amber - seller accent
 const A2 = "#b45309";
 const A3 = "#92400e";
 
 const fmtEur = (v: string | null | undefined) =>
-  v == null ? "—"
+  v == null ? "-"
   : new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(v));
 
 const fmtDate = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—";
+  iso ? new Date(iso).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "-";
 
 const timeLeft = (iso: string | null): string => {
-  if (!iso) return "—";
+  if (!iso) return "-";
   const diff = new Date(iso).getTime() - Date.now();
   if (diff <= 0) return "Abgelaufen";
   const h = Math.floor(diff / 3_600_000);
@@ -176,7 +176,7 @@ export function SellerControlCenter() {
               return updated;
             });
             toast(`Neues Gesuch: ${newOnes[0]!.commodity}`, {
-              description: `${Number(newOnes[0]!.quantity).toLocaleString("de-DE")} ${newOnes[0]!.unit} — Registrierung offen`,
+              description: `${Number(newOnes[0]!.quantity).toLocaleString("de-DE")} ${newOnes[0]!.unit} - Registrierung offen`,
               style: { background: "#fffbeb", border: `1px solid ${A}`, color: A3 },
             });
           }
@@ -336,7 +336,7 @@ export function SellerControlCenter() {
           <div className="scc-ticker">
             <div className="scc-ticker-hd">
               <span className="scc-ticker-dot" />
-              <span className="scc-ticker-title">Markt-Scanner — Neue Ausschreibungen</span>
+              <span className="scc-ticker-title">Markt-Scanner - Neue Ausschreibungen</span>
               <span style={{ fontSize: 11, color: "#9ca3af", marginLeft: "auto" }}>
                 Automatisch · alle 30 Sek.
               </span>
@@ -351,7 +351,7 @@ export function SellerControlCenter() {
                   <div key={e.id} className="scc-ticker-item">
                     <span className="scc-ticker-new">NEU</span>
                     <span className="scc-ticker-text">
-                      <strong>{e.commodity}</strong> —{" "}
+                      <strong>{e.commodity}</strong> -{" "}
                       {Number(e.quantity).toLocaleString("de-DE")} {e.unit} gesucht
                     </span>
                     <span className="scc-ticker-time">{fmtDate(e.createdAt)}</span>
@@ -366,7 +366,7 @@ export function SellerControlCenter() {
             {/* Umsatz */}
             <div className="scc-kpi-card">
               <span className="scc-kpi-icon">€</span>
-              <div className="scc-kpi-label">Umsatz & Marge — lfd. Monat</div>
+              <div className="scc-kpi-label">Umsatz & Marge - lfd. Monat</div>
               <div className="scc-kpi-num">
                 {loadingKpi ? "…" : fmtEur(stats?.monthlyRevenue ?? "0")}
               </div>
@@ -405,13 +405,13 @@ export function SellerControlCenter() {
             {/* CBAM-Score */}
             <div className="scc-kpi-card">
               <span className="scc-kpi-icon">🌿</span>
-              <div className="scc-kpi-label">CBAM-Score — Ihr Ø CO₂-Fußabdruck</div>
+              <div className="scc-kpi-label">CBAM-Score - Ihr Ø CO₂-Fußabdruck</div>
               <div className="scc-kpi-num" style={{ color: "#16a34a" }}>
                 {loadingKpi
                   ? "…"
                   : stats?.avgCo2 != null
                   ? `${stats.avgCo2.toLocaleString("de-DE", { maximumFractionDigits: 2 })} t`
-                  : "—"}
+                  : "-"}
               </div>
               <div className="scc-kpi-sub">
                 CO₂-Äq. / Tonne Ware{" "}
@@ -454,7 +454,7 @@ export function SellerControlCenter() {
               <div>
                 <div className="scc-section-title">Meine aktiven Positionen</div>
                 <div className="scc-section-sub">
-                  Laufende Gebote — gefährdet zuerst
+                  Laufende Gebote - gefährdet zuerst
                 </div>
               </div>
             </div>
@@ -463,7 +463,7 @@ export function SellerControlCenter() {
               <div className="scc-pos-empty">Wird geladen…</div>
             ) : !stats || stats.positions.length === 0 ? (
               <div className="scc-pos-empty">
-                Keine aktiven Gebote — registrieren Sie sich für offene Ausschreibungen.
+                Keine aktiven Gebote - registrieren Sie sich für offene Ausschreibungen.
               </div>
             ) : (
               <div className="scc-pos-grid">
@@ -488,7 +488,7 @@ export function SellerControlCenter() {
                       <div className="scc-pos-price-box">
                         <div className="scc-pos-price-label">Bestes Gebot</div>
                         <div className="scc-pos-price-val" style={{ color: pos.isLeading ? "#15803d" : "#dc2626" }}>
-                          {pos.bestPrice ? `${fmtEur(pos.bestPrice)} €/t` : "—"}
+                          {pos.bestPrice ? `${fmtEur(pos.bestPrice)} €/t` : "-"}
                         </div>
                       </div>
                     </div>
@@ -497,7 +497,7 @@ export function SellerControlCenter() {
                     </div>
                     {pos.diffToBest && (
                       <div className="scc-pos-diff">
-                        +{fmtEur(pos.diffToBest)} über bestem Gebot — Gebot senken?
+                        +{fmtEur(pos.diffToBest)} über bestem Gebot - Gebot senken?
                       </div>
                     )}
                     <div className="scc-pos-timer">
@@ -580,7 +580,7 @@ export function SellerControlCenter() {
                         <td style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12.5 }}>
                           {lot.startPrice
                             ? `${Number(lot.startPrice).toLocaleString("de-DE", { minimumFractionDigits: 2 })} €/t`
-                            : <span style={{ color: "#9ca3af" }}>—</span>}
+                            : <span style={{ color: "#9ca3af" }}>-</span>}
                         </td>
                         <td>
                           {lot.co2PerTonne ? (
@@ -588,7 +588,7 @@ export function SellerControlCenter() {
                               {parseFloat(lot.co2PerTonne).toLocaleString("de-DE", { maximumFractionDigits: 1 })} kg/t
                             </span>
                           ) : (
-                            <span style={{ color: "#d1d5db", fontSize: 11 }}>—</span>
+                            <span style={{ color: "#d1d5db", fontSize: 11 }}>-</span>
                           )}
                         </td>
                         <td style={{ fontSize: 12, color: "#6b7280" }}>

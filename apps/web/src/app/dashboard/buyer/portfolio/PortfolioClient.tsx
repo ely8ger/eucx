@@ -230,14 +230,14 @@ export function PortfolioClient() {
             </div>
             <div className="pf-kpi" style={{ borderTop: `3px solid ${GREEN}` }}>
               <div className="pf-kpi-num" style={{ color: GREEN, fontSize: totalSavings > 999999 ? 20 : 26 }}>
-                {totalSavings > 0 ? `−${fmtEur(totalSavings)}` : "—"}
+                {totalSavings > 0 ? `−${fmtEur(totalSavings)}` : "-"}
               </div>
               <div className="pf-kpi-label">Einsparung ggü. Startpreis</div>
               <div className="pf-kpi-sub">vs. ursprünglicher Ausschreibungspreis</div>
             </div>
             <div className="pf-kpi" style={{ borderTop: `3px solid #e5e7eb` }}>
               <div className="pf-kpi-num" style={{ color: "#374151", fontSize: 20 }}>
-                {totalFees > 0 ? fmtEur(totalFees) : "—"}
+                {totalFees > 0 ? fmtEur(totalFees) : "-"}
               </div>
               <div className="pf-kpi-label">EUCX-Gebühren</div>
               <div className="pf-kpi-sub">Transaktionsgebühren gesamt</div>
@@ -328,14 +328,14 @@ export function PortfolioClient() {
                         {savings > 0 ? (
                           <span className="pf-savings">−{fmtEur(savings)}</span>
                         ) : (
-                          <span style={{ color: "#d1d5db" }}>—</span>
+                          <span style={{ color: "#d1d5db" }}>-</span>
                         )}
                       </td>
                       <td style={{ textAlign: "right" }}>
                         {c.myFee ? (
                           <span className="pf-fee">{fmtEur(Number(c.myFee.amount))}</span>
                         ) : (
-                          <span style={{ color: "#d1d5db" }}>—</span>
+                          <span style={{ color: "#d1d5db" }}>-</span>
                         )}
                       </td>
                       {hasCo2 && (
@@ -345,7 +345,7 @@ export function PortfolioClient() {
                               {co2Exposure.toLocaleString("de-DE", { maximumFractionDigits: 1 })} t
                             </span>
                           ) : (
-                            <span style={{ color: "#d1d5db" }}>—</span>
+                            <span style={{ color: "#d1d5db" }}>-</span>
                           )}
                         </td>
                       )}
@@ -367,8 +367,8 @@ export function PortfolioClient() {
                     <td style={{ textAlign: "right" }} />
                     <td style={{ textAlign: "right" }} />
                     <td style={{ textAlign: "right", color: BLUE }}>{fmtEur(totalValue)}</td>
-                    <td style={{ textAlign: "right", color: GREEN }}>{totalSavings > 0 ? `−${fmtEur(totalSavings)}` : "—"}</td>
-                    <td style={{ textAlign: "right", color: "#374151" }}>{totalFees > 0 ? fmtEur(totalFees) : "—"}</td>
+                    <td style={{ textAlign: "right", color: GREEN }}>{totalSavings > 0 ? `−${fmtEur(totalSavings)}` : "-"}</td>
+                    <td style={{ textAlign: "right", color: "#374151" }}>{totalFees > 0 ? fmtEur(totalFees) : "-"}</td>
                     {hasCo2 && (
                       <td style={{ textAlign: "right", color: "#1e3a8a" }}>
                         {totalCo2.toLocaleString("de-DE", { maximumFractionDigits: 1 })} t
@@ -385,7 +385,7 @@ export function PortfolioClient() {
           {/* CBAM-Infobox */}
           {!loading && hasCo2 && (
             <div className="pf-cbam-banner">
-              <div className="pf-cbam-title">EU-CBAM — CO₂-Zertifikatskosten (Schätzung)</div>
+              <div className="pf-cbam-title">EU-CBAM - CO₂-Zertifikatskosten (Schätzung)</div>
               <p className="pf-cbam-text">
                 Für CBAM-pflichtige Waren (EU-Verordnung 2023/956) sind CO₂-Zertifikate erforderlich.
                 Die Schätzung basiert auf dem aktuellen EU-ETS-Referenzpreis von <strong>75 €/t CO₂</strong>.

@@ -95,7 +95,7 @@ export const LEXIKON: LexikonEntry[] = [
           {
             id: "preisbildung-energie",
             heading: "Energiekosten und CO₂",
-            body: "EAF-Betriebe benötigen je Tonne Rohstahl ca. 350–400 kWh Strom. Bei einem Strompreis von 80 €/MWh entspricht das 28–32 €/t. CO₂-Zertifikate (EUA) kosten 2026 ca. 60–70 €/t CO₂ — bei 0,4–0,6 t CO₂/t Stahl summiert sich das auf 25–40 €/t."
+            body: "EAF-Betriebe benötigen je Tonne Rohstahl ca. 350–400 kWh Strom. Bei einem Strompreis von 80 €/MWh entspricht das 28–32 €/t. CO₂-Zertifikate (EUA) kosten 2026 ca. 60–70 €/t CO₂ - bei 0,4–0,6 t CO₂/t Stahl summiert sich das auf 25–40 €/t."
           },
           {
             id: "preisbildung-import",
@@ -137,7 +137,7 @@ export const LEXIKON: LexikonEntry[] = [
   },
   {
     slug: "otf-eucx",
-    term: "OTF — Organised Trading Facility",
+    term: "OTF - Organised Trading Facility",
     shortDef: "Regulierter Handelsplatz nach MiFID II für Nicht-Eigenkapitalinstrumente, insbesondere physische Rohstoffkontrakte.",
     description: "Was ist eine OTF nach MiFID II? Unterschiede zu MTF und RM, BaFin-Zulassung und Handelsmechanismus der EUCX.",
     category: "Regulierung",
@@ -149,12 +149,12 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "definition",
         heading: "Definition nach MiFID II",
-        body: "Eine Organised Trading Facility (OTF) ist eine der drei Kategorien regulierter Handelsplätze nach MiFID II (Richtlinie 2014/65/EU). Sie wurde speziell für Nicht-Eigenkapitalinstrumente konzipiert — Anleihen, strukturierte Finanzprodukte, Emissionszertifikate und Derivate auf physische Waren.\n\nDie EUCX betreibt eine BaFin-zugelassene OTF für physische Industrierohstoffe. Als OTF darf die EUCX das Matching diskretionär durchführen — im Gegensatz zu RM oder MTF.",
+        body: "Eine Organised Trading Facility (OTF) ist eine der drei Kategorien regulierter Handelsplätze nach MiFID II (Richtlinie 2014/65/EU). Sie wurde speziell für Nicht-Eigenkapitalinstrumente konzipiert - Anleihen, strukturierte Finanzprodukte, Emissionszertifikate und Derivate auf physische Waren.\n\nDie EUCX betreibt eine BaFin-zugelassene OTF für physische Industrierohstoffe. Als OTF darf die EUCX das Matching diskretionär durchführen - im Gegensatz zu RM oder MTF.",
         sub: [
           {
             id: "definition-unterschiede",
-            heading: "OTF vs. MTF vs. RM — die drei Handelsplatztypen",
-            body: "Regulated Market (RM): Klassische Börse. Strikt nicht-diskretionäres Matching. Hauptsächlich Aktien.\n\nMultilateral Trading Facility (MTF): Elektronisches Handelssystem. Nicht-diskretionäres Matching. Aktien, ETFs, Anleihen.\n\nOrganised Trading Facility (OTF): Einzige Kategorie mit diskretionärem Element. Betreiber darf Aufträge ablehnen — muss Interessenkonfliktregeln einhalten. Geeignet für illiquide Märkte wie physische Rohstoffe."
+            heading: "OTF vs. MTF vs. RM - die drei Handelsplatztypen",
+            body: "Regulated Market (RM): Klassische Börse. Strikt nicht-diskretionäres Matching. Hauptsächlich Aktien.\n\nMultilateral Trading Facility (MTF): Elektronisches Handelssystem. Nicht-diskretionäres Matching. Aktien, ETFs, Anleihen.\n\nOrganised Trading Facility (OTF): Einzige Kategorie mit diskretionärem Element. Betreiber darf Aufträge ablehnen - muss Interessenkonfliktregeln einhalten. Geeignet für illiquide Märkte wie physische Rohstoffe."
           }
         ]
       },
@@ -172,7 +172,7 @@ export const LEXIKON: LexikonEntry[] = [
   },
   {
     slug: "cbam",
-    term: "CBAM — Carbon Border Adjustment Mechanism",
+    term: "CBAM - Carbon Border Adjustment Mechanism",
     shortDef: "EU-Grenzausgleichsmechanismus für CO₂-intensive Importwaren: Stahl, Aluminium, Zement, Düngemittel, Energie. Ab 1. Januar 2026 kostenpflichtig.",
     description: "Der vollständige CBAM-Guide für Rohstoffhändler: Übergangsphase, Zertifikate, Berechnung, CN-Codes, Reporting-Pflichten, Auswirkungen auf Stahl- und Düngemittelpreise. BaFin-lizenzierter OTF EUCX erklärt.",
     category: "Regulierung",
@@ -184,12 +184,12 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "was-ist-cbam",
         heading: "Was ist der CBAM?",
-        body: "Der Carbon Border Adjustment Mechanism (CBAM, Verordnung (EU) 2023/956) ist das bisher ehrgeizigste Klimaschutzinstrument der Europäischen Union im Außenhandel. Als CO₂-Grenzausgleich verhindert er das sogenannte Carbon Leakage — die Verlagerung emissionsintensiver Produktion in Länder mit weniger strengen Klimaschutzauflagen, nur um EU-CO₂-Kosten zu umgehen.\n\nDas Grundprinzip ist einfach: Wer emissionsintensive Güter in die EU importiert, muss denselben CO₂-Preis zahlen wie ein EU-Produzent, der dem EU-Emissionshandelssystem (EU-ETS) unterliegt. Der Preis der CBAM-Zertifikate richtet sich nach dem wöchentlichen Durchschnittspreis der EU-ETS-Emissionsrechte (European Union Allowances, EUA).\n\nCBAM ist kein Zoll im klassischen Sinne. Es ist eine Regulierung, die sicherstellt, dass der CO₂-Preis, den EU-Produzenten zahlen, nicht durch billige Importe unterlaufen wird. Für Rohstoffhändler, die auf der EUCX-Plattform aktiv sind, hat dies fundamentale Auswirkungen auf die Wettbewerbsfähigkeit europäischer gegenüber außereuropäischer Ware.",
+        body: "Der Carbon Border Adjustment Mechanism (CBAM, Verordnung (EU) 2023/956) ist das bisher ehrgeizigste Klimaschutzinstrument der Europäischen Union im Außenhandel. Als CO₂-Grenzausgleich verhindert er das sogenannte Carbon Leakage - die Verlagerung emissionsintensiver Produktion in Länder mit weniger strengen Klimaschutzauflagen, nur um EU-CO₂-Kosten zu umgehen.\n\nDas Grundprinzip ist einfach: Wer emissionsintensive Güter in die EU importiert, muss denselben CO₂-Preis zahlen wie ein EU-Produzent, der dem EU-Emissionshandelssystem (EU-ETS) unterliegt. Der Preis der CBAM-Zertifikate richtet sich nach dem wöchentlichen Durchschnittspreis der EU-ETS-Emissionsrechte (European Union Allowances, EUA).\n\nCBAM ist kein Zoll im klassischen Sinne. Es ist eine Regulierung, die sicherstellt, dass der CO₂-Preis, den EU-Produzenten zahlen, nicht durch billige Importe unterlaufen wird. Für Rohstoffhändler, die auf der EUCX-Plattform aktiv sind, hat dies fundamentale Auswirkungen auf die Wettbewerbsfähigkeit europäischer gegenüber außereuropäischer Ware.",
         sub: [
           {
             id: "cbam-hintergrund",
             heading: "Hintergrund: Carbon Leakage und EU Green Deal",
-            body: "Das EU-ETS (Emissionshandelssystem, seit 2005) verpflichtet EU-Produzenten dazu, für jede Tonne CO₂-Emission ein Zertifikat (EUA) zu kaufen oder zu nutzen. Mit steigendem EUA-Preis (von ca. 5 €/t CO₂ in 2018 auf über 90 €/t CO₂ im Jahr 2023, aktuell ~65 €/t) wuchs die Gefahr, dass europäische Stahl-, Zement- und Düngemittelproduzenten im globalen Wettbewerb benachteiligt werden — und Produktion abwandert.\n\nCBAM schließt diese Lücke. Er ist zentraler Bestandteil des Fit for 55-Pakets, mit dem die EU bis 2030 eine Reduktion der Treibhausgasemissionen um 55 % gegenüber 1990 anstrebt. Mit CBAM wird der CO₂-Preis erstmals konsequent auf alle Marktteilnehmer ausgedehnt — unabhängig vom Produktionsort."
+            body: "Das EU-ETS (Emissionshandelssystem, seit 2005) verpflichtet EU-Produzenten dazu, für jede Tonne CO₂-Emission ein Zertifikat (EUA) zu kaufen oder zu nutzen. Mit steigendem EUA-Preis (von ca. 5 €/t CO₂ in 2018 auf über 90 €/t CO₂ im Jahr 2023, aktuell ~65 €/t) wuchs die Gefahr, dass europäische Stahl-, Zement- und Düngemittelproduzenten im globalen Wettbewerb benachteiligt werden - und Produktion abwandert.\n\nCBAM schließt diese Lücke. Er ist zentraler Bestandteil des Fit for 55-Pakets, mit dem die EU bis 2030 eine Reduktion der Treibhausgasemissionen um 55 % gegenüber 1990 anstrebt. Mit CBAM wird der CO₂-Preis erstmals konsequent auf alle Marktteilnehmer ausgedehnt - unabhängig vom Produktionsort."
           },
           {
             id: "cbam-sektoren",
@@ -201,7 +201,7 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "uebergangsphasephase",
         heading: "Übergangsphase 2023–2025: Nur Berichtspflicht",
-        body: "Die CBAM-Übergangsphase lief vom 1. Oktober 2023 bis zum 31. Dezember 2025. In dieser Phase bestanden ausschließlich Berichtspflichten — es fielen keine Zahlungen an. Importeure mussten quartalsweise einen CBAM-Übergangsbericht einreichen, der folgende Angaben enthält:\n\n1. Menge der importierten CBAM-Waren in Tonnen\n2. Eingebettete direkte und indirekte CO₂-Emissionen (in tCO₂e)\n3. Produktionsland und -anlage\n4. Im Ursprungsland bereits gezahlter CO₂-Preis (falls vorhanden)\n\nBerichte wurden über das EU-CBAM-Übergangsregister (CBAM Transitional Registry) eingereicht, das von der EU-Kommission betrieben wird. Verstöße gegen die Berichtspflicht während der Übergangsphase wurden mit Bußgeldern von 10–50 EUR je nicht gemeldeter Tonne CO₂e sanktioniert (Art. 26 Abs. 1 VO (EU) 2023/956).",
+        body: "Die CBAM-Übergangsphase lief vom 1. Oktober 2023 bis zum 31. Dezember 2025. In dieser Phase bestanden ausschließlich Berichtspflichten - es fielen keine Zahlungen an. Importeure mussten quartalsweise einen CBAM-Übergangsbericht einreichen, der folgende Angaben enthält:\n\n1. Menge der importierten CBAM-Waren in Tonnen\n2. Eingebettete direkte und indirekte CO₂-Emissionen (in tCO₂e)\n3. Produktionsland und -anlage\n4. Im Ursprungsland bereits gezahlter CO₂-Preis (falls vorhanden)\n\nBerichte wurden über das EU-CBAM-Übergangsregister (CBAM Transitional Registry) eingereicht, das von der EU-Kommission betrieben wird. Verstöße gegen die Berichtspflicht während der Übergangsphase wurden mit Bußgeldern von 10–50 EUR je nicht gemeldeter Tonne CO₂e sanktioniert (Art. 26 Abs. 1 VO (EU) 2023/956).",
         sub: [
           {
             id: "cbam-lektionen",
@@ -225,7 +225,7 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "cbam-berechnung",
         heading: "CBAM-Preis: Berechnung und Formel",
-        body: "Die CBAM-Zahllast errechnet sich nach folgender Formel:\n\nCBAM-Zahllast (€) = Eingebettete Emissionen (tCO₂e/t Ware) × Importmenge (t) × EUA-Wochenpreis (€/tCO₂e) − bereits im Ursprungsland gezahlter CO₂-Preis\n\nDie eingebetteten Emissionen umfassen:\n— Direkte Emissionen (Scope 1): Aus dem Produktionsprozess selbst (z.B. Hochofengas, Koksverbrennung)\n— Indirekte Emissionen (Scope 2): Aus dem verbrauchten Strom (nur für Strom, Aluminium und Stahl relevant, soweit national festgelegt)\n\nWichtig: Ab 2026 sind ausschließlich verifizierte Emissionen oder offizielle EU-Standardwerte zulässig. Die Verifizierung muss durch akkreditierte Verifizierer (nach Delegierter Verordnung (EU) 2023/1604) erfolgen.",
+        body: "Die CBAM-Zahllast errechnet sich nach folgender Formel:\n\nCBAM-Zahllast (€) = Eingebettete Emissionen (tCO₂e/t Ware) × Importmenge (t) × EUA-Wochenpreis (€/tCO₂e) − bereits im Ursprungsland gezahlter CO₂-Preis\n\nDie eingebetteten Emissionen umfassen:\n- Direkte Emissionen (Scope 1): Aus dem Produktionsprozess selbst (z.B. Hochofengas, Koksverbrennung)\n- Indirekte Emissionen (Scope 2): Aus dem verbrauchten Strom (nur für Strom, Aluminium und Stahl relevant, soweit national festgelegt)\n\nWichtig: Ab 2026 sind ausschließlich verifizierte Emissionen oder offizielle EU-Standardwerte zulässig. Die Verifizierung muss durch akkreditierte Verifizierer (nach Delegierter Verordnung (EU) 2023/1604) erfolgen.",
         sub: [
           {
             id: "cbam-beispiel-stahl",
@@ -259,7 +259,7 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "cbam-marktauswirkungen",
         heading: "Auswirkungen auf den EU-Rohstoffmarkt",
-        body: "CBAM ist eine der größten strukturellen Verschiebungen im europäischen Rohstoffhandel seit der ETS-Einführung 2005. Die Auswirkungen sind sektorspezifisch:\n\nBetonstahl: Türkische und osteuropäische (Nicht-EU) Betonstahl-Importe decken ca. 18 % des EU-Bedarfs. CBAM macht diese Importe um 100–130 €/t teurer. Dies stützt EU-Erzeugerpreise strukturell — insbesondere für EAF-Produzenten mit grünem Strommix (Skandinavien, Frankreich).\n\nFlachstahl (nicht auf EUCX): Hochofenstahl aus China (~2,1 tCO₂/t) wird mit ~137 €/t CBAM belastet. EU-Hochofenstahl erhält schrittweise weniger Freiallokationen — Kostensteigerung von 20–40 €/t bis 2030.\n\nHarnstoff und Stickstoffdünger: Importe aus Russland (ca. 35 % der EU-Importe vor 2022), Ägypten und Algerien werden massiv teurer. EU-Produzenten (SKW Piesteritz, Yara, BASF) profitieren.\n\nAluminium: Primäraluminium aus Russland, China und dem Mittleren Osten mit 8–16 tCO₂/t trägt CBAM von 520–1.040 €/t (bei EUA 65 €/t). De facto Abschottung des EU-Markts für konventionell produziertes Aluminium.",
+        body: "CBAM ist eine der größten strukturellen Verschiebungen im europäischen Rohstoffhandel seit der ETS-Einführung 2005. Die Auswirkungen sind sektorspezifisch:\n\nBetonstahl: Türkische und osteuropäische (Nicht-EU) Betonstahl-Importe decken ca. 18 % des EU-Bedarfs. CBAM macht diese Importe um 100–130 €/t teurer. Dies stützt EU-Erzeugerpreise strukturell - insbesondere für EAF-Produzenten mit grünem Strommix (Skandinavien, Frankreich).\n\nFlachstahl (nicht auf EUCX): Hochofenstahl aus China (~2,1 tCO₂/t) wird mit ~137 €/t CBAM belastet. EU-Hochofenstahl erhält schrittweise weniger Freiallokationen - Kostensteigerung von 20–40 €/t bis 2030.\n\nHarnstoff und Stickstoffdünger: Importe aus Russland (ca. 35 % der EU-Importe vor 2022), Ägypten und Algerien werden massiv teurer. EU-Produzenten (SKW Piesteritz, Yara, BASF) profitieren.\n\nAluminium: Primäraluminium aus Russland, China und dem Mittleren Osten mit 8–16 tCO₂/t trägt CBAM von 520–1.040 €/t (bei EUA 65 €/t). De facto Abschottung des EU-Markts für konventionell produziertes Aluminium.",
       },
     ],
     related: ["betonstahl", "otf-eucx", "abwicklungsgarantie"],
@@ -267,8 +267,8 @@ export const LEXIKON: LexikonEntry[] = [
       { q: "Ab wann ist CBAM kostenpflichtig?", a: "Ab 1. Januar 2026. Die Übergangsphase (Oktober 2023 – Dezember 2025) hatte nur Berichtspflichten ohne Zahlungslast." },
       { q: "Betrifft CBAM auch Stahlschrott?", a: "Nein. CBAM gilt für verarbeitete Erzeugnisse (Betonstahl, Bleche, Walzdraht), nicht für Schrott als Rohmaterial. Schrott fällt unter HS 7204 und ist explizit ausgenommen." },
       { q: "Wie kaufe ich CBAM-Zertifikate?", a: "Über das EU-CBAM-Register (cbam.ec.europa.eu). In Deutschland ist die Bundeszollverwaltung / BAFA zuständig für Registrierung und Abwicklung. Der Zertifikatspreis wird wöchentlich aus dem EUA-Durchschnitt berechnet." },
-      { q: "Was ist der Unterschied zwischen CBAM und EU-ETS?", a: "EU-ETS betrifft EU-Produzenten direkt (Zertifikatspflicht für eigene Emissionen). CBAM betrifft Importeure und stellt sicher, dass Importe denselben CO₂-Preis zahlen wie EU-Erzeuger. Beide Systeme sind eng verknüpft — der CBAM-Preis basiert auf dem EUA-Preis." },
-      { q: "Gilt CBAM auch für Recycling-Stahl (EAF)?", a: "Ja, aber mit deutlich niedrigerem CO₂-Faktor. EAF-Stahl aus der Türkei emittiert ca. 1,8 tCO₂/t, Hochofenstahl ca. 2,1 tCO₂/t. Bei EAF-Stahl mit erneuerbarem Strom kann die CO₂-Intensität auf 0,4–0,6 tCO₂/t sinken — CBAM-Aufschlag dann nur 26–39 €/t." },
+      { q: "Was ist der Unterschied zwischen CBAM und EU-ETS?", a: "EU-ETS betrifft EU-Produzenten direkt (Zertifikatspflicht für eigene Emissionen). CBAM betrifft Importeure und stellt sicher, dass Importe denselben CO₂-Preis zahlen wie EU-Erzeuger. Beide Systeme sind eng verknüpft - der CBAM-Preis basiert auf dem EUA-Preis." },
+      { q: "Gilt CBAM auch für Recycling-Stahl (EAF)?", a: "Ja, aber mit deutlich niedrigerem CO₂-Faktor. EAF-Stahl aus der Türkei emittiert ca. 1,8 tCO₂/t, Hochofenstahl ca. 2,1 tCO₂/t. Bei EAF-Stahl mit erneuerbarem Strom kann die CO₂-Intensität auf 0,4–0,6 tCO₂/t sinken - CBAM-Aufschlag dann nur 26–39 €/t." },
       { q: "Muss EUCX als Handelsplattform CBAM abführen?", a: "Nein. CBAM liegt beim Importeur (der Partei, die Waren aus Drittstaaten in die EU einführt). EUCX als Handelsplattform für bereits in der EU befindliche Waren ist kein Importeur und unterliegt keiner CBAM-Zahllast." },
     ],
   },
@@ -357,7 +357,7 @@ export const LEXIKON: LexikonEntry[] = [
   {
     slug: "abwicklungsgarantie",
     term: "Abwicklungsgarantie",
-    shortDef: "Die Abwicklungsgarantie (Settlement Guarantee) sichert Handelstransaktionen ab und schützt beide Vertragsparteien vor Gegenparteiausfällen — regulatorisch vorgeschrieben nach MiFID II.",
+    shortDef: "Die Abwicklungsgarantie (Settlement Guarantee) sichert Handelstransaktionen ab und schützt beide Vertragsparteien vor Gegenparteiausfällen - regulatorisch vorgeschrieben nach MiFID II.",
     description: "Abwicklungsgarantie im institutionellen Rohstoffhandel: Leistung-gegen-Zahlung, Margin-Mechanismus, Ausfallfonds, Clearingstelle und rechtliche Grundlagen nach MiFID II und WpHG. Vollständiger EUCX-Guide.",
     category: "Regulierung",
     readMin: 13,
@@ -368,12 +368,12 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "definition",
         heading: "Definition und rechtliche Grundlage",
-        body: "Die Abwicklungsgarantie (engl. Settlement Guarantee oder Settlement Assurance) ist eine rechtsverbindliche Zusage eines Handelsplatzbetreibers oder einer Clearingstelle, dass eine Transaktion vollständig und fristgerecht abgewickelt wird — unabhängig davon, ob eine der Vertragsparteien ihren Pflichten nachkommt. Sie bildet das Fundament des institutionellen Wertpapier- und Warenhandels.\n\nIm Kontext der EUCX gilt: Jeder über die Plattform abgeschlossene Kontrakt ist durch die Abwicklungsgarantie der EUCX GmbH gesichert. Käufer erhalten ihre Ware, Verkäufer erhalten ihre Zahlung — oder der Schadensfonds der EUCX tritt ein. Dieses Prinzip schafft das Vertrauen, das für einen funktionierenden organisierten Markt unabdingbar ist.",
+        body: "Die Abwicklungsgarantie (engl. Settlement Guarantee oder Settlement Assurance) ist eine rechtsverbindliche Zusage eines Handelsplatzbetreibers oder einer Clearingstelle, dass eine Transaktion vollständig und fristgerecht abgewickelt wird - unabhängig davon, ob eine der Vertragsparteien ihren Pflichten nachkommt. Sie bildet das Fundament des institutionellen Wertpapier- und Warenhandels.\n\nIm Kontext der EUCX gilt: Jeder über die Plattform abgeschlossene Kontrakt ist durch die Abwicklungsgarantie der EUCX GmbH gesichert. Käufer erhalten ihre Ware, Verkäufer erhalten ihre Zahlung - oder der Schadensfonds der EUCX tritt ein. Dieses Prinzip schafft das Vertrauen, das für einen funktionierenden organisierten Markt unabdingbar ist.",
         sub: [
           {
             id: "definition-rechtsgrundlage",
             heading: "Rechtsgrundlagen im Detail",
-            body: "§ 72 WpHG (Wertpapierhandelsgesetz): Verpflichtet OTF-Betreiber zur Einrichtung angemessener Systeme und Verfahren zur Abwicklungssicherung. Verstoss kann zum Entzug der BaFin-Lizenz führen.\n\nArt. 20 MiFID II (Richtlinie 2014/65/EU): Definiert Anforderungen an Organised Trading Facilities. Abwicklungssicherung ist explizite Betreiberpflicht.\n\nArt. 3 CSDR (Verordnung (EU) 909/2014 — Central Securities Depository Regulation): Setzt EU-weite Mindeststandards fuer Wertpapierabwicklung, analog anwendbar auf physische Warenkontrakte an OTFs.\n\nDelgierte Verordnung (EU) 2017/565: Konkretisiert organisatorische Anforderungen an OTF-Betreiber, u.a. Risikomanagement und Notfallplaene."
+            body: "§ 72 WpHG (Wertpapierhandelsgesetz): Verpflichtet OTF-Betreiber zur Einrichtung angemessener Systeme und Verfahren zur Abwicklungssicherung. Verstoss kann zum Entzug der BaFin-Lizenz führen.\n\nArt. 20 MiFID II (Richtlinie 2014/65/EU): Definiert Anforderungen an Organised Trading Facilities. Abwicklungssicherung ist explizite Betreiberpflicht.\n\nArt. 3 CSDR (Verordnung (EU) 909/2014 - Central Securities Depository Regulation): Setzt EU-weite Mindeststandards fuer Wertpapierabwicklung, analog anwendbar auf physische Warenkontrakte an OTFs.\n\nDelgierte Verordnung (EU) 2017/565: Konkretisiert organisatorische Anforderungen an OTF-Betreiber, u.a. Risikomanagement und Notfallplaene."
           },
           {
             id: "definition-pvp",
@@ -385,27 +385,27 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "mechanismus",
         heading: "Der EUCX-Abwicklungsmechanismus Schritt für Schritt",
-        body: "Die Abwicklungsgarantie wirkt nicht erst bei einem Ausfall — sie ist in jeden Schritt des Handelsprozesses eingebaut. Hier der vollständige Ablauf:",
+        body: "Die Abwicklungsgarantie wirkt nicht erst bei einem Ausfall - sie ist in jeden Schritt des Handelsprozesses eingebaut. Hier der vollständige Ablauf:",
         sub: [
           {
             id: "mechanismus-phase1",
-            heading: "Phase 1: Vor dem Handel — Zulassung und Margin-Hinterlegung",
+            heading: "Phase 1: Vor dem Handel - Zulassung und Margin-Hinterlegung",
             body: "Jeder neue Marktteilnehmer durchläuft vor der ersten Order eine vierstufige Prüfung:\n\n1. KYC/AML-Pruefung: Identitaetspruefung aller wirtschaftlich Berechtigten (UBOs) nach GwG.\n2. Kreditpruefung: Bonitaetsbeurteilung anhand Jahresabschluss und Bankauskunft.\n3. MiFID-II-Kategorisierung: Einstufung als Professioneller Kunde oder Geeignete Gegenpartei.\n4. Initial Margin: Einzahlung auf EUCX-Treuhandkonto (min. 10.000 EUR oder 5 % des genehmigten Jahresvolumens).\n\nOhne vollstaendige Initial Margin sind keine Orders moeglich. Das System blockiert die Ordermaske technisch."
           },
           {
             id: "mechanismus-phase2",
-            heading: "Phase 2: Orderabgabe — automatische Margin-Prüfung",
+            heading: "Phase 2: Orderabgabe - automatische Margin-Prüfung",
             body: "Jede eingehende Order wird in Echtzeit gegen die verfuegbare Margin geprueft:\n\nVerfuegbare Margin = Eingezahlte Initial Margin − reservierte Margin aus offenen Orders\n\nBeispiel: Haendler A hat 50.000 EUR Margin. Er gibt eine Kauforder fuer 200 t Betonstahl zu 700 EUR/t ein = Orderwert 140.000 EUR. Bei 5 % Margin-Satz werden 7.000 EUR reserviert. Verfuegbare Margin nach Order: 43.000 EUR. Weitere Orders bis 43.000 EUR / 5 % = 860.000 EUR Gesamtvolumen moeglich.\n\nAbgelehnte Orders werden mit Fehlercode M001 (Insufficient Margin) zurueckgewiesen. Der Haendler erhaelt eine automatische Benachrichtigung."
           },
           {
             id: "mechanismus-phase3",
-            heading: "Phase 3: Nach dem Matching — Handelsbestätigung und Settlement-Einleitung",
+            heading: "Phase 3: Nach dem Matching - Handelsbestätigung und Settlement-Einleitung",
             body: "Nach erfolgreichem Matching (Bid >= Ask) laeuft der Settlement-Prozess automatisch an:\n\nT+0 (Handelsabschluss): Matching-Bestaetigung an beide Parteien per E-Mail und Portal. Die EUCX-Settlement-ID wird generiert. Reservierte Margin wird zu blockierter Margin.\n\nT+1 (Dokumentenaustausch): Verkäufer sendet Orderbestaetigung mit Lieferdatum, Lieferanschrift und Qualitaetszertifikat (Werksprüfzeugnis 3.1). Käufer bestätigt Lieferanschrift.\n\nT+2 (Zahlungsreservierung): EUCX reserviert den Kaufbetrag auf dem Treuhandkonto des Käufers. Betrag ist bis zur Lieferbestaetigung eingefroren.\n\nT+3 bis T+7 (physische Lieferung): Abhängig von Incoterm und Entfernung. EUCX-Logistikpartner überwacht Lieferfortschritt.\n\nT+8 (finale Abwicklung): Nach Eingang des signierten Liefernachweises (Wiegerschein, CMR-Frachtbrief) wird die Zahlung automatisch an den Verkäufer freigegeben. Margin-Reservierung beider Parteien aufgehoben."
           },
           {
             id: "mechanismus-ausfall",
             heading: "Phase 4: Ausfallverfahren bei Nichterfüllung",
-            body: "Kommt eine Partei ihren Verpflichtungen nicht nach, greift das EUCX-Ausfallverfahren in drei Stufen:\n\nStufe 1 — Margin-Einzug: Die gesamte blockierte Margin der ausfallenden Partei wird eingezogen. Dies deckt in den meisten Faellen den Schaden vollstaendig.\n\nStufe 2 — Ausfallfonds: Reicht die Margin nicht aus, greift der EUCX-Ausfallfonds (Kapital: 5 Mio. EUR, gespeist aus Handelsgebühren). Maximal 2 Mio. EUR je Einzelfall.\n\nStufe 3 — Berufshaftpflicht: Darueber hinausgehende Schaeden werden durch die Berufshaftpflichtversicherung der EUCX GmbH (Allianz Global Corporate & Specialty SE, 5 Mio. EUR je Fall) gedeckt.\n\nDer Nichterfüllende Marktteilnehmer wird sofort gesperrt und erhält eine formelle Abmahnung nach BGB. Bei wiederholtem Ausfall: dauerhafter Ausschluss von der Plattform und Meldung an die BaFin."
+            body: "Kommt eine Partei ihren Verpflichtungen nicht nach, greift das EUCX-Ausfallverfahren in drei Stufen:\n\nStufe 1 - Margin-Einzug: Die gesamte blockierte Margin der ausfallenden Partei wird eingezogen. Dies deckt in den meisten Faellen den Schaden vollstaendig.\n\nStufe 2 - Ausfallfonds: Reicht die Margin nicht aus, greift der EUCX-Ausfallfonds (Kapital: 5 Mio. EUR, gespeist aus Handelsgebühren). Maximal 2 Mio. EUR je Einzelfall.\n\nStufe 3 - Berufshaftpflicht: Darueber hinausgehende Schaeden werden durch die Berufshaftpflichtversicherung der EUCX GmbH (Allianz Global Corporate & Specialty SE, 5 Mio. EUR je Fall) gedeckt.\n\nDer Nichterfüllende Marktteilnehmer wird sofort gesperrt und erhält eine formelle Abmahnung nach BGB. Bei wiederholtem Ausfall: dauerhafter Ausschluss von der Plattform und Meldung an die BaFin."
           }
         ]
       },
@@ -416,17 +416,17 @@ export const LEXIKON: LexikonEntry[] = [
         sub: [
           {
             id: "margin-initial",
-            heading: "Initial Margin — Die Eintrittshuerde",
+            heading: "Initial Margin - Die Eintrittshuerde",
             body: "Die Initial Margin ist die einmalige Grundsicherheit, die bei Kontoeröffnung hinterlegt wird. Sie richtet sich nach dem genehmigten Jahreshandelsvolumen:\n\nBis 2 Mio. EUR Jahresvolumen: 10.000 EUR Mindest-Margin (5,0 %)\n2–10 Mio. EUR: 50.000 EUR (2,5 %)\n10–50 Mio. EUR: 150.000 EUR (1,5 %)\nÜber 50 Mio. EUR: Individuell vereinbart (i.d.R. 1,0 %)\n\nDie Initial Margin liegt jederzeit auf einem segregierten Treuhandkonto bei der Deutschen Bank AG, getrennt vom EUCX-Betriebsvermögen. Sie ist damit im Insolvenzfall der EUCX GmbH vollstaendig geschützt.\n\nVerzinsung: EZB-Einlagezinssatz − 0,25 % p.a. (aktuell: ca. 3,65 % p.a.)."
           },
           {
             id: "margin-variation",
-            heading: "Variation Margin — Tagesaktuelle Anpassung",
+            heading: "Variation Margin - Tagesaktuelle Anpassung",
             body: "Bei offenen Terminkontrakten (Futures/Forwards auf EUCX) wird taeglich eine Mark-to-Market-Bewertung durchgefuehrt. Liegt der aktuelle Marktpreis unter dem vereinbarten Terminpreis, muss der Käufer eine Variation Margin nachschiessen.\n\nBeispiel: Kaeufer schließt Forward-Kontrakt ueber 100 t Betonstahl zu 720 EUR/t ab. Aktueller Marktpreis faellt auf 680 EUR/t. Unrealisierter Verlust: (720 − 680) × 100 = 4.000 EUR. Dieser Betrag wird als Variation Margin täglich eingefordert.\n\nVariation Margin ist nur für Terminkontrakte relevant. Kassageschaefte (Spot) haben keine Variation Margin."
           },
           {
             id: "margin-maintenance",
-            heading: "Maintenance Margin — Der Sicherheitspuffer",
+            heading: "Maintenance Margin - Der Sicherheitspuffer",
             body: "Die Maintenance Margin ist der Mindestbetrag, der jederzeit auf dem Marginkonto verfuegbar sein muss. Bei EUCX betraegt sie 80 % der Initial Margin.\n\nUnterschreitet die verfuegbare Margin die Maintenance Margin, loest das System automatisch einen Margin Call aus:\n1. Automatische E-Mail-Benachrichtigung an den Kontaktinhaber\n2. 24-Stunden-Frist zur Nachschusszahlung\n3. Bei Nichterfuellung: automatische Liquidation der aeltesten offenen Positionen bis zur Wiederherstellung der Initial Margin."
           }
         ]
@@ -434,12 +434,12 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "vergleich-otc",
         heading: "Abwicklungsgarantie vs. OTC-Handel: Was Händler wissen müssen",
-        body: "Im Over-the-Counter (OTC) Handel — also dem direkten, bilateralen Handel ausserhalb einer Boerse — gibt es keine Abwicklungsgarantie. Kaeufer und Verkäufer tragen das volle Gegenparteirisiko. Laut BIS-Statistik (Bank for International Settlements) scheitern ca. 5–8 % aller OTC-Rohstoffgeschäfte an Abwicklungsproblemen.\n\nDie Abwicklungsgarantie der EUCX eliminiert dieses Risiko vollstaendig. Fuer mittelstaendische Industrieunternehmen, die bisher OTC handelten, bedeutet der Wechsel zur EUCX:\n\n— Keine Due-Diligence-Kosten fuer jeden einzelnen Handelspartner\n— Keine bilateralen Rahmenvertraege (ISDA/Master Agreement) noetig\n— Planungssicherheit: Liefertermin und Preis sind bei Abschluss garantiert\n— Bilanziell: Gegenparteirisiko entfaellt aus dem Risikobericht\n— Regulatorisch: Reduzierter Dokumentationsaufwand nach EMIR Art. 11",
+        body: "Im Over-the-Counter (OTC) Handel - also dem direkten, bilateralen Handel ausserhalb einer Boerse - gibt es keine Abwicklungsgarantie. Kaeufer und Verkäufer tragen das volle Gegenparteirisiko. Laut BIS-Statistik (Bank for International Settlements) scheitern ca. 5–8 % aller OTC-Rohstoffgeschäfte an Abwicklungsproblemen.\n\nDie Abwicklungsgarantie der EUCX eliminiert dieses Risiko vollstaendig. Fuer mittelstaendische Industrieunternehmen, die bisher OTC handelten, bedeutet der Wechsel zur EUCX:\n\n- Keine Due-Diligence-Kosten fuer jeden einzelnen Handelspartner\n- Keine bilateralen Rahmenvertraege (ISDA/Master Agreement) noetig\n- Planungssicherheit: Liefertermin und Preis sind bei Abschluss garantiert\n- Bilanziell: Gegenparteirisiko entfaellt aus dem Risikobericht\n- Regulatorisch: Reduzierter Dokumentationsaufwand nach EMIR Art. 11",
       },
       {
         id: "expertentipp",
         heading: "Expertentipp: Margin-Optimierung für aktive Händler",
-        body: "Ein haeufiger Fehler neuer EUCX-Teilnehmer: Sie hinterlegen genau die Mindest-Margin und sind dann ueberrascht, wenn groessere Ordervolumina abgewiesen werden.\n\nProfi-Ansatz: Hinterlegen Sie 120–150 % der rein rechnerisch notwendigen Margin. Das gibt Ihnen Handlungsspielraum bei schnellen Marktbewegungen und verhindert Margin Calls in volatilen Phasen (z.B. waehrend CBAM-Ankuendigungen oder Zollerhoehungen).\n\nSteuertipp: Die Initial Margin ist kein Aufwand — sie bleibt Vermoegen Ihres Unternehmens. Die anfallenden Zinsertraege auf der Margin muessen als Kapitalertrag versteuert werden. Sprechen Sie mit Ihrem Steuerberater ueber die korrekte Bilanzierung nach HGB § 266 Abs. 2 B.II.4.",
+        body: "Ein haeufiger Fehler neuer EUCX-Teilnehmer: Sie hinterlegen genau die Mindest-Margin und sind dann ueberrascht, wenn groessere Ordervolumina abgewiesen werden.\n\nProfi-Ansatz: Hinterlegen Sie 120–150 % der rein rechnerisch notwendigen Margin. Das gibt Ihnen Handlungsspielraum bei schnellen Marktbewegungen und verhindert Margin Calls in volatilen Phasen (z.B. waehrend CBAM-Ankuendigungen oder Zollerhoehungen).\n\nSteuertipp: Die Initial Margin ist kein Aufwand - sie bleibt Vermoegen Ihres Unternehmens. Die anfallenden Zinsertraege auf der Margin muessen als Kapitalertrag versteuert werden. Sprechen Sie mit Ihrem Steuerberater ueber die korrekte Bilanzierung nach HGB § 266 Abs. 2 B.II.4.",
       },
     ],
     related: ["otf-eucx", "cbam", "mifid-ii-otf"],
@@ -458,7 +458,7 @@ export const LEXIKON: LexikonEntry[] = [
       },
       {
         q: "Ist meine Margin-Einlage sicher, wenn EUCX insolvent wird?",
-        a: "Ja. Die Initial Margin liegt auf einem segregierten Treuhandkonto bei der Deutschen Bank AG — getrennt vom EUCX-Betriebsvermögen. Im Insolvenzfall der EUCX GmbH hat der Insolvenzverwalter keinen Zugriff auf diese Mittel. Sie werden unverzueglich an die Teilnehmer zurueckuebertragen."
+        a: "Ja. Die Initial Margin liegt auf einem segregierten Treuhandkonto bei der Deutschen Bank AG - getrennt vom EUCX-Betriebsvermögen. Im Insolvenzfall der EUCX GmbH hat der Insolvenzverwalter keinen Zugriff auf diese Mittel. Sie werden unverzueglich an die Teilnehmer zurueckuebertragen."
       },
       {
         q: "Gilt die Abwicklungsgarantie auch fuer Terminkontrakte?",
@@ -1426,8 +1426,8 @@ export const LEXIKON: LexikonEntry[] = [
   },
   {
     slug: "mar-marktmissbrauch",
-    term: "MAR — Marktmissbrauchsverordnung",
-    shortDef: "EU-Verordnung (EU) 596/2014 gegen Insiderhandel, Marktmanipulation und unerlaubte Weitergabe von Insiderinformationen — gilt auf allen regulierten Handelsplatzen einschliesslich EUCX.",
+    term: "MAR - Marktmissbrauchsverordnung",
+    shortDef: "EU-Verordnung (EU) 596/2014 gegen Insiderhandel, Marktmanipulation und unerlaubte Weitergabe von Insiderinformationen - gilt auf allen regulierten Handelsplatzen einschliesslich EUCX.",
     category: "Regulierung",
     description: "EU-Verordnung (EU) 596/2014 gegen Insiderhandel, Marktmanipulation und unerlaubte Weitergabe von Insiderinformationen.",
     published: "2026-03-25",
@@ -1437,7 +1437,7 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "grundlagen",
         heading: "Grundlagen und Anwendungsbereich",
-        body: "Die Marktmissbrauchsverordnung (MAR) — Verordnung (EU) 596/2014 — ist seit Juli 2016 in der EU unmittelbar anwendbar. Sie loeste die Marktmissbrauchsrichtlinie (MAD) ab und gilt einheitlich auf allen regulierten Handelsplatzen (Regulated Markets, MTFs, OTFs) sowie im ausserboerslichen Handel (OTC), wenn die Basiswerte an regulierten Platzen gehandelt werden. EUCX als OTF: Alle auf EUCX gehandelten Rohstoffe und Derivate unterliegen der MAR-Uberwachung. EUCX ist nach Art. 16 MAR verpflichtet, bei Verdacht auf Marktmissbrauch Suspicious Transaction and Order Reports (STORs) an die BaFin zu erstatten.",
+        body: "Die Marktmissbrauchsverordnung (MAR) - Verordnung (EU) 596/2014 - ist seit Juli 2016 in der EU unmittelbar anwendbar. Sie loeste die Marktmissbrauchsrichtlinie (MAD) ab und gilt einheitlich auf allen regulierten Handelsplatzen (Regulated Markets, MTFs, OTFs) sowie im ausserboerslichen Handel (OTC), wenn die Basiswerte an regulierten Platzen gehandelt werden. EUCX als OTF: Alle auf EUCX gehandelten Rohstoffe und Derivate unterliegen der MAR-Uberwachung. EUCX ist nach Art. 16 MAR verpflichtet, bei Verdacht auf Marktmissbrauch Suspicious Transaction and Order Reports (STORs) an die BaFin zu erstatten.",
       },
       {
         id: "insiderhandel",
@@ -1469,8 +1469,8 @@ export const LEXIKON: LexikonEntry[] = [
   },
   {
     slug: "emir-derivate",
-    term: "EMIR — Derivate-Regulierung",
-    shortDef: "EU-Verordnung (EU) 648/2012 uber OTC-Derivate, zentrale Gegenparteien und Transaktionsregister — regelt Clearing-Pflicht, Meldepflichten und Risikominderung fuer Rohstoffderivate.",
+    term: "EMIR - Derivate-Regulierung",
+    shortDef: "EU-Verordnung (EU) 648/2012 uber OTC-Derivate, zentrale Gegenparteien und Transaktionsregister - regelt Clearing-Pflicht, Meldepflichten und Risikominderung fuer Rohstoffderivate.",
     category: "Regulierung",
     description: "EU-Verordnung (EU) 648/2012 uber OTC-Derivate, zentrale Gegenparteien und Transaktionsregister.",
     published: "2026-03-25",
@@ -1480,7 +1480,7 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "grundlagen",
         heading: "Grundlagen und Ziele",
-        body: "EMIR (European Market Infrastructure Regulation) — Verordnung (EU) 648/2012 — wurde als Reaktion auf die Finanzkrise 2008 verabschiedet und ist seit 2012 in Kraft. Ziel: Verringerung des systemischen Risikos durch zentrale Abwicklung standardisierter OTC-Derivate und verbesserte Transparenz durch Meldepflichten. EMIR-Refit (2019): Vereinfachungen fur kleine nicht-finanzielle Gegenparteien (NFCs). DORA-Schnittstelle: EMIR-Anforderungen an IT-Sicherheit werden durch DORA (Digital Operational Resilience Act) erganzt. Fur Rohstoffhandler: EMIR ist relevant, sobald Rohstoffderivate (Forwards, Futures, Optionen, Swaps) im OTC-Markt oder auf OTFs wie EUCX genutzt werden.",
+        body: "EMIR (European Market Infrastructure Regulation) - Verordnung (EU) 648/2012 - wurde als Reaktion auf die Finanzkrise 2008 verabschiedet und ist seit 2012 in Kraft. Ziel: Verringerung des systemischen Risikos durch zentrale Abwicklung standardisierter OTC-Derivate und verbesserte Transparenz durch Meldepflichten. EMIR-Refit (2019): Vereinfachungen fur kleine nicht-finanzielle Gegenparteien (NFCs). DORA-Schnittstelle: EMIR-Anforderungen an IT-Sicherheit werden durch DORA (Digital Operational Resilience Act) erganzt. Fur Rohstoffhandler: EMIR ist relevant, sobald Rohstoffderivate (Forwards, Futures, Optionen, Swaps) im OTC-Markt oder auf OTFs wie EUCX genutzt werden.",
       },
       {
         id: "clearing-pflicht",
@@ -1512,7 +1512,7 @@ export const LEXIKON: LexikonEntry[] = [
   },
   {
     slug: "gwg-geldwaesche",
-    term: "GwG — Geldwaschegesetz",
+    term: "GwG - Geldwaschegesetz",
     shortDef: "Das deutsche Geldwaschegesetz (GwG) setzt die EU-Geldwascherichtlinien um und verpflichtet EUCX zu KYC, AML-Screening, Transaktionsuberwachung und Verdachtsmeldungen an die FIU.",
     category: "Regulierung",
     description: "Das deutsche Geldwaschegesetz (GwG) verpflichtet EUCX zu KYC, AML-Screening und Verdachtsmeldungen.",
@@ -1527,13 +1527,13 @@ export const LEXIKON: LexikonEntry[] = [
       },
       {
         id: "kyc",
-        heading: "KYC — Sorgfaltspflichten",
-        body: "Allgemeine Sorgfaltspflichten (Paragraph 10 GwG): Identifizierung des Vertragspartners (Name, Geburtsdatum, Adresse, Identifikationsnummer). Bei juristischen Personen: Handelsregisterauszug, Gesellschaftsstruktur, Organe. Feststellung des wirtschaftlich Berechtigten (UBO — Ultimate Beneficial Owner): Alle natuerlichen Personen mit mehr als 25% Kontrolle oder Kapitalanteil mussen identifiziert und im Transparenzregister gepruft werden. Vereinfachte Sorgfalt: Fur niedrigrisikohafte Geschaftsbeziehungen (z.B. boersennotierte Unternehmen). Verstarkte Sorgfalt: Bei politisch exponierten Personen (PEPs), Hochrisikolaendern (FATF-Liste), ungewoehnlichen Transaktionsstrukturen. EUCX-Prozess: Digitale KYC-Strecke mit Dokument-Upload, Liveness-Check und automatisiertem Screening.",
+        heading: "KYC - Sorgfaltspflichten",
+        body: "Allgemeine Sorgfaltspflichten (Paragraph 10 GwG): Identifizierung des Vertragspartners (Name, Geburtsdatum, Adresse, Identifikationsnummer). Bei juristischen Personen: Handelsregisterauszug, Gesellschaftsstruktur, Organe. Feststellung des wirtschaftlich Berechtigten (UBO - Ultimate Beneficial Owner): Alle natuerlichen Personen mit mehr als 25% Kontrolle oder Kapitalanteil mussen identifiziert und im Transparenzregister gepruft werden. Vereinfachte Sorgfalt: Fur niedrigrisikohafte Geschaftsbeziehungen (z.B. boersennotierte Unternehmen). Verstarkte Sorgfalt: Bei politisch exponierten Personen (PEPs), Hochrisikolaendern (FATF-Liste), ungewoehnlichen Transaktionsstrukturen. EUCX-Prozess: Digitale KYC-Strecke mit Dokument-Upload, Liveness-Check und automatisiertem Screening.",
       },
       {
         id: "aml-monitoring",
         heading: "AML-Monitoring und Verdachtsmeldungen",
-        body: "Transaktionsuberwachung: Kontinuierliche Uberwachung aller Transaktionen auf AML-Indikatoren. Red Flags: Ungewoehnlich hohe Transaktionsvolumina, Zahlungen uber Drittlander ohne wirtschaftlichen Grund, Zahlungen in bar oder via anonyme Zahlungswege, Preisniveaus weit ausserhalb des Marktstandards, hauffiger Partnerawechsel ohne erklarlichen Grund. Verdachtsmeldung (SAR — Suspicious Activity Report): EUCX ist nach Paragraph 43 GwG verpflichtet, bei Verdacht auf Geldwasche oder Terrorismusfinanzierung eine Verdachtsmeldung an die FIU (Financial Intelligence Unit) der deutschen Zollverwaltung zu erstatten. Tipping-Off-Verbot: Es ist verboten, den Verdachtigen uber die Meldung zu informieren.",
+        body: "Transaktionsuberwachung: Kontinuierliche Uberwachung aller Transaktionen auf AML-Indikatoren. Red Flags: Ungewoehnlich hohe Transaktionsvolumina, Zahlungen uber Drittlander ohne wirtschaftlichen Grund, Zahlungen in bar oder via anonyme Zahlungswege, Preisniveaus weit ausserhalb des Marktstandards, hauffiger Partnerawechsel ohne erklarlichen Grund. Verdachtsmeldung (SAR - Suspicious Activity Report): EUCX ist nach Paragraph 43 GwG verpflichtet, bei Verdacht auf Geldwasche oder Terrorismusfinanzierung eine Verdachtsmeldung an die FIU (Financial Intelligence Unit) der deutschen Zollverwaltung zu erstatten. Tipping-Off-Verbot: Es ist verboten, den Verdachtigen uber die Meldung zu informieren.",
       },
       {
         id: "sanktionen",
@@ -1547,7 +1547,7 @@ export const LEXIKON: LexikonEntry[] = [
         faq: [
           { q: "Was ist ein UBO und warum muss er erfasst werden?", a: "UBO (Ultimate Beneficial Owner) ist jede natuerliche Person, die mehr als 25% der Anteile oder Stimmrechte an einem Unternehmen halt oder auf andere Weise Kontrolle ausubt. Die Identifikation ist nach Paragraph 3 GwG Pflicht, da Geldwasche oft uber Firmengeflechte verschleiert wird." },
           { q: "Wie lange dauert das KYC-Verfahren auf EUCX?", a: "Digitale KYC-Pruefung: Bei vollstandigen Unterlagen i.d.R. 1-2 Werktage. Bei komplexen Unternehmensstrukturen oder verstaerkter Sorgfaltspflicht (PEPs, Hochrisikolander): 3-5 Werktage." },
-          { q: "Muss ich als Kaufer auf EUCX selbst GwG-Pflichten erfullen?", a: "Nein, soweit Sie als Vertragspartner von EUCX handeln. EUCX ubernimmt als Pflichtadressat die Sorgfaltspflichten. Sie mussen jedoch wahrheitsgemasse Angaben machen und Unterlagen bereitstellen — falsche Angaben sind strafbar." },
+          { q: "Muss ich als Kaufer auf EUCX selbst GwG-Pflichten erfullen?", a: "Nein, soweit Sie als Vertragspartner von EUCX handeln. EUCX ubernimmt als Pflichtadressat die Sorgfaltspflichten. Sie mussen jedoch wahrheitsgemasse Angaben machen und Unterlagen bereitstellen - falsche Angaben sind strafbar." },
         ],
       },
     ],
@@ -1567,7 +1567,7 @@ export const AKADEMIE_ARTIKEL: AkademieArtikel[] = [
       {
         id: "einfuehrung",
         heading: "Einführung: Warum digitale Warenbörsen?",
-        body: "Der physische Rohstoffhandel in der EU war bis vor wenigen Jahren stark fragmentiert: Preise wurden bilateral verhandelt, oft telefonisch oder per E-Mail. Informationsasymmetrien begünstigten etablierte Marktteilnehmer. Kleinen und mittleren Unternehmen fehlte der Zugang zu transparenten Marktpreisen.\n\nDigitale Warenbörsen wie die EUCX lösen dieses Problem durch ein zentrales, elektronisches Orderbuch. Alle Teilnehmer sehen dieselben Preise — Käufer und Verkäufer werden automatisch zusammengeführt. Das Ergebnis: Engere Spreads, faire Preisbildung und rechtssichere Vertragsschlüsse.",
+        body: "Der physische Rohstoffhandel in der EU war bis vor wenigen Jahren stark fragmentiert: Preise wurden bilateral verhandelt, oft telefonisch oder per E-Mail. Informationsasymmetrien begünstigten etablierte Marktteilnehmer. Kleinen und mittleren Unternehmen fehlte der Zugang zu transparenten Marktpreisen.\n\nDigitale Warenbörsen wie die EUCX lösen dieses Problem durch ein zentrales, elektronisches Orderbuch. Alle Teilnehmer sehen dieselben Preise - Käufer und Verkäufer werden automatisch zusammengeführt. Das Ergebnis: Engere Spreads, faire Preisbildung und rechtssichere Vertragsschlüsse.",
         sub: [
           {
             id: "einfuehrung-vorteile",
@@ -1606,7 +1606,7 @@ export const AKADEMIE_ARTIKEL: AkademieArtikel[] = [
           {
             id: "orderbuch-matching",
             heading: "Matching-Algorithmus und Price Discovery",
-            body: "Price-Time-Priority: Bester Preis zuerst, bei gleichem Preis älteste Order zuerst.\n\nBeispiel Betonstahl:\nSell: 700 €/t — 50 t; 702 €/t — 100 t\nBuy: 698 €/t — 75 t\n\nMarket Order 50 t: Ausführung zu 700 €/t (bestes Angebot). Spread von 698–700 €/t = 2 €/t."
+            body: "Price-Time-Priority: Bester Preis zuerst, bei gleichem Preis älteste Order zuerst.\n\nBeispiel Betonstahl:\nSell: 700 €/t - 50 t; 702 €/t - 100 t\nBuy: 698 €/t - 75 t\n\nMarket Order 50 t: Ausführung zu 700 €/t (bestes Angebot). Spread von 698–700 €/t = 2 €/t."
           }
         ]
       },
@@ -1630,7 +1630,7 @@ export const AKADEMIE_ARTIKEL: AkademieArtikel[] = [
       {
         id: "vertragsschluss",
         heading: "Vertragsschluss und Abwicklung",
-        body: "Mit dem Matching ist der Vertrag geschlossen — elektronisch und rechtlich bindend nach § 127a BGB. Die EUCX-Clearingstelle tritt als zentraler Kontrahent (CCP) auf.",
+        body: "Mit dem Matching ist der Vertrag geschlossen - elektronisch und rechtlich bindend nach § 127a BGB. Die EUCX-Clearingstelle tritt als zentraler Kontrahent (CCP) auf.",
         sub: [
           {
             id: "vertragsschluss-ccp",

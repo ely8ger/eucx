@@ -355,7 +355,7 @@ function VatField({
 
       {status === "valid" && verified && (
         <p style={{ fontSize: 11, color: GREEN, fontFamily: F, margin: 0 }}>
-          {t("register_vies_valid")} — {verified}
+          {t("register_vies_valid")} - {verified}
         </p>
       )}
       {status === "valid" && !verified && (
@@ -370,12 +370,12 @@ function VatField({
       )}
       {status === "unavailable" && (
         <p style={{ fontSize: 11, color: "#b45309", fontFamily: F, margin: 0 }}>
-          Alle Prüfdienste vorübergehend nicht erreichbar — Nummer wird manuell geprüft.
+          Alle Prüfdienste vorübergehend nicht erreichbar - Nummer wird manuell geprüft.
         </p>
       )}
       {status === "idle" && (
         <p style={{ fontSize: 11, color: MUTED, fontFamily: F, margin: 0 }}>
-          {country}123456789 — {t("register_vies_hint")}
+          {country}123456789 - {t("register_vies_hint")}
         </p>
       )}
     </div>
@@ -448,9 +448,9 @@ function HrbField({ value, onChange, onFound }: {
           {status === "loading" ? "Wird geprüft…" : "Prüfen"}
         </button>
       </div>
-      {status === "found"    && <p style={{ fontSize: 11, color: GREEN, fontFamily: F, margin: 0 }}>Unternehmen gefunden — Daten wurden übernommen.</p>}
+      {status === "found"    && <p style={{ fontSize: 11, color: GREEN, fontFamily: F, margin: 0 }}>Unternehmen gefunden - Daten wurden übernommen.</p>}
       {status === "notfound" && <p style={{ fontSize: 11, color: RED,   fontFamily: F, margin: 0 }}>Kein Eintrag gefunden. Bitte manuell ausfüllen.</p>}
-      {status === "idle"     && <p style={{ fontSize: 11, color: MUTED, fontFamily: F, margin: 0 }}>Optional — automatische Datenübernahme aus dem Handelsregister.</p>}
+      {status === "idle"     && <p style={{ fontSize: 11, color: MUTED, fontFamily: F, margin: 0 }}>Optional - automatische Datenübernahme aus dem Handelsregister.</p>}
     </div>
   );
 }
@@ -544,7 +544,7 @@ export default function RegisterPage() {
       } else if (data.unavailable) {
         setLeiStatus("unavailable");
       } else if (data.inactive) {
-        setLeiStatus("invalid"); setLeiError("LEI ist inaktiv — bitte erneuern Sie Ihre LEI.");
+        setLeiStatus("invalid"); setLeiError("LEI ist inaktiv - bitte erneuern Sie Ihre LEI.");
       } else {
         setLeiStatus("invalid"); setLeiError("LEI nicht im GLEIF-Register gefunden.");
       }
@@ -910,7 +910,7 @@ export default function RegisterPage() {
                     onValidated={(data) => { if (data) applyCompanyData(data); }}
                   />
 
-                  {/* LEI — optional */}
+                  {/* LEI - optional */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                     <label htmlFor="lei" style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: F }}>
                       LEI-Nummer (Legal Entity Identifier)
@@ -953,9 +953,9 @@ export default function RegisterPage() {
                       )}
                     </div>
                     {leiStatus === "valid"       && <p style={{ fontSize: 11, color: GREEN,    fontFamily: F, margin: 0 }}>Aktive LEI verifiziert via GLEIF.</p>}
-                    {leiStatus === "unavailable" && <p style={{ fontSize: 11, color: "#b45309", fontFamily: F, margin: 0 }}>GLEIF vorübergehend nicht erreichbar — wird manuell geprüft.</p>}
+                    {leiStatus === "unavailable" && <p style={{ fontSize: 11, color: "#b45309", fontFamily: F, margin: 0 }}>GLEIF vorübergehend nicht erreichbar - wird manuell geprüft.</p>}
                     {leiError                   && <p style={{ fontSize: 11, color: RED,      fontFamily: F, margin: 0 }}>{leiError}</p>}
-                    {leiStatus === "idle"        && <p style={{ fontSize: 11, color: MUTED,    fontFamily: F, margin: 0 }}>Optional — 20-stellige Kennnummer. Wird bei Eingabe automatisch über GLEIF geprüft.</p>}
+                    {leiStatus === "idle"        && <p style={{ fontSize: 11, color: MUTED,    fontFamily: F, margin: 0 }}>Optional - 20-stellige Kennnummer. Wird bei Eingabe automatisch über GLEIF geprüft.</p>}
                   </div>
 
                   <Field
@@ -990,7 +990,7 @@ export default function RegisterPage() {
                     onFound={(data) => applyCompanyData(data)}
                   />
 
-                  {/* Anschrift — auto-fill aus VIES oder HRB */}
+                  {/* Anschrift - auto-fill aus VIES oder HRB */}
                   <Field
                     label={t("register_street")} name="street" required
                     placeholder="Musterstraße 42"
@@ -1084,8 +1084,8 @@ export default function RegisterPage() {
                       Sind Sie im Handelsregister als Geschäftsführer oder mit Einzelvertretungsmacht eingetragen?
                     </p>
                     {[
-                      { value: true,  label: "Ja — ich bin Geschäftsführer oder habe Einzelvertretungsmacht", desc: "Keine weitere Vollmacht erforderlich" },
-                      { value: false, label: "Nein — ich handele auf Basis einer Vollmacht",                  desc: "Vollmacht muss in der KYC-Prüfung hochgeladen werden" },
+                      { value: true,  label: "Ja - ich bin Geschäftsführer oder habe Einzelvertretungsmacht", desc: "Keine weitere Vollmacht erforderlich" },
+                      { value: false, label: "Nein - ich handele auf Basis einer Vollmacht",                  desc: "Vollmacht muss in der KYC-Prüfung hochgeladen werden" },
                     ].map((opt) => (
                       <label
                         key={String(opt.value)}

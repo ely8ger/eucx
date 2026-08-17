@@ -8,7 +8,7 @@ const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
 const SPEC = {
   openapi: "3.0.3",
   info: {
-    title:       "EUCX — European Commodity Exchange API",
+    title:       "EUCX - European Commodity Exchange API",
     description: "Interne API-Referenz. Nur für autorisierte Administratoren.",
     version:     "1.0.0",
     contact:     { name: "EUCX Platform Team", url: "https://eucx.eu" },
@@ -86,7 +86,7 @@ const SPEC = {
     },
     "/auth/login": {
       post: {
-        summary: "Einloggen — gibt JWT Access + Refresh Token zurück",
+        summary: "Einloggen - gibt JWT Access + Refresh Token zurück",
         tags: ["Auth"],
         requestBody: {
           required: true,
@@ -104,7 +104,7 @@ const SPEC = {
           },
         },
         responses: {
-          "200": { description: "Login erfolgreich — accessToken + refreshToken" },
+          "200": { description: "Login erfolgreich - accessToken + refreshToken" },
           "401": { description: "Ungültige Zugangsdaten" },
         },
       },
@@ -172,7 +172,7 @@ const SPEC = {
           { name: "sessionId", in: "query", required: true, schema: { type: "string", format: "uuid" } },
         ],
         responses: {
-          "200": { description: "SSE Stream — orderbook Events alle 1,5s" },
+          "200": { description: "SSE Stream - orderbook Events alle 1,5s" },
         },
       },
     },

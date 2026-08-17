@@ -37,19 +37,19 @@ const DOC_TYPE_LABELS: Record<DocType, string> = {
 };
 
 const DOC_TYPE_HELP: Record<DocType, string> = {
-  TRADE_REGISTER:    "Erhältlich unter handelsregister.de — nicht älter als 3 Monate, ca. 12 €",
+  TRADE_REGISTER:    "Erhältlich unter handelsregister.de - nicht älter als 3 Monate, ca. 12 €",
   VAT_CONFIRMATION:  "Kostenlose Bestätigung vom Bundeszentralamt für Steuern (eop.bff-online.de)",
   ID_DOCUMENT:       "Vorder- und Rückseite des Personalausweises oder Hauptseite des Reisepasses",
-  UBO_DOCUMENT:      "Gesellschafterliste mit Anteilseignern >25 % oder Transparenzregister-Auszug (§ 19 GwG) — Pflicht für alle Marktteilnehmer",
-  SOLVENCY_PROOF:    "Aktuelle Bankauskunft oder Bonitätszertifikat (Creditreform, Schufa) — nicht älter als 3 Monate",
+  UBO_DOCUMENT:      "Gesellschafterliste mit Anteilseignern >25 % oder Transparenzregister-Auszug (§ 19 GwG) - Pflicht für alle Marktteilnehmer",
+  SOLVENCY_PROOF:    "Aktuelle Bankauskunft oder Bonitätszertifikat (Creditreform, Schufa) - nicht älter als 3 Monate",
   POWER_OF_ATTORNEY: "Von der Geschäftsführung unterzeichnete Vollmacht, die Ihre Berechtigung zum Abschluss von Warentermingeschäften auf EUCX ausdrücklich beinhaltet",
   EORI_CERTIFICATE:  "EORI-Registrierungsnachweis für grenzüberschreitenden Warenverkehr in der EU (zoll.de)",
-  ISO_CERTIFICATE:   "ISO 9001 Qualitätsmanagementsystem oder EN ISO 3834 Schweißqualitätsnorm — sofern vorhanden",
-  CBAM_REGISTRATION: "CBAM-Registrierungsnachweis gemäß EU-Verordnung 2023/956 — erforderlich bei Import von Stahl aus Nicht-EU-Ländern",
+  ISO_CERTIFICATE:   "ISO 9001 Qualitätsmanagementsystem oder EN ISO 3834 Schweißqualitätsnorm - sofern vorhanden",
+  CBAM_REGISTRATION: "CBAM-Registrierungsnachweis gemäß EU-Verordnung 2023/956 - erforderlich bei Import von Stahl aus Nicht-EU-Ländern",
   OTHER:             "Weitere relevante Unterlagen, z. B. Gesellschaftsvertrag oder Vollmacht",
 };
 
-// Role-specific doc config — evaluated at render time
+// Role-specific doc config - evaluated at render time
 const REQUIRED_BASE: DocType[] = ["TRADE_REGISTER", "VAT_CONFIRMATION", "ID_DOCUMENT", "UBO_DOCUMENT"];
 const BUYER_REQUIRED_EXTRA: DocType[] = ["SOLVENCY_PROOF"];
 const SELLER_OPTIONAL: DocType[] = ["EORI_CERTIFICATE", "ISO_CERTIFICATE", "CBAM_REGISTRATION"];
@@ -370,17 +370,17 @@ export function VerificationClient() {
             <KycStatusBadge status={kycStatus} />
           </div>
 
-          {/* REJECTED — prominenter Alert oben */}
+          {/* REJECTED - prominenter Alert oben */}
           {hasRejected && (
             <div className="ver-alert red">
               <div className="ver-alert-title">
-                {rejectedDocs.length === 1 ? "Dokument abgelehnt" : `${rejectedDocs.length} Dokumente abgelehnt`} — Bitte neu einreichen
+                {rejectedDocs.length === 1 ? "Dokument abgelehnt" : `${rejectedDocs.length} Dokumente abgelehnt`} - Bitte neu einreichen
               </div>
               <div className="ver-alert-body">
                 {rejectedDocs.map((d) => (
                   <div key={d.id}>
                     <strong>„{d.name}"</strong>
-                    {d.adminNote && <> — Prüfer-Hinweis: <em>{d.adminNote}</em></>}
+                    {d.adminNote && <> - Prüfer-Hinweis: <em>{d.adminNote}</em></>}
                   </div>
                 ))}
                 <div style={{ marginTop: 6 }}>Klicken Sie bei dem betroffenen Dokument auf „Erneut einreichen".</div>
@@ -388,7 +388,7 @@ export function VerificationClient() {
             </div>
           )}
 
-          {/* PENDING — Info-Box */}
+          {/* PENDING - Info-Box */}
           {kycStatus === "PENDING_VERIFICATION" && !submitted && !hasRejected && (
             <div className="ver-alert yellow">
               <div className="ver-alert-title">Dokumente in Prüfung</div>
@@ -405,7 +405,7 @@ export function VerificationClient() {
             <div className="ver-alert green">
               <div className="ver-alert-title">Dokumente erfolgreich eingereicht</div>
               <div className="ver-alert-body">
-                Wir benachrichtigen Sie per E-Mail an <strong>{userEmail}</strong>, sobald die Prüfung abgeschlossen ist — in der Regel unter 24 Stunden.
+                Wir benachrichtigen Sie per E-Mail an <strong>{userEmail}</strong>, sobald die Prüfung abgeschlossen ist - in der Regel unter 24 Stunden.
                 <br />
                 {userRole === "SELLER"
                   ? "Nach erfolgreicher Verifikation können Sie sich für Ausschreibungen registrieren und Gebote abgeben."
@@ -431,7 +431,7 @@ export function VerificationClient() {
             </div>
           )}
 
-          {/* Dokument-Checkliste — Pflichtunterlagen */}
+          {/* Dokument-Checkliste - Pflichtunterlagen */}
           <div className="ver-cl">
             <div className="ver-cl-head">
               Pflichtunterlagen ({requiredTypes.filter((t) => docStatusForType(t) === "approved").length}/{requiredTypes.length} genehmigt)
@@ -466,11 +466,11 @@ export function VerificationClient() {
             })}
           </div>
 
-          {/* Optionale Unterlagen — nur Verkäufer */}
+          {/* Optionale Unterlagen - nur Verkäufer */}
           {optionalTypes.length > 0 && (
             <div className="ver-cl">
               <div className="ver-cl-head" style={{ color: "#64748b" }}>
-                Optionale Unterlagen — Verkäufer
+                Optionale Unterlagen - Verkäufer
               </div>
               {optionalTypes.map((type) => {
                 const st     = docStatusForType(type);
@@ -545,7 +545,7 @@ export function VerificationClient() {
                   {isDragActive ? "Dateien loslassen …" : "Dateien hier ablegen oder tippen zum Auswählen"}
                 </div>
                 <div className="ver-drop-hint">Typ wird automatisch erkannt · Auch auf dem iPad: Foto direkt aus Kamera</div>
-                <div className="ver-drop-types">PDF, JPG, PNG, WEBP — max. 15 MB pro Datei</div>
+                <div className="ver-drop-types">PDF, JPG, PNG, WEBP - max. 15 MB pro Datei</div>
               </div>
 
               {files.length > 0 && (

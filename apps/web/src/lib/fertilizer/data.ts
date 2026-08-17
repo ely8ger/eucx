@@ -68,7 +68,7 @@ export const FERTILIZER_CATEGORIES: FertiCategory[] = [
         bodentyp:       ["Alle Bodentypen"],
         verpackung:     ["Big Bag 500 kg", "Big Bag 1.000 kg", "Schüttgut"],
         zertifizierung: ["EU-Verordnung 2019/1009", "REACH"],
-        beschreibung:   "Kaliumsalz 60 % (Kaliumchlorid mit 60 % K₂O-Gehalt) ist einer der meistverwendeten Kaliumdünger weltweit. Kalium ist einer der Hauptnährstoffe für das Pflanzenwachstum — es steigert die Fruchtbarkeit, beschleunigt die Photosynthese und erhöht die Widerstandsfähigkeit der Pflanzen gegen Krankheiten, Trockenheit und Lagerung. Nicht geeignet für chloridempfindliche Kulturen wie Tabak, Hopfen, Beeren und bestimmte Gemüsesorten.",
+        beschreibung:   "Kaliumsalz 60 % (Kaliumchlorid mit 60 % K₂O-Gehalt) ist einer der meistverwendeten Kaliumdünger weltweit. Kalium ist einer der Hauptnährstoffe für das Pflanzenwachstum - es steigert die Fruchtbarkeit, beschleunigt die Photosynthese und erhöht die Widerstandsfähigkeit der Pflanzen gegen Krankheiten, Trockenheit und Lagerung. Nicht geeignet für chloridempfindliche Kulturen wie Tabak, Hopfen, Beeren und bestimmte Gemüsesorten.",
         technischeDaten: [
           { label: "Erscheinungsbild",                               wert: "Rosa oder leicht gefärbte Granulate" },
           { label: "Massenanteil Kalium (als K₂O), %, mind.",        wert: "60" },
@@ -136,7 +136,7 @@ export const FERTILIZER_CATEGORIES: FertiCategory[] = [
         bodentyp:       ["Alle Bodentypen"],
         verpackung:     ["Big Bag 500 kg", "Big Bag 1.000 kg", "Schüttgut"],
         zertifizierung: ["EU-Verordnung 2019/1009", "REACH"],
-        beschreibung:   "Weißes MOP (Muriate of Potash) ist ein hochwertiges, feingranuliertes Kaliumchlorid in weißer Ausführung. Mit einem K₂O-Gehalt von mindestens 62 % und einem KCl-Gehalt von mindestens 98 % besonders rein. Konzipiert für den Präzisionsanbau — gleichmäßige Partikelgröße für exakte Ausbringung mit modernen Düngerstreuern.",
+        beschreibung:   "Weißes MOP (Muriate of Potash) ist ein hochwertiges, feingranuliertes Kaliumchlorid in weißer Ausführung. Mit einem K₂O-Gehalt von mindestens 62 % und einem KCl-Gehalt von mindestens 98 % besonders rein. Konzipiert für den Präzisionsanbau - gleichmäßige Partikelgröße für exakte Ausbringung mit modernen Düngerstreuern.",
         technischeDaten: [
           { label: "Erscheinungsbild",                               wert: "Kristalle in Weiß / Grauton" },
           { label: "Massenanteil K₂O, %, mind.",                    wert: "62,0" },
@@ -262,7 +262,7 @@ export const FERTILIZER_CATEGORIES: FertiCategory[] = [
         bodentyp:       ["Alle Bodentypen", "Sandige Böden", "Lehmige Böden", "Tonböden"],
         verpackung:     ["Big Bag 500 kg", "Big Bag 1.000 kg", "Schüttgut"],
         zertifizierung: ["EU-Verordnung 2019/1009", "EN 13657", "REACH"],
-        beschreibung:   "Harnstoff 46 % enthält 46 % Stickstoff in Amidform — dem höchsten Stickstoffgehalt aller festen Mineraldünger. Nach Auflösung im Boden wird der Stickstoff zunächst in Ammonium und dann in Nitrat umgewandelt und steht der Pflanze optimal zur Verfügung. Einsetzbar zur Boden- und Blattbehandlung auf allen Bodentypen außer stark alkalischen oder sauren Böden. Wirtschaftlichster Stickstoffträger im Ackerbau.",
+        beschreibung:   "Harnstoff 46 % enthält 46 % Stickstoff in Amidform - dem höchsten Stickstoffgehalt aller festen Mineraldünger. Nach Auflösung im Boden wird der Stickstoff zunächst in Ammonium und dann in Nitrat umgewandelt und steht der Pflanze optimal zur Verfügung. Einsetzbar zur Boden- und Blattbehandlung auf allen Bodentypen außer stark alkalischen oder sauren Böden. Wirtschaftlichster Stickstoffträger im Ackerbau.",
         technischeDaten: [
           { label: "Erscheinungsbild",                               wert: "Rosa oder leicht gefärbte Granulate (Prills)" },
           { label: "Stickstoffgehalt (N), %, mind. (Trockenmasse)",  wert: "46,2" },

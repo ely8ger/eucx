@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
 
         await sendAuctionMail({
           to:       user.email,
-          subject:  "EUCX — Konto gesperrt: Bitte Passwort zurücksetzen",
+          subject:  "EUCX - Konto gesperrt: Bitte Passwort zurücksetzen",
           template: "password_reset",
           data:     { token: rawToken, reason: "BRUTE_FORCE_LOCK", email: user.email },
         });
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Passwort korrekt — Fehlzähler zurücksetzen
+    // Passwort korrekt - Fehlzähler zurücksetzen
     if (user.failedLoginCount > 0 || user.lockedUntil) {
       await db.user.update({
         where: { id: user.id },

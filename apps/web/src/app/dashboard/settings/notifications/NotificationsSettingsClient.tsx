@@ -154,7 +154,7 @@ export function NotificationsSettingsClient() {
 
           {/* Info-Banner */}
           <div className="nn-info">
-            Echtzeit-Benachrichtigungen (In-App) sind systemweit immer aktiv und können nicht deaktiviert werden —
+            Echtzeit-Benachrichtigungen (In-App) sind systemweit immer aktiv und können nicht deaktiviert werden -
             sie sind für einen sicheren Handelsbetrieb erforderlich.
             E-Mail-Benachrichtigungen können Sie nach Ihren Präferenzen konfigurieren.
           </div>
@@ -170,7 +170,7 @@ export function NotificationsSettingsClient() {
                     E-Mail-Benachrichtigungen
                   </div>
                   <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>
-                    Zustellung an Ihre hinterlegte E-Mail-Adresse — auch wenn Sie nicht eingeloggt sind
+                    Zustellung an Ihre hinterlegte E-Mail-Adresse - auch wenn Sie nicht eingeloggt sind
                   </div>
                 </div>
 
@@ -220,7 +220,7 @@ export function NotificationsSettingsClient() {
                     <div className="nn-row-label">Angebotsphase geöffnet</div>
                     <div className="nn-row-desc">
                       E-Mail, wenn eine Handelssitzung, für die Sie registriert sind,
-                      in die Angebotsphase übergeht — mit Startpreis und verbleibender Zeit.
+                      in die Angebotsphase übergeht - mit Startpreis und verbleibender Zeit.
                     </div>
                     <div className="nn-row-when">
                       <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="#d1d5db" strokeWidth="1.2"/><path d="M5 3v2.5l1.5 1" stroke="#d1d5db" strokeWidth="1.2" strokeLinecap="round"/></svg>
@@ -240,7 +240,7 @@ export function NotificationsSettingsClient() {
                 <div style={{ padding: "14px 20px", borderBottom: `2px solid #059669`, background: "#fff" }}>
                   <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: ".09em", textTransform: "uppercase" as const, color: "#059669", display: "flex", alignItems: "center", gap: 8 }}>
                     <span className="nn-active-dot" />
-                    In-App-Benachrichtigungen — Immer aktiv
+                    In-App-Benachrichtigungen - Immer aktiv
                   </div>
                   <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>
                     Echtzeit-Toasts + Glocken-Symbol im Header · Keine Konfiguration erforderlich
@@ -278,7 +278,7 @@ export function NotificationsSettingsClient() {
                 <div className="nn-hint-text">
                   In-App-Benachrichtigungen werden in der Glocke oben rechts gesammelt und sind
                   7 Tage lang abrufbar. Für dauerhaften Zugriff auf Handelsereignisse
-                  empfehlen wir die <a href="/dashboard/settings/api-keys" style={{ color: BLUE, fontWeight: 600 }}>API-Schlüssel-Integration</a> —
+                  empfehlen wir die <a href="/dashboard/settings/api-keys" style={{ color: BLUE, fontWeight: 600 }}>API-Schlüssel-Integration</a> -
                   so können Sie alle Ereignisse in Ihr eigenes System überführen.
                 </div>
               </div>

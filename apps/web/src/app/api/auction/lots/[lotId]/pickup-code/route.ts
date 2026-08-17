@@ -4,7 +4,7 @@
  * Gibt den Abholcode (6-stellig) für einen Kontrakt zurück.
  * Falls noch kein Code existiert und Status READY_FOR_PICKUP: wird generiert.
  *
- * Auth: Bearer JWT — Seller (Eigentümer), Buyer des Lots, oder Admin
+ * Auth: Bearer JWT - Seller (Eigentümer), Buyer des Lots, oder Admin
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";

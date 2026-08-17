@@ -119,7 +119,7 @@ export default function NewOrderPage() {
   const cbamLookup    = CO2_LOOKUP[subcategory];
   const hasBofOption  = cbamLookup?.bof !== null;
 
-  // Auto-Fill: CO₂-Gesamtemissionen = Rate × Menge — aktualisiert bei Ware/Verfahren/Menge
+  // Auto-Fill: CO₂-Gesamtemissionen = Rate × Menge - aktualisiert bei Ware/Verfahren/Menge
   useEffect(() => {
     if (!cbamLookup) return;
     const method = productionMethod ?? "EAF";
@@ -206,7 +206,7 @@ export default function NewOrderPage() {
               </div>
             </Card>
 
-            {/* CBAM-Block — nur für relevante Kategorien */}
+            {/* CBAM-Block - nur für relevante Kategorien */}
             {showCbam && (
               <Card header={
                 <div className="flex items-center gap-2">
@@ -220,8 +220,8 @@ export default function NewOrderPage() {
                     placeholder="Verfahren wählen …"
                     {...register("productionMethod")}
                   >
-                    <option value="EAF">EAF — Elektrolichtbogenofen (Recycling-Stahl)</option>
-                    {hasBofOption && <option value="BOF">BF-BOF — Hochofen / Sauerstoffkonverter (Primärstahl)</option>}
+                    <option value="EAF">EAF - Elektrolichtbogenofen (Recycling-Stahl)</option>
+                    {hasBofOption && <option value="BOF">BF-BOF - Hochofen / Sauerstoffkonverter (Primärstahl)</option>}
                   </Select>
 
                   <div>

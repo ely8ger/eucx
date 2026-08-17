@@ -1,5 +1,5 @@
 /**
- * PriceEngine — Kernlogik der Reverse Auction (BUTB)
+ * PriceEngine - Kernlogik der Reverse Auction (BUTB)
  *
  * Verantwortlichkeiten:
  *   1. Gebot validieren (Phase, Preis, Verkäufer-Registrierung)
@@ -43,7 +43,7 @@ export async function placeBid(
     return { ok: false, error: "Preis muss größer 0 sein", code: 422 };
   }
 
-  // Alles in einer Transaktion — Row-Lock schützt currentBest
+  // Alles in einer Transaktion - Row-Lock schützt currentBest
   return db.$transaction(async (tx) => {
     // ── 1. Lot mit Row-Level-Lock laden ───────────────────────────────
     const lots = await tx.$queryRaw<
@@ -172,7 +172,7 @@ export async function concludeLot(lotId: string): Promise<{ ok: boolean; winnerI
   });
 }
 
-// Interne Version — muss bereits innerhalb einer Transaktion laufen
+// Interne Version - muss bereits innerhalb einer Transaktion laufen
 async function _concludeLot(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx: any,

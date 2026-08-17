@@ -117,7 +117,7 @@ export default function FormularePage() {
             </div>
             <div>
               <p style={{ fontSize: 11, color: "rgba(255,255,255,.4)", letterSpacing: "0.12em", textTransform: "uppercase", margin: "0 0 8px" }}>
-                Regelwerk — Formulare
+                Regelwerk - Formulare
               </p>
               <h1 style={{ fontSize: 34, fontWeight: 300, color: "#fff", margin: 0, lineHeight: 1.2, letterSpacing: "-0.01em" }}>
                 Formulare & <span style={{ fontWeight: 700 }}>Anträge</span>
@@ -214,7 +214,7 @@ export default function FormularePage() {
       <footer style={{ backgroundColor: DARK, borderTop: `3px solid ${BLUE}`, padding: "48px 32px", fontFamily: SANS }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 24 }}>
           <div>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,.35)", margin: "0 0 8px" }}>EUCX — European Union Commodity Exchange</p>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,.35)", margin: "0 0 8px" }}>EUCX - European Union Commodity Exchange</p>
             <p style={{ fontSize: 12, color: "rgba(255,255,255,.2)", margin: 0 }}>Physische Spot-Warenhandelsplattform · Frankfurt am Main</p>
           </div>
           <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>

@@ -1,6 +1,6 @@
 /**
- * GET  /api/seller/inventory  — Alle Chargen des eingeloggten Verkäufers
- * POST /api/seller/inventory  — Neue Charge anlegen
+ * GET  /api/seller/inventory  - Alle Chargen des eingeloggten Verkäufers
+ * POST /api/seller/inventory  - Neue Charge anlegen
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";

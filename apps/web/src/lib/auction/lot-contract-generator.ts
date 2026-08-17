@@ -4,7 +4,7 @@
  * Generiert einen Auktions-Kaufvertrag als A4-PDF mit pdf-lib.
  * Kein native-Code, vollständig Vercel-kompatibel.
  *
- * Layout: Gov-Blue (#154194) — EUCX Design-Sprache
+ * Layout: Gov-Blue (#154194) - EUCX Design-Sprache
  *
  * ─── Fälschungssicherheit (SHA-256) ─────────────────────────────────────────
  *   1. PDF wird aus Lot-Daten generiert → pdfBytes (Uint8Array)
@@ -53,13 +53,13 @@ export interface LotContractData {
   sellerFeeAmount: string;
   buyerFeeRate:    string;
   buyerFeeAmount:  string;
-  // Warenspezifikation (Pflichtangaben — vertragswesentlich §§ 433, 434 BGB)
+  // Warenspezifikation (Pflichtangaben - vertragswesentlich §§ 433, 434 BGB)
   hsCode?:         string;   // Zolltarifnummer, z.B. "7214 20 00"
   qualityGrade?:   string;   // Güte / Qualitätsnorm, z.B. "B500B · EN 10080"
   deliveryPeriod?: string;   // Lieferzeitraum, z.B. "4–6 Wochen ab Zuschlag"
   paymentTerms?:   string;   // Zahlungsbedingungen, z.B. "30 Tage netto"
   vatTreatment?:   string;   // USt.-Behandlung, z.B. "§13b UStG Reverse Charge"
-  // CBAM-Daten (Carbon Border Adjustment Mechanism — EU-Verordnung 2023/956)
+  // CBAM-Daten (Carbon Border Adjustment Mechanism - EU-Verordnung 2023/956)
   co2PerTonne?:      string; // kg CO₂-Äq./Tonne
   countryOfOrigin?:  string; // ISO 3166-1 alpha-2
   productionSiteId?: string; // EU-CBAM-Registry-ID
@@ -299,7 +299,7 @@ export async function generateLotContract(data: LotContractData): Promise<Genera
   y -= 10;
 
   // ── §5 CBAM-Angaben ──────────────────────────────────────────────────────────
-  sectionHeader(page, bold, "§ 5  CBAM — Carbon Border Adjustment Mechanism (EU-Verordnung 2023/956)", M, y, CW, C);
+  sectionHeader(page, bold, "§ 5  CBAM - Carbon Border Adjustment Mechanism (EU-Verordnung 2023/956)", M, y, CW, C);
   y -= 16;
 
   const hasCbam = data.co2PerTonne || data.countryOfOrigin || data.productionSiteId;
@@ -307,7 +307,7 @@ export async function generateLotContract(data: LotContractData): Promise<Genera
   if (hasCbam) {
     // Grüner Hinweis-Balken
     page.drawRectangle({ x: M, y: y - 14, width: CW, height: 14, color: rgb(0.9, 1, 0.93), borderColor: rgb(0, 0.65, 0.3), borderWidth: 0.5 });
-    txt(page, "CBAM-Angaben gemäß Art. 35 Abs. 2 EU-Verordnung 2023/956 — Deklarationspflichtige Ware", M + 8, y - 10, bold, 7, rgb(0, 0.5, 0.2));
+    txt(page, "CBAM-Angaben gemäß Art. 35 Abs. 2 EU-Verordnung 2023/956 - Deklarationspflichtige Ware", M + 8, y - 10, bold, 7, rgb(0, 0.5, 0.2));
     y -= 22;
 
     const cbamRows: [string, string][] = [];
@@ -374,7 +374,7 @@ export async function generateLotContract(data: LotContractData): Promise<Genera
   txt(page, "EUCX INTEGRITÄTS-FINGERPRINT", M + 8, 68, bold, 7, C.govBlue);
   txt(page, "Algorithmus: SHA-256  ·  Jede nachträgliche Änderung am Dokument ergibt einen anderen Hash.", M + 8, 56, normal, 6, C.gray);
   txt(page, "SHA-256:", M + 8, 42, bold, 6.5, C.gray);
-  txt(page, "[BERECHNET NACH ABSCHLUSS — SIEHE EUCX AUDITLOG]", M + 55, 42, mono, 6, C.gray);
+  txt(page, "[BERECHNET NACH ABSCHLUSS - SIEHE EUCX AUDITLOG]", M + 55, 42, mono, 6, C.gray);
   txt(page, `Vertrag generiert: ${new Date().toLocaleString("de-DE")}  ·  EUCX Platform  ·  eucx.eu`, M + 8, 28, normal, 6, C.gray);
   txt(page, "Seite 1 / 1", width - M - 38, 28, normal, 6, C.gray);
 

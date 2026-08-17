@@ -4,7 +4,7 @@
  * Gibt alle LotContracts des eingeloggten Verkäufers zurück,
  * angereichert mit Lot-Daten (Ware, Menge, Incoterms) für das Logistics-Dashboard.
  *
- * Auth: Bearer JWT — Seller oder Admin
+ * Auth: Bearer JWT - Seller oder Admin
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";

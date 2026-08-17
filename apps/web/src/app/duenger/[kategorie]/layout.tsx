@@ -6,8 +6,8 @@ export async function generateMetadata({ params }: { params: Promise<{ kategorie
   const kat   = FERTILIZER_CATEGORIES.find(c => c.id === kategorie);
   const label = kat?.label ?? kategorie;
   const desc  = kat?.description
-    ? `${kat.description.slice(0, 110)} — Institutionell handeln auf EUCX.`
-    : `${label} — Düngemittel institutionell kaufen und verkaufen auf EUCX.`;
+    ? `${kat.description.slice(0, 110)} - Institutionell handeln auf EUCX.`
+    : `${label} - Düngemittel institutionell kaufen und verkaufen auf EUCX.`;
 
   return {
     title: `${label} kaufen | EUCX Düngemittelmarkt`,

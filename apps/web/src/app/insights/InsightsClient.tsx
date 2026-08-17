@@ -265,7 +265,7 @@ export function InsightsClient() {
               Marktwissen &<br /><strong style={{ fontWeight: 700 }}>Insights</strong>
             </h1>
             <p style={{ fontSize: 15, color: "#8aa8cc", maxWidth: 560, lineHeight: 1.7, margin: "0 0 40px" }}>
-              Rohstoff-Lexikon, Marktanalysen, Händler-Akademie und EU-Regulatorik — für professionelle B2B-Handelsteilnehmer.
+              Rohstoff-Lexikon, Marktanalysen, Händler-Akademie und EU-Regulatorik - für professionelle B2B-Handelsteilnehmer.
             </p>
             <StatsBar />
           </div>

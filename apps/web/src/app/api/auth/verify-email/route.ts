@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
 }
 
 /**
- * POST /api/auth/verify-email/resend — Code erneut senden
+ * POST /api/auth/verify-email/resend - Code erneut senden
  * Body: { userId: string }
  */
 export async function PUT(req: NextRequest) {
@@ -103,7 +103,7 @@ export async function PUT(req: NextRequest) {
     const { sendAuctionMail } = await import("@/lib/notifications/mailer");
     await sendAuctionMail({
       to:       user.email,
-      subject:  "EUCX — Neuer Bestätigungscode",
+      subject:  "EUCX - Neuer Bestätigungscode",
       template: "email_verification",
       data:     { code },
     });

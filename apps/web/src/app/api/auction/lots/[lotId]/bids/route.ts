@@ -78,7 +78,7 @@ async function _handlePost(
     return NextResponse.json({ error: "Nur Verkäufer können Gebote abgeben" }, { status: 403 });
   }
 
-  // ── [TESTMODE-01] KYC + Deposit-Check — DEAKTIVIERT ─────────────
+  // ── [TESTMODE-01] KYC + Deposit-Check - DEAKTIVIERT ─────────────
   // Grund: Test-Seller nicht verifiziert. Wieder aktivieren wenn Admin-KYC-Flow bereit.
   // Original: checkBidEligibility(token.userId, lotId)
   // ──────────────────────────────────────────────────────────────────
@@ -109,7 +109,7 @@ async function _handlePost(
     );
   }
 
-  // ── [TESTMODE-02] CBAM-Precheck — DEAKTIVIERT ────────────────────
+  // ── [TESTMODE-02] CBAM-Precheck - DEAKTIVIERT ────────────────────
   // Grund: Test-Seller hat keine SellerCharge. Wieder aktivieren wenn Chargen-Flow bereit.
   // Original: if (lot.co2PerTonne !== null) { const validCharge = ... }
   // ──────────────────────────────────────────────────────────────────

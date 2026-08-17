@@ -1,6 +1,6 @@
 /**
- * PATCH  /api/seller/inventory/[id]  — Charge aktualisieren (Status, Daten)
- * DELETE /api/seller/inventory/[id]  — Charge löschen (nur wenn AVAILABLE)
+ * PATCH  /api/seller/inventory/[id]  - Charge aktualisieren (Status, Daten)
+ * DELETE /api/seller/inventory/[id]  - Charge löschen (nur wenn AVAILABLE)
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";

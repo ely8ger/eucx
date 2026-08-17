@@ -114,12 +114,12 @@ function trendColor(t: string | undefined) {
 
 // ── Archiv-Daten ─────────────────────────────────────────────────────────────
 const archiv = [
-  { kw: "KW 11 / 2026", datum: "14. März 2026", headline: "Schrottpreise brechen ein — Betonstahl unter Druck" },
+  { kw: "KW 11 / 2026", datum: "14. März 2026", headline: "Schrottpreise brechen ein - Betonstahl unter Druck" },
   { kw: "KW 10 / 2026", datum: "7. März 2026", headline: "Kupfer auf 3-Monats-Hoch: Elektrifizierungseffekt oder Spekulation?" },
   { kw: "KW 9 / 2026", datum: "28. Feb. 2026", headline: "CBAM-Übergangsphase: Importstahl aus der Türkei vor dem Preisanstieg" },
-  { kw: "KW 8 / 2026", datum: "21. Feb. 2026", headline: "Erdgas (TTF) fällt auf 6-Monats-Tief — Energieintensive Industrie atmet auf" },
+  { kw: "KW 8 / 2026", datum: "21. Feb. 2026", headline: "Erdgas (TTF) fällt auf 6-Monats-Tief - Energieintensive Industrie atmet auf" },
   { kw: "KW 7 / 2026", datum: "14. Feb. 2026", headline: "Weizen: Schwarzmeer-Export bricht Preisrekord" },
-  { kw: "KW 6 / 2026", datum: "7. Feb. 2026", headline: "Nickel-Korrektur: -11 % seit Jahresbeginn — LME-Lageraufbau dominiert" },
+  { kw: "KW 6 / 2026", datum: "7. Feb. 2026", headline: "Nickel-Korrektur: -11 % seit Jahresbeginn - LME-Lageraufbau dominiert" },
   { kw: "KW 5 / 2026", datum: "31. Jan. 2026", headline: "Stahlmarkt Q1 2026: Saisonaler Aufschwung oder strukturelle Wende?" },
   { kw: "KW 4 / 2026", datum: "24. Jan. 2026", headline: "Düngemittel: Harnstoff-Preise steigen vor Frühjahrsbestellung" },
 ];
@@ -151,7 +151,7 @@ export default function AnalysenPage() {
             Marktanalysen
           </h1>
           <p style={{ fontSize: 15, color: "#8aa8cc", margin: "0 0 24px", fontWeight: 300 }}>
-            Wöchentliche Preisberichte &amp; Kommentare — KW 12 / 2026
+            Wöchentliche Preisberichte &amp; Kommentare - KW 12 / 2026
           </p>
 
           {/* Badges */}
@@ -196,20 +196,20 @@ export default function AnalysenPage() {
             Marktkommentar KW 12 / 2026
           </h2>
           <p style={{ fontSize: 12, color: "#888", margin: "0 0 24px", letterSpacing: "0.04em" }}>
-            21. März 2026 — EUCX Research Team
+            21. März 2026 - EUCX Research Team
           </p>
 
           <p style={{ fontSize: 14, lineHeight: 1.8, color: "#333", margin: "0 0 18px" }}>
             Der Betonstahl-Markt zeigt sich nach dem scharfen Rückgang im Februar deutlich stabilisiert
             (+3,2 % WoW auf 698 €/t DAP Frankfurt). Als Haupttreiber sind die gestiegene Bauaktivität
-            in Deutschland und Polen sowie rückläufige Schrottpreise in der Türkei zu nennen — dem
+            in Deutschland und Polen sowie rückläufige Schrottpreise in der Türkei zu nennen - dem
             größten EAF-Stahlproduzenten Europas. Türkische Werke haben ihre Schrottbeschaffungskosten
             signifikant reduziert, was kurzfristig zu wettbewerbsfähigeren Exportpreisen führt, jedoch
             gleichzeitig die Preisdurchsetzungskraft bei Endabnehmern begrenzt.
           </p>
           <p style={{ fontSize: 14, lineHeight: 1.8, color: "#333", margin: "0 0 18px" }}>
             Die Notierungen für Walzdraht bleiben hingegen unter Druck: Überkapazitäten aus
-            osteuropäischen Werken — insbesondere aus Rumänien und der Ukraine — drücken die Spotpreise
+            osteuropäischen Werken - insbesondere aus Rumänien und der Ukraine - drücken die Spotpreise
             auf 672 €/t DAP Duisburg (-0,6 % WoW). Im Agrarsektor sorgt ein angespanntes
             Wettergeschehen in der Schwarzmeerregion für spürbaren Preisdruck bei MATIF-Weizen
             (+1,8 % WoW auf 218 €/t). Analysten beobachten die ukrainischen Winterweizenbestände
@@ -236,10 +236,10 @@ export default function AnalysenPage() {
             }}
           >
             „Ausblick: Wir erwarten für KW 13 eine Seitwärtsbewegung bei Baustahl. CBAM-Effekte werden
-            ab Q3 2026 die Importpreise spürbar anheben — langfristig bullisch für EU-Produzenten."
+            ab Q3 2026 die Importpreise spürbar anheben - langfristig bullisch für EU-Produzenten."
             <br />
             <span style={{ fontStyle: "normal", fontSize: 12, color: "#666", display: "block", marginTop: 8 }}>
-              — EUCX Research Team, 21. März 2026
+              - EUCX Research Team, 21. März 2026
             </span>
           </blockquote>
         </div>
@@ -253,7 +253,7 @@ export default function AnalysenPage() {
           Börsenpreisen. Δ WoW = Veränderung gegenüber Vorwoche, Δ MoM = gegenüber Vormonat.
         </p>
 
-        {/* Tabelle 1 — Stahl & Eisen */}
+        {/* Tabelle 1 - Stahl & Eisen */}
         <h3 style={{ fontSize: 15, fontWeight: 700, color: BLUE, margin: "0 0 12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
           Stahl &amp; Eisen
         </h3>
@@ -287,7 +287,7 @@ export default function AnalysenPage() {
           </table>
         </div>
 
-        {/* Tabelle 2 — Nichteisenmetalle */}
+        {/* Tabelle 2 - Nichteisenmetalle */}
         <h3 style={{ fontSize: 15, fontWeight: 700, color: BLUE, margin: "0 0 12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
           Nichteisenmetalle
         </h3>
@@ -320,7 +320,7 @@ export default function AnalysenPage() {
           </table>
         </div>
 
-        {/* Tabelle 3 — Agrar & Düngemittel */}
+        {/* Tabelle 3 - Agrar & Düngemittel */}
         <h3 style={{ fontSize: 15, fontWeight: 700, color: BLUE, margin: "0 0 12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
           Agrar &amp; Düngemittel
         </h3>
@@ -352,7 +352,7 @@ export default function AnalysenPage() {
           </table>
         </div>
 
-        {/* Tabelle 4 — Energie & CO₂ */}
+        {/* Tabelle 4 - Energie & CO₂ */}
         <h3 style={{ fontSize: 15, fontWeight: 700, color: BLUE, margin: "0 0 12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
           Energie &amp; CO₂
         </h3>
@@ -395,22 +395,22 @@ export default function AnalysenPage() {
           </h3>
 
           <p style={{ fontSize: 14, lineHeight: 1.85, color: "#333", margin: "0 0 16px" }}>
-            Nach einem turbulenten Februar — geprägt von sinkenden Spotpreisen infolge schwacher
-            Baunachfrage und hoher Lagerbestände bei deutschen Händlern — zeichnet sich zum Ende
+            Nach einem turbulenten Februar - geprägt von sinkenden Spotpreisen infolge schwacher
+            Baunachfrage und hoher Lagerbestände bei deutschen Händlern - zeichnet sich zum Ende
             von KW 12 eine deutliche Stabilisierung ab. Der Preis für{" "}
             <Link href="/insights/lexikon/betonstahl" style={{ color: BLUE, textDecoration: "underline" }}>
               Betonstahl
             </Link>{" "}
-            (B500B, 12 mm, DAP Frankfurt) notiert bei 698 €/t — ein Zuwachs von 3,2 % gegenüber
+            (B500B, 12 mm, DAP Frankfurt) notiert bei 698 €/t - ein Zuwachs von 3,2 % gegenüber
             der Vorwoche. Damit liegt das Material wieder nahe am Jahresauftaktsniveau von Anfang Januar
             (706 €/t).
           </p>
 
           <p style={{ fontSize: 14, lineHeight: 1.85, color: "#333", margin: "0 0 16px" }}>
-            <strong>Angebotsseite — Türkei dominiert das EAF-Segment:</strong> Die Türkei ist mit einer
+            <strong>Angebotsseite - Türkei dominiert das EAF-Segment:</strong> Die Türkei ist mit einer
             Jahresproduktion von über 40 Mio. Tonnen der wichtigste EAF-Stahlproduzent Europas. In den
             vergangenen Wochen sind die lokalen Schrottpreise in türkischen Häfen um rund 15 $/t
-            gefallen — ein Effekt des geringeren Angebots aus den USA (Exportdrosselung wegen Binnenpreisen)
+            gefallen - ein Effekt des geringeren Angebots aus den USA (Exportdrosselung wegen Binnenpreisen)
             und steigender europäischer Schrottsammlung. Diese Kostenentlastung auf der Inputseite erlaubt
             türkischen Exporteuren, ihre Angebote leicht zu senken, ohne Margen zu gefährden. Der
             resultierende Wettbewerbsdruck auf EU-Hersteller ist real, wird aber durch steigende{" "}
@@ -421,10 +421,10 @@ export default function AnalysenPage() {
           </p>
 
           <p style={{ fontSize: 14, lineHeight: 1.85, color: "#333", margin: "0 0 16px" }}>
-            <strong>Nachfrageseite — Deutschland, Polen, Frankreich:</strong> Im deutschen Bausektor
+            <strong>Nachfrageseite - Deutschland, Polen, Frankreich:</strong> Im deutschen Bausektor
             signalisieren aktuelle Auftragseingänge eine vorsichtige Erholung nach dem langen Frosteinbruch
-            im Januar/Februar. Der Rückstau an verschobenen Projekten — insbesondere im sozialen Wohnungsbau
-            und im Infrastrukturbereich — stützt die Nachfrage für Q2 2026. In Polen setzt die fortgesetzte
+            im Januar/Februar. Der Rückstau an verschobenen Projekten - insbesondere im sozialen Wohnungsbau
+            und im Infrastrukturbereich - stützt die Nachfrage für Q2 2026. In Polen setzt die fortgesetzte
             EU-Kohäsionsfondförderung neue Impulse: Mehrere Großprojekte in der Transportinfrastruktur
             (Autobahnen A1 Erweiterung, S7 Lückenschluss) benötigen signifikante Betonstahl-Volumina.
             Frankreich bleibt verhalten; die angespannte Haushaltslage bremst staatliche Bauprojekte.
@@ -435,7 +435,7 @@ export default function AnalysenPage() {
             Anfang Q3 2026. Importeure von Betonstahl aus Drittstaaten müssen dann CBAM-Zertifikate
             vorweisen, deren Preis an den EU-ETS-Kurs (aktuell 65,40 €/tCO₂) gekoppelt ist. Bei einem
             CO₂-Intensitätswert von rund 1,6 tCO₂/t für türkischen EAF-Stahl ergibt sich ein
-            theoretischer CBAM-Aufschlag von ca. 100–105 €/t — ein erheblicher Wettbewerbsvorteil für
+            theoretischer CBAM-Aufschlag von ca. 100–105 €/t - ein erheblicher Wettbewerbsvorteil für
             EU-integrierte Hochofenproduzenten. Die Markterwartung dieser Verschiebung ist bereits
             partiell in den Futures eingepreist.
           </p>
@@ -443,14 +443,14 @@ export default function AnalysenPage() {
           <p style={{ fontSize: 14, lineHeight: 1.85, color: "#333", margin: "0 0 24px" }}>
             <strong>Energiekosten bleiben entscheidender Faktor:</strong> EAF-Stahlwerke benötigen
             je nach Effizienz 380–480 kWh Strom pro Tonne Rohstahl. Bei einem EEX-Base-Preis von
-            89,50 €/MWh entspricht das Energiekosten von 34–43 €/t allein für Strom — ein wesentlicher
+            89,50 €/MWh entspricht das Energiekosten von 34–43 €/t allein für Strom - ein wesentlicher
             Kostentreiber, der die Produktionsmengenentscheidungen prägt. Werke mit langfristigen
             PPA-Verträgen (Power Purchase Agreements) sind hier klar im Vorteil.
           </p>
 
           {/* Regionale Preisunterschiede */}
           <h4 style={{ fontSize: 13, fontWeight: 700, color: "#444", margin: "0 0 12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Regionale Preisunterschiede — Betonstahl B500B, KW 12
+            Regionale Preisunterschiede - Betonstahl B500B, KW 12
           </h4>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
@@ -463,7 +463,7 @@ export default function AnalysenPage() {
               </thead>
               <tbody>
                 {[
-                  ["Frankfurt (DE)", "698 €/t", "—"],
+                  ["Frankfurt (DE)", "698 €/t", "-"],
                   ["Paris (FR)", "704 €/t", "+0,9 %"],
                   ["Warschau (PL)", "682 €/t", "-2,3 %"],
                   ["Madrid (ES)", "718 €/t", "+2,9 %"],
@@ -471,7 +471,7 @@ export default function AnalysenPage() {
                   <tr key={ort}>
                     <td style={{ ...tdStyle, fontWeight: 600 }}>{ort}</td>
                     <td style={tdStyle}>{preis}</td>
-                    <td style={{ ...tdStyle, color: delta === "—" ? "#666" : deltaColor(delta), fontWeight: 600 }}>
+                    <td style={{ ...tdStyle, color: delta === "-" ? "#666" : deltaColor(delta), fontWeight: 600 }}>
                       {delta}
                     </td>
                   </tr>
@@ -501,28 +501,28 @@ export default function AnalysenPage() {
 
           <p style={{ fontSize: 14, lineHeight: 1.85, color: "#333", margin: "0 0 16px" }}>
             <strong>LME-Lagerbestände auf Mehrmonatstief:</strong> Die offiziellen LME-Lagerbestände
-            lagen per 21. März bei 87.450 Tonnen — ein Rückgang von 12 % gegenüber der Vorwoche und der
+            lagen per 21. März bei 87.450 Tonnen - ein Rückgang von 12 % gegenüber der Vorwoche und der
             niedrigste Stand seit Oktober 2025. Sinkende Warehousebestände signalisieren, dass physisches
             Metall zunehmend für industrielle Verarbeitung abgezogen wird, statt spekulativ eingelagert
             zu bleiben. Der Spread zwischen Cash und 3-Monats-Future (Backwardation) beträgt aktuell
-            ca. 48 $/t — ein Zeichen physischer Marktanspannung.
+            ca. 48 $/t - ein Zeichen physischer Marktanspannung.
           </p>
 
           <p style={{ fontSize: 14, lineHeight: 1.85, color: "#333", margin: "0 0 16px" }}>
-            <strong>Nachfrageseite — Elektrifizierung als struktureller Treiber:</strong> Ein modernes
-            Elektrofahrzeug (BEV) benötigt im Durchschnitt 83 kg Kupfer — gegenüber nur 23 kg bei
+            <strong>Nachfrageseite - Elektrifizierung als struktureller Treiber:</strong> Ein modernes
+            Elektrofahrzeug (BEV) benötigt im Durchschnitt 83 kg Kupfer - gegenüber nur 23 kg bei
             einem konventionellen Verbrenner. Mit europaweit über 2,8 Mio. verkauften BEV in 2025 und
             weiter steigender Tendenz wächst der automobile Kupferbedarf erheblich. Hinzu kommt der
             Stromnetzausbau: Der europäische Netzentwicklungsplan 2026–2035 sieht Investitionen von
-            über 380 Mrd. EUR vor — ein wesentlicher Teil davon in kupferintensive Kabelsysteme und
+            über 380 Mrd. EUR vor - ein wesentlicher Teil davon in kupferintensive Kabelsysteme und
             Transformatoren. Windkraftanlagen (Offshore wie Onshore) benötigen je MW installierter
             Leistung rund 3,6 t Kupfer.
           </p>
 
           <p style={{ fontSize: 14, lineHeight: 1.85, color: "#333", margin: "0 0 16px" }}>
-            <strong>Angebotsseite — Produktionsausfälle in Chile und Peru:</strong> Chile ist mit einem
-            Weltmarktanteil von ca. 27 % der mit Abstand größte Kupferproduzent. Codelco — der
-            staatliche chilenische Konzern — meldete in Q1 2026 einen produktionsbedingten Ausfall von
+            <strong>Angebotsseite - Produktionsausfälle in Chile und Peru:</strong> Chile ist mit einem
+            Weltmarktanteil von ca. 27 % der mit Abstand größte Kupferproduzent. Codelco - der
+            staatliche chilenische Konzern - meldete in Q1 2026 einen produktionsbedingten Ausfall von
             rund 18.000 t aufgrund von Wartungsarbeiten an der Chuquicamata-Mine sowie anhaltender
             Wasserknappheit im Hochland. In Peru führten soziale Unruhen rund um das Cerro-Verde-Projekt
             (Freeport-McMoRan) zu vorübergehenden Betriebsunterbrechungen. Kombiniert ergibt sich
@@ -544,7 +544,7 @@ export default function AnalysenPage() {
           </h3>
 
           <p style={{ fontSize: 14, lineHeight: 1.85, color: "#333", margin: "0 0 16px" }}>
-            Der MATIF-Weizenkontrakt (Front-Month, Lieferung Mai 2026) schloss KW 12 bei 218 €/t —
+            Der MATIF-Weizenkontrakt (Front-Month, Lieferung Mai 2026) schloss KW 12 bei 218 €/t -
             ein Wochenplus von 1,8 %. Auslöser ist eine Lage, die Getreidehändler seit Jahren kennen
             und fürchten: unberechenbare Witterungsverhältnisse in der Schwarzmeerregion zu einem
             kritischen Zeitpunkt im Vegetationszyklus. Die Ukraine, drittgrößter Weizen-Exporteur der
@@ -564,7 +564,7 @@ export default function AnalysenPage() {
           </p>
 
           <p style={{ fontSize: 14, lineHeight: 1.85, color: "#333", margin: "0 0 16px" }}>
-            <strong>Harnstoff — Frühjahrsbestellungseffekt:</strong> Harnstoff (CIF Hamburg) stieg
+            <strong>Harnstoff - Frühjahrsbestellungseffekt:</strong> Harnstoff (CIF Hamburg) stieg
             auf 485 $/t (+0,9 % WoW). Die Frühjahrsbestellsaison setzt typischerweise ab Mitte März
             ein: Landwirte in Deutschland, Frankreich und Polen decken ihren Stickstoffdüngerbedarf
             für die anstehende Vegetationsperiode ein. Dieser saisonale Nachfrageimpuls trifft auf ein

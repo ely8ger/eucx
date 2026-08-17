@@ -204,7 +204,7 @@ export async function GET(
     const pn = `Seite ${pageNum}`;
     dt(pn, W - MR - reg.widthOfTextAtSize(pn, 6.5), FOOT_Y + 3, reg, 6.5, C.muted);
     // Zeile 2 (6pt damit die lange Zeile passt)
-    dt("EUCX — European Union Commodity Exchange · eucx.eu · BaFin-regulierte Handelsplattform · MiFID II OTF",
+    dt("EUCX - European Union Commodity Exchange · eucx.eu · BaFin-regulierte Handelsplattform · MiFID II OTF",
       ML, FOOT_Y - 9, reg, 6, C.muted);
   };
 
@@ -254,7 +254,7 @@ export async function GET(
   // Zeile 1 = Label + Verordnung; Zeile 2 = Quartal + Pflicht; Zeile 3 = Hinweis
   const b1reg  = "EU-Verordnung 2023/956 (CBAM) i.V.m. DVO (EU) 2023/1773";
   const b2      = `Berichtszeitraum: ${qtrLabel}  ·  Meldepflicht ab 01.01.2026`;
-  const b3      = "Automatische Systemgenerierung — ersetzt nicht die Meldepflicht im EU-CBAM-Register.";
+  const b3      = "Automatische Systemgenerierung - ersetzt nicht die Meldepflicht im EU-CBAM-Register.";
   const bannerH = 56;
   dr(ML, y - bannerH, CW, bannerH, C.blueLt);
   pg.drawRectangle({ x: ML, y: y - bannerH, width: 3.5, height: bannerH, color: C.blue });
@@ -268,15 +268,15 @@ export async function GET(
   sHdr("1. ANMELDER / IMPORTEUR");
   const anmelderRows: [string, string, ReturnType<typeof rgb>?][] = [
     ["Unternehmensname",   `${org.name}${org.legalForm ? ` (${org.legalForm})` : ""}`],
-    ["Anschrift",          [org.street, org.postalCode && org.city ? `${org.postalCode} ${org.city}` : org.city, org.country].filter(Boolean).join(", ") || "—"],
-    ["USt-IdNr.",          org.taxId ?? "—"],
-    ["EORI-Nummer",        org.eoriNumber ?? "— Nicht hinterlegt (Pflicht ab 2026)", org.eoriNumber ? undefined : C.red],
-    ["CBAM-Kontonummer",   org.cbamAccountNumber ?? "— Nicht hinterlegt", org.cbamAccountNumber ? undefined : C.amber],
+    ["Anschrift",          [org.street, org.postalCode && org.city ? `${org.postalCode} ${org.city}` : org.city, org.country].filter(Boolean).join(", ") || "-"],
+    ["USt-IdNr.",          org.taxId ?? "-"],
+    ["EORI-Nummer",        org.eoriNumber ?? "- Nicht hinterlegt (Pflicht ab 2026)", org.eoriNumber ? undefined : C.red],
+    ["CBAM-Kontonummer",   org.cbamAccountNumber ?? "- Nicht hinterlegt", org.cbamAccountNumber ? undefined : C.amber],
     ...(org.hrb         ? [["Handelsregisternr.", org.hrb]                                                                        as [string, string]] : []),
     ...(org.lei         ? [["LEI",                org.lei]                                                                        as [string, string]] : []),
     ...(org.contactName ? [["Ansprechpartner",    `${org.contactName}${org.contactPosition ? ` · ${org.contactPosition}` : ""}`] as [string, string]] : []),
     ["Rolle",              "EU-Importeur (CBAM-Anmelder)"],
-    ["Handelsplattform",   "EUCX — eucx.eu (MiFID II OTF)"],
+    ["Handelsplattform",   "EUCX - eucx.eu (MiFID II OTF)"],
     ["Los-ID",             lot.id],
   ];
   anmelderRows.forEach(([k, v, vc], i) => rowFn(k, v, i % 2 === 0, vc));
@@ -290,14 +290,14 @@ export async function GET(
     ...(lot.hsCode                 ? [["CN-Code (8-stellig)",          lot.hsCode]          as [string, string]] : []),
     ...(lot.cbamCategory           ? [["CBAM-Warengruppe (Anhang I)",  lot.cbamCategory]    as [string, string]] : []),
     ["Menge",                        `${fmtNum(qty)} ${lot.unit}`],
-    ["Herstellungsland",             originCountry ?? "— Fehlt", originCountry ? undefined : C.red],
+    ["Herstellungsland",             originCountry ?? "- Fehlt", originCountry ? undefined : C.red],
     ...(exportCountry && exportCountry !== originCountry ? [["Ausfuhrland", exportCountry] as [string, string]] : []),
     ...(productionSite             ? [["Produktionsstatte (CBAM-ID)", productionSite]       as [string, string]] : []),
     ["Lieferbedingung",              lot.incoterms ?? "DAP"],
     ...(lot.deliveryLocation       ? [["Lieferort",                    lot.deliveryLocation] as [string, string]] : []),
     ...(lot.vatTreatment           ? [["USt.-Behandlung",              lot.vatTreatment]    as [string, string]] : []),
     ...(lot.currentBest            ? [["Transaktionswert",             `${fmtNum(parseFloat(lot.currentBest.toString()))} EUR / ${lot.unit}`] as [string, string]] : []),
-    ["Abschluss der Auktion",        lot.lockedAt ? fmtDate(lot.lockedAt) : "—"],
+    ["Abschluss der Auktion",        lot.lockedAt ? fmtDate(lot.lockedAt) : "-"],
     ["Emissionsdatenquelle",         winnerBid ? "Verkaeuferdeklaration (verifizierte Lieferantendaten)" : "Kauferschatzung"],
     ...(verificationRef            ? [["Prufbescheinigung",            verificationRef]      as [string, string]] : []),
   ];
@@ -355,7 +355,7 @@ export async function GET(
   }
   y -= GAP;
 
-  // ── 4. Rechtliche Erklärung (Text mit wrapText — kein Überlauf möglich) ──
+  // ── 4. Rechtliche Erklärung (Text mit wrapText - kein Überlauf möglich) ──
   const declParas: { text: string; isBold: boolean }[] = [
     { isBold: true,  text: "Wahrheits- und Vollständigkeitserklärung gemäß Art. 3 EU-DVO 2023/1773" },
     { isBold: false, text: "Ich erkläre hiermit, dass alle in diesem Bericht enthaltenen Angaben nach bestem Wissen und Gewissen korrekt und vollständig sind. Mir ist bekannt, dass unrichtige Angaben im CBAM-Verfahren zu Sanktionen gemäß Art. 26 EU-VO 2023/956 führen können." },

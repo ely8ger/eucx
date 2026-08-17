@@ -75,14 +75,14 @@ export function SellerBillingClient() {
   const ledger = contracts.flatMap((c) => [
     {
       date:  c.createdAt,
-      desc:  `Umsatz — ${c.commodity} (${c.contractNumber})`,
+      desc:  `Umsatz - ${c.commodity} (${c.contractNumber})`,
       debit: Number(c.totalValue),
       credit: 0,
       type:  "revenue",
     },
     {
       date:  c.createdAt,
-      desc:  `EUCX-Plattformgebühr (0,80%) — ${c.contractNumber}`,
+      desc:  `EUCX-Plattformgebühr (0,80%) - ${c.contractNumber}`,
       debit: 0,
       credit: Number(c.feeAmount),
       type:  "fee",
@@ -95,8 +95,8 @@ export function SellerBillingClient() {
       const demoFee  = Math.round(demoRev * demoRate * 100) / 100;
       const demoPct  = (demoRate * 100).toFixed(2).replace(".", ",");
       return [
-        { date: "2026-06-28T09:00:00Z", desc: "Umsatz — Betonstahl 320t (EUCX-LOT-2026-000001)", debit: demoRev, credit: 0, type: "revenue" },
-        { date: "2026-06-28T09:00:00Z", desc: `EUCX-Plattformgebühr (${demoPct} %) — EUCX-LOT-2026-000001`, debit: 0, credit: demoFee, type: "fee" },
+        { date: "2026-06-28T09:00:00Z", desc: "Umsatz - Betonstahl 320t (EUCX-LOT-2026-000001)", debit: demoRev, credit: 0, type: "revenue" },
+        { date: "2026-06-28T09:00:00Z", desc: `EUCX-Plattformgebühr (${demoPct} %) - EUCX-LOT-2026-000001`, debit: 0, credit: demoFee, type: "fee" },
       ];
     })() : []
   ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -229,7 +229,7 @@ export function SellerBillingClient() {
 
           {/* EU Reverse Charge Hinweis */}
           <div className="bil-vat-box">
-            <div className="bil-vat-title">EU Reverse Charge VAT — Automatisierte Netto-Rechnungsstellung</div>
+            <div className="bil-vat-title">EU Reverse Charge VAT - Automatisierte Netto-Rechnungsstellung</div>
             <div className="bil-vat-text">
               Da EUCX als B2B-Plattform ausschließlich umsatzsteuerlich registrierte Unternehmen zulässt
               (KYC-Pflicht mit USt-IdNr.), gilt bei grenzüberschreitenden EU-Transaktionen das

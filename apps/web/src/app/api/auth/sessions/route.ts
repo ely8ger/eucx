@@ -1,6 +1,6 @@
 /**
- * GET  /api/auth/sessions  — aktive Sessions des Nutzers
- * DELETE /api/auth/sessions — alle anderen Sessions beenden (Remote Logout)
+ * GET  /api/auth/sessions  - aktive Sessions des Nutzers
+ * DELETE /api/auth/sessions - alle anderen Sessions beenden (Remote Logout)
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";

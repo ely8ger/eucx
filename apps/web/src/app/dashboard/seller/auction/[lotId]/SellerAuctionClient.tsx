@@ -43,7 +43,7 @@ interface KycInfo {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const fmtEur = (v: string | null | number) =>
-  v == null || v === "" ? "—"
+  v == null || v === "" ? "-"
   : new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
 
 const fmtDelta = (delta: number) =>
@@ -73,7 +73,7 @@ function useCountdown(endIso: string | null) {
   const m = Math.floor((ms % 3_600_000) / 60_000);
   const s = Math.floor((ms % 60_000) / 1_000);
   return {
-    label:    ms === 0 ? (endIso ? "Abgelaufen" : "—") : `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`,
+    label:    ms === 0 ? (endIso ? "Abgelaufen" : "-") : `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`,
     isUrgent: ms > 0 && ms < 10 * 60_000,
     ms,
   };
@@ -316,7 +316,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
       a.href = url; a.download = `EUCX-Kaufvertrag-${lot.id.slice(0, 8).toUpperCase()}.pdf`;
       a.click(); URL.revokeObjectURL(url);
     } catch {
-      toast.error("Download fehlgeschlagen — Netzwerkfehler");
+      toast.error("Download fehlgeschlagen - Netzwerkfehler");
     }
   };
 
@@ -506,7 +506,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                 </div>
                 <div className="sa-lot-row">
                   <span className="sa-lot-key">Käufer-Limit (EUR/Einheit)</span>
-                  <span className="sa-lot-val" style={{ color: "#154194" }}>{lot.startPrice ? fmtEur(lot.startPrice) : "—"}</span>
+                  <span className="sa-lot-val" style={{ color: "#154194" }}>{lot.startPrice ? fmtEur(lot.startPrice) : "-"}</span>
                 </div>
                 <div className="sa-lot-row">
                   <span className="sa-lot-key">Aktuell bestes Gebot</span>
@@ -524,7 +524,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                 )}
                 <div className="sa-lot-row">
                   <span className="sa-lot-key">Gebote / Bieter</span>
-                  <span className="sa-lot-val">{allBids.length} / {state?.activeBidderCount ?? "—"}</span>
+                  <span className="sa-lot-val">{allBids.length} / {state?.activeBidderCount ?? "-"}</span>
                 </div>
 
                 {/* Qualität */}
@@ -544,7 +544,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                 <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#9ca3af", textTransform: "uppercase", margin: "12px 0 6px" }}>Lieferung</div>
                 {[
                   ["Incoterms",     lot.incoterms       ?? "DAP"],
-                  ["Herkunftsland", lot.countryOfOrigin ?? "—"],
+                  ["Herkunftsland", lot.countryOfOrigin ?? "-"],
                   ...(lot.hsCode && !lot.qualityGrade ? [["HS-Code", lot.hsCode]] : []),
                   ...(lot.co2PerTonne       ? [["CO₂-Äq.",          `${lot.co2PerTonne} kg/t`]] : []),
                   ...(lot.productionSiteId  ? [["CBAM-Stätten-ID",   lot.productionSiteId]]      : []),
@@ -602,7 +602,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
               {/* Timer */}
               <div className="sa-card sa-kpi">
                 <div className="sa-kpi-label">Verbleibend</div>
-                <div className={`sa-kpi-val${isUrgent ? " urgent" : ""}`}>{liveEnd ? countdown : "—"}</div>
+                <div className={`sa-kpi-val${isUrgent ? " urgent" : ""}`}>{liveEnd ? countdown : "-"}</div>
                 <div className="sa-kpi-sub">
                   {isExpired                                               && "Bieterwettbewerb beendet"}
                   {!isExpired && livePhase === "PROPOSAL"                  && "Erstgebote laufen"}
@@ -619,8 +619,8 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                   <div className="sa-kpi-val" style={{ color: "#154194" }}>{fmtEur(myBids[0]!.price)}</div>
                   <div className="sa-kpi-sub">
                     {myRank === 1
-                      ? <span style={{ color: "#16a34a", fontWeight: 600 }}>{isExpired ? "Rang 1 bei Auktionsende" : "Rang 1 — Führend"}</span>
-                      : <span style={{ color: "#d97706", fontWeight: 600 }}>{isExpired ? `Rang #${myRank} bei Auktionsende` : `Rang #${myRank} — Überboten`}</span>
+                      ? <span style={{ color: "#16a34a", fontWeight: 600 }}>{isExpired ? "Rang 1 bei Auktionsende" : "Rang 1 - Führend"}</span>
+                      : <span style={{ color: "#d97706", fontWeight: 600 }}>{isExpired ? `Rang #${myRank} bei Auktionsende` : `Rang #${myRank} - Überboten`}</span>
                     }
                   </div>
                 </div>
@@ -654,14 +654,14 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                       {isLeading
                         ? "Sie halten das beste Angebot"
                         : myRank !== null
-                          ? `Überboten — Rang #${myRank}`
+                          ? `Überboten - Rang #${myRank}`
                           : "Noch kein Gebot abgegeben"}
                     </div>
                     <div className={`sa-status-sub${isLeading ? " leading" : myRank !== null ? " trailing" : ""}`}>
                       {isLeading
-                        ? `Ihr Gebot ${fmtEur(myBids[0]?.price ?? null)} führt aktuell — halten Sie die Position`
+                        ? `Ihr Gebot ${fmtEur(myBids[0]?.price ?? null)} führt aktuell - halten Sie die Position`
                         : myRank !== null
-                          ? `Bestes Angebot liegt bei ${fmtEur(liveBest)} — geben Sie ein besseres Gebot ab`
+                          ? `Bestes Angebot liegt bei ${fmtEur(liveBest)} - geben Sie ein besseres Gebot ab`
                           : `Geben Sie Ihr erstes Angebot ab. Käufer-Limit: ${fmtEur(lot.startPrice)}`}
                     </div>
                   </div>
@@ -671,7 +671,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                 </div>
               )}
 
-              {/* Abgelaufen — DB-Phase noch nicht aktualisiert */}
+              {/* Abgelaufen - DB-Phase noch nicht aktualisiert */}
               {isExpired && (
                 <div className={`sa-card sa-conclusion${isLeading ? " won" : " lost"}`}>
                   <div className={`sa-conclusion-title${isLeading ? " won" : " lost"}`}>
@@ -682,9 +682,9 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                   </div>
                   <div className="sa-conclusion-sub">
                     {isLeading
-                      ? "Ihr Gebot war das beste — Ergebnis wird ausgewertet."
+                      ? "Ihr Gebot war das beste - Ergebnis wird ausgewertet."
                       : myRank !== null
-                        ? "Sie wurden überboten — Ergebnis wird ausgewertet."
+                        ? "Sie wurden überboten - Ergebnis wird ausgewertet."
                         : "Die Auktion ist abgelaufen. Ergebnis wird ausgewertet."}
                   </div>
                 </div>
@@ -702,7 +702,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                   <div className="sa-conclusion-sub">
                     {isLeading
                       ? "Ihr Siegergebot wurde akzeptiert. Kaufvertrag steht zum Download bereit."
-                      : `Siegergebot: ${fmtEur(liveBest)} — Kein Zuschlag erhalten.`}
+                      : `Siegergebot: ${fmtEur(liveBest)} - Kein Zuschlag erhalten.`}
                   </div>
                   {isLeading && (
                     <button className="sa-dl-btn" onClick={downloadContract}>
@@ -715,7 +715,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
               {/* Depot-Banner */}
               {kyc?.isYoungCompany && depositReq && canBid && (
                 <div style={{ background: "#fffbeb", border: "1px solid #fcd34d", padding: "12px 18px", fontSize: 13, color: "#92400e" }}>
-                  Sicherheitsleistung (5%) erforderlich — fehlend:{" "}
+                  Sicherheitsleistung (5%) erforderlich - fehlend:{" "}
                   <strong style={{ color: "#dc2626" }}>{Number(depositReq).toLocaleString("de-DE", { minimumFractionDigits: 2 })} €</strong>
                 </div>
               )}
@@ -738,7 +738,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                         <path d="M18 13l2 2 4-4" strokeWidth="2.2"/>
                       </svg>
                       <span style={{ fontSize: 12, fontWeight: 700, color: "#92400e", letterSpacing: ".04em", textTransform: "uppercase" }}>
-                        CBAM-Angaben — Pflichtfelder für meldepflichtige Ware
+                        CBAM-Angaben - Pflichtfelder für meldepflichtige Ware
                       </span>
                       {(cbamData.cbamCountryOfOrigin || cbamData.cbamCo2DirectPerTonne) && (
                         <span style={{ fontSize: 10, fontWeight: 700, color: "#16a34a", background: "#f0fdf4", padding: "2px 7px", border: "1px solid #bbf7d0" }}>
@@ -763,7 +763,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                           { key: "cbamCountryOfExport",     label: "Ausfuhrland (ISO)",             placeholder: "z.B. TR, BG, PL",  note: "Falls ≠ Produktionsland" },
                           { key: "cbamCo2DirectPerTonne",   label: "Direkte CO₂-Emissionen (kg/t)", placeholder: "z.B. 1850.00",     note: "kg CO₂-Äq. pro Tonne" },
                           { key: "cbamCo2IndirectPerTonne", label: "Indirekte CO₂-Em. (kg/t)",      placeholder: "z.B. 420.00",      note: "Aus Stromverbrauch" },
-                          { key: "cbamCarbonPricePaid",     label: "CO₂-Preis gezahlt (€/t)",       placeholder: "z.B. 12.50",       note: "Art. 9 — Abzug möglich" },
+                          { key: "cbamCarbonPricePaid",     label: "CO₂-Preis gezahlt (€/t)",       placeholder: "z.B. 12.50",       note: "Art. 9 - Abzug möglich" },
                           { key: "cbamProductionSiteId",    label: "CBAM-Stätten-ID",               placeholder: "EU-CBAM-000000",   note: "EU-Produktionsstätten-ID" },
                         ] as { key: keyof CbamData; label: string; placeholder: string; note: string }[]).map(({ key, label, placeholder, note }) => (
                           <div key={key}>
@@ -816,7 +816,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                   <div className="sa-bid-title">
                     Angebot abgeben
                     {bestNum && <span style={{ fontWeight: 400, color: "#9ca3af", marginLeft: 8, fontSize: 11 }}>
-                      — muss unter {fmtEur(liveBest)} liegen
+                      - muss unter {fmtEur(liveBest)} liegen
                     </span>}
                   </div>
                   <div className="sa-bid-row">
@@ -838,7 +838,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                     </button>
                   </div>
                   <div className="sa-bid-hint">
-                    Preis in <strong style={{ color: "#154194" }}>EUR (€)</strong> pro {lot.unit} — alle Beträge in Euro.
+                    Preis in <strong style={{ color: "#154194" }}>EUR (€)</strong> pro {lot.unit} - alle Beträge in Euro.
                     {lot.startPrice && <> Käufer-Limit: <strong style={{ color: "#374151" }}>{fmtEur(lot.startPrice)}</strong>.</>}
                     {" "}Enter oder Button zum Bestätigen.
                   </div>
@@ -853,7 +853,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                     Gebotsübersicht
                   </div>
                   <span className="sa-feed-meta">
-                    {allBids.length} Gebot{allBids.length !== 1 ? "e" : ""} · {state?.activeBidderCount ?? "—"} Teilnehmer
+                    {allBids.length} Gebot{allBids.length !== 1 ? "e" : ""} · {state?.activeBidderCount ?? "-"} Teilnehmer
                   </span>
                 </div>
                 {competitorWithDelta.length === 0 ? (

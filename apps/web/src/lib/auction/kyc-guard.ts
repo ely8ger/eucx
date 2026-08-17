@@ -5,7 +5,7 @@
  * Check B: isYoungCompany → Wallet.balance >= 5% des Lot-Werts (sonst 403 + depositRequired)
  *
  * Lot-Wert = quantity × (currentBest ?? startPrice)
- * — falls kein Preis gesetzt: kein Depot-Check möglich → nur KYC-Check
+ * - falls kein Preis gesetzt: kein Depot-Check möglich → nur KYC-Check
  */
 
 import { db } from "@/lib/db/client";

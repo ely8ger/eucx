@@ -79,11 +79,11 @@ export async function PATCH(
 
       await sendAuctionMail({
         to:       user.email,
-        subject:  "EUCX — Ihr Konto wurde freigeschaltet",
+        subject:  "EUCX - Ihr Konto wurde freigeschaltet",
         template: "registration_approved",
         data:     {
           email:   user.email,
-          orgName: user.organization?.name ?? "—",
+          orgName: user.organization?.name ?? "-",
           role:    ROLE_LABEL[user.role] ?? user.role,
         },
       });
@@ -99,7 +99,7 @@ export async function PATCH(
 
     await sendAuctionMail({
       to:       user.email,
-      subject:  "EUCX — Ihre Registrierung wurde abgelehnt",
+      subject:  "EUCX - Ihre Registrierung wurde abgelehnt",
       template: "registration_rejected",
       data:     { email: user.email, reason: body.reason ?? "" },
     });

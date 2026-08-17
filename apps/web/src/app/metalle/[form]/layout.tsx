@@ -6,8 +6,8 @@ export async function generateMetadata({ params }: { params: Promise<{ form: str
   const f     = STEEL_FORMS.find(s => s.id === form);
   const label = f?.label ?? form;
   const desc  = f?.description
-    ? `${f.description} — Institutionell handeln auf EUCX.`
-    : `${label} — Metallprodukte institutionell kaufen und verkaufen auf EUCX.`;
+    ? `${f.description} - Institutionell handeln auf EUCX.`
+    : `${label} - Metallprodukte institutionell kaufen und verkaufen auf EUCX.`;
 
   return {
     title: `${label} | EUCX Metallmarkt`,

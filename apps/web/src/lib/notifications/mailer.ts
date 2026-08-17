@@ -1,5 +1,5 @@
 /**
- * EUCX Mailer — E-Mail-Versand via Resend
+ * EUCX Mailer - E-Mail-Versand via Resend
  *
  * Setzt RESEND_API_KEY in .env.local voraus.
  * Wenn kein API-Key gesetzt: Stub-Modus (nur console.log).

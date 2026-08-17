@@ -2,7 +2,7 @@
  * POST /api/auction/lots/[lotId]/payment-sent
  *
  * Käufer meldet: Zahlung wurde angewiesen (Überweisung veranlasst).
- * Setzt paymentSentAt — ändert keinen deliveryStatus.
+ * Setzt paymentSentAt - ändert keinen deliveryStatus.
  * Nur der Käufer des Kontrakts kann diesen Endpunkt aufrufen.
  * Status muss AWAITING_PAYMENT sein.
  */

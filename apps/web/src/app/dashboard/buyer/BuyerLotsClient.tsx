@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * /dashboard/buyer — Käufer-Hub
+ * /dashboard/buyer - Käufer-Hub
  *
  * Ausschreibung erstellen, eigene Lots verwalten, Auktion starten.
  */
@@ -67,7 +67,7 @@ interface LotRow {
 
 interface CountryEntry { code: string; name: string }
 
-// ISO 3166-1 — alle UN-Mitgliedstaaten + wichtige Territorien (Deutsche Namen)
+// ISO 3166-1 - alle UN-Mitgliedstaaten + wichtige Territorien (Deutsche Namen)
 const COUNTRY_LIST: CountryEntry[] = [
   { code:"AF", name:"Afghanistan" },          { code:"EG", name:"Ägypten" },
   { code:"AL", name:"Albanien" },             { code:"DZ", name:"Algerien" },
@@ -210,25 +210,25 @@ const CBAM_GROUPS = [
 ] as const;
 type CbamGroupId = typeof CBAM_GROUPS[number]["id"];
 
-// ── Warenkatalog — EUCX-Produktpalette ────────────────────────────────────────
+// ── Warenkatalog - EUCX-Produktpalette ────────────────────────────────────────
 // Jede Vorlage befüllt Pflichtfelder vor; Käufer passt Menge, Preis, Lieferzeitraum an.
 const COMMODITY_CATALOG = [
-  // Stahl — Langprodukte
-  { id: "rebar-bst500",   cat: "Stahl — Langprodukte",     cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Betonstahl BST 500 (Rebar)",                hsCode: "7214 20 00", qualityGrade: "B500B · EN 10080",             inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Gerippter Betonstahl BST 500, Ø 8–40 mm. Normen: EN 10080, DIN 488. Lieferung in Stäben 6 m / 12 m oder Ring. 3.1-Werkzeugnis nach EN 10204 beizufügen. Anwendung: Stahlbetonkonstruktionen." },
-  { id: "rebar-bst500s",  cat: "Stahl — Langprodukte",     cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Betonstahl BST 500S (seismisch)",            hsCode: "7214 20 00", qualityGrade: "B500S · EN 10080",             inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Gerippter Betonstahl BST 500S, erhöhte Duktilität Klasse S für Erdbebengebiete. Ø 8–32 mm. Normen: EN 10080, DIN 488-2, EC 8. 3.1-Werkzeugnis nach EN 10204 erforderlich." },
-  { id: "wire-rod",       cat: "Stahl — Langprodukte",     cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Walzdraht (Wire Rod) SAE 1008",              hsCode: "7213 91 10", qualityGrade: "SAE 1008 · EN 10016-2",        inco: "EXW", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Walzdraht unlegiert, niedriggekohlter Stahl SAE 1008 / DD11. Coil, Ø 5,5–16 mm. Normen: EN 10016-2. Schmelznachweis 3.1 nach EN 10204 erforderlich. Anwendung: Zieherei, Betonstahlproduktion." },
-  // Stahl — Flachprodukte
-  { id: "flat-s235",      cat: "Stahl — Flachprodukte",    cbam: "STEEL_PRIMARY" as CbamGroupId,      name: "Warmgewalzter Stahl S235JR (Blech / Coil)", hsCode: "7208 51 20", qualityGrade: "S235JR · EN 10025-2",          inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Warmgewalzte Bleche / Coils, S235JR. Breite 600–2000 mm, Dicke 2–25 mm. Normen: EN 10025-2, EN 10051. Anwendung: Konstruktionsstahl, Maschinenbau. 3.1-Zeugnis nach EN 10204 beizufügen." },
-  { id: "flat-s355",      cat: "Stahl — Flachprodukte",    cbam: "STEEL_PRIMARY" as CbamGroupId,      name: "Feinkornbaustahl S355JR (Blech)",            hsCode: "7208 51 91", qualityGrade: "S355JR · EN 10025-2",          inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Warmgewalzte Feinkornbaustahl-Bleche S355JR. Dicke 3–80 mm, Breite bis 3000 mm. Normen: EN 10025-2. Anwendung: Brückenbau, Schweißkonstruktionen. 3.1-Werkzeugnis nach EN 10204." },
-  // Stahl — Träger / Profile
-  { id: "beams-hea-heb",  cat: "Stahl — Träger / Profile", cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "HEA / HEB Stahlträger S235 / S355",         hsCode: "7216 33 10", qualityGrade: "S235JR / S355JR · EN 10025-2", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Breitflanschträger HEA/HEB nach EN 10365, S235JR oder S355JR. Größen HEA 100–900, HEB 100–1000. Anwendung: Stahlbau, Hallenkonstruktionen. 3.1-Werkzeugnis nach EN 10204." },
-  // Stahl — Rohre
-  { id: "pipes-welded",   cat: "Stahl — Rohre",            cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Nahtgeschweißte Hohlprofile S235JRH",       hsCode: "7306 30 51", qualityGrade: "S235JRH · EN 10210-1",         inco: "EXW", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Nahtgeschweißte Hohlprofile (quadratisch, rechteckig, rund), S235JRH. Wandstärke 2–16 mm. Normen: EN 10210-1, EN 10219. Anwendung: Stahlbau, Konstruktionsprofile. 3.1-Zeugnis EN 10204." },
+  // Stahl - Langprodukte
+  { id: "rebar-bst500",   cat: "Stahl - Langprodukte",     cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Betonstahl BST 500 (Rebar)",                hsCode: "7214 20 00", qualityGrade: "B500B · EN 10080",             inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Gerippter Betonstahl BST 500, Ø 8–40 mm. Normen: EN 10080, DIN 488. Lieferung in Stäben 6 m / 12 m oder Ring. 3.1-Werkzeugnis nach EN 10204 beizufügen. Anwendung: Stahlbetonkonstruktionen." },
+  { id: "rebar-bst500s",  cat: "Stahl - Langprodukte",     cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Betonstahl BST 500S (seismisch)",            hsCode: "7214 20 00", qualityGrade: "B500S · EN 10080",             inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Gerippter Betonstahl BST 500S, erhöhte Duktilität Klasse S für Erdbebengebiete. Ø 8–32 mm. Normen: EN 10080, DIN 488-2, EC 8. 3.1-Werkzeugnis nach EN 10204 erforderlich." },
+  { id: "wire-rod",       cat: "Stahl - Langprodukte",     cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Walzdraht (Wire Rod) SAE 1008",              hsCode: "7213 91 10", qualityGrade: "SAE 1008 · EN 10016-2",        inco: "EXW", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Walzdraht unlegiert, niedriggekohlter Stahl SAE 1008 / DD11. Coil, Ø 5,5–16 mm. Normen: EN 10016-2. Schmelznachweis 3.1 nach EN 10204 erforderlich. Anwendung: Zieherei, Betonstahlproduktion." },
+  // Stahl - Flachprodukte
+  { id: "flat-s235",      cat: "Stahl - Flachprodukte",    cbam: "STEEL_PRIMARY" as CbamGroupId,      name: "Warmgewalzter Stahl S235JR (Blech / Coil)", hsCode: "7208 51 20", qualityGrade: "S235JR · EN 10025-2",          inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Warmgewalzte Bleche / Coils, S235JR. Breite 600–2000 mm, Dicke 2–25 mm. Normen: EN 10025-2, EN 10051. Anwendung: Konstruktionsstahl, Maschinenbau. 3.1-Zeugnis nach EN 10204 beizufügen." },
+  { id: "flat-s355",      cat: "Stahl - Flachprodukte",    cbam: "STEEL_PRIMARY" as CbamGroupId,      name: "Feinkornbaustahl S355JR (Blech)",            hsCode: "7208 51 91", qualityGrade: "S355JR · EN 10025-2",          inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Warmgewalzte Feinkornbaustahl-Bleche S355JR. Dicke 3–80 mm, Breite bis 3000 mm. Normen: EN 10025-2. Anwendung: Brückenbau, Schweißkonstruktionen. 3.1-Werkzeugnis nach EN 10204." },
+  // Stahl - Träger / Profile
+  { id: "beams-hea-heb",  cat: "Stahl - Träger / Profile", cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "HEA / HEB Stahlträger S235 / S355",         hsCode: "7216 33 10", qualityGrade: "S235JR / S355JR · EN 10025-2", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Breitflanschträger HEA/HEB nach EN 10365, S235JR oder S355JR. Größen HEA 100–900, HEB 100–1000. Anwendung: Stahlbau, Hallenkonstruktionen. 3.1-Werkzeugnis nach EN 10204." },
+  // Stahl - Rohre
+  { id: "pipes-welded",   cat: "Stahl - Rohre",            cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Nahtgeschweißte Hohlprofile S235JRH",       hsCode: "7306 30 51", qualityGrade: "S235JRH · EN 10210-1",         inco: "EXW", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Nahtgeschweißte Hohlprofile (quadratisch, rechteckig, rund), S235JRH. Wandstärke 2–16 mm. Normen: EN 10210-1, EN 10219. Anwendung: Stahlbau, Konstruktionsprofile. 3.1-Zeugnis EN 10204." },
   // NE-Metalle
   { id: "copper-cathodes", cat: "NE-Metalle",              cbam: null,                                 name: "Kupferkathoden Grade A",                    hsCode: "7403 11 00", qualityGrade: "Cu-CATH-1 · EN 1978 Grade A",  inco: "CIF", vat: "Umsatzsteuer 19 % (Regelbesteuerung)",             desc: "Elektrolyt-Kupferkathoden EN 1978 Grade A, Reinheit min. 99,99 % Cu. Standardkathode ca. 110–130 kg/Stück. LME-konforme Qualität, palettiert. Analysezertifikat erforderlich." },
   { id: "aluminium-1050",  cat: "NE-Metalle",              cbam: "ALUMINIUM_UNWROUGHT" as CbamGroupId, name: "Aluminiumbarren (Primär) EN AW-1050A",      hsCode: "7601 10 00", qualityGrade: "EN AW-1050A · EN 573-3",       inco: "CIF", vat: "Umsatzsteuer 19 % (Regelbesteuerung)",             desc: "Primär-Aluminiumbarren EN AW-1050A (Al 99,5 %), T-Barren oder Masseln. LME-Spezifikation P1020. Analysezertifikat und Ursprungsnachweis erforderlich. CBAM-pflichtig ab 2026." },
   // Schrott
-  { id: "scrap-hms",       cat: "Stahl — Schrott",         cbam: null,                                 name: "Stahlschrott HMS 1/2 (Heavy Melting Scrap)", hsCode: "7204 10 00", qualityGrade: "HMS 1/2 · ISRI 200–212",      inco: "FOB", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Schwerer Stahlschrott HMS 1/2, ISRI-Spezifikation 200 (HMS1) / 210 (HMS2). Feuchtigkeitsgehalt max. 1 %. Analyse: C ≤ 0,4 %, S ≤ 0,05 %. Sichtkontrolle bei Übernahme." },
+  { id: "scrap-hms",       cat: "Stahl - Schrott",         cbam: null,                                 name: "Stahlschrott HMS 1/2 (Heavy Melting Scrap)", hsCode: "7204 10 00", qualityGrade: "HMS 1/2 · ISRI 200–212",      inco: "FOB", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Schwerer Stahlschrott HMS 1/2, ISRI-Spezifikation 200 (HMS1) / 210 (HMS2). Feuchtigkeitsgehalt max. 1 %. Analyse: C ≤ 0,4 %, S ≤ 0,05 %. Sichtkontrolle bei Übernahme." },
 ] as const;
 
 interface KycInfo {
@@ -260,7 +260,7 @@ const isLotExpired = (l: { phase: string; auctionEnd: string | null }): boolean 
   (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && !!l.auctionEnd && new Date(l.auctionEnd).getTime() < Date.now();
 
 const fmtEur = (v: string | null) =>
-  v == null ? "—"
+  v == null ? "-"
   : new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
 
 const fmtDate = (iso: string) =>
@@ -362,7 +362,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
   // ── Katalog-Suche (debounced 300ms) ──────────────────────────────────
   useEffect(() => {
-    if (catalogProduct) return; // Produkt bereits gewählt — keine Neu-Suche
+    if (catalogProduct) return; // Produkt bereits gewählt - keine Neu-Suche
     if (catalogQuery.length < 1) { setCatalogResults([]); setCatalogOpen(false); setCatalogBrowseMode(false); return; }
     setCatalogBrowseMode(false);
     const t = setTimeout(() => {
@@ -436,7 +436,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   }
 
   function selectCountry(c: CountryEntry) {
-    const val = `${c.code} — ${c.name}`;
+    const val = `${c.code} - ${c.name}`;
     setCountryInput(val);
     setCountryOfOrigin(val);
     setCountryConfirmed(true);
@@ -481,7 +481,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     if (!commodity.trim())   { setFormError("Ware ist erforderlich."); return; }
     const qty = parseFloat(quantity);
     if (!qty || qty <= 0)    { setFormError("Menge muss größer als 0 sein."); return; }
-    if (!description.trim()) { setFormError("Beschreibung ist erforderlich — bitte technische Details, Zeugnis, Lieferort und Verpackung angeben."); return; }
+    if (!description.trim()) { setFormError("Beschreibung ist erforderlich - bitte technische Details, Zeugnis, Lieferort und Verpackung angeben."); return; }
 
     setSubmitting(true);
     try {
@@ -495,7 +495,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       body.countryOfOrigin = countryOfOrigin;
       if (productionSiteId) body.productionSiteId = productionSiteId.trim();
       if (incoterms)        body.incoterms        = incoterms;
-      // Pflichtfelder — vertragswesentlich
+      // Pflichtfelder - vertragswesentlich
       if (!hsCode.trim())         { setFormError("Zolltarifnummer (HS-Code) ist erforderlich.");     setSubmitting(false); return; }
       if (!qualityGrade.trim())   { setFormError("Güte / Qualitätsnorm ist erforderlich.");          setSubmitting(false); return; }
       if (!deliveryPeriod.trim())   { setFormError("Max. Lieferzeit ist erforderlich.");               setSubmitting(false); return; }
@@ -544,7 +544,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     setOpeningLotId(lotId);
   }
 
-  // Schritt 2: API-Call — Server berechnet Slot-Ende
+  // Schritt 2: API-Call - Server berechnet Slot-Ende
   async function confirmOpenLot() {
     if (!token || !openingLotId || opening) return;
     setOpening(openingLotId);
@@ -833,10 +833,10 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
           {kyc && !isVerified && (
             <div className="bl-kyc-warn">
               <div className="bl-kyc-warn-text">
-                {kyc.verificationStatus === "GUEST"                && "Identitätsprüfung nicht abgeschlossen — Ausschreibungen sind erst nach KYC-Verifizierung möglich."}
-                {kyc.verificationStatus === "PENDING_VERIFICATION" && "KYC-Dokumente eingereicht — Prüfung läuft (in der Regel unter 24h)."}
-                {kyc.verificationStatus === "REJECTED"             && "KYC abgelehnt — bitte neue Dokumente einreichen oder Support kontaktieren."}
-                {kyc.verificationStatus === "SUSPENDED"            && "Konto gesperrt — bitte Support kontaktieren."}
+                {kyc.verificationStatus === "GUEST"                && "Identitätsprüfung nicht abgeschlossen - Ausschreibungen sind erst nach KYC-Verifizierung möglich."}
+                {kyc.verificationStatus === "PENDING_VERIFICATION" && "KYC-Dokumente eingereicht - Prüfung läuft (in der Regel unter 24h)."}
+                {kyc.verificationStatus === "REJECTED"             && "KYC abgelehnt - bitte neue Dokumente einreichen oder Support kontaktieren."}
+                {kyc.verificationStatus === "SUSPENDED"            && "Konto gesperrt - bitte Support kontaktieren."}
               </div>
               {(kyc.verificationStatus === "GUEST" || kyc.verificationStatus === "REJECTED") && (
                 <a href="/dashboard/settings/verification" className="bl-kyc-link">Jetzt verifizieren →</a>
@@ -871,7 +871,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
           {lotsWithCbam > 0 && (
             <div className="bl-co2-widget">
               <div className="bl-co2-main">
-                <div className="bl-co2-label">CBAM — CO₂-Bilanz · Abgeschlossene Lots</div>
+                <div className="bl-co2-label">CBAM - CO₂-Bilanz · Abgeschlossene Lots</div>
                 <div className="bl-co2-num">
                   {totalCo2Tonnes.toLocaleString("de-DE", { maximumFractionDigits: 2 })}
                 </div>
@@ -894,7 +894,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   <div className="bl-co2-item-num">
                     {co2Lots.length > 0
                       ? (totalCo2Tonnes / co2Lots.length).toLocaleString("de-DE", { maximumFractionDigits: 1 })
-                      : "—"}
+                      : "-"}
                   </div>
                   <div className="bl-co2-item-label">Ø t CO₂ / Lot</div>
                 </div>
@@ -961,7 +961,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
           {/* Pre-Flight-Check */}
           {showPreflight && !showForm && (
             <div className="bl-pf">
-              <div className="bl-pf-title">Vor der Ausschreibung — Pflichtprüfung</div>
+              <div className="bl-pf-title">Vor der Ausschreibung - Pflichtprüfung</div>
               <div className="bl-pf-sub">Alle drei Punkte müssen erfüllt sein, bevor Sie eine Ausschreibung veröffentlichen können.</div>
               <div className="bl-pf-checks">
                 {/* KYC */}
@@ -972,7 +972,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   <div style={{ flex: 1 }}>
                     <div className="bl-pf-label">Identitätsprüfung (KYC)</div>
                     <div className="bl-pf-desc">
-                      {isVerified ? "Identität bestätigt — vollständig handelsberechtigt." : "KYC noch nicht abgeschlossen. Unterlagen einreichen."}
+                      {isVerified ? "Identität bestätigt - vollständig handelsberechtigt." : "KYC noch nicht abgeschlossen. Unterlagen einreichen."}
                     </div>
                   </div>
                   {!isVerified && (
@@ -987,7 +987,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   <div style={{ flex: 1 }}>
                     <div className="bl-pf-label">Zwei-Faktor-Authentifizierung</div>
                     <div className="bl-pf-desc">
-                      {isTotpEnabled ? "2FA aktiv — Konto zusätzlich gesichert." : "2FA noch nicht eingerichtet. In den Sicherheitseinstellungen aktivieren."}
+                      {isTotpEnabled ? "2FA aktiv - Konto zusätzlich gesichert." : "2FA noch nicht eingerichtet. In den Sicherheitseinstellungen aktivieren."}
                     </div>
                   </div>
                   {!isTotpEnabled && (
@@ -1055,7 +1055,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     <input
                       className="bl-input"
                       style={{ paddingRight: 42 }}
-                      placeholder='Produkt suchen oder ▼ klicken — "Beton", "pipe", "angle", "B240A" …'
+                      placeholder='Produkt suchen oder ▼ klicken - "Beton", "pipe", "angle", "B240A" …'
                       value={catalogQuery}
                       autoComplete="off"
                       onChange={(e) => {
@@ -1134,18 +1134,18 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           </div>
                           {/* Norm */}
                           <div style={{ fontSize: 11, color: "#6b7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                            {r.norm ?? <span style={{ color: "#d1d5db" }}>—</span>}
+                            {r.norm ?? <span style={{ color: "#d1d5db" }}>-</span>}
                           </div>
                           {/* Abmessungen */}
                           <div style={{ fontSize: 11, color: "#9ca3af", textAlign: "right", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
-                            {r._count.sizes > 0 ? r._count.sizes : <span style={{ color: "#d1d5db" }}>—</span>}
+                            {r._count.sizes > 0 ? r._count.sizes : <span style={{ color: "#d1d5db" }}>-</span>}
                           </div>
                         </div>
                       ))}
                     </div>
                   )}
                   {catalogQuery.length >= 1 && catalogResults.length === 0 && !catalogOpen && !catalogProduct && (
-                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 5, paddingLeft: 2 }}>Kein Treffer — Produktnamen im Feld „Ware / Commodity" frei eingeben.</div>
+                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 5, paddingLeft: 2 }}>Kein Treffer - Produktnamen im Feld „Ware / Commodity" frei eingeben.</div>
                   )}
 
                   {/* Ausgewählt-Zeile */}
@@ -1379,11 +1379,11 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                 {/* CBAM-Sektion */}
                 <div className="bl-cbam-header">
-                  <span className="bl-cbam-title">CBAM — Carbon Border Adjustment Mechanism</span>
+                  <span className="bl-cbam-title">CBAM - Carbon Border Adjustment Mechanism</span>
                   <span className="bl-cbam-badge">EU-Verordnung 2023/956</span>
                 </div>
                 <div className="bl-cbam-hint">
-                  Angaben für grenzüberschreitenden Handel — Pflicht ab 2026. Bei inländischer Ware empfohlen.
+                  Angaben für grenzüberschreitenden Handel - Pflicht ab 2026. Bei inländischer Ware empfohlen.
                 </div>
                 <div className="bl-form-grid">
                   <div className="bl-form-group full">
@@ -1393,7 +1393,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       value={cbamCategory}
                       onChange={(e) => setCbamCategory(e.target.value as CbamGroupId | "")}
                     >
-                      <option value="">— Keine / Nicht CBAM-pflichtig —</option>
+                      <option value="">- Keine / Nicht CBAM-pflichtig -</option>
                       <optgroup label="Eisen &amp; Stahl">
                         {CBAM_GROUPS.filter(g => g.id.startsWith("STEEL")).map(g => (
                           <option key={g.id} value={g.id}>{g.label} ({g.kn})</option>
@@ -1505,13 +1505,13 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           borderTop:"none", padding:"10px 14px",
                           fontSize:12.5, color:"#dc2626",
                         }}>
-                          Kein anerkanntes Land gefunden — bitte aus der Liste wählen.
+                          Kein anerkanntes Land gefunden - bitte aus der Liste wählen.
                         </div>
                       )}
 
                       {/* Bestätigtes Land */}
                       {countryConfirmed && (() => {
-                        const entry = COUNTRY_LIST.find(c => `${c.code} — ${c.name}` === countryOfOrigin);
+                        const entry = COUNTRY_LIST.find(c => `${c.code} - ${c.name}` === countryOfOrigin);
                         return entry ? (
                           <div style={{
                             marginTop:6, padding:"6px 10px",
@@ -1568,7 +1568,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   const std      = grp.factor;                   // kg/t EU-Standard
                   const rawQty   = parseFloat(quantity) || 0;
                   const qtyTon   = unit === "TON" ? rawQty : unit === "KG" ? rawQty / 1000 : rawQty;
-                  const ETS      = 75;                           // €/t CO₂ — EU-ETS-Schätzpreis 2026
+                  const ETS      = 75;                           // €/t CO₂ - EU-ETS-Schätzpreis 2026
                   const diff     = std - entered;                // positiv = Einsparung ggü. EU-Standard
                   const diffPct  = (diff / std) * 100;
                   const isSaving   = diff > 0;
@@ -1581,7 +1581,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   return (
                     <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
 
-                      {/* 1 — Grünes Einsparpotenzial-Badge */}
+                      {/* 1 - Grünes Einsparpotenzial-Badge */}
                       {isSaving && qtyTon > 0 && (
                         <div style={{ background: "#f0fdf4", border: "1px solid #16a34a", borderRadius: 6, padding: "10px 14px", display: "flex", alignItems: "flex-start", gap: 10 }}>
                           <span style={{ fontSize: 16, lineHeight: 1 }}>🌱</span>
@@ -1594,7 +1594,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         </div>
                       )}
 
-                      {/* 2 — Gelber Plausibilitäts-Warn-Indikator */}
+                      {/* 2 - Gelber Plausibilitäts-Warn-Indikator */}
                       {isCritical && (
                         <div style={{ background: "#fffbeb", border: "1px solid #d97706", borderRadius: 6, padding: "10px 14px", display: "flex", alignItems: "flex-start", gap: 10 }}>
                           <span style={{ fontSize: 16, lineHeight: 1 }}>⚠️</span>
@@ -1607,7 +1607,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         </div>
                       )}
 
-                      {/* 3 — CBAM-Zertifikatkosten-Rechner */}
+                      {/* 3 - CBAM-Zertifikatkosten-Rechner */}
                       {qtyTon > 0 && (
                         <div style={{ background: "#eff6ff", border: "1px solid #93c5fd", borderRadius: 6, padding: "10px 14px", fontSize: 12, color: "#1e3a5f", lineHeight: 1.7 }}>
                           <strong>Geschätzte CBAM-Zertifikatkosten für diesen Deal</strong><br />
@@ -1622,7 +1622,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           )}
                           <br />
                           <span style={{ color: "#6b7280", fontSize: 11 }}>
-                            Schätzung auf Basis EU-ETS {ETS} €/t CO₂ (Indikativpreis 2026). Kein rechtsverbindlicher Wert —
+                            Schätzung auf Basis EU-ETS {ETS} €/t CO₂ (Indikativpreis 2026). Kein rechtsverbindlicher Wert -
                             tatsächliche Kosten hängen von freien ETS-Zertifikaten und dem Tagespreismarkt ab.
                           </span>
                         </div>
@@ -1638,7 +1638,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   <span className="bl-cbam-badge" style={{ background: "#154194" }}>Rechtlich relevant</span>
                 </div>
                 <div className="bl-cbam-hint">
-                  Pflichtangaben — Bestandteil des Kaufvertrags (§§ 433, 434 BGB). Werden Bietern vor Gebotsabgabe vollständig angezeigt.
+                  Pflichtangaben - Bestandteil des Kaufvertrags (§§ 433, 434 BGB). Werden Bietern vor Gebotsabgabe vollständig angezeigt.
                 </div>
                 <div className="bl-form-grid">
                   <div className="bl-form-group">
@@ -1673,7 +1673,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       onChange={(e) => setDeliveryPeriod(e.target.value)}
                       required
                     >
-                      <option value="">— Bitte wählen —</option>
+                      <option value="">- Bitte wählen -</option>
                       <option value="max. 1 Woche ab Zuschlag">max. 1 Woche ab Zuschlag</option>
                       <option value="max. 2 Wochen ab Zuschlag">max. 2 Wochen ab Zuschlag</option>
                       <option value="max. 3 Wochen ab Zuschlag">max. 3 Wochen ab Zuschlag</option>
@@ -1741,7 +1741,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                                   fontSize:12, fontWeight:700, fontFamily:"IBM Plex Mono,monospace",
                                   padding:"2px 6px", letterSpacing:".04em", flexShrink:0,
                                 }}>
-                                  {plz || "—"}
+                                  {plz || "-"}
                                 </span>
                                 <span style={{ fontSize:13 }}>
                                   <span style={{ fontWeight:600 }}>{str}</span>
@@ -1753,7 +1753,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         </div>
                       )}
 
-                      {/* Bestätigte Adresse — PLZ-Verifikationszeile */}
+                      {/* Bestätigte Adresse - PLZ-Verifikationszeile */}
                       {addrConfirmed && (() => {
                         const plz = addrInput.match(/\b\d{4,6}\b/)?.[0];
                         return plz ? (
@@ -1790,9 +1790,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       onChange={(e) => setPaymentTerms(e.target.value)}
                       required
                     >
-                      <option value="">— Bitte wählen —</option>
+                      <option value="">- Bitte wählen -</option>
                       <optgroup label="Vorauszahlung">
-                        <option value="Vorkasse 100 % vor Lieferung">Vorkasse — 100 % vor Lieferung</option>
+                        <option value="Vorkasse 100 % vor Lieferung">Vorkasse - 100 % vor Lieferung</option>
                         <option value="Anzahlung 10 % bei Zuschlag, Rest bei Lieferung">Anzahlung 10 % bei Zuschlag, Rest bei Lieferung</option>
                         <option value="Anzahlung 25 % bei Zuschlag, Rest bei Lieferung">Anzahlung 25 % bei Zuschlag, Rest bei Lieferung</option>
                         <option value="Anzahlung 50 % bei Zuschlag, Rest bei Lieferung">Anzahlung 50 % bei Zuschlag, Rest bei Lieferung</option>
@@ -1824,7 +1824,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       value={vatTreatment}
                       onChange={(e) => setVatTreatment(e.target.value)}
                     >
-                      <option value="">— Bitte wählen —</option>
+                      <option value="">- Bitte wählen -</option>
                       <option value="Umsatzsteuer 19 % (Regelbesteuerung)">Umsatzsteuer 19 % (Regelbesteuerung)</option>
                       <option value="Steuerschuldumkehr §13b UStG (Reverse Charge)">Steuerschuldumkehr §13b UStG (Reverse Charge)</option>
                       <option value="Innergemeinschaftliche Lieferung §4 Nr. 1b UStG (0 %)">Innergemeinschaftliche Lieferung §4 Nr. 1b UStG (0 %)</option>
@@ -1960,7 +1960,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                               )}
                             </div>
                           ) : (
-                            <span style={{ color: "#d1d5db" }}>—</span>
+                            <span style={{ color: "#d1d5db" }}>-</span>
                           )}
                         </td>
                         {/* Aktion */}

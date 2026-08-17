@@ -56,7 +56,7 @@ function nextOpenUTC(now: Date): Date {
     candidate.setUTCDate(now.getUTCDate() + day);
     const bz = berlinerzeit(candidate);
     if (isTradingDay(bz.weekday)) {
-      // Setze auf 10:00:00 Berlin — näherungsweise: wir suchen UTC-Zeitpunkt
+      // Setze auf 10:00:00 Berlin - näherungsweise: wir suchen UTC-Zeitpunkt
       // Einfacher Ansatz: nutze Date.UTC + Zeitzone-Offset
       const approx = new Date(
         candidate.toLocaleDateString("en-CA", { timeZone: "Europe/Berlin" }) +
@@ -117,7 +117,7 @@ export function getTradingStatus(now: Date = new Date()): TradingStatus {
     secondsLeft = Math.max(0, Math.floor((opensAtUTC.getTime() - now.getTime()) / 1000));
     opensAt = opensAtUTC;
   } else {
-    // Geschlossen — nächsten Handelstag suchen
+    // Geschlossen - nächsten Handelstag suchen
     opensAt = nextOpenUTC(now);
     secondsLeft = Math.max(0, Math.floor((opensAt.getTime() - now.getTime()) / 1000));
   }

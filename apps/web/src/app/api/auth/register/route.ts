@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
 
     await sendAuctionMail({
       to:       email,
-      subject:  "EUCX — Bestätigen Sie Ihre E-Mail-Adresse",
+      subject:  "EUCX - Bestätigen Sie Ihre E-Mail-Adresse",
       template: "email_verification",
       data:     { code },
     });

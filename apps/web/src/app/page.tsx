@@ -109,7 +109,7 @@ export default function HomePage() {
             <p style={{ ...S.body, maxWidth: 420, margin: 0 }}>{t("section_markets_sub")}</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 1, backgroundColor: "#e0e0e0" }}>
-            {/* ── METALLE — klickbar ── */}
+            {/* ── METALLE - klickbar ── */}
             <Link href="/katalog" style={{ textDecoration: "none" }}>
               <div style={{ backgroundColor: "#fff", padding: "32px 28px", cursor: "pointer", height: "100%" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#f0f4fb"; }}

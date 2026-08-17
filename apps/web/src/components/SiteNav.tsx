@@ -287,7 +287,7 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
                   minWidth: 300, padding: "8px 0",
                 }}>
 
-                  {/* Marktpreise — top item with live dot */}
+                  {/* Marktpreise - top item with live dot */}
                   <Link href="/marktpreise" className="dd-item"
                     style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 18px 10px", textDecoration: "none", borderBottom: "1px solid #f0f0f0", marginBottom: 4 }}>
                     <div className="dd-bar" style={{ width: 3, height: 36, backgroundColor: "#154194", flexShrink: 0, marginTop: 2 }} />
