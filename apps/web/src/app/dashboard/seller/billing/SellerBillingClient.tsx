@@ -298,12 +298,39 @@ export function SellerBillingClient() {
                 zur internen Vorbereitung der CBAM-Erklärung. Die Datei ist kein offizielles Einreichungsformat.
               </div>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                <button className="bil-cbam-btn">
+                <button
+                  className="bil-cbam-btn"
+                  onClick={async () => {
+                    const r = await fetch("/api/seller/cbam-export?year=2026", {
+                      headers: { Authorization: `Bearer ${token}` },
+                    });
+                    if (!r.ok) return;
+                    const blob = await r.blob();
+                    const url  = URL.createObjectURL(blob);
+                    const a    = document.createElement("a");
+                    a.href     = url;
+                    a.download = "EUCX-CBAM-2026.csv";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                >
                   CBAM-Daten 2026 exportieren →
                 </button>
                 <button
                   style={{ padding: "10px 18px", background: "#fff", color: "#374151", border: "1px solid #d1d5db", fontSize: 13, cursor: "pointer" }}
-                  onClick={() => {}}
+                  onClick={async () => {
+                    const r = await fetch("/api/seller/cbam-export", {
+                      headers: { Authorization: `Bearer ${token}` },
+                    });
+                    if (!r.ok) return;
+                    const blob = await r.blob();
+                    const url  = URL.createObjectURL(blob);
+                    const a    = document.createElement("a");
+                    a.href     = url;
+                    a.download = "EUCX-CBAM-alle.csv";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
                 >
                   Alle Perioden
                 </button>
