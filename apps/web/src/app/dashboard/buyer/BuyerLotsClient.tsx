@@ -492,8 +492,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       // CBAM-Felder (optional)
       if (cbamCategory)     body.cbamCategory     = cbamCategory;
       if (co2PerTonne)      body.co2PerTonne      = parseFloat(co2PerTonne);
-      if (!countryConfirmed) { setFormError("Bitte wählen Sie ein gültiges Herkunftsland aus der Liste aus."); setSubmitting(false); return; }
-      body.countryOfOrigin = countryOfOrigin;
+      if (countryConfirmed && countryOfOrigin) body.countryOfOrigin = countryOfOrigin;
       if (productionSiteId) body.productionSiteId = productionSiteId.trim();
       if (incoterms)        body.incoterms        = incoterms;
       // Pflichtfelder - vertragswesentlich
@@ -1502,7 +1501,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">Herkunftsland *</label>
+                    <label className="bl-label">Herkunftsland <span>(optional, fur CBAM-Praferenz)</span></label>
                     <div ref={countryRef} style={{ position: "relative" }}>
                       <div style={{ position: "relative" }}>
                         <input
