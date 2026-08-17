@@ -125,17 +125,17 @@ export function SellerBillingClient() {
         .bil-section { margin-bottom:32px; }
         .bil-section-title { font-size:14px; font-weight:700; margin-bottom:14px; color:#111827; }
         .bil-ledger { background:#fff; border:1px solid #e5e7eb; }
-        .bil-ledger-hd { display:grid; grid-template-columns:120px 1fr 130px 130px; gap:0; padding:10px 16px; border-bottom:2px solid ${A}; }
+        .bil-ledger-hd { display:grid; grid-template-columns:120px 1fr 170px 160px; gap:0; padding:10px 16px; border-bottom:2px solid ${A}; }
         .bil-ledger-hd span { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#9ca3af; }
-        .bil-ledger-row { display:grid; grid-template-columns:120px 1fr 130px 130px; gap:0; padding:12px 16px; border-bottom:1px solid #f3f4f6; align-items:center; }
+        .bil-ledger-row { display:grid; grid-template-columns:120px 1fr 170px 160px; gap:0; padding:12px 16px; border-bottom:1px solid #f3f4f6; align-items:center; }
         .bil-ledger-row:last-child { border-bottom:none; }
         .bil-ledger-row:hover { background:#fffbf5; }
         .bil-ledger-date { font-size:12px; color:#6b7280; }
         .bil-ledger-desc { font-size:13px; color:#111827; }
         .bil-ledger-desc.fee { color:#6b7280; font-style:italic; }
-        .bil-ledger-debit { font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:700; color:#16a34a; text-align:right; }
-        .bil-ledger-credit { font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:700; color:#dc2626; text-align:right; }
-        .bil-ledger-total { display:grid; grid-template-columns:120px 1fr 130px 130px; gap:0; padding:12px 16px; background:#f9fafb; border-top:2px solid #e5e7eb; font-weight:700; }
+        .bil-ledger-debit { font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:700; color:#16a34a; text-align:right; white-space:nowrap; }
+        .bil-ledger-credit { font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:700; color:#dc2626; text-align:right; white-space:nowrap; padding-left:16px; border-left:1px solid #e5e7eb; }
+        .bil-ledger-total { display:grid; grid-template-columns:120px 1fr 170px 160px; gap:0; padding:12px 16px; background:#f9fafb; border-top:2px solid #e5e7eb; font-weight:700; }
         .bil-vat-box { background:#fff; border:1px solid #e5e7eb; border-left:4px solid #154194; padding:20px 24px; margin-bottom:24px; }
         .bil-vat-title { font-size:13px; font-weight:700; color:#154194; margin-bottom:8px; }
         .bil-vat-text { font-size:12.5px; color:#374151; line-height:1.6; }
@@ -277,7 +277,7 @@ export function SellerBillingClient() {
                 <span style={{ color: "#14532d", fontSize: 11, fontWeight: 700 }}>Netto-Erlös</span>
                 <span style={{ fontSize: 11, color: "#6b7280" }}>nach Plattformgebühr (netto, ohne USt)</span>
                 <span />
-                <span style={{ fontFamily: "'IBM Plex Mono',monospace", color: "#14532d", textAlign: "right", fontSize: 15 }}>
+                <span style={{ fontFamily: "'IBM Plex Mono',monospace", color: "#14532d", textAlign: "right", fontSize: 14, whiteSpace: "nowrap", paddingLeft: 16, borderLeft: "2px solid #16a34a" }}>
                   {fmtEur(displayRev - displayFees)}
                 </span>
               </div>
