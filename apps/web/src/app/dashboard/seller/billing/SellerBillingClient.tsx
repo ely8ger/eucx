@@ -25,7 +25,20 @@ const fmtEur = (v: string | number) =>
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
 
-const FEE_RATE = 0.008; // 0.8% Standard-Verkäufer-Gebühr
+const FEE_TIERS = [
+  { min: 0,           max: 500_000,    rate: 0.012, label: "1,20 %" },
+  { min: 500_000,     max: 2_000_000,  rate: 0.008, label: "0,80 %" },
+  { min: 2_000_000,   max: 10_000_000, rate: 0.005, label: "0,50 %" },
+  { min: 10_000_000,  max: Infinity,   rate: 0.003, label: "0,30 %" },
+];
+
+function getFeeRate(volume: number): number {
+  return FEE_TIERS.find((t) => volume >= t.min && volume < t.max)?.rate ?? 0.003;
+}
+
+function getActiveTierIdx(volume: number): number {
+  return FEE_TIERS.findIndex((t) => volume >= t.min && volume < t.max);
+}
 
 export function SellerBillingClient() {
   const router = useRouter();
@@ -76,14 +89,23 @@ export function SellerBillingClient() {
     },
   ]).concat(
     // Demo-Einträge wenn keine echten Kontrakte
-    contracts.length === 0 ? [
-      { date: "2026-06-28T09:00:00Z", desc: "Umsatz — Betonstahl 320t (EUCX-LOT-2026-000001)", debit: 3040000, credit: 0, type: "revenue" },
-      { date: "2026-06-28T09:00:00Z", desc: "EUCX-Plattformgebühr (0,80%) — EUCX-LOT-2026-000001", debit: 0, credit: 24320, type: "fee" },
-    ] : []
+    contracts.length === 0 ? (() => {
+      const demoRev  = 3_040_000;
+      const demoRate = getFeeRate(demoRev);
+      const demoFee  = Math.round(demoRev * demoRate * 100) / 100;
+      const demoPct  = (demoRate * 100).toFixed(2).replace(".", ",");
+      return [
+        { date: "2026-06-28T09:00:00Z", desc: "Umsatz — Betonstahl 320t (EUCX-LOT-2026-000001)", debit: demoRev, credit: 0, type: "revenue" },
+        { date: "2026-06-28T09:00:00Z", desc: `EUCX-Plattformgebühr (${demoPct} %) — EUCX-LOT-2026-000001`, debit: 0, credit: demoFee, type: "fee" },
+      ];
+    })() : []
   ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   const demoTotalRev  = ledger.filter((e) => e.type === "revenue").reduce((s, e) => s + e.debit, 0);
   const demoTotalFees = ledger.filter((e) => e.type === "fee").reduce((s, e) => s + e.credit, 0);
+  const displayRev    = demoTotalRev || totalRev;
+  const displayFees   = demoTotalFees || totalFees;
+  const activeTierIdx = getActiveTierIdx(displayRev);
 
   return (
     <>
@@ -144,19 +166,19 @@ export function SellerBillingClient() {
           <div className="bil-kpi">
             <div className="bil-kpi-card">
               <div className="bil-kpi-num" style={{ color: "#16a34a" }}>
-                {fmtEur(demoTotalRev || totalRev)}
+                {fmtEur(displayRev)}
               </div>
               <div className="bil-kpi-label">Brutto-Umsatz</div>
             </div>
             <div className="bil-kpi-card">
               <div className="bil-kpi-num" style={{ color: "#dc2626" }}>
-                −{fmtEur(demoTotalFees || totalFees)}
+                −{fmtEur(displayFees)}
               </div>
-              <div className="bil-kpi-label">EUCX-Gebühren</div>
+              <div className="bil-kpi-label">EUCX-Gebühren (netto)</div>
             </div>
             <div className="bil-kpi-card">
               <div className="bil-kpi-num" style={{ color: A }}>
-                {fmtEur((demoTotalRev || totalRev) - (demoTotalFees || totalFees))}
+                {fmtEur(displayRev - displayFees)}
               </div>
               <div className="bil-kpi-label">Netto-Erlös</div>
             </div>
@@ -181,23 +203,26 @@ export function SellerBillingClient() {
               </thead>
               <tbody>
                 {[
-                  ["0 – 500.000 €",     "1,20 %", false],
-                  ["500.000 – 2.000.000 €", "0,80 %", true],
-                  ["2.000.000 – 10.000.000 €", "0,50 %", false],
-                  ["Über 10.000.000 €",  "0,30 %", false],
-                ].map(([range, rate, active]) => (
-                  <tr key={range as string} style={{ background: active ? "#fffbeb" : undefined }}>
-                    <td style={{ color: "#374151" }}>{range}</td>
-                    <td style={{ fontFamily: "'IBM Plex Mono',monospace", fontWeight: 700 }}>{rate}</td>
-                    <td>
-                      {active && (
-                        <span style={{ display: "inline-block", padding: "2px 8px", background: A, color: "#fff", fontSize: 10.5, fontWeight: 700 }}>
-                          Ihr Satz
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                  ["0 – 500.000 €",             "1,20 %", 0],
+                  ["500.000 – 2.000.000 €",     "0,80 %", 1],
+                  ["2.000.000 – 10.000.000 €",  "0,50 %", 2],
+                  ["Über 10.000.000 €",          "0,30 %", 3],
+                ].map(([range, rate, idx]) => {
+                  const isActive = idx === activeTierIdx;
+                  return (
+                    <tr key={range as string} style={{ background: isActive ? "#fffbeb" : undefined }}>
+                      <td style={{ color: "#374151" }}>{range}</td>
+                      <td style={{ fontFamily: "'IBM Plex Mono',monospace", fontWeight: 700 }}>{rate}</td>
+                      <td>
+                        {isActive && (
+                          <span style={{ display: "inline-block", padding: "2px 8px", background: A, color: "#fff", fontSize: 10.5, fontWeight: 700 }}>
+                            Ihr Satz
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -239,13 +264,21 @@ export function SellerBillingClient() {
                 </div>
               ))}
               <div className="bil-ledger-total">
-                <span style={{ color: "#9ca3af", fontSize: 11 }}>Gesamt</span>
+                <span style={{ color: "#9ca3af", fontSize: 11 }}>Summe</span>
                 <span />
                 <span style={{ fontFamily: "'IBM Plex Mono',monospace", color: "#16a34a", textAlign: "right" }}>
-                  +{fmtEur(demoTotalRev || totalRev)}
+                  +{fmtEur(displayRev)}
                 </span>
                 <span style={{ fontFamily: "'IBM Plex Mono',monospace", color: "#dc2626", textAlign: "right" }}>
-                  −{fmtEur(demoTotalFees || totalFees)}
+                  −{fmtEur(displayFees)}
+                </span>
+              </div>
+              <div className="bil-ledger-total" style={{ background: "#f0fdf4", borderTop: "2px solid #16a34a" }}>
+                <span style={{ color: "#14532d", fontSize: 11, fontWeight: 700 }}>Netto-Erlös</span>
+                <span style={{ fontSize: 11, color: "#6b7280" }}>nach Plattformgebühr (netto, ohne USt)</span>
+                <span />
+                <span style={{ fontFamily: "'IBM Plex Mono',monospace", color: "#14532d", textAlign: "right", fontSize: 15 }}>
+                  {fmtEur(displayRev - displayFees)}
                 </span>
               </div>
             </div>
@@ -253,15 +286,20 @@ export function SellerBillingClient() {
 
           {/* CBAM-Report */}
           <div className="bil-section">
-            <div className="bil-section-title">CBAM Quarterly Report — Export</div>
+            <div className="bil-section-title">CBAM-Daten-Export (Jahreserklärung 2026)</div>
             <div style={{ background: "#fff", border: "1px solid #e5e7eb", padding: "18px 22px" }}>
-              <div style={{ fontSize: 13, color: "#374151", marginBottom: 10 }}>
-                Exportieren Sie Ihre CBAM-Quartalsmeldung gemäß EU-Verordnung 2023/956 für alle
-                abgeschlossenen Transaktionen. Die XML-Datei ist direkt beim EU-Zollbeauftragten einreichbar.
+              <div style={{ fontSize: 13, color: "#374151", marginBottom: 6, lineHeight: 1.6 }}>
+                Seit 01.01.2026 gilt das definitive CBAM-Regime (EU-VO 2023/956).
+                Die erste Jahreserklärung für das Referenzjahr 2026 ist bis 31.05.2027 über das{" "}
+                <strong>CBAM-Register der EU-Kommission</strong> durch den autorisierten CBAM-Anmelder einzureichen.
+              </div>
+              <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 12 }}>
+                Dieser Export enthält Ihre Transaktions- und Emissionsdaten (eingebettete CO₂-Emissionen pro Lot)
+                zur internen Vorbereitung der CBAM-Erklärung. Die Datei ist kein offizielles Einreichungsformat.
               </div>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 <button className="bil-cbam-btn">
-                  CBAM Q2/2026 exportieren →
+                  CBAM-Daten 2026 exportieren →
                 </button>
                 <button
                   style={{ padding: "10px 18px", background: "#fff", color: "#374151", border: "1px solid #d1d5db", fontSize: 13, cursor: "pointer" }}
