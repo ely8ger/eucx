@@ -700,7 +700,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-form-title { font-size:15px; font-weight:700; color:#111827; margin:0; }
         .bl-form-body { display:flex; align-items:flex-start; }
         .bl-form-left { flex:1; min-width:0; padding:24px 28px 28px; }
-        .bl-form-summary { width:272px; flex-shrink:0; border-left:1px solid #e5e7eb; background:#f8fafc; padding:24px 20px; position:sticky; top:24px; align-self:flex-start; }
+        .bl-form-summary { width:272px; flex-shrink:0; border-left:1px solid #e5e7eb; background:#f8fafc; padding:24px 20px; position:sticky; top:100px; align-self:flex-start; }
         @media (max-width:800px) { .bl-form-body { flex-direction:column; } .bl-form-summary { width:100%; border-left:none; border-top:1px solid #e5e7eb; position:static; } }
         .bl-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
         @media (max-width:640px) { .bl-form-grid { grid-template-columns:1fr; } }
