@@ -62,6 +62,7 @@ interface LotRow {
   deliveryLocation?:  string | null;
   paymentTerms?:      string | null;
   vatTreatment?:      string | null;
+  greenSteel?:        boolean;
   contractId?:        string | null;
 }
 
@@ -289,6 +290,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [startPrice,       setStartPrice]       = useState("");
   const [description,      setDescription]      = useState("");
   const [formError,        setFormError]        = useState<string | null>(null);
+  const [greenSteel,       setGreenSteel]       = useState(false);
   // CBAM form state
   const [cbamCategory,     setCbamCategory]     = useState<CbamGroupId | "">("");
   const [co2PerTonne,      setCo2PerTonne]      = useState("");   // kg CO₂-Äq./t (EU-Default oder Werkswert)
@@ -493,6 +495,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       if (cbamCategory)     body.cbamCategory     = cbamCategory;
       if (co2PerTonne)      body.co2PerTonne      = parseFloat(co2PerTonne);
       if (countryConfirmed && countryOfOrigin) body.countryOfOrigin = countryOfOrigin;
+      body.greenSteel = greenSteel;
       if (productionSiteId) body.productionSiteId = productionSiteId.trim();
       if (incoterms)        body.incoterms        = incoterms;
       // Pflichtfelder - vertragswesentlich
@@ -522,7 +525,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
           description: "Jetzt Verkäufer einladen und Auktion starten.",
           style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" },
         });
-        setCommodity(""); setQuantity(""); setUnit("TON"); setStartPrice(""); setDescription("");
+        setCommodity(""); setQuantity(""); setUnit("TON"); setStartPrice(""); setDescription(""); setGreenSteel(false);
         setCbamCategory(""); setCo2PerTonne(""); setCountryOfOrigin(""); setProductionSiteId(""); setIncoterms("DAP");
         setHsCode(""); setQualityGrade(""); setDeliveryPeriod(""); setDeliveryLocation(""); setPaymentTerms(""); setVatTreatment("");
         setSelectedPreset("");
@@ -1428,6 +1431,50 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   </div>
                 )}
 
+                {/* Green Steel Toggle */}
+                <div
+                  onClick={() => setGreenSteel(v => !v)}
+                  style={{
+                    marginTop: 20,
+                    marginBottom: 4,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 14,
+                    padding: "14px 18px",
+                    border: `2px solid ${greenSteel ? "#16a34a" : "#e5e7eb"}`,
+                    background: greenSteel ? "#f0fdf4" : "#fafafa",
+                    cursor: "pointer",
+                    transition: "border-color .15s, background .15s",
+                    userSelect: "none" as const,
+                  }}
+                >
+                  {/* Checkbox */}
+                  <div style={{
+                    width: 22, height: 22, flexShrink: 0,
+                    border: `2px solid ${greenSteel ? "#16a34a" : "#d1d5db"}`,
+                    background: greenSteel ? "#16a34a" : "#fff",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "background .15s, border-color .15s",
+                  }}>
+                    {greenSteel && <span style={{ color: "#fff", fontSize: 13, fontWeight: 700, lineHeight: 1 }}>✓</span>}
+                  </div>
+                  {/* Text */}
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: greenSteel ? "#15803d" : "#374151" }}>
+                      Green Steel gefordert
+                    </div>
+                    <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>
+                      Nur nachhaltig produziertes Stahl (EAF mit Okoenergie, H-DRI oder vergleichbar)
+                    </div>
+                  </div>
+                  {/* Badge */}
+                  {greenSteel && (
+                    <div style={{ marginLeft: "auto", padding: "3px 10px", background: "#16a34a", color: "#fff", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", flexShrink: 0 }}>
+                      GREEN
+                    </div>
+                  )}
+                </div>
+
                 {/* CBAM-Sektion */}
                 <div className="bl-cbam-header">
                   <span className="bl-cbam-title">CBAM - Carbon Border Adjustment Mechanism</span>
@@ -1922,6 +1969,11 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   <span className="bl-sum-label">Incoterm</span>
                   <span className="bl-sum-value">{incoterms || "–"}</span>
                 </div>
+                {greenSteel && (
+                  <div style={{ marginBottom: 10, padding: "5px 10px", background: "#f0fdf4", border: "1px solid #bbf7d0", display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#15803d" }}>GREEN STEEL</span>
+                  </div>
+                )}
 
                 {/* Max. Volumen — prominent */}
                 <div className="bl-sum-vol">
@@ -1995,8 +2047,11 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       <tr key={lot.id}>
                         {/* Ware + Menge */}
                         <td>
-                          <div style={{ fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                            {lot.commodity}
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <span style={{ fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{lot.commodity}</span>
+                            {lot.greenSteel && (
+                              <span style={{ flexShrink: 0, padding: "1px 6px", background: "#16a34a", color: "#fff", fontSize: 9, fontWeight: 700, letterSpacing: ".05em" }}>GREEN</span>
+                            )}
                           </div>
                           <div style={{ fontSize: 11.5, color: "#374151", marginTop: 2, whiteSpace: "nowrap" }}>
                             {Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}

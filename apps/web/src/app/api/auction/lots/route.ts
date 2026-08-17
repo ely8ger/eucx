@@ -30,6 +30,7 @@ const createLotSchema = z.object({
   countryOfOrigin:  z.string().max(100).optional(),
   productionSiteId: z.string().max(50).optional(),
   incoterms:        z.enum(INCOTERMS_VALUES).optional(),
+  greenSteel:       z.boolean().optional(),
   // Handels- und Vertragsangaben (Pflichtfelder - vertragswesentlich nach §§ 433, 434 BGB)
   hsCode:           z.string().min(1, "HS-Code ist erforderlich").max(20),
   qualityGrade:     z.string().min(1, "Güte / Qualitätsnorm ist erforderlich").max(120),
@@ -76,7 +77,7 @@ export async function POST(req: NextRequest) {
 
   // ── Lot anlegen ───────────────────────────────────────────────────
   const { commodity, quantity, unit, startPrice, description,
-          cbamCategory, co2PerTonne, countryOfOrigin, productionSiteId, incoterms,
+          cbamCategory, co2PerTonne, countryOfOrigin, productionSiteId, incoterms, greenSteel,
           hsCode, qualityGrade, deliveryPeriod, deliveryLocation, paymentTerms, vatTreatment } = parsed.data;
 
   const buyerIp = req.headers.get("x-forwarded-for")?.split(",").at(0)?.trim()
@@ -105,6 +106,7 @@ export async function POST(req: NextRequest) {
         deliveryLocation,
         paymentTerms,
         vatTreatment,
+        greenSteel:      greenSteel ?? false,
       },
     });
   } catch (err) {
@@ -170,6 +172,7 @@ export async function GET(req: NextRequest) {
       deliveryLocation: true,
       paymentTerms:     true,
       vatTreatment:     true,
+      greenSteel:       true,
       buyer: {
         select: { id: true, organizationId: true },
       },

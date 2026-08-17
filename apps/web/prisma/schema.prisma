@@ -1185,6 +1185,7 @@ model Lot {
   co2DirectPerTonne   Decimal? @db.Decimal(12, 4)   // kg CO₂-Äq./t — nur direkte Emissionen
   co2IndirectPerTonne Decimal? @db.Decimal(12, 4)   // kg CO₂-Äq./t — indirekte Emissionen (Strom)
   carbonPricePaid     Decimal? @db.Decimal(12, 4)   // €/t — CO₂-Preis im Ursprungsland bereits gezahlt
+  greenSteel          Boolean  @default(false)        // Käufer fordert nachhaltig produziertes Stahl (EAF/H-DRI)
 
   // ── Handels- und Vertragsangaben ──────────────────────────────────────────────
   hsCode           String?                       // Zolltarifnummer (CN-Code 8-stellig, z.B. "7214 20 00")
