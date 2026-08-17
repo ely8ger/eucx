@@ -1083,20 +1083,13 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                 {/* ── Produktkatalog-Suche ── */}
                 <div style={{ marginBottom: 20, position: "relative" }}>
-                  <div
-                    onClick={() => setCatalogExpanded((v) => !v)}
-                    style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: catalogExpanded ? 8 : 0, paddingLeft: 12, borderLeft: "3px solid #154194", cursor: "pointer", userSelect: "none" as const }}
-                  >
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, paddingLeft: 12, borderLeft: "3px solid #154194" }}>
                     <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase" as const }}>Produktkatalog</span>
                     <span style={{ fontSize: 11, color: "#9ca3af" }}>184 Produkte · 24.438 Abmessungen</span>
                     {catalogProduct && (
                       <span style={{ fontSize: 11, color: "#154194", fontWeight: 600, marginLeft: 4 }}>· {catalogProduct.nameEn}</span>
                     )}
-                    <span style={{ marginLeft: "auto", fontSize: 10, color: "#154194", fontWeight: 700 }}>
-                      {catalogExpanded ? "▲" : "▼"}
-                    </span>
                   </div>
-                  {catalogExpanded && (
                   <div style={{ position: "relative" }}>
                     <input
                       className="bl-input"
@@ -1217,11 +1210,10 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     </div>
                   )}
                   </div>
-                  )}
                 </div>
 
                 {/* ── Abmessungs-Picker ── */}
-                {catalogExpanded && catalogProduct && catalogSizes.length > 0 && (() => {
+                {catalogProduct && catalogSizes.length > 0 && (() => {
                   const SEP = "х";
                   const hasMultiPart = catalogSizes.some((s) => s.includes(SEP));
 
