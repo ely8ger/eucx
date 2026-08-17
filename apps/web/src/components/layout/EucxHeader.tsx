@@ -522,9 +522,11 @@ export function EucxHeader() {
   const rawContext  = resolveContext(pathname);
   const context: typeof rawContext = (
     rawContext === "settings" &&
-    pathname.startsWith("/dashboard/contracts") &&
-    (me?.role === "BUYER" || me?.role === "SELLER")
-  ) ? (me.role === "SELLER" ? "seller" : "buyer") : rawContext;
+    pathname.startsWith("/dashboard/contracts")
+  ) ? (
+    me === null ? null :                              // me noch nicht geladen → keine Nav (kein Flash)
+    me.role === "SELLER" ? "seller" : "buyer"
+  ) : rawContext;
 
   const navItems: NavItem[] = context ? (NAV[context] ?? []) : [];
   const accentColor = context === "seller" ? SELLER_CLR : BLUE;
