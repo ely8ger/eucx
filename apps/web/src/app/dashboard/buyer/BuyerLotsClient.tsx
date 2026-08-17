@@ -645,7 +645,13 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   // lotsWithCbam: nur abgeschlossene Lots (konsistent mit totalCo2Tonnes)
   const lotsWithCbam = co2Lots.length;
 
-
+  // Live-Berechnung: Menge × Maximalpreis
+  const maxVol = (() => {
+    const q = parseFloat(quantity);
+    const p = parseFloat(startPrice);
+    return !isNaN(q) && q > 0 && !isNaN(p) && p > 0 ? q * p : null;
+  })();
+  const fmtEurInt = (v: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
 
   return (
     <>
@@ -685,8 +691,13 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-btn-new:disabled { opacity:.5; cursor:not-allowed; }
 
         /* Create form */
-        .bl-form-wrap { background:#fff; border:1px solid #e5e7eb; border-top:3px solid #154194; padding:28px; margin-bottom:24px; }
-        .bl-form-title { font-size:15px; font-weight:700; margin-bottom:20px; color:#111827; }
+        .bl-form-wrap { background:#fff; border:1px solid #e5e7eb; border-top:3px solid #154194; margin-bottom:24px; }
+        .bl-form-header { padding:20px 28px; border-bottom:1px solid #f3f4f6; }
+        .bl-form-title { font-size:15px; font-weight:700; color:#111827; margin:0; }
+        .bl-form-body { display:flex; align-items:flex-start; }
+        .bl-form-left { flex:1; min-width:0; padding:24px 28px 28px; }
+        .bl-form-summary { width:272px; flex-shrink:0; border-left:1px solid #e5e7eb; background:#f8fafc; padding:24px 20px; position:sticky; top:24px; align-self:flex-start; }
+        @media (max-width:800px) { .bl-form-body { flex-direction:column; } .bl-form-summary { width:100%; border-left:none; border-top:1px solid #e5e7eb; position:static; } }
         .bl-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
         @media (max-width:640px) { .bl-form-grid { grid-template-columns:1fr; } }
         .bl-form-group { display:flex; flex-direction:column; gap:6px; }
@@ -706,6 +717,14 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-btn-submit:disabled { opacity:.5; cursor:not-allowed; }
         .bl-btn-cancel { padding:10px 20px; background:#fff; color:#374151; font-size:13px; font-weight:600; border:1px solid #d1d5db; cursor:pointer; transition:background .15s; }
         .bl-btn-cancel:hover { background:#f9fafb; }
+        .bl-maxvol { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f0f5ff; border:1px solid #c7d7fc; margin-top:12px; }
+        .bl-sum-row { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; font-size:12.5px; }
+        .bl-sum-label { color:#6b7280; font-weight:500; }
+        .bl-sum-value { color:#111827; font-weight:600; text-align:right; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .bl-sum-vol { margin:16px 0; padding:14px; background:#fff; border:1px solid #e5e7eb; }
+        .bl-btn-draft { width:100%; padding:11px; background:#154194; color:#fff; font-size:13px; font-weight:700; border:none; cursor:pointer; transition:background .15s; margin-bottom:10px; }
+        .bl-btn-draft:hover:not(:disabled) { background:#1a52c2; }
+        .bl-btn-draft:disabled { opacity:.5; cursor:not-allowed; }
 
         /* Table */
         .bl-table-wrap { overflow-x:auto; }
@@ -1032,8 +1051,12 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
           {/* Create Form */}
           {showForm && (
             <div className="bl-form-wrap">
-              <div className="bl-form-title">Neue Ausschreibung erstellen</div>
-              <form onSubmit={(e) => { void createLot(e); }}>
+              <div className="bl-form-header">
+                <div className="bl-form-title">Neue Ausschreibung erstellen</div>
+              </div>
+              <form id="bl-lot-form" onSubmit={(e) => { void createLot(e); }}>
+              <div className="bl-form-body">
+              <div className="bl-form-left">
 
                 {/* ── Produktkatalog-Suche ── */}
                 <div style={{ marginBottom: 20, position: "relative" }}>
@@ -1376,6 +1399,14 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     />
                   </div>
                 </div>
+
+                {/* Inline Maximalvolumen */}
+                {maxVol !== null && (
+                  <div className="bl-maxvol">
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "#374151" }}>Geschätztes Maximalvolumen</span>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: "#154194", fontVariantNumeric: "tabular-nums" }}>{fmtEurInt(maxVol)}</span>
+                  </div>
+                )}
 
                 {/* CBAM-Sektion */}
                 <div className="bl-cbam-header">
@@ -1834,12 +1865,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   </div>
                 </div>
 
-                {formError && <div className="bl-form-error" style={{ marginTop: 16 }}>{formError}</div>}
-
-                <div className="bl-form-actions">
-                  <button className="bl-btn-submit" type="submit" disabled={submitting}>
-                    {submitting ? "Wird erstellt…" : "Ausschreibung erstellen"}
-                  </button>
+                <div className="bl-form-actions" style={{ marginTop: 16 }}>
                   <button
                     className="bl-btn-cancel"
                     type="button"
@@ -1848,6 +1874,55 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     Abbrechen
                   </button>
                 </div>
+              </div>{/* end bl-form-left */}
+
+              {/* ── Zusammenfassung (rechte Spalte) ── */}
+              <div className="bl-form-summary">
+                <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".06em", textTransform: "uppercase" as const, color: "#154194", borderBottom: "2px solid #154194", paddingBottom: 10, marginBottom: 16 }}>
+                  Zusammenfassung
+                </div>
+
+                <div className="bl-sum-row">
+                  <span className="bl-sum-label">Produkt</span>
+                  <span className="bl-sum-value" title={commodity}>{commodity || "–"}</span>
+                </div>
+                <div className="bl-sum-row">
+                  <span className="bl-sum-label">Menge</span>
+                  <span className="bl-sum-value">{quantity ? `${quantity} ${unit}` : "–"}</span>
+                </div>
+                <div className="bl-sum-row">
+                  <span className="bl-sum-label">Max. Preis</span>
+                  <span className="bl-sum-value">{startPrice ? `${parseFloat(startPrice).toLocaleString("de-DE")} €/${unit}` : "–"}</span>
+                </div>
+                <div className="bl-sum-row">
+                  <span className="bl-sum-label">Lieferort</span>
+                  <span className="bl-sum-value" title={deliveryLocation || ""}>{deliveryLocation || "–"}</span>
+                </div>
+                <div className="bl-sum-row">
+                  <span className="bl-sum-label">Incoterm</span>
+                  <span className="bl-sum-value">{incoterms || "–"}</span>
+                </div>
+
+                {/* Max. Volumen — prominent */}
+                <div className="bl-sum-vol">
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", letterSpacing: ".06em", textTransform: "uppercase" as const, marginBottom: 6 }}>Max. Volumen</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: maxVol ? "#154194" : "#d1d5db", fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>
+                    {maxVol ? fmtEurInt(maxVol) : "–"}
+                  </div>
+                </div>
+
+                {formError && <div className="bl-form-error" style={{ marginBottom: 12 }}>{formError}</div>}
+
+                <button className="bl-btn-draft" type="submit" disabled={submitting}>
+                  {submitting ? "Wird gespeichert…" : "Als Entwurf speichern"}
+                </button>
+
+                <div style={{ fontSize: 11, color: "#6b7280", lineHeight: 1.6 }}>
+                  Der Entwurf ist nur fur Sie sichtbar. Eingeladene Verkaufer konnen erst nach dem Auktionsstart Gebote abgeben.
+                </div>
+              </div>{/* end bl-form-summary */}
+
+              </div>{/* end bl-form-body */}
               </form>
             </div>
           )}
