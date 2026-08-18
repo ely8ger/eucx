@@ -139,7 +139,7 @@ export async function GET(req: NextRequest) {
   const mine    = searchParams.get("mine") === "true";
 
   // Fällige Auktionen on-demand abschließen (Backup für Cron-Ausfälle)
-  runAuctionTimer().catch(() => {});
+  runAuctionTimer().catch((err) => console.error("[AuctionTimer on-demand]", err));
 
   const lots = await db.lot.findMany({
     where: mine

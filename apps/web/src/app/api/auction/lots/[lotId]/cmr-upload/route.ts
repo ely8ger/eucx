@@ -81,15 +81,15 @@ export async function POST(
   const base64      = Buffer.from(arrayBuffer).toString("base64");
   const dataUrl     = `data:${file.type};base64,${base64}`;
 
+  const autoAdvanced = contract.deliveryStatus === DeliveryStatus.READY_FOR_PICKUP;
+
   const updated = await db.lotContract.update({
     where: { id: contract.id },
     data:  {
       cmrDocument:    dataUrl,
       cmrUploadedAt:  new Date(),
       // Automatischer Übergang zu IN_TRANSIT wenn noch READY_FOR_PICKUP
-      deliveryStatus: contract.deliveryStatus === DeliveryStatus.READY_FOR_PICKUP
-        ? DeliveryStatus.IN_TRANSIT
-        : contract.deliveryStatus,
+      deliveryStatus: autoAdvanced ? DeliveryStatus.IN_TRANSIT : contract.deliveryStatus,
     },
     select: {
       id:             true,
@@ -101,7 +101,8 @@ export async function POST(
 
   return NextResponse.json({
     ...updated,
-    fileName:  file.name,
-    fileSizeMb: (file.size / 1024 / 1024).toFixed(2),
+    fileName:         file.name,
+    fileSizeMb:       (file.size / 1024 / 1024).toFixed(2),
+    statusAdvancedTo: autoAdvanced ? DeliveryStatus.IN_TRANSIT : null,
   }, { status: 201 });
 }

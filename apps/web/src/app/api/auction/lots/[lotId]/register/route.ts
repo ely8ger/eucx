@@ -30,11 +30,14 @@ export async function POST(
   const [user, lot] = await Promise.all([
     db.user.findUnique({
       where:  { id: token.userId },
-      select: { id: true, role: true, status: true, verificationStatus: true },
+      select: { id: true, role: true, status: true, verificationStatus: true, organizationId: true },
     }),
     db.lot.findUnique({
       where:  { id: lotId },
-      select: { id: true, phase: true, buyerId: true, buyerIp: true },
+      select: {
+        id: true, phase: true, buyerId: true, buyerIp: true,
+        buyer: { select: { organizationId: true } },
+      },
     }),
   ]);
 
@@ -54,13 +57,10 @@ export async function POST(
     return NextResponse.json({ error: "Käufer kann sich nicht als Verkäufer registrieren" }, { status: 409 });
   }
 
-  // ── IP-Sperre: Käufer und Verkäufer dürfen nicht dieselbe IP haben ──
-  const sellerIp = req.headers.get("x-forwarded-for")?.split(",").at(0)?.trim()
-                ?? req.headers.get("x-real-ip")
-                ?? null;
-  if (sellerIp && lot.buyerIp && sellerIp === lot.buyerIp) {
+  // ── Organisations-Konflikt: Käufer und Verkäufer dürfen nicht zur selben Organisation gehören ──
+  if (user.organizationId && lot.buyer?.organizationId && user.organizationId === lot.buyer.organizationId) {
     return NextResponse.json(
-      { error: "Registrierung von dieser IP-Adresse nicht möglich (Interessenkonflikt)" },
+      { error: "Registrierung nicht möglich: Käufer und Verkäufer gehören zur selben Organisation (Interessenkonflikt)" },
       { status: 409 }
     );
   }

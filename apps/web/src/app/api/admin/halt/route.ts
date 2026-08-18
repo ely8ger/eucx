@@ -14,7 +14,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken }         from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
+import { db }                        from "@/lib/db/client";
 import { z }                         from "zod";
+import { randomBytes }               from "crypto";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +48,21 @@ async function nestProxy(
   }
 }
 
+// ── DB-Fallback: aktive Halts aus Datenbank lesen ────────────────────────────
+async function dbGetHalts() {
+  const halts = await db.$queryRaw<Array<{
+    id: string; activatedBy: string; reason: string;
+    activatedAt: Date; expiresAt: Date | null; liftedAt: Date | null;
+  }>>`
+    SELECT id, "activatedBy", reason, "activatedAt", "expiresAt", "liftedAt"
+    FROM trading_halts
+    WHERE "liftedAt" IS NULL
+      AND ("expiresAt" IS NULL OR "expiresAt" > NOW())
+    ORDER BY "activatedAt" DESC
+  `;
+  return halts;
+}
+
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   const rawToken   = authHeader?.slice(7) ?? req.cookies.get("access_token")?.value ?? "";
@@ -56,18 +73,29 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
   }
 
+  // NestJS-Primärpfad
   const upstream = await nestProxy("GET", rawToken);
   if (upstream?.ok) {
     const data = await upstream.json();
     return NextResponse.json(data);
   }
 
-  // Fallback: Halt-Status unbekannt (NestJS offline)
-  return NextResponse.json({
-    halts:          [],
-    redisAvailable: false,
-    warning:        "NestJS nicht erreichbar - Status unbekannt",
-  });
+  // DB-Fallback
+  try {
+    const halts = await dbGetHalts();
+    return NextResponse.json({
+      halts:          halts.map((h) => ({ ...h, source: "db" })),
+      redisAvailable: false,
+      source:         "database",
+    });
+  } catch (err) {
+    console.error("[admin/halt GET] DB-Fallback fehlgeschlagen:", err);
+    return NextResponse.json({
+      halts:          [],
+      redisAvailable: false,
+      warning:        "Status konnte nicht abgerufen werden",
+    });
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -96,6 +124,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Validierungsfehler", details: parsed.error.flatten() }, { status: 422 });
   }
 
+  // NestJS-Primärpfad
   const upstream = await nestProxy("POST", rawToken, {
     reason:          parsed.data.reason,
     durationSeconds: parsed.data.durationSeconds,
@@ -117,10 +146,42 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(data);
   }
 
-  return NextResponse.json(
-    { error: "NestJS nicht erreichbar - Kill-Switch konnte nicht aktiviert werden" },
-    { status: 503 },
-  );
+  // DB-Fallback: Halt in Datenbank speichern
+  try {
+    const haltId   = randomBytes(10).toString("hex");
+    const expiresAt = parsed.data.durationSeconds > 0
+      ? new Date(Date.now() + parsed.data.durationSeconds * 1000)
+      : null;
+
+    await db.$executeRaw`
+      INSERT INTO trading_halts (id, "activatedBy", reason, "activatedAt", "expiresAt")
+      VALUES (${haltId}, ${tokenPayload.userId}, ${parsed.data.reason}, NOW(), ${expiresAt})
+    `;
+
+    await audit({
+      userId:     tokenPayload.userId,
+      action:     "ADMIN_ACTION",
+      entityType: "TradingSession",
+      entityId:   "global",
+      ipAddress:  req.headers.get("x-forwarded-for") ?? "unknown",
+      userAgent:  req.headers.get("user-agent") ?? "",
+      meta:       { killSwitch: "ACTIVATED_DB_FALLBACK", reason: parsed.data.reason, durationSeconds: parsed.data.durationSeconds },
+    });
+
+    return NextResponse.json({
+      id:          haltId,
+      status:      "HALT_ACTIVE",
+      reason:      parsed.data.reason,
+      expiresAt:   expiresAt?.toISOString() ?? null,
+      source:      "database",
+    });
+  } catch (err) {
+    console.error("[admin/halt POST] DB-Fallback fehlgeschlagen:", err);
+    return NextResponse.json(
+      { error: "Kill-Switch konnte nicht aktiviert werden" },
+      { status: 503 },
+    );
+  }
 }
 
 export async function DELETE(req: NextRequest) {
@@ -134,6 +195,7 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
   }
 
+  // NestJS-Primärpfad
   const upstream = await nestProxy("DELETE", rawToken);
 
   if (upstream?.ok) {
@@ -150,8 +212,29 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ status: "TRADING_RESUMED" });
   }
 
-  return NextResponse.json(
-    { error: "NestJS nicht erreichbar - Halt konnte nicht aufgehoben werden" },
-    { status: 503 },
-  );
+  // DB-Fallback: alle aktiven Halts aufheben
+  try {
+    await db.$executeRaw`
+      UPDATE trading_halts SET "liftedAt" = NOW(), "liftedBy" = ${tokenPayload.userId}
+      WHERE "liftedAt" IS NULL
+    `;
+
+    await audit({
+      userId:     tokenPayload.userId,
+      action:     "ADMIN_ACTION",
+      entityType: "TradingSession",
+      entityId:   "global",
+      ipAddress:  req.headers.get("x-forwarded-for") ?? "unknown",
+      userAgent:  req.headers.get("user-agent") ?? "",
+      meta:       { killSwitch: "LIFTED_DB_FALLBACK" },
+    });
+
+    return NextResponse.json({ status: "TRADING_RESUMED", source: "database" });
+  } catch (err) {
+    console.error("[admin/halt DELETE] DB-Fallback fehlgeschlagen:", err);
+    return NextResponse.json(
+      { error: "Halt konnte nicht aufgehoben werden" },
+      { status: 503 },
+    );
+  }
 }

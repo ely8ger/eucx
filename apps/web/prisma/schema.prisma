@@ -1469,6 +1469,22 @@ model ProductSize {
   @@map("product_sizes")
 }
 
+// ─── TradingHalt — Globaler Handelsstopp (Kill-Switch)
+// Wird vom Admin aktiviert. Verarbeitung: NestJS/Redis (primär) → DB (Fallback).
+// liftedAt=null → Halt aktiv. liftedAt gesetzt → Halt aufgehoben.
+model TradingHalt {
+  id          String    @id @default(cuid())
+  activatedBy String    // userId des Admins
+  reason      String
+  activatedAt DateTime  @default(now())
+  expiresAt   DateTime?
+  liftedAt    DateTime?
+  liftedBy    String?
+
+  @@index([liftedAt])
+  @@map("trading_halts")
+}
+
 // ─── NotificationPreference — Nutzer-Präferenzen für E-Mail-Benachrichtigungen
 // Wird beim ersten GET/PATCH angelegt falls noch nicht vorhanden (upsert).
 model NotificationPreference {

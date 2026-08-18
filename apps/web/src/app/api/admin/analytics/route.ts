@@ -32,12 +32,24 @@ export async function GET(req: NextRequest) {
     since.setDate(since.getDate() - 30);
     since.setHours(0, 0, 0, 0);
 
-    // ── Deals der letzten 30 Tage ─────────────────────────────────────────
-    const deals = await db.deal.findMany({
-      where:   { createdAt: { gte: since }, status: { not: "CANCELLED" } },
-      select:  { id: true, totalValue: true, createdAt: true },
+    // ── LotContracts der letzten 30 Tage (primäre Handelsvolumen-Quelle) ──
+    const lotContracts = await db.lotContract.findMany({
+      where:   { createdAt: { gte: since } },
+      select:  { id: true, totalValue: true, createdAt: true, fees: { select: { amount: true, type: true } } },
       orderBy: { createdAt: "asc" },
     });
+
+    // ── Legacy Deals der letzten 30 Tage (Orderbuch-Abschlüsse) ─────────
+    let deals: { id: string; totalValue: unknown; createdAt: Date }[] = [];
+    try {
+      deals = await db.deal.findMany({
+        where:   { createdAt: { gte: since }, status: { not: "CANCELLED" } },
+        select:  { id: true, totalValue: true, createdAt: true },
+        orderBy: { createdAt: "asc" },
+      });
+    } catch {
+      // Deal-Tabelle möglicherweise leer - ignorieren
+    }
 
     // ── Plattform-Gebühren (LedgerEntry EUCX_FEE_REVENUE) ────────────────
     let feeEntries: { amount: unknown; createdAt: Date }[] = [];
@@ -67,10 +79,23 @@ export async function GET(req: NextRequest) {
       dayMap[key] = { date: key, volume: new Decimal(0), fees: new Decimal(0), dealCount: 0 };
     }
 
+    // LotContracts aggregieren (Hauptquelle)
+    for (const contract of lotContracts) {
+      const key = contract.createdAt.toISOString().slice(0, 10);
+      if (!dayMap[key]) continue;
+      dayMap[key].volume = dayMap[key].volume.plus(new Decimal(contract.totalValue.toString()));
+      dayMap[key].dealCount++;
+      // Gebühren aus LotFees
+      for (const fee of contract.fees) {
+        dayMap[key].fees = dayMap[key].fees.plus(new Decimal(fee.amount.toString()));
+      }
+    }
+
+    // Legacy Deals (addieren, ohne Doppelzählung)
     for (const deal of deals) {
       const key = deal.createdAt.toISOString().slice(0, 10);
       if (!dayMap[key]) continue;
-      dayMap[key].volume = dayMap[key].volume.plus(new Decimal(deal.totalValue.toString()));
+      dayMap[key].volume = dayMap[key].volume.plus(new Decimal(String(deal.totalValue)));
       dayMap[key].dealCount++;
     }
 
