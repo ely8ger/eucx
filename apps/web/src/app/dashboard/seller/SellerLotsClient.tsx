@@ -38,6 +38,8 @@ interface LotRow {
   vatTreatment?:    string | null;
   description?:     string | null;
   greenSteel?:      boolean;
+  cbamCategory?:    string | null;
+  productionSiteId?:string | null;
 }
 
 interface KycInfo {
@@ -636,10 +638,16 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                   <div className="sl-preview-section-title">Warenangaben</div>
                   <table className="sl-preview-table">
                     <tbody>
+                      {row("Ware", lot.commodity)}
+                      {row("Menge", `${Number(lot.quantity).toLocaleString("de-DE")} ${lot.unit === "TON" ? "t" : lot.unit === "KG" ? "kg" : lot.unit}`)}
+                      {lot.startPrice && row("Maximalpreis (Limit)", `${parseFloat(lot.startPrice).toLocaleString("de-DE", { minimumFractionDigits: 2 })} €/${lot.unit === "TON" ? "t" : lot.unit === "KG" ? "kg" : lot.unit}`)}
                       {row("Güte / Qualitätsnorm", lot.qualityGrade)}
                       {row("HS-Code (Zolltarif)", lot.hsCode, true)}
-                      {row("Herkunftsland", lot.countryOfOrigin)}
+                      {lot.greenSteel && row("Green Steel", "Ja — zertifizierter Stahl mit reduziertem CO₂-Fußabdruck")}
+                      {row("CBAM-Kategorie", lot.cbamCategory)}
                       {lot.co2PerTonne && row("CO₂-Emissionsfaktor", `${parseFloat(lot.co2PerTonne).toLocaleString("de-DE")} kg CO₂/t`)}
+                      {row("Herkunftsland", lot.countryOfOrigin)}
+                      {row("Produktionsstandort-ID", lot.productionSiteId, true)}
                     </tbody>
                   </table>
                 </div>

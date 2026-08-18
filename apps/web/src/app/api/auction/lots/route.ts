@@ -165,6 +165,7 @@ export async function GET(req: NextRequest) {
       auctionEnd:       true,
       createdAt:        true,
       winnerId:         true,
+      cbamCategory:     true,
       co2PerTonne:      true,
       countryOfOrigin:  true,
       productionSiteId: true,

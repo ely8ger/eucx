@@ -63,6 +63,8 @@ interface LotRow {
   paymentTerms?:      string | null;
   vatTreatment?:      string | null;
   greenSteel?:        boolean;
+  cbamCategory?:      string | null;
+  productionSiteId?:  string | null;
   isDraft?:           boolean;
   description?:       string | null;
   contractId?:        string | null;
@@ -2345,10 +2347,14 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     <tbody>
                       {row("Ware", lot.commodity)}
                       {row("Menge", `${qty.toLocaleString("de-DE")} ${unitLabel}`)}
+                      {lot.startPrice && row("Maximalpreis (Limit)", `${parseFloat(lot.startPrice).toLocaleString("de-DE", { minimumFractionDigits: 2 })} €/${unitLabel}`)}
                       {row("Güte / Qualitätsnorm", lot.qualityGrade)}
                       {row("HS-Code (Zolltarif)", lot.hsCode, true)}
+                      {lot.greenSteel && row("Green Steel", "Ja — zertifizierter Stahl mit reduziertem CO₂-Fußabdruck")}
+                      {row("CBAM-Kategorie", lot.cbamCategory)}
                       {lot.co2PerTonne && row("CO₂-Emissionsfaktor", `${parseFloat(lot.co2PerTonne).toLocaleString("de-DE")} kg CO₂/t`)}
                       {row("Herkunftsland", lot.countryOfOrigin)}
+                      {row("Produktionsstandort-ID", lot.productionSiteId, true)}
                     </tbody>
                   </table>
                 </div>
