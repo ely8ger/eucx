@@ -1285,21 +1285,23 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                             onChange={(e) => setSizeQuery(e.target.value)}
                           />
                         </div>
-                        <div style={{ padding: "12px 14px", display: "flex", flexWrap: "wrap", gap: 6, maxHeight: 200, overflowY: "auto" }}>
+                        <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "repeat(auto-fill, 90px)", gap: 6, maxHeight: 200, overflowY: "auto" }}>
                           {filtered.map((s) => (
                             <button
                               key={s}
                               type="button"
                               onClick={() => { setSelectedSize(s); setCommodity(`${catalogProduct.nameEn}, ${s}`); }}
                               style={{
-                                padding: "6px 14px", fontSize: 13, cursor: "pointer",
+                                width: "100%", padding: "6px 4px", fontSize: 12, cursor: "pointer",
                                 fontFamily: "'IBM Plex Mono', monospace", fontWeight: 500,
                                 border: selectedSize === s ? "1.5px solid #154194" : "1px solid #d1d5db",
                                 background: selectedSize === s ? "#154194" : "#fff",
                                 color: selectedSize === s ? "#fff" : "#374151",
                                 transition: "all .1s",
-                                minWidth: 72, textAlign: "center" as const,
+                                textAlign: "center" as const,
+                                overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis",
                               }}
+                              title={s}
                             >{s}</button>
                           ))}
                         </div>
@@ -1370,7 +1372,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                               ? `Wandstärke / Dicke für ${selectedPrimary} (${secondaries.length})`
                               : "← Profil auswählen"}
                           </div>
-                          <div style={{ padding: 10, display: "flex", flexWrap: "wrap", gap: 4, maxHeight: 210, overflowY: "auto" }}>
+                          <div style={{ padding: 10, display: "grid", gridTemplateColumns: "repeat(auto-fill, 90px)", gap: 4, maxHeight: 210, overflowY: "auto" }}>
                             {secondaries.map((s) => {
                               const lastIdx = s.lastIndexOf(SEP);
                               const label = lastIdx > 0 ? s.slice(lastIdx + 1) : s;
@@ -1379,7 +1381,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                                   key={s}
                                   type="button"
                                   onClick={() => { setSelectedSize(s); setCommodity(`${catalogProduct.nameEn}, ${s}`); }}
-                                  style={{ padding: "5px 12px", fontSize: 12, cursor: "pointer", fontFamily: "monospace", border: selectedSize === s ? "1.5px solid #154194" : "1px solid #d1d5db", background: selectedSize === s ? "#154194" : "#fff", color: selectedSize === s ? "#fff" : "#374151" }}
+                                  style={{ width: "100%", padding: "5px 4px", fontSize: 12, cursor: "pointer", fontFamily: "monospace", textAlign: "center" as const, border: selectedSize === s ? "1.5px solid #154194" : "1px solid #d1d5db", background: selectedSize === s ? "#154194" : "#fff", color: selectedSize === s ? "#fff" : "#374151", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}
+                                  title={s}
                                 >{label}</button>
                               );
                             })}
