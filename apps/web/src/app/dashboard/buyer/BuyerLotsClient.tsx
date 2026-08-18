@@ -64,6 +64,7 @@ interface LotRow {
   vatTreatment?:      string | null;
   greenSteel?:        boolean;
   isDraft?:           boolean;
+  description?:       string | null;
   contractId?:        string | null;
 }
 
@@ -811,37 +812,53 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-btn-open:disabled { opacity:.4; cursor:not-allowed; }
 
         /* Zeitwähler-Popover */
-        .bl-pub-overlay { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:300; display:flex; align-items:flex-start; justify-content:center; overflow-y:auto; padding:40px 16px; }
-        .bl-pub { background:#fff; border-top:4px solid #154194; width:100%; max-width:560px; box-shadow:0 20px 60px rgba(0,0,0,.22); }
-        .bl-pub-head { padding:24px 28px 18px; border-bottom:1px solid #f3f4f6; }
-        .bl-pub-title { font-size:18px; font-weight:700; color:#0d1b2a; margin:0 0 4px; }
-        .bl-pub-sub { font-size:12px; color:#6b7280; }
-        .bl-pub-vol { background:#154194; color:#fff; margin:0; padding:18px 28px; }
-        .bl-pub-vol-label { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; opacity:.75; margin-bottom:4px; }
-        .bl-pub-vol-value { font-size:32px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
-        .bl-pub-vol-note { font-size:11px; opacity:.7; margin-top:3px; }
-        .bl-pub-section { padding:20px 28px; border-bottom:1px solid #f3f4f6; }
-        .bl-pub-section-title { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#9ca3af; margin-bottom:12px; }
-        .bl-pub-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 24px; }
-        .bl-pub-field { display:flex; flex-direction:column; gap:2px; }
-        .bl-pub-field-label { font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#9ca3af; }
-        .bl-pub-field-value { font-size:13px; font-weight:600; color:#111827; }
-        .bl-pub-timing { background:#f0f4ff; border:1px solid #c7d7fc; padding:14px 16px; margin:0 28px; }
-        .bl-pub-timing-top { font-size:12px; font-weight:700; color:#1e3a8a; margin-bottom:2px; }
+        .bl-pub-overlay { position:fixed; inset:0; background:rgba(10,20,50,.45); backdrop-filter:blur(6px); z-index:300; display:flex; align-items:center; justify-content:center; padding:20px; }
+        .bl-pub { background:#fff; width:100%; max-width:620px; max-height:92vh; overflow:hidden; display:flex; flex-direction:column; border-radius:16px; box-shadow:0 24px 60px rgba(0,0,0,.22), 0 4px 16px rgba(21,65,148,.12), inset 0 1px 0 rgba(255,255,255,.9); }
+        .bl-pub-head { background:linear-gradient(160deg,#f8faff 0%,#fff 100%); border-bottom:1px solid #e9edf5; border-radius:12px 12px 0 0; padding:22px 28px 16px; flex-shrink:0; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+        .bl-pub-head-left { flex:1; min-width:0; }
+        .bl-pub-eyebrow { font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#9ca3af; margin-bottom:5px; }
+        .bl-pub-title { font-size:19px; font-weight:700; color:#0d1e4a; margin:0; line-height:1.2; }
+        .bl-pub-sub { font-size:12px; color:#6b7280; margin-top:5px; line-height:1.5; }
+        .bl-pub-head-close { background:#f1f5f9; border:none; color:#6b7280; font-size:14px; cursor:pointer; padding:6px 9px; line-height:1; flex-shrink:0; border-radius:50%; transition:all .15s; }
+        .bl-pub-head-close:hover { background:#e2e8f0; color:#111827; }
+        /* Volumen-Zeile */
+        .bl-pub-vol { background:linear-gradient(90deg,#f8faff 0%,#f0f4ff 100%); border-bottom:1px solid #e9edf5; padding:14px 28px; flex-shrink:0; display:flex; align-items:baseline; gap:16px; }
+        .bl-pub-vol-label { font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#9ca3af; white-space:nowrap; }
+        .bl-pub-vol-value { font-family:"IBM Plex Mono",monospace; font-size:22px; font-weight:700; color:#0d1e4a; font-variant-numeric:tabular-nums; }
+        .bl-pub-vol-note { font-size:11px; color:#6b7280; }
+        /* Scroll-Body */
+        .bl-pub-body { flex:1; overflow-y:auto; }
+        .bl-pub-section { padding:16px 28px 8px; border-bottom:1px solid #f1f5f9; }
+        .bl-pub-section:last-child { border-bottom:none; }
+        .bl-pub-section-title { font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#94a3b8; margin-bottom:10px; }
+        /* Term-Sheet Tabelle */
+        .bl-pub-table { width:100%; border-collapse:collapse; margin-bottom:10px; }
+        .bl-pub-table tr { border-bottom:1px solid #f1f5f9; }
+        .bl-pub-table tr:last-child { border-bottom:none; }
+        .bl-pub-table td { padding:7px 0; vertical-align:top; }
+        .bl-pub-table td:first-child { width:44%; font-size:11.5px; color:#94a3b8; font-weight:400; padding-right:12px; }
+        .bl-pub-table td:last-child { font-size:12.5px; color:#111827; font-weight:500; }
+        .bl-pub-table td.mono { font-family:"IBM Plex Mono",monospace; font-size:12px; }
+        .bl-pub-desc { font-size:12.5px; color:#374151; line-height:1.75; white-space:pre-wrap; margin-bottom:12px; background:#f8faff; border-radius:8px; padding:12px 14px; border:1px solid #e9edf5; }
+        /* Timing */
+        .bl-pub-timing { background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px; margin-bottom:8px; }
+        .bl-pub-timing-top { font-size:12px; font-weight:700; color:#1e40af; margin-bottom:2px; }
         .bl-pub-timing-sub { font-size:11px; color:#6b7280; }
-        .bl-pub-legal { padding:20px 28px; }
-        .bl-pub-legal-box { border:1px solid #e5e7eb; padding:14px 16px; display:flex; align-items:flex-start; gap:12px; cursor:pointer; transition:border-color .15s; }
+        /* Rechtliche Bestätigung */
+        .bl-pub-legal { padding:16px 28px; }
+        .bl-pub-legal-box { border:1px solid #e5e7eb; border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:12px; cursor:pointer; transition:border-color .15s,background .15s; }
         .bl-pub-legal-box:hover { border-color:#154194; }
         .bl-pub-legal-box.checked { border-color:#154194; background:#f0f5ff; }
-        .bl-pub-legal-check { width:18px; height:18px; border:2px solid #d1d5db; flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; transition:background .15s, border-color .15s; }
+        .bl-pub-legal-check { width:18px; height:18px; border:2px solid #d1d5db; border-radius:4px; flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; transition:background .15s, border-color .15s; }
         .bl-pub-legal-check.checked { background:#154194; border-color:#154194; }
-        .bl-pub-legal-text { font-size:12px; color:#374151; line-height:1.6; }
-        .bl-pub-actions { padding:16px 28px 24px; display:flex; gap:10px; }
-        .bl-pub-confirm { flex:1; height:48px; background:#154194; color:#fff; font-size:14px; font-weight:700; border:none; cursor:pointer; letter-spacing:.03em; transition:background .15s; }
-        .bl-pub-confirm:hover:not(:disabled) { background:#1a52c2; }
-        .bl-pub-confirm:disabled { opacity:.35; cursor:not-allowed; }
-        .bl-pub-back { height:48px; padding:0 20px; background:#fff; color:#6b7280; font-size:13px; font-weight:600; border:1px solid #d1d5db; cursor:pointer; transition:background .15s; }
-        .bl-pub-back:hover { background:#f9fafb; }
+        .bl-pub-legal-text { font-size:12px; color:#374151; line-height:1.65; }
+        /* Footer */
+        .bl-pub-actions { padding:14px 28px; border-top:1px solid #e9edf5; border-radius:0 0 16px 16px; display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-shrink:0; background:linear-gradient(160deg,#fff 0%,#f8faff 100%); }
+        .bl-pub-confirm { padding:10px 28px; background:linear-gradient(135deg,#1a52c2 0%,#154194 100%); color:#fff; font-size:12.5px; font-weight:600; border:none; cursor:pointer; letter-spacing:.04em; transition:all .15s; text-transform:uppercase; border-radius:8px; box-shadow:0 2px 8px rgba(21,65,148,.35); }
+        .bl-pub-confirm:hover:not(:disabled) { background:linear-gradient(135deg,#1f5fdf 0%,#1a52c2 100%); box-shadow:0 4px 14px rgba(21,65,148,.45); transform:translateY(-1px); }
+        .bl-pub-confirm:disabled { opacity:.35; cursor:not-allowed; transform:none; }
+        .bl-pub-back { padding:9px 20px; background:#fff; color:#374151; font-size:12px; font-weight:500; border:1px solid #e2e8f0; cursor:pointer; transition:all .15s; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+        .bl-pub-back:hover { border-color:#9ca3af; background:#f8faff; }
         .bl-btn-watch { padding:7px 14px; background:#fff; color:#154194; font-size:12px; font-weight:700; border:1.5px solid #154194; text-decoration:none; display:inline-block; transition:all .15s; white-space:nowrap; }
         .bl-btn-watch:hover { background:#154194; color:#fff; }
         .bl-btn-contract { padding:7px 14px; background:#154194; color:#fff; font-size:12px; font-weight:700; border:none; text-decoration:none; display:inline-block; transition:background .15s; white-space:nowrap; }
@@ -2289,118 +2306,121 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         const vol   = price !== null ? qty * price : null;
         const fmtEurLarge = (v: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
         const unitLabel = lot.unit === "TON" ? "t" : lot.unit === "KG" ? "kg" : lot.unit;
+        const row = (label: string, value: string | null | undefined, mono = false) =>
+          value ? (
+            <tr>
+              <td>{label}</td>
+              <td className={mono ? "mono" : ""}>{value}</td>
+            </tr>
+          ) : null;
+
         return (
           <div className="bl-pub-overlay" onClick={() => setOpeningLotId(null)}>
             <div className="bl-pub" onClick={(e) => e.stopPropagation()}>
 
               {/* Header */}
               <div className="bl-pub-head">
-                <div className="bl-pub-title">Ausschreibung veröffentlichen</div>
-                <div className="bl-pub-sub">Bitte prufen Sie alle Angaben sorgfaltig. Nach der Veroffentlichung sind Anderungen nicht mehr moglich.</div>
+                <div className="bl-pub-head-left">
+                  <div className="bl-pub-eyebrow">Auktion · Abschlussbestätigung</div>
+                  <div className="bl-pub-title">Ausschreibung veröffentlichen</div>
+                  <div className="bl-pub-sub">Bitte prüfen Sie alle Angaben sorgfältig. Nach der Veröffentlichung sind Änderungen nicht mehr möglich.</div>
+                </div>
+                <button className="bl-pub-head-close" onClick={() => setOpeningLotId(null)}>✕</button>
               </div>
 
-              {/* Volumen-Banner */}
+              {/* Volumen-Zeile */}
               <div className="bl-pub-vol">
-                <div className="bl-pub-vol-label">Geschatztes Auftragsvolumen</div>
-                <div className="bl-pub-vol-value">{vol !== null ? fmtEurLarge(vol) : "–"}</div>
-                <div className="bl-pub-vol-note">{qty.toLocaleString("de-DE")} {unitLabel} × {price !== null ? price.toLocaleString("de-DE", { minimumFractionDigits: 2 }) : "–"} €/{unitLabel} (Maximalpreis)</div>
+                <span className="bl-pub-vol-label">Geschätztes Auftragsvolumen</span>
+                <span className="bl-pub-vol-value">{vol !== null ? fmtEurLarge(vol) : "–"}</span>
+                <span className="bl-pub-vol-note">{qty.toLocaleString("de-DE")} {unitLabel} × {price !== null ? price.toLocaleString("de-DE", { minimumFractionDigits: 2 }) : "–"} €/{unitLabel} (Maximalpreis)</span>
               </div>
 
-              {/* Vertragseckdaten */}
-              <div className="bl-pub-section">
-                <div className="bl-pub-section-title">Vertragseckdaten</div>
-                <div className="bl-pub-grid">
-                  <div className="bl-pub-field">
-                    <span className="bl-pub-field-label">Ware</span>
-                    <span className="bl-pub-field-value">{lot.commodity}</span>
-                  </div>
-                  <div className="bl-pub-field">
-                    <span className="bl-pub-field-label">Menge</span>
-                    <span className="bl-pub-field-value">{qty.toLocaleString("de-DE")} {unitLabel}</span>
-                  </div>
-                  {lot.qualityGrade && (
-                    <div className="bl-pub-field">
-                      <span className="bl-pub-field-label">Gute / Norm</span>
-                      <span className="bl-pub-field-value">{lot.qualityGrade}</span>
-                    </div>
-                  )}
-                  {lot.hsCode && (
-                    <div className="bl-pub-field">
-                      <span className="bl-pub-field-label">HS-Code</span>
-                      <span className="bl-pub-field-value">{lot.hsCode}</span>
-                    </div>
-                  )}
-                  {lot.incoterms && (
-                    <div className="bl-pub-field">
-                      <span className="bl-pub-field-label">Incoterms</span>
-                      <span className="bl-pub-field-value">{lot.incoterms}</span>
-                    </div>
-                  )}
-                  {lot.deliveryPeriod && (
-                    <div className="bl-pub-field">
-                      <span className="bl-pub-field-label">Lieferzeit</span>
-                      <span className="bl-pub-field-value">{lot.deliveryPeriod}</span>
-                    </div>
-                  )}
-                  {lot.deliveryLocation && (
-                    <div className="bl-pub-field" style={{ gridColumn: "1 / -1" }}>
-                      <span className="bl-pub-field-label">Lieferort</span>
-                      <span className="bl-pub-field-value">{lot.deliveryLocation}</span>
-                    </div>
-                  )}
-                  {lot.paymentTerms && (
-                    <div className="bl-pub-field" style={{ gridColumn: "1 / -1" }}>
-                      <span className="bl-pub-field-label">Zahlungsbedingungen</span>
-                      <span className="bl-pub-field-value">{lot.paymentTerms}</span>
-                    </div>
-                  )}
-                  {lot.vatTreatment && (
-                    <div className="bl-pub-field" style={{ gridColumn: "1 / -1" }}>
-                      <span className="bl-pub-field-label">USt.-Behandlung</span>
-                      <span className="bl-pub-field-value">{lot.vatTreatment}</span>
-                    </div>
-                  )}
+              {/* Scroll-Body */}
+              <div className="bl-pub-body">
+
+                {/* Warenangaben */}
+                <div className="bl-pub-section">
+                  <div className="bl-pub-section-title">Warenangaben</div>
+                  <table className="bl-pub-table">
+                    <tbody>
+                      {row("Ware", lot.commodity)}
+                      {row("Menge", `${qty.toLocaleString("de-DE")} ${unitLabel}`)}
+                      {row("Güte / Qualitätsnorm", lot.qualityGrade)}
+                      {row("HS-Code (Zolltarif)", lot.hsCode, true)}
+                      {lot.co2PerTonne && row("CO₂-Emissionsfaktor", `${parseFloat(lot.co2PerTonne).toLocaleString("de-DE")} kg CO₂/t`)}
+                      {row("Herkunftsland", lot.countryOfOrigin)}
+                    </tbody>
+                  </table>
                 </div>
-              </div>
 
-              {/* Auktionsrahmen */}
-              <div className="bl-pub-section">
-                <div className="bl-pub-section-title">Auktionsrahmen</div>
-                <div className="bl-pub-timing">
-                  <div className="bl-pub-timing-top">Angebotsphase: {nextSlotLabel()}</div>
-                  <div className="bl-pub-timing-sub">{lot._count.registrations} Verkaufer registriert · Gebote werden sofort nach Veroffentlichung angenommen</div>
+                {/* Lieferung */}
+                <div className="bl-pub-section">
+                  <div className="bl-pub-section-title">Lieferung</div>
+                  <table className="bl-pub-table">
+                    <tbody>
+                      {row("Lieferbedingung (Incoterms)", lot.incoterms)}
+                      {row("Max. Lieferzeit", lot.deliveryPeriod)}
+                      {row("Lieferort", lot.deliveryLocation)}
+                    </tbody>
+                  </table>
                 </div>
-              </div>
 
-              {/* Rechtliche Bestatigung */}
-              <div className="bl-pub-legal">
-                <div
-                  className={`bl-pub-legal-box${publishConfirmed ? " checked" : ""}`}
-                  onClick={() => setPublishConfirmed(v => !v)}
-                >
-                  <div className={`bl-pub-legal-check${publishConfirmed ? " checked" : ""}`}>
-                    {publishConfirmed && <span style={{ color: "#fff", fontSize: 12, fontWeight: 700 }}>✓</span>}
+                {/* Vertrag & Abrechnung */}
+                <div className="bl-pub-section">
+                  <div className="bl-pub-section-title">Vertrag &amp; Abrechnung</div>
+                  <table className="bl-pub-table">
+                    <tbody>
+                      {row("Zahlungsbedingungen", lot.paymentTerms)}
+                      {row("USt.-Behandlung", lot.vatTreatment)}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Beschreibung */}
+                {lot.description && (
+                  <div className="bl-pub-section">
+                    <div className="bl-pub-section-title">Beschreibung / Spezifikation</div>
+                    <div className="bl-pub-desc">{lot.description}</div>
                   </div>
-                  <div className="bl-pub-legal-text">
-                    Ich bestatige, dass ich die obenstehenden Vertragseckdaten geprüft habe und diese verbindlich sind. Ein Zuschlag begrundet eine vertragliche Verpflichtung gemass § 433 BGB. Der Kaufpreis ist spatestens gemas den vereinbarten Zahlungsbedingungen zu entrichten.
+                )}
+
+                {/* Auktionsrahmen */}
+                <div className="bl-pub-section">
+                  <div className="bl-pub-section-title">Auktionsrahmen</div>
+                  <div className="bl-pub-timing">
+                    <div className="bl-pub-timing-top">Angebotsphase: {nextSlotLabel()}</div>
+                    <div className="bl-pub-timing-sub">{lot._count.registrations} Verkäufer registriert · Gebote werden sofort nach Veröffentlichung angenommen</div>
                   </div>
                 </div>
-              </div>
 
-              {/* Aktionen */}
+                {/* Rechtliche Bestätigung */}
+                <div className="bl-pub-legal">
+                  <div
+                    className={`bl-pub-legal-box${publishConfirmed ? " checked" : ""}`}
+                    onClick={() => setPublishConfirmed(v => !v)}
+                  >
+                    <div className={`bl-pub-legal-check${publishConfirmed ? " checked" : ""}`}>
+                      {publishConfirmed && <span style={{ color: "#fff", fontSize: 12, fontWeight: 700 }}>✓</span>}
+                    </div>
+                    <div className="bl-pub-legal-text">
+                      Ich bestätige, dass ich die obenstehenden Vertragseckdaten geprüft habe und diese verbindlich sind. Ein Zuschlag begründet eine vertragliche Verpflichtung gemäß § 433 BGB. Der Kaufpreis ist spätestens gemäß den vereinbarten Zahlungsbedingungen zu entrichten.
+                    </div>
+                  </div>
+                </div>
+
+              </div>{/* Ende bl-pub-body */}
+
+              {/* Footer */}
               <div className="bl-pub-actions">
-                <button
-                  className="bl-pub-back"
-                  onClick={() => setOpeningLotId(null)}
-                >
-                  Zuruck
+                <button className="bl-pub-back" onClick={() => setOpeningLotId(null)}>
+                  Zurück
                 </button>
                 <button
                   className="bl-pub-confirm"
                   disabled={!publishConfirmed || !!opening}
                   onClick={() => { void confirmOpenLot(); }}
                 >
-                  {opening ? "Wird veroffentlicht…" : "Jetzt veroffentlichen →"}
+                  {opening ? "Wird veröffentlicht…" : "Jetzt veröffentlichen →"}
                 </button>
               </div>
 
