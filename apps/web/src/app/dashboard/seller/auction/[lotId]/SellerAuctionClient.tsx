@@ -86,13 +86,15 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
 
   const [token,       setToken]       = useState("");
   const [priceInput,  setPriceInput]  = useState("");
-  const [submitting,  setSubmitting]  = useState(false);
   const [myBids,      setMyBids]      = useState<MyBid[]>([]);
   const [allBids,     setAllBids]     = useState<AllBid[]>([]);
   const [myRank,      setMyRank]      = useState<number | null>(null);
   const [kyc,         setKyc]         = useState<KycInfo | null>(null);
   const [depositReq,  setDepositReq]  = useState<string | null>(null);
   const [flash,       setFlash]       = useState<"good" | "bad" | null>(null);
+  const [btnState,    setBtnState]    = useState<"idle"|"loading"|"success"|"error">("idle");
+  const [priceKey,    setPriceKey]    = useState(0);
+  const [shake,       setShake]       = useState(false);
   const [cbamOpen,    setCbamOpen]    = useState(false);
   const [cbamData,    setCbamData]    = useState<CbamData>({
     cbamCountryOfOrigin: "", cbamCountryOfExport: "", cbamProductionSiteId: "",
@@ -100,7 +102,8 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
     cbamCarbonPricePaid: "", cbamVerificationRef: "",
   });
 
-  const prevBest = useRef<string | null>(lot.currentBest);
+  const prevBest    = useRef<string | null>(lot.currentBest);
+  const prevLeading = useRef<boolean | null>(null);
 
   // ── Init ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -161,17 +164,28 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
 
   useEffect(() => { if (token) loadBids(token); }, [token, loadBids]);
 
-  // SSE-Trigger: Preis geändert → Bids neu laden
+  // SSE-Trigger: Preis geändert → Bids neu laden + Preis-Animation
   useEffect(() => {
     if (!state || state.currentBest === prevBest.current) return;
     prevBest.current = state.currentBest;
+    setPriceKey(k => k + 1);
     loadBids(token);
   }, [state?.currentBest, token, loadBids]);
 
+  // Überboten-Erkennung → Status-Karte schütteln
+  useEffect(() => {
+    const leading = myRank === 1;
+    if (prevLeading.current === true && !leading && myRank !== null) {
+      setShake(true);
+      setTimeout(() => setShake(false), 700);
+    }
+    prevLeading.current = leading;
+  }, [myRank]);
+
   // ── Gebot abgeben ────────────────────────────────────────────────
   const submitBid = async (price: number) => {
-    if (!token || submitting || price <= 0) return;
-    setSubmitting(true);
+    if (!token || btnState !== "idle" || price <= 0) return;
+    setBtnState("loading");
     try {
       const cbamPayload = lot.cbamCategory ? {
         cbamCountryOfOrigin:     cbamData.cbamCountryOfOrigin     || undefined,
@@ -201,17 +215,23 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
             style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" },
           });
         }
+        setBtnState("error");
+        setTimeout(() => setBtnState("idle"), 1500);
         setFlash("bad");
         setTimeout(() => setFlash(null), 1500);
       } else {
+        setBtnState("success");
+        setTimeout(() => setBtnState("idle"), 1100);
         toast.success("Gebot abgegeben", { description: `Neues Bestgebot: ${fmtEur(d.newBest)}` });
         setPriceInput("");
         setFlash("good");
         setTimeout(() => setFlash(null), 1500);
         await loadBids(token);
       }
-    } catch { toast.error("Netzwerkfehler"); }
-    finally { setSubmitting(false); }
+    } catch {
+      toast.error("Netzwerkfehler");
+      setBtnState("idle");
+    }
   };
 
   // ── Derived state ────────────────────────────────────────────────
@@ -333,8 +353,12 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
         *,*::before,*::after { box-sizing:border-box; }
 
-        @keyframes sa-dot { 0%,100%{opacity:1} 50%{opacity:.4} }
-        @keyframes sa-flash { 0%{transform:scale(1.03)} 100%{transform:scale(1)} }
+        @keyframes sa-dot       { 0%,100%{opacity:1} 50%{opacity:.4} }
+        @keyframes sa-flash     { 0%{transform:scale(1.03)} 100%{transform:scale(1)} }
+        @keyframes sa-price-in  { from{opacity:0;transform:translateY(-6px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+        @keyframes sa-glow-lead { 0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,.18)} 50%{box-shadow:0 0 20px 0 rgba(22,163,74,.1)} }
+        @keyframes sa-shake     { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-8px)} 30%{transform:translateX(7px)} 45%{transform:translateX(-5px)} 60%{transform:translateX(4px)} 75%{transform:translateX(-2px)} 90%{transform:translateX(1px)} }
+        @keyframes sa-btn-ok    { 0%{background:#16a34a;transform:scale(1.025)} 70%{background:#15803d;transform:scale(1.01)} 100%{background:#154194;transform:scale(1)} }
 
         .sa-root { font-family:'IBM Plex Sans',Arial,sans-serif; background:#f5f7fb; min-height:100vh; color:#0d1b2a; }
 
@@ -443,6 +467,14 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         .sa-bid-status-chip.trailing { background:#fee2e2; color:#991b1b; }
         .sa-bid-status-val { font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:600; color:#0d1e4a; }
         .sa-bid-status-sub { font-size:11px; color:#9ca3af; margin-left:auto; }
+
+        /* ── Interaktive Effekte ── */
+        .sa-status.leading         { animation:sa-glow-lead 2.8s ease-in-out infinite; }
+        .sa-status.shaking         { animation:sa-shake .65s ease-out; }
+        .sa-price-anim             { animation:sa-price-in .38s cubic-bezier(.22,1,.36,1); }
+        .sa-bid-btn.btn-success    { background:#16a34a !important; animation:sa-btn-ok .95s ease-out forwards; }
+        .sa-bid-btn.btn-error      { background:#dc2626 !important; animation:sa-shake .45s ease-out; }
+        .sa-bid-btn.btn-loading    { opacity:.75; cursor:not-allowed; }
       `}</style>
 
       <div className="sa-root">
@@ -656,7 +688,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
 
               {/* Status */}
               {canBid && (
-                <div className={`sa-card sa-status${isLeading ? " leading" : myRank !== null ? " trailing" : " idle"}`}>
+                <div className={`sa-card sa-status${isLeading ? " leading" : myRank !== null ? " trailing" : " idle"}${shake ? " shaking" : ""}`}>
                   <div className="sa-status-left">
                     <div className="sa-status-kpi-label">Ihr Status</div>
                     <div className={`sa-status-title${isLeading ? " leading" : myRank !== null ? " trailing" : ""}`}>
@@ -674,7 +706,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                           : `Geben Sie Ihr erstes Angebot ab. Käufer-Limit: ${fmtEur(lot.startPrice)}`}
                     </div>
                   </div>
-                  <div className={`sa-status-price${isLeading ? " leading" : myRank !== null ? " trailing" : " none"}${flash ? " flash" : ""}`}>
+                  <div key={priceKey} className={`sa-status-price${isLeading ? " leading" : myRank !== null ? " trailing" : " none"}${flash ? " flash" : ""}${priceKey > 0 ? " sa-price-anim" : ""}`}>
                     {fmtEur(liveBest)}
                   </div>
                 </div>
@@ -845,14 +877,14 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                       value={priceInput}
                       onChange={(e) => setPriceInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && priceInput && submitBid(Number(priceInput))}
-                      disabled={submitting}
+                      disabled={btnState !== "idle"}
                     />
                     <button
-                      className="sa-bid-btn"
-                      disabled={!priceInput || submitting}
+                      className={`sa-bid-btn${btnState === "success" ? " btn-success" : btnState === "error" ? " btn-error" : btnState === "loading" ? " btn-loading" : ""}`}
+                      disabled={!priceInput || btnState !== "idle"}
                       onClick={() => submitBid(Number(priceInput))}
                     >
-                      {submitting ? "Wird übermittelt…" : "Gebot abgeben"}
+                      {btnState === "loading" ? "Wird übermittelt…" : btnState === "success" ? "✓ Gebot abgegeben" : btnState === "error" ? "Fehler — erneut versuchen" : "Gebot abgeben"}
                     </button>
                   </div>
                   <div className="sa-bid-hint">
