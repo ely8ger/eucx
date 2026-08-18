@@ -435,6 +435,27 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         .sa-conclusion-sub { font-size:13px; color:#6b7280; margin-bottom:20px; line-height:1.6; }
         .sa-dl-btn { display:inline-block; padding:10px 24px; background:#154194; color:#fff; font-size:13px; font-weight:700; border:none; cursor:pointer; letter-spacing:.03em; transition:background .15s; }
         .sa-dl-btn:hover { background:#0f3070; }
+
+        /* ── Sticky Statusleiste ── */
+        .sa-sticky { position:sticky; top:0; z-index:100; display:flex; align-items:center; padding:0 28px; height:44px; gap:24px; font-family:"IBM Plex Sans",Arial,sans-serif; border-bottom:1px solid rgba(0,0,0,.12); }
+        .sa-sticky.leading  { background:#166534; }
+        .sa-sticky.trailing { background:#991b1b; }
+        .sa-sticky.idle     { background:#154194; }
+        .sa-sticky-rank  { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.7); }
+        .sa-sticky-bid   { font-family:"IBM Plex Mono",monospace; font-size:16px; font-weight:700; color:#fff; }
+        .sa-sticky-sep   { width:1px; height:18px; background:rgba(255,255,255,.25); }
+        .sa-sticky-best-label { font-size:10px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.6); }
+        .sa-sticky-best  { font-family:"IBM Plex Mono",monospace; font-size:14px; font-weight:600; color:rgba(255,255,255,.9); }
+        .sa-sticky-cd    { margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:600; color:rgba(255,255,255,.9); letter-spacing:.04em; }
+        .sa-sticky-cd-label { font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.55); display:block; text-align:right; margin-bottom:1px; }
+
+        /* ── Status im Gebotsfeld ── */
+        .sa-bid-status { display:flex; align-items:center; gap:10px; padding:9px 0 12px; border-bottom:1px solid #f1f5f9; margin-bottom:14px; }
+        .sa-bid-status-chip { font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; letter-spacing:.03em; }
+        .sa-bid-status-chip.leading  { background:#dcfce7; color:#15803d; }
+        .sa-bid-status-chip.trailing { background:#fee2e2; color:#991b1b; }
+        .sa-bid-status-val { font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:600; color:#0d1e4a; }
+        .sa-bid-status-sub { font-size:11px; color:#9ca3af; margin-left:auto; }
       `}</style>
 
       <div className="sa-root">
@@ -461,6 +482,30 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
             </div>
           </div>
         </div>
+
+        {/* ── Sticky Statusleiste (nur wenn Gebot vorhanden) ── */}
+        {canBid && myBids.length > 0 && (
+          <div className={`sa-sticky${isLeading ? " leading" : " trailing"}`}>
+            <div>
+              <span className="sa-sticky-rank">{isLeading ? "Führend" : `Überboten · Rang ${myRank}`}</span>
+              <div className="sa-sticky-bid">{fmtEur(myBids[0]!.price)}</div>
+            </div>
+            <div className="sa-sticky-sep" />
+            <div>
+              <span className="sa-sticky-best-label">Bestes Gebot</span>
+              <div className="sa-sticky-best">{fmtEur(liveBest)}</div>
+            </div>
+            {liveEnd && (
+              <>
+                <div className="sa-sticky-sep" />
+                <div className="sa-sticky-cd">
+                  <span className="sa-sticky-cd-label">Verbleibend</span>
+                  {countdown}
+                </div>
+              </>
+            )}
+          </div>
+        )}
 
         <div className="sa-page">
 
@@ -812,7 +857,16 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
               {/* Gebot abgeben */}
               {canBid && (
                 <div className="sa-card sa-bid-card">
-                  {/* [TESTMODE-05] KYC-Overlay deaktiviert */}
+                  {/* Mein Status — kompakt im Gebotsfeld */}
+                  {myBids.length > 0 && (
+                    <div className="sa-bid-status">
+                      <span className={`sa-bid-status-chip${isLeading ? " leading" : " trailing"}`}>
+                        {isLeading ? `Rang 1 · Führend` : `Rang ${myRank} · Überboten`}
+                      </span>
+                      <span className="sa-bid-status-val">{fmtEur(myBids[0]!.price)}</span>
+                      {!isLeading && <span className="sa-bid-status-sub">Bestes: {fmtEur(liveBest)}</span>}
+                    </div>
+                  )}
                   <div className="sa-bid-title">
                     Angebot abgeben
                     {bestNum && <span style={{ fontWeight: 400, color: "#9ca3af", marginLeft: 8, fontSize: 11 }}>
