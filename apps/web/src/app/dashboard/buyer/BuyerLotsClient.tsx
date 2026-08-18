@@ -534,9 +534,10 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       if (!r.ok) {
         setFormError(d.error ? (d.detail ? `${d.error}: ${d.detail}` : d.error) : "Fehler beim Erstellen. Bitte erneut versuchen.");
       } else {
-        toast.success("Ausschreibung erstellt", {
-          description: "Jetzt Verkäufer einladen und Auktion starten.",
-          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" },
+        toast.success("Entwurf gespeichert ✓", {
+          description: 'Sobald sich Verkäufer anmelden, erscheint der Button "Auktion starten →" in der Tabelle unten.',
+          style: { background: "#eff6ff", border: "1px solid #154194", color: "#1e3a6e" },
+          duration: 6000,
         });
         setCommodity(""); setQuantity(""); setUnit("TON"); setStartPrice(""); setDescription(""); setGreenSteel(false);
         setCbamCategory(""); setCo2PerTonne(""); setCountryOfOrigin(""); setProductionSiteId(""); setIncoterms("DAP");
@@ -2139,15 +2140,25 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         {/* Aktion */}
                         <td style={{ whiteSpace: "nowrap" }}>
                           {lot.phase === "COLLECTION" && (
-                            <button
-                              className="bl-btn-open"
-                              disabled={opening === lot.id || lot._count.registrations === 0}
-                              onClick={() => openingLotId === lot.id ? setOpeningLotId(null) : requestOpenLot(lot.id)}
-                              title={lot._count.registrations === 0 ? "Warten auf Verkäufer-Registrierungen" : nextSlotStartLabel()}
-                              style={{ fontSize: 11, whiteSpace: "nowrap" }}
-                            >
-                              {opening === lot.id ? "…" : nextSlotStartLabel()}
-                            </button>
+                            lot._count.registrations === 0 ? (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                                <span style={{ fontSize: 10, fontWeight: 700, color: "#d97706", letterSpacing: ".03em" }}>⏳ Schritt 2 von 3</span>
+                                <span style={{ fontSize: 10.5, color: "#6b7280", lineHeight: 1.4 }}>Warten auf<br/>Verkäufer-Anmeldungen</span>
+                              </div>
+                            ) : (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                                <span style={{ fontSize: 10, fontWeight: 700, color: "#16a34a", letterSpacing: ".03em" }}>✓ Schritt 3 von 3</span>
+                                <button
+                                  className="bl-btn-open"
+                                  disabled={opening === lot.id}
+                                  onClick={() => openingLotId === lot.id ? setOpeningLotId(null) : requestOpenLot(lot.id)}
+                                  title={nextSlotStartLabel()}
+                                  style={{ fontSize: 11, whiteSpace: "nowrap" }}
+                                >
+                                  {opening === lot.id ? "…" : "Auktion starten →"}
+                                </button>
+                              </div>
+                            )
                           )}
                           {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && !isLotExpired(lot) && (
                             <a href={`/dashboard/buyer/auction/${lot.id}`} className="bl-btn-watch">
