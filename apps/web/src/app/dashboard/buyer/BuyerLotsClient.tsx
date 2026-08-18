@@ -811,9 +811,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-loading { color:#9ca3af; font-size:13px; padding:40px 24px; text-align:center; }
 
         /* CBAM section */
-        .bl-cbam-header { display:flex; align-items:center; gap:10px; margin-top:24px; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #e5e7eb; }
+        .bl-cbam-header { display:flex; align-items:center; gap:10px; margin-top:24px; margin-bottom:12px; padding-bottom:8px; border-bottom:2px solid #154194; }
         .bl-cbam-title { font-size:12.5px; font-weight:700; color:#154194; letter-spacing:.04em; text-transform:uppercase; }
-        .bl-cbam-badge { font-size:10px; font-weight:700; padding:2px 8px; background:#dbeafe; color:#1d4ed8; letter-spacing:.05em; }
+        .bl-cbam-badge { font-size:10px; font-weight:700; padding:2px 8px; background:#154194; color:#fff; letter-spacing:.05em; }
         .bl-cbam-hint { font-size:11.5px; color:#6b7280; margin-bottom:16px; }
 
         /* CO₂-Widget */
@@ -1724,7 +1724,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 {/* Handels- und Vertragsangaben */}
                 <div className="bl-cbam-header" style={{ marginTop: 24 }}>
                   <span className="bl-cbam-title">Handels- und Vertragsangaben</span>
-                  <span className="bl-cbam-badge" style={{ background: "#154194", color: "#fff" }}>Rechtlich relevant</span>
+                  <span className="bl-cbam-badge">Rechtlich relevant</span>
                 </div>
                 <div className="bl-cbam-hint">
                   Pflichtangaben - Bestandteil des Kaufvertrags (§§ 433, 434 BGB). Werden Bietern vor Gebotsabgabe vollständig angezeigt.
