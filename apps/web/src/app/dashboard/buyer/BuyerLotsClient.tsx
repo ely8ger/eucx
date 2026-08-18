@@ -1408,8 +1408,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                   <div className="bl-form-group">
                     <label className="bl-label">
-                      Maximaler Preis{" "}
-                      <span>(optional — EUR&nbsp;pro&nbsp;{unit || "Einheit"})</span>
+                      max. EUR pro {unit || "Einheit"}{" "}
+                      <span>(optional)</span>
                     </label>
                     <div style={{ position: "relative" }}>
                       <input
