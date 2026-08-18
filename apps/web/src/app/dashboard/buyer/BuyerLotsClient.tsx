@@ -393,9 +393,12 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   // ── Größen für gewähltes Produkt laden ───────────────────────────────
   useEffect(() => {
     if (!catalogProduct) { setCatalogSizes([]); return; }
-    fetch(`/api/catalog?slug=${catalogProduct.slug}`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`/api/catalog?slug=${catalogProduct.slug}`)
       .then((r) => r.json())
-      .then((d) => setCatalogSizes(d.sizes?.map((s: { value: string }) => s.value) ?? []))
+      .then((d) => {
+        setCatalogSizes(d.sizes?.map((s: { value: string }) => s.value) ?? []);
+        if (d.hsCode) setHsCode(d.hsCode);
+      })
       .catch(() => {});
   }, [catalogProduct, token]);
 
@@ -501,6 +504,20 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
     setSubmitting(true);
     try {
+      // Token vor dem Submit refreshen — Formular kann > 15 min dauern
+      let activeToken = token;
+      try {
+        const ref = await fetch("/api/auth/refresh", { method: "POST" });
+        if (ref.ok) {
+          const rd = await ref.json() as { accessToken?: string };
+          if (rd.accessToken) {
+            activeToken = rd.accessToken;
+            localStorage.setItem("accessToken", activeToken);
+            setToken(activeToken);
+          }
+        }
+      } catch { /* kein Refresh möglich, weiter mit aktuellem Token */ }
+
       const body: Record<string, unknown> = { commodity: commodity.trim(), quantity: qty, unit };
       if (startPrice) body.startPrice = parseFloat(startPrice);
       if (description.trim()) body.description = description.trim();
@@ -527,12 +544,19 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
       const r = await fetch("/api/auction/lots", {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        headers: { Authorization: `Bearer ${activeToken}`, "Content-Type": "application/json" },
         body:    JSON.stringify(body),
       });
-      const d = await r.json().catch(() => ({})) as { error?: string; detail?: string };
+      const d = await r.json().catch(() => ({})) as { error?: string; detail?: string; message?: string; code?: string; details?: Record<string, string[]> };
       if (!r.ok) {
-        setFormError(d.error ? (d.detail ? `${d.error}: ${d.detail}` : d.error) : "Fehler beim Erstellen. Bitte erneut versuchen.");
+        if (r.status === 401) {
+          setFormError("Sitzung abgelaufen — bitte Seite neu laden und erneut versuchen.");
+        } else if (d.details) {
+          const first = Object.values(d.details).flat()[0];
+          setFormError(first ? `Validierungsfehler: ${first}` : (d.error ?? "Validierungsfehler."));
+        } else {
+          setFormError(d.error ?? d.message ?? "Fehler beim Erstellen. Bitte erneut versuchen.");
+        }
       } else {
         toast.success("Entwurf gespeichert ✓", {
           description: 'Sobald sich Verkäufer anmelden, erscheint der Button "Auktion starten →" in der Tabelle unten.',
@@ -1764,15 +1788,25 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 </div>
                 <div className="bl-form-grid">
                   <div className="bl-form-group">
-                    <label className="bl-label">Zolltarifnummer (HS-Code) *</label>
+                    <label className="bl-label">
+                      Zolltarifnummer (HS-Code) *
+                      {catalogProduct && hsCode && (
+                        <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 600, color: "#16a34a" }}>✓ aus Katalog</span>
+                      )}
+                    </label>
                     <input
                       className="bl-input"
                       type="text"
-                      placeholder="z.B. 7214 20 00"
+                      placeholder="Wird aus Katalog geladen oder manuell eingeben"
                       value={hsCode}
                       onChange={(e) => setHsCode(e.target.value)}
                       required
                     />
+                    {!catalogProduct && !hsCode && (
+                      <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4, lineHeight: 1.5 }}>
+                        8-stellige EU-Zollnummer (z.B. 7214 20 00 für Betonstahl). Bei Produktauswahl aus dem Katalog wird dieses Feld automatisch befüllt.
+                      </div>
+                    )}
                   </div>
 
                   <div className="bl-form-group">
