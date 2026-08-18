@@ -86,7 +86,13 @@ async function _handlePost(
   // ── Lot laden (für CBAM + Deal-Limit Checks) ─────────────────────
   const lot = await db.lot.findUnique({
     where:  { id: lotId },
-    select: { quantity: true, co2PerTonne: true, phase: true, buyerId: true, buyerIp: true },
+    select: {
+      quantity:     true,
+      co2PerTonne:  true,
+      phase:        true,
+      buyerId:      true,
+      buyer:        { select: { organizationId: true } },
+    },
   });
   if (!lot) return NextResponse.json({ error: "Lot nicht gefunden" }, { status: 404 });
 
@@ -98,13 +104,15 @@ async function _handlePost(
     );
   }
 
-  // ── IP-Sperre: Käufer und Verkäufer dürfen nicht dieselbe IP haben ──
-  const sellerIp = req.headers.get("x-forwarded-for")?.split(",").at(0)?.trim()
-                ?? req.headers.get("x-real-ip")
-                ?? null;
-  if (sellerIp && lot.buyerIp && sellerIp === lot.buyerIp) {
+  // ── Organisations-Sperre: Käufer und Verkäufer dürfen nicht zur selben Org gehören ──
+  const seller = await db.user.findUnique({
+    where:  { id: token.userId },
+    select: { organizationId: true },
+  });
+  if (seller?.organizationId && lot.buyer?.organizationId &&
+      seller.organizationId === lot.buyer.organizationId) {
     return NextResponse.json(
-      { error: "Gebot von dieser IP-Adresse nicht möglich (Interessenkonflikt)" },
+      { error: "Gebot nicht möglich: Käufer und Verkäufer gehören zur selben Organisation (Interessenkonflikt)" },
       { status: 409 }
     );
   }

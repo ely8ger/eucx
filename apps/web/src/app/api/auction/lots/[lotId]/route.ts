@@ -82,14 +82,30 @@ export async function GET(
     return NextResponse.json({ error: "Lot nicht gefunden" }, { status: 404 });
   }
 
-  const { registrations, lotContract, ...rest } = lot;
+  // CONCLUSION ohne Kontrakt: Post-Trade synchron nachholen (Timer-Race-Condition)
+  let resolvedContract = lot.lotContract;
+  if (lot.phase === "CONCLUSION" && lot.winnerId && !lot.lotContract) {
+    try {
+      const { processLotConclusion } = await import("@/lib/auction/post-trade");
+      await processLotConclusion(lotId);
+      const fresh = await db.lotContract.findUnique({
+        where:  { lotId },
+        select: { id: true, deliveryStatus: true, contractNumber: true },
+      });
+      resolvedContract = fresh ?? null;
+    } catch (err) {
+      console.error("[LotDetail] processLotConclusion recovery fehlgeschlagen:", err);
+    }
+  }
+
+  const { registrations, lotContract: _lc, ...rest } = lot;
   return NextResponse.json({
     lot: {
       ...rest,
-      isRegistered: registrations.length > 0,
-      contractId:   lotContract?.id ?? null,
-      deliveryStatus: lotContract?.deliveryStatus ?? null,
-      contractNumber: lotContract?.contractNumber ?? null,
+      isRegistered:   registrations.length > 0,
+      contractId:     resolvedContract?.id ?? null,
+      deliveryStatus: resolvedContract?.deliveryStatus ?? null,
+      contractNumber: resolvedContract?.contractNumber ?? null,
     },
   });
 }
