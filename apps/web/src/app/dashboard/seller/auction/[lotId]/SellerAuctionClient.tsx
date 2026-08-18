@@ -439,7 +439,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         /* ── Sticky Statusleiste ── */
         .sa-sticky { position:sticky; top:0; z-index:100; display:flex; align-items:center; padding:0 28px; height:44px; gap:24px; font-family:"IBM Plex Sans",Arial,sans-serif; border-bottom:1px solid rgba(0,0,0,.12); }
         .sa-sticky.leading  { background:#166534; }
-        .sa-sticky.trailing { background:#991b1b; }
+        .sa-sticky.trailing { background:#dc2626; }
         .sa-sticky.idle     { background:#154194; }
         .sa-sticky-rank  { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.7); }
         .sa-sticky-bid   { font-family:"IBM Plex Mono",monospace; font-size:16px; font-weight:700; color:#fff; }
