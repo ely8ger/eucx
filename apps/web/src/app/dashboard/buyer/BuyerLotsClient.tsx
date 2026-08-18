@@ -63,6 +63,7 @@ interface LotRow {
   paymentTerms?:      string | null;
   vatTreatment?:      string | null;
   greenSteel?:        boolean;
+  isDraft?:           boolean;
   contractId?:        string | null;
 }
 
@@ -494,7 +495,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   }
 
   // ── Ausschreibung erstellen ───────────────────────────────────────
-  async function createLot(e: React.FormEvent) {
+  async function createLot(e: React.FormEvent, publish = false) {
     e.preventDefault();
     setFormError(null);
     if (!commodity.trim())   { setFormError("Ware ist erforderlich."); return; }
@@ -541,6 +542,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       body.deliveryLocation = deliveryLocation.trim();
       body.paymentTerms     = paymentTerms.trim();
       body.vatTreatment   = vatTreatment;
+      if (publish) body.publish = true;
 
       const r = await fetch("/api/auction/lots", {
         method:  "POST",
@@ -558,8 +560,10 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
           setFormError(d.error ?? d.message ?? "Fehler beim Erstellen. Bitte erneut versuchen.");
         }
       } else {
-        toast.success("Entwurf gespeichert ✓", {
-          description: 'Sobald sich Verkäufer anmelden, erscheint der Button "Auktion starten →" in der Tabelle unten.',
+        toast.success(publish ? "Ausschreibung veröffentlicht ✓" : "Entwurf gespeichert ✓", {
+          description: publish
+            ? "Verkäufer können sich jetzt registrieren. Sobald genug angemeldet sind, starten Sie die Auktion."
+            : 'Privater Entwurf gespeichert. Klicken Sie "Veröffentlichen" in der Tabelle, wenn Sie bereit sind.',
           style: { background: "#eff6ff", border: "1px solid #154194", color: "#1e3a6e" },
           duration: 6000,
         });
@@ -613,6 +617,28 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       toast.error("Netzwerkfehler");
     } finally {
       setOpening(null);
+    }
+  }
+
+  // ── Entwurf veröffentlichen ───────────────────────────────────────
+  async function publishDraft(lotId: string) {
+    try {
+      const r = await fetch(`/api/auction/lots/${lotId}/publish`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (r.ok) {
+        toast.success("Ausschreibung veröffentlicht ✓", {
+          description: "Verkäufer können sich jetzt registrieren.",
+          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" },
+        });
+        await loadLots();
+      } else {
+        const d = await r.json().catch(() => ({})) as { error?: string };
+        toast.error(d.error ?? "Fehler beim Veröffentlichen");
+      }
+    } catch {
+      toast.error("Netzwerkfehler");
     }
   }
 
@@ -2046,12 +2072,29 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                 {formError && <div className="bl-form-error" style={{ marginBottom: 12 }}>{formError}</div>}
 
-                <button className="bl-btn-draft" type="submit" disabled={submitting}>
+                <button
+                  className="bl-btn-draft"
+                  type="submit"
+                  disabled={submitting}
+                  style={{ marginBottom: 8 }}
+                >
                   {submitting ? "Wird gespeichert…" : "Als Entwurf speichern"}
                 </button>
 
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={(e) => { void createLot(e as unknown as React.FormEvent, true); }}
+                  style={{ width: "100%", padding: "10px 0", background: "#154194", color: "#fff", border: "none", fontWeight: 700, fontSize: 13, cursor: submitting ? "not-allowed" : "pointer", opacity: submitting ? 0.6 : 1, transition: "background .15s", marginBottom: 8 }}
+                  onMouseEnter={(e) => { if (!submitting) (e.currentTarget as HTMLButtonElement).style.background = "#1a52c2"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#154194"; }}
+                >
+                  Jetzt veröffentlichen →
+                </button>
+
                 <div style={{ fontSize: 11, color: "#6b7280", lineHeight: 1.6 }}>
-                  Der Entwurf ist nur fur Sie sichtbar. Eingeladene Verkaufer konnen erst nach dem Auktionsstart Gebote abgeben.
+                  <strong>Entwurf:</strong> Nur für Sie sichtbar — kein Verkäufer sieht das Lot.<br/>
+                  <strong>Veröffentlichen:</strong> Verkäufer können sich sofort registrieren.
                 </div>
               </div>{/* end bl-form-summary */}
 
@@ -2128,8 +2171,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         </td>
                         {/* Status + Ende + Bieter */}
                         <td>
-                          <span className="bl-phase eucx-badge" style={{ background: isLotExpired(lot) ? "#6b7280" : PHASE_COLOR[lot.phase] }}>
-                            {isLotExpired(lot) ? "Beendet" : PHASE_LABEL[lot.phase]}
+                          <span className="bl-phase eucx-badge" style={{ background: lot.isDraft ? "#6b7280" : isLotExpired(lot) ? "#6b7280" : PHASE_COLOR[lot.phase] }}>
+                            {lot.isDraft ? "Entwurf" : isLotExpired(lot) ? "Beendet" : PHASE_LABEL[lot.phase]}
                           </span>
                           <div style={{ fontSize: 10.5, color: "#9ca3af", marginTop: 4, lineHeight: 1.5 }}>
                             {lot._count.registrations} angemeldet · {lot._count.bids} Gebote
@@ -2176,7 +2219,19 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         </td>
                         {/* Aktion */}
                         <td style={{ whiteSpace: "nowrap" }}>
-                          {lot.phase === "COLLECTION" && (
+                          {lot.phase === "COLLECTION" && lot.isDraft && (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                              <span style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", letterSpacing: ".03em" }}>Privater Entwurf</span>
+                              <button
+                                className="bl-btn-open"
+                                onClick={() => { void publishDraft(lot.id); }}
+                                style={{ fontSize: 11, whiteSpace: "nowrap" }}
+                              >
+                                Veröffentlichen →
+                              </button>
+                            </div>
+                          )}
+                          {lot.phase === "COLLECTION" && !lot.isDraft && (
                             lot._count.registrations === 0 ? (
                               <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                                 <span style={{ fontSize: 10, fontWeight: 700, color: "#d97706", letterSpacing: ".03em" }}>⏳ Schritt 2 von 3</span>

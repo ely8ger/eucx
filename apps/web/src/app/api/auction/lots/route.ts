@@ -38,6 +38,7 @@ const createLotSchema = z.object({
   deliveryLocation: z.string().min(1, "Lieferort ist erforderlich").max(200),
   paymentTerms:     z.string().min(1, "Zahlungsbedingungen sind erforderlich").max(120),
   vatTreatment:     z.string().min(1, "USt.-Behandlung ist erforderlich").max(120),
+  publish:          z.boolean().optional(), // true = sofort veröffentlichen (isDraft=false)
 });
 
 export async function POST(req: NextRequest) {
@@ -78,7 +79,8 @@ export async function POST(req: NextRequest) {
   // ── Lot anlegen ───────────────────────────────────────────────────
   const { commodity, quantity, unit, startPrice, description,
           cbamCategory, co2PerTonne, countryOfOrigin, productionSiteId, incoterms, greenSteel,
-          hsCode, qualityGrade, deliveryPeriod, deliveryLocation, paymentTerms, vatTreatment } = parsed.data;
+          hsCode, qualityGrade, deliveryPeriod, deliveryLocation, paymentTerms, vatTreatment,
+          publish } = parsed.data;
 
   const buyerIp = req.headers.get("x-forwarded-for")?.split(",").at(0)?.trim()
                ?? req.headers.get("x-real-ip")
@@ -107,6 +109,7 @@ export async function POST(req: NextRequest) {
         paymentTerms,
         vatTreatment,
         greenSteel:      greenSteel ?? false,
+        isDraft:         publish === true ? false : true,
       },
     });
   } catch (err) {
@@ -143,12 +146,12 @@ export async function GET(req: NextRequest) {
 
   const lots = await db.lot.findMany({
     where: mine
-      // Käufer sieht nur eigene Lots - alle Phasen inkl. CONCLUSION
+      // Käufer sieht alle eigenen Lots inkl. Entwürfe und CONCLUSION
       ? { buyerId: userId, ...(phase ? { phase: phase as never } : {}) }
-      // Alle anderen sehen offene Lots (COLLECTION/PROPOSAL/REDUCTION)
+      // Verkäufer sehen nur veröffentlichte Lots (isDraft=false)
       : phase
-        ? { phase: phase as never }
-        : { phase: { in: ["COLLECTION", "PROPOSAL", "REDUCTION"] } },
+        ? { phase: phase as never, isDraft: false }
+        : { phase: { in: ["COLLECTION", "PROPOSAL", "REDUCTION"] }, isDraft: false },
     orderBy: { createdAt: "desc" },
     take:    100,
     select: {
@@ -173,6 +176,7 @@ export async function GET(req: NextRequest) {
       paymentTerms:     true,
       vatTreatment:     true,
       greenSteel:       true,
+      isDraft:          true,
       buyer: {
         select: { id: true, organizationId: true },
       },

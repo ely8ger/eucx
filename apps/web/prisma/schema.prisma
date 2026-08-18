@@ -1157,6 +1157,7 @@ model Lot {
   quantity     Decimal      @db.Decimal(18, 4)
   unit         CommodityUnit
   phase        AuctionPhase @default(COLLECTION)
+  isDraft      Boolean      @default(true)   // true = privat (nur Käufer), false = veröffentlicht (Verkäufer sehen COLLECTION)
   description  String?      @db.Text   // Käufer-Ausschreibungstext
   startPrice   Decimal?     @db.Decimal(18, 2)  // Käufer-Maximalpreis (€/Einheit)
   currentBest  Decimal?     @db.Decimal(18, 2)  // Aktuell niedrigstes Gebot
