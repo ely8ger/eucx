@@ -44,12 +44,12 @@ interface KycInfo {
 
 const fmtEur = (v: string | null | number) =>
   v == null || v === "" ? "-"
-  : new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
+  : new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 3 }).format(Number(v));
 
 const fmtDelta = (delta: number) =>
   delta === 0 ? "±0 €"
   : (delta > 0 ? "+" : "") +
-    new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(delta);
+    new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 3 }).format(delta);
 
 function vatShort(vat: string): string {
   if (vat.startsWith("Innergemeinschaftliche")) return "§4 Nr. 1b UStG · 0 %";
@@ -840,7 +840,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                   <div className="sa-bid-row">
                     <input
                       className="sa-bid-input"
-                      type="number" step="0.01" min="0"
+                      type="number" step="0.001" min="0"
                       placeholder={bestNum ? String(Math.floor(bestNum - 1)) : "€ / Einheit"}
                       value={priceInput}
                       onChange={(e) => setPriceInput(e.target.value)}
