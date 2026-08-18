@@ -30,7 +30,12 @@ export async function GET(req: NextRequest) {
   if (slug) {
     const product = await db.catalogProduct.findUnique({
       where: { slug },
-      include: { sizes: { select: { value: true }, orderBy: { value: "asc" } } },
+      include: {
+        sizes: {
+          select: { value: true },
+          orderBy: [{ sortKey: { sort: "asc", nulls: "last" } }, { value: "asc" }],
+        },
+      },
     });
     if (!product) return NextResponse.json({ error: "Nicht gefunden" }, { status: 404 });
     return NextResponse.json(product);

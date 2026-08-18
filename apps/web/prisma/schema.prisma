@@ -1463,9 +1463,11 @@ model ProductSize {
   id        String         @id @default(cuid())
   productId String
   value     String         // Abmessung als String (z.B. "8х0.4", "20х20х1", "0.2")
+  sortKey   Float?         // Erste Zahl im Wert für numerische Sortierung (null → alphabetisch am Ende)
   product   CatalogProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
+  @@index([productId, sortKey])
   @@map("product_sizes")
 }
 
