@@ -1,7 +1,8 @@
 /**
  * GET /api/catalog?q=wire          → Produktsuche (max 20 Treffer, ab 1 Zeichen)
- * GET /api/catalog?browse=1        → Alle Produkte für Dropdown-Browse (top 25)
+ * GET /api/catalog?browse=1        → Alle Produkte für Dropdown-Browse
  * GET /api/catalog?slug=provoloka  → Einzelprodukt mit allen Größen
+ * GET /api/catalog?stats=1         → { products: N, sizes: N } für Header-Anzeige
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
@@ -14,6 +15,16 @@ export async function GET(req: NextRequest) {
   const q      = req.nextUrl.searchParams.get("q")?.trim() ?? "";
   const slug   = req.nextUrl.searchParams.get("slug")?.trim() ?? "";
   const browse = req.nextUrl.searchParams.get("browse") === "1";
+  const stats  = req.nextUrl.searchParams.get("stats") === "1";
+
+  // ── Statistiken für Header ──────────────────────────────────────────
+  if (stats) {
+    const [products, sizes] = await Promise.all([
+      db.catalogProduct.count(),
+      db.productSize.count(),
+    ]);
+    return NextResponse.json({ products, sizes });
+  }
 
   // ── Einzelprodukt mit Größen ────────────────────────────────────────
   if (slug) {
