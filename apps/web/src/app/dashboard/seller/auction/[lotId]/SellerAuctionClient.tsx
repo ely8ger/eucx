@@ -436,20 +436,6 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         .sa-dl-btn { display:inline-block; padding:10px 24px; background:#154194; color:#fff; font-size:13px; font-weight:700; border:none; cursor:pointer; letter-spacing:.03em; transition:background .15s; }
         .sa-dl-btn:hover { background:#0f3070; }
 
-        /* ── Sticky Statusleiste ── */
-        .sa-sticky { position:fixed; top:0; left:0; right:0; z-index:200; display:flex; align-items:center; padding:0 28px; height:44px; gap:24px; font-family:"IBM Plex Sans",Arial,sans-serif; border-bottom:1px solid rgba(0,0,0,.12); }
-        .sa-sticky-spacer { height:44px; }
-        .sa-sticky.leading  { background:#166534; }
-        .sa-sticky.trailing { background:#dc2626; }
-        .sa-sticky.idle     { background:#154194; }
-        .sa-sticky-rank  { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.7); }
-        .sa-sticky-bid   { font-family:"IBM Plex Mono",monospace; font-size:16px; font-weight:700; color:#fff; }
-        .sa-sticky-sep   { width:1px; height:18px; background:rgba(255,255,255,.25); }
-        .sa-sticky-best-label { font-size:10px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.6); }
-        .sa-sticky-best  { font-family:"IBM Plex Mono",monospace; font-size:14px; font-weight:600; color:rgba(255,255,255,.9); }
-        .sa-sticky-cd    { margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:600; color:rgba(255,255,255,.9); letter-spacing:.04em; }
-        .sa-sticky-cd-label { font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.55); display:block; text-align:right; margin-bottom:1px; }
-
         /* ── Status im Gebotsfeld ── */
         .sa-bid-status { display:flex; align-items:center; gap:10px; padding:9px 0 12px; border-bottom:1px solid #f1f5f9; margin-bottom:14px; }
         .sa-bid-status-chip { font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; letter-spacing:.03em; }
