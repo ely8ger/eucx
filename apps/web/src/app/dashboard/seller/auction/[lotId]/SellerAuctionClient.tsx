@@ -484,30 +484,6 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
           </div>
         </div>
 
-        {/* ── Sticky Statusleiste (nur wenn Gebot vorhanden) ── */}
-        {canBid && myBids.length > 0 && <div className="sa-sticky-spacer" />}
-        {canBid && myBids.length > 0 && (
-          <div className={`sa-sticky${isLeading ? " leading" : " trailing"}`}>
-            <div>
-              <span className="sa-sticky-rank">{isLeading ? "Führend" : `Überboten · Rang ${myRank}`}</span>
-              <div className="sa-sticky-bid">{fmtEur(myBids[0]!.price)}</div>
-            </div>
-            <div className="sa-sticky-sep" />
-            <div>
-              <span className="sa-sticky-best-label">Bestes Gebot</span>
-              <div className="sa-sticky-best">{fmtEur(liveBest)}</div>
-            </div>
-            {liveEnd && (
-              <>
-                <div className="sa-sticky-sep" />
-                <div className="sa-sticky-cd">
-                  <span className="sa-sticky-cd-label">Verbleibend</span>
-                  {countdown}
-                </div>
-              </>
-            )}
-          </div>
-        )}
 
         <div className="sa-page">
 
