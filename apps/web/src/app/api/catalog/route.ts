@@ -30,7 +30,6 @@ export async function GET(req: NextRequest) {
     const products = await db.catalogProduct.findMany({
       select: SELECT,
       orderBy: { nr: "asc" },
-      take: 25,
     });
     return NextResponse.json({ products, browse: true });
   }
