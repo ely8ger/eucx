@@ -71,8 +71,8 @@ export async function GET(req: NextRequest) {
     type DayAccum = { date: string; volume: InstanceType<typeof Decimal>; fees: InstanceType<typeof Decimal>; dealCount: number };
     const dayMap: Record<string, DayAccum> = {};
 
-    // Alle 30 Tage vorinitialisieren (kein Datenlücken-Problem in Charts)
-    for (let i = 0; i < 30; i++) {
+    // 31 Tage initialisieren — von "vor 30 Tagen" bis heute einschließlich
+    for (let i = 0; i <= 30; i++) {
       const d = new Date(since);
       d.setDate(since.getDate() + i);
       const key = d.toISOString().slice(0, 10);
