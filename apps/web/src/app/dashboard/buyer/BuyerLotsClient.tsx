@@ -1407,7 +1407,10 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">Maximaler Preis <span>(optional, EUR €/Einheit)</span></label>
+                    <label className="bl-label">
+                      Maximaler Preis{" "}
+                      <span>(optional — EUR&nbsp;pro&nbsp;{unit || "Einheit"})</span>
+                    </label>
                     <div style={{ position: "relative" }}>
                       <input
                         className="bl-input"
@@ -1417,10 +1420,17 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         placeholder="850.00"
                         value={startPrice}
                         onChange={(e) => setStartPrice(e.target.value)}
-                        style={{ paddingRight: 50, width: "100%" }}
+                        style={{ paddingRight: 72, width: "100%" }}
                       />
-                      <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: 12, fontWeight: 700, color: "#154194", pointerEvents: "none" }}>EUR</span>
+                      <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: 11, fontWeight: 700, color: "#154194", pointerEvents: "none", whiteSpace: "nowrap" }}>
+                        €/{unit || "Einheit"}
+                      </span>
                     </div>
+                    {maxVol && (
+                      <div style={{ fontSize: 11, color: "#6b7280", marginTop: 4 }}>
+                        = max. {fmtEurInt(maxVol)} Gesamtvolumen ({quantity}&nbsp;{unit}&nbsp;×&nbsp;{parseFloat(startPrice).toLocaleString("de-DE")}&nbsp;€/{unit})
+                      </div>
+                    )}
                   </div>
 
                   <div className="bl-form-group full">
