@@ -31,7 +31,7 @@ interface MeUser {
   verificationStatus?: string;
   walletBalance?:     string;
   walletReserved?:    string;
-  organization?:      { name?: string; isVerified?: boolean };
+  organization?:      { name?: string; isVerified?: boolean; memberId?: string | null };
 }
 
 interface BreadcrumbConfig {
@@ -410,6 +410,14 @@ function UserAvatar({ me }: { me: MeUser | null }) {
               }}>
                 {orgName}
               </p>
+              {me?.organization?.memberId && (
+                <p style={{
+                  margin: "0 0 4px", fontSize: 11, fontFamily: "'IBM Plex Mono',monospace",
+                  fontWeight: 700, color: BLUE, letterSpacing: ".02em",
+                }}>
+                  {me.organization.memberId}
+                </p>
+              )}
               <p style={{
                 margin: "0 0 10px", fontSize: 11, color: MUTED,
                 whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 220,

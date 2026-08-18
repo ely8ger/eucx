@@ -259,6 +259,8 @@ model Organization {
   naceCode          String?
   eoriNumber        String?   // EORI-Nummer für Zollanmeldungen (z.B. DE123456789012345)
   cbamAccountNumber String?   // EU-CBAM-Registernummer (Pflicht ab 2026 für Importeure)
+  memberId          String?   @unique           // EUCX-DE-S26-0042-7 (vergeben bei Registrierung)
+  memberSeq         Int       @default(autoincrement()) @unique  // interne Sequenznummer
   isVerified        Boolean   @default(false)
   createdAt         DateTime  @default(now())
 

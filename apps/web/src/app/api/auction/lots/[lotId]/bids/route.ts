@@ -214,30 +214,27 @@ export async function GET(
   const bids = await db.bid.findMany({
     where:   { lotId: lotId },
     orderBy: [{ price: "asc" }, { createdAt: "asc" }],
-    select:  { id: true, sellerId: true, price: true, isWinner: true, createdAt: true },
+    select:  {
+      id: true, sellerId: true, price: true, isWinner: true, createdAt: true,
+      seller: { select: { organization: { select: { memberSeq: true, memberId: true } } } },
+    },
   });
 
   const isBuyer = lot.buyerId === token.userId;
 
-  // Seller-Anonymisierung: Eindeutige IDs durch numerische Platzhalter ersetzen
-  const sellerMap = new Map<string, string>();
-  let counter = 1;
   const anonymized = bids.map((bid) => {
-    if (!sellerMap.has(bid.sellerId)) {
-      sellerMap.set(bid.sellerId, `Anbieter-${counter++}`);
-    }
+    const seq    = bid.seller.organization.memberSeq;
+    const seqStr = seq.toString().padStart(4, "0");
+    const label  = `Bieter #${seqStr}`;
     return {
-      id:       bid.id,
-      // Käufer sieht anonymisiert, Verkäufer sieht eigene ID klar, fremde anonymisiert
-      sellerId: isBuyer
-        ? sellerMap.get(bid.sellerId)
-        : bid.sellerId === token.userId
-          ? "Sie"
-          : sellerMap.get(bid.sellerId),
-      price:    bid.price.toString(),
-      isWinner: bid.isWinner,
-      isOwn:    bid.sellerId === token.userId,
-      rank:     bids.indexOf(bid) + 1,
+      id:        bid.id,
+      // Käufer und fremde Verkäufer: stabile Bieter-#XXXX-Kennung
+      sellerId:  bid.sellerId === token.userId ? "Sie" : label,
+      memberSeq: seq,
+      price:     bid.price.toString(),
+      isWinner:  bid.isWinner,
+      isOwn:     bid.sellerId === token.userId,
+      rank:      bids.indexOf(bid) + 1,
       createdAt: bid.createdAt,
     };
   });

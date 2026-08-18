@@ -3,6 +3,7 @@ import { db }                        from "@/lib/db/client";
 import { hashPassword }              from "@/lib/auth/password";
 import { registerSchema }            from "@/lib/validation/schemas";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
+import { generateEucxMemberId }      from "@/lib/members/eucx-id";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +48,10 @@ export async function POST(req: NextRequest) {
         contactName, contactPosition, isGeschaeftsfuehrer,
       },
     });
+    // EUCX Member-ID generieren und direkt setzen
+    const memberId = generateEucxMemberId(org.country, role, org.memberSeq);
+    await db.organization.update({ where: { id: org.id }, data: { memberId } });
+
     const user = await db.user.create({
       data: { email, passwordHash, role, organizationId: org.id, status: "PENDING", emailVerified: false },
     });

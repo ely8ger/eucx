@@ -44,6 +44,8 @@ interface OrgData {
   isGeschaeftsfuehrer: boolean | null;
   eoriNumber:          string | null;
   cbamAccountNumber:   string | null;
+  memberId:            string | null;
+  memberSeq:           number;
 }
 
 interface MeData {
@@ -145,6 +147,34 @@ export function ProfileClient() {
           </p>
         </div>
 
+        {/* EUCX Member-ID Banner */}
+        {org?.memberId && (
+          <div style={{
+            background: "#0d1e4a", marginBottom: 16,
+            padding: "18px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12,
+          }}>
+            <div>
+              <p style={{ margin: "0 0 3px", fontSize: 10, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "rgba(255,255,255,.45)", fontFamily: F }}>
+                Ihre EUCX Marktteilnehmer-ID
+              </p>
+              <p style={{ margin: 0, fontSize: 22, fontWeight: 700, fontFamily: "'IBM Plex Mono',monospace", color: "#fff", letterSpacing: ".04em" }}>
+                {org.memberId}
+              </p>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
+              <span style={{
+                padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".06em",
+                background: "rgba(255,255,255,.12)", color: "rgba(255,255,255,.85)",
+              }}>
+                {me?.role === "SELLER" ? "VERKÄUFER" : "KÄUFER"}
+              </span>
+              <span style={{ fontSize: 11, color: "rgba(255,255,255,.4)", fontFamily: F }}>
+                MiFID II · BaFin-registriert
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Status-Banner */}
         {me && (
           <div style={{ background: "#fff", border: `1px solid ${BORDER}`, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 24px", flexWrap: "wrap", gap: 12 }}>
@@ -236,6 +266,11 @@ export function ProfileClient() {
                   <RoField label="Land"         value={COUNTRY_NAMES[org.country] ?? org.country} />
                 </div>
               </div>
+              <RoField
+                label="EUCX Marktteilnehmer-ID"
+                value={org.memberId ?? undefined}
+                note="Eindeutige Börsen-ID · unveränderlich · erscheint in allen Verträgen und Berichten"
+              />
 
               <RoField
                 label="Anschrift"

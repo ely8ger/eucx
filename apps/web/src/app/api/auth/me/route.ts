@@ -51,6 +51,8 @@ export async function GET(req: NextRequest) {
           isGeschaeftsfuehrer: true,
           eoriNumber:          true,
           cbamAccountNumber:   true,
+          memberId:            true,
+          memberSeq:           true,
           wallet: {
             select: { balance: true, reservedBalance: true },
           },
@@ -92,6 +94,8 @@ export async function GET(req: NextRequest) {
       isGeschaeftsfuehrer: user.organization.isGeschaeftsfuehrer ?? null,
       eoriNumber:          user.organization.eoriNumber ?? null,
       cbamAccountNumber:   user.organization.cbamAccountNumber ?? null,
+      memberId:            user.organization.memberId ?? null,
+      memberSeq:           user.organization.memberSeq,
     },
     walletBalance:  user.organization.wallet?.balance?.toString()         ?? "0",
     walletReserved: user.organization.wallet?.reservedBalance?.toString() ?? "0",
