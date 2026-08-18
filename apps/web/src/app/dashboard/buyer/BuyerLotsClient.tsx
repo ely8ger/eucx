@@ -723,7 +723,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-label span { color:#9ca3af; font-weight:400; margin-left:4px; }
         .bl-input { width:100%; box-sizing:border-box; height:40px; border:1px solid #d1d5db; padding:0 12px; font-size:14px; outline:none; font-family:inherit; transition:border-color .15s; }
         .bl-input:focus { border-color:#154194; }
-        .bl-select { height:40px; border:1px solid #d1d5db; padding:0 12px; font-size:14px; outline:none; font-family:inherit; background:#fff; appearance:none; cursor:pointer; }
+        .bl-select { width:100%; box-sizing:border-box; height:40px; border:1px solid #d1d5db; padding:0 36px 0 12px; font-size:14px; outline:none; font-family:inherit; background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center; appearance:none; cursor:pointer; transition:border-color .15s; }
         .bl-select:focus { border-color:#154194; }
         .bl-textarea { border:1px solid #d1d5db; padding:10px 12px; font-size:13px; outline:none; font-family:inherit; resize:vertical; min-height:72px; transition:border-color .15s; }
         .bl-textarea:focus { border-color:#154194; }
