@@ -269,54 +269,54 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
         .sl-loading { color:#9ca3af; font-size:13px; padding:40px 24px; text-align:center; }
 
         /* ── Lot-Vorschau Modal ── */
-        .sl-preview-overlay { position:fixed; inset:0; background:rgba(0,0,0,.32); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
-        .sl-preview { background:#fff; width:100%; max-width:660px; max-height:90vh; overflow-y:auto; display:flex; flex-direction:column; border-top:3px solid #154194; box-shadow:0 8px 32px rgba(0,0,0,.14); }
+        .sl-preview-overlay { position:fixed; inset:0; background:rgba(10,20,50,.45); backdrop-filter:blur(6px); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
+        .sl-preview { background:#fff; width:100%; max-width:660px; max-height:90vh; overflow-y:auto; display:flex; flex-direction:column; border-radius:16px; border-top:4px solid #154194; box-shadow:0 24px 60px rgba(0,0,0,.22), 0 4px 16px rgba(21,65,148,.12), inset 0 1px 0 rgba(255,255,255,.9); }
 
-        /* Header — weiß, nüchtern */
-        .sl-preview-head { background:#fff; border-bottom:1px solid #e5e7eb; padding:22px 30px 18px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; position:sticky; top:0; z-index:10; }
+        /* Header */
+        .sl-preview-head { background:linear-gradient(160deg,#f8faff 0%,#fff 100%); border-bottom:1px solid #e9edf5; border-radius:12px 12px 0 0; padding:22px 28px 18px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; position:sticky; top:0; z-index:10; }
         .sl-preview-eyebrow { font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#9ca3af; margin-bottom:6px; }
         .sl-preview-title { font-size:19px; font-weight:300; color:#0d1e4a; line-height:1.2; letter-spacing:-.01em; }
         .sl-preview-title strong { font-weight:700; }
-        .sl-preview-meta { margin-top:8px; font-size:12px; color:#6b7280; font-weight:400; display:flex; gap:16px; flex-wrap:wrap; }
-        .sl-preview-meta span::before { content:"—"; margin-right:6px; color:#d1d5db; }
-        .sl-preview-meta span:first-child::before { display:none; }
-        .sl-preview-close { background:none; border:none; color:#9ca3af; font-size:18px; cursor:pointer; padding:2px 4px; line-height:1; flex-shrink:0; transition:color .15s; }
-        .sl-preview-close:hover { color:#111827; }
+        .sl-preview-meta { margin-top:8px; font-size:12px; color:#6b7280; display:flex; gap:8px; flex-wrap:wrap; }
+        .sl-preview-meta span { background:#f1f5f9; border-radius:20px; padding:2px 10px; font-size:11px; }
+        .sl-preview-meta span.green { background:#dcfce7; color:#15803d; font-weight:600; }
+        .sl-preview-close { background:#f1f5f9; border:none; color:#6b7280; font-size:14px; cursor:pointer; padding:6px 9px; line-height:1; flex-shrink:0; border-radius:50%; transition:all .15s; margin-top:2px; }
+        .sl-preview-close:hover { background:#e2e8f0; color:#111827; }
 
-        /* Preis-Zeile — schmal, nur Zahlen */
-        .sl-preview-price-row { border-bottom:1px solid #e5e7eb; padding:12px 30px; display:flex; gap:32px; background:#fafafa; }
-        .sl-preview-price-cell { display:flex; flex-direction:column; gap:1px; }
+        /* Preis-Zeile */
+        .sl-preview-price-row { border-bottom:1px solid #e9edf5; padding:14px 28px; display:flex; gap:28px; background:linear-gradient(90deg,#f8faff 0%,#f0f4ff 100%); }
+        .sl-preview-price-cell { display:flex; flex-direction:column; gap:2px; }
         .sl-preview-price-label { font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#9ca3af; }
-        .sl-preview-price-val { font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:600; color:#0d1e4a; }
+        .sl-preview-price-val { font-family:"IBM Plex Mono",monospace; font-size:16px; font-weight:600; color:#0d1e4a; }
         .sl-preview-price-val.best { color:#15803d; }
 
         /* Body */
-        .sl-preview-body { flex:1; }
+        .sl-preview-body { flex:1; padding:4px 0; }
 
-        /* Section — wie Bloomberg Terminal Abschnitte */
-        .sl-preview-section { padding:18px 30px 4px; border-bottom:1px solid #f3f4f6; }
+        /* Sections */
+        .sl-preview-section { padding:16px 28px 8px; border-bottom:1px solid #f1f5f9; }
         .sl-preview-section:last-child { border-bottom:none; }
-        .sl-preview-section-title { font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#9ca3af; margin-bottom:10px; }
+        .sl-preview-section-title { font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#94a3b8; margin-bottom:10px; }
 
-        /* Daten-Tabelle — zwei Spalten, schlank */
-        .sl-preview-table { width:100%; border-collapse:collapse; margin-bottom:14px; }
-        .sl-preview-table tr { border-bottom:1px solid #f3f4f6; }
+        /* Daten-Tabelle */
+        .sl-preview-table { width:100%; border-collapse:collapse; margin-bottom:10px; }
+        .sl-preview-table tr { border-bottom:1px solid #f1f5f9; }
         .sl-preview-table tr:last-child { border-bottom:none; }
-        .sl-preview-table td { padding:6px 0; vertical-align:top; }
-        .sl-preview-table td:first-child { width:44%; font-size:11.5px; color:#9ca3af; font-weight:400; padding-right:12px; }
+        .sl-preview-table td { padding:7px 0; vertical-align:top; }
+        .sl-preview-table td:first-child { width:44%; font-size:11.5px; color:#94a3b8; font-weight:400; padding-right:12px; }
         .sl-preview-table td:last-child { font-size:12.5px; color:#111827; font-weight:500; }
-        .sl-preview-table td.mono { font-family:"IBM Plex Mono",monospace; font-size:12px; }
+        .sl-preview-table td.mono { font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.02em; }
 
         /* Beschreibung */
-        .sl-preview-desc { font-size:12.5px; color:#374151; line-height:1.7; white-space:pre-wrap; margin-bottom:18px; padding-top:2px; }
+        .sl-preview-desc { font-size:12.5px; color:#374151; line-height:1.75; white-space:pre-wrap; margin-bottom:16px; background:#f8faff; border-radius:8px; padding:12px 14px; border:1px solid #e9edf5; }
 
         /* Footer */
-        .sl-preview-footer { padding:14px 30px; border-top:1px solid #e5e7eb; display:flex; gap:10px; align-items:center; justify-content:flex-end; position:sticky; bottom:0; background:#fff; }
-        .sl-preview-btn-cancel { padding:9px 20px; background:#fff; border:1px solid #d1d5db; color:#374151; font-size:12px; cursor:pointer; font-weight:500; transition:all .15s; letter-spacing:.01em; }
-        .sl-preview-btn-cancel:hover { border-color:#6b7280; }
-        .sl-preview-btn-reg { padding:9px 24px; background:#154194; color:#fff; border:none; font-size:12.5px; font-weight:600; cursor:pointer; letter-spacing:.04em; transition:background .15s; text-transform:uppercase; }
-        .sl-preview-btn-reg:hover:not(:disabled) { background:#1a52c2; }
-        .sl-preview-btn-reg:disabled { opacity:.35; cursor:not-allowed; }
+        .sl-preview-footer { padding:14px 28px; border-top:1px solid #e9edf5; border-radius:0 0 16px 16px; display:flex; gap:10px; align-items:center; justify-content:flex-end; position:sticky; bottom:0; background:linear-gradient(160deg,#fff 0%,#f8faff 100%); }
+        .sl-preview-btn-cancel { padding:9px 20px; background:#fff; border:1px solid #e2e8f0; color:#374151; font-size:12px; cursor:pointer; font-weight:500; transition:all .15s; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+        .sl-preview-btn-cancel:hover { border-color:#9ca3af; background:#f8faff; }
+        .sl-preview-btn-reg { padding:9px 24px; background:linear-gradient(135deg,#1a52c2 0%,#154194 100%); color:#fff; border:none; font-size:12.5px; font-weight:600; cursor:pointer; letter-spacing:.04em; transition:all .15s; text-transform:uppercase; border-radius:8px; box-shadow:0 2px 8px rgba(21,65,148,.35); }
+        .sl-preview-btn-reg:hover:not(:disabled) { background:linear-gradient(135deg,#1f5fdf 0%,#1a52c2 100%); box-shadow:0 4px 14px rgba(21,65,148,.45); transform:translateY(-1px); }
+        .sl-preview-btn-reg:disabled { opacity:.35; cursor:not-allowed; transform:none; }
 
         /* Lot-Zeile klickbar */
         .sl-row-clickable { cursor:pointer; }
@@ -601,7 +601,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                     <span>{Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}</span>
                     {lot.incoterms && <span>{lot.incoterms}</span>}
                     {lot.countryOfOrigin && <span>{lot.countryOfOrigin}</span>}
-                    {lot.greenSteel && <span style={{ color: "#15803d", fontWeight: 600 }}>Green Steel</span>}
+                    {lot.greenSteel && <span className="green">Green Steel</span>}
                   </div>
                 </div>
                 <button className="sl-preview-close" onClick={() => setPreviewLot(null)}>✕</button>
