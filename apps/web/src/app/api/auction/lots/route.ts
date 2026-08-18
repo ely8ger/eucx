@@ -176,6 +176,7 @@ export async function GET(req: NextRequest) {
       paymentTerms:     true,
       vatTreatment:     true,
       greenSteel:       true,
+      description:      true,
       isDraft:          true,
       buyer: {
         select: { id: true, organizationId: true },

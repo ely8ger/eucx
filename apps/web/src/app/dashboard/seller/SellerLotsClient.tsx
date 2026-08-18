@@ -29,6 +29,15 @@ interface LotRow {
   co2PerTonne?:     string | null;
   countryOfOrigin?: string | null;
   incoterms?:       string | null;
+  // Vertragsangaben (für Vorschau)
+  hsCode?:          string | null;
+  qualityGrade?:    string | null;
+  deliveryPeriod?:  string | null;
+  deliveryLocation?:string | null;
+  paymentTerms?:    string | null;
+  vatTreatment?:    string | null;
+  description?:     string | null;
+  greenSteel?:      boolean;
 }
 
 interface KycInfo {
@@ -99,6 +108,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
   const [kyc,          setKyc]          = useState<KycInfo | null>(null);
   const [registering,  setRegistering]  = useState<string | null>(null);
   const [filter,       setFilter]       = useState<"all" | "mine" | "active">(initialFilter);
+  const [previewLot,   setPreviewLot]   = useState<LotRow | null>(null);
 
   // ── Token + Auth-Redirect ──────────────────────────────────────────
   useEffect(() => {
@@ -258,6 +268,34 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
         /* Loading */
         .sl-loading { color:#9ca3af; font-size:13px; padding:40px 24px; text-align:center; }
 
+        /* Lot-Vorschau Modal */
+        .sl-preview-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; display:flex; align-items:center; justify-content:center; padding:24px; }
+        .sl-preview { background:#fff; width:100%; max-width:620px; max-height:90vh; overflow-y:auto; display:flex; flex-direction:column; }
+        .sl-preview-head { background:#154194; padding:18px 22px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; position:sticky; top:0; }
+        .sl-preview-title { font-size:16px; font-weight:700; color:#fff; line-height:1.3; }
+        .sl-preview-close { background:none; border:none; color:rgba(255,255,255,.7); font-size:20px; cursor:pointer; line-height:1; padding:0; flex-shrink:0; }
+        .sl-preview-close:hover { color:#fff; }
+        .sl-preview-body { padding:22px; flex:1; }
+        .sl-preview-section { margin-bottom:20px; }
+        .sl-preview-section-title { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#9ca3af; border-bottom:1px solid #e5e7eb; padding-bottom:6px; margin-bottom:12px; }
+        .sl-preview-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 20px; }
+        .sl-preview-field { display:flex; flex-direction:column; gap:2px; }
+        .sl-preview-label { font-size:10px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:#9ca3af; }
+        .sl-preview-value { font-size:13px; color:#111827; font-weight:500; }
+        .sl-preview-desc { font-size:12.5px; color:#374151; line-height:1.6; white-space:pre-wrap; background:#f9fafb; border:1px solid #e5e7eb; padding:12px; }
+        .sl-preview-footer { padding:16px 22px; border-top:1px solid #e5e7eb; background:#f9fafb; display:flex; gap:10px; align-items:center; justify-content:flex-end; position:sticky; bottom:0; }
+        .sl-preview-btn-cancel { padding:9px 18px; background:#fff; border:1px solid #d1d5db; color:#374151; font-size:13px; cursor:pointer; font-weight:500; transition:background .15s; }
+        .sl-preview-btn-cancel:hover { background:#f3f4f6; }
+        .sl-preview-btn-reg { padding:10px 22px; background:#d97706; color:#fff; border:none; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s; }
+        .sl-preview-btn-reg:hover:not(:disabled) { background:#b45309; }
+        .sl-preview-btn-reg:disabled { opacity:.4; cursor:not-allowed; }
+
+        /* Lot-Zeile klickbar */
+        .sl-row-clickable { cursor:pointer; }
+        .sl-row-clickable:hover td { background:#fff7ed !important; }
+        .sl-lot-name-link { color:#154194; font-weight:600; text-decoration:none; border-bottom:1px solid transparent; transition:border-color .15s; }
+        .sl-lot-name-link:hover { border-bottom-color:#154194; }
+
       `}</style>
 
       <div className="sl-root">
@@ -397,11 +435,11 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                     const phaseLabel    = expired ? "Beendet" : PHASE_LABEL[lot.phase];
 
                     return (
-                      <tr key={lot.id}>
+                      <tr key={lot.id} className="sl-row-clickable" onClick={() => setPreviewLot(lot)}>
                         {/* Ware + Menge + CBAM */}
                         <td>
-                          <div style={{ fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                            {lot.commodity}
+                          <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            <span className="sl-lot-name-link">{lot.commodity}</span>
                           </div>
                           <div style={{ fontSize: 11.5, color: "#374151", marginTop: 2, whiteSpace: "nowrap" }}>
                             {Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}
@@ -478,9 +516,9 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                             <button
                               className="sl-btn-reg"
                               disabled={registering === lot.id}
-                              onClick={() => registerForLot(lot.id)}
+                              onClick={(e) => { e.stopPropagation(); setPreviewLot(lot); }}
                             >
-                              {registering === lot.id ? "…" : "Registrieren"}
+                              Details & Registrieren
                             </button>
                           )}
                           {!canRegister && !canGoToAction && !canSeeResult && !lot.isRegistered && lot.phase === "COLLECTION" && !isVerified && (
@@ -504,6 +542,118 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
           )}
         </div>
       </div>
+
+      {/* ── Lot-Vorschau Modal ─────────────────────────────────────── */}
+      {previewLot && (() => {
+        const lot         = previewLot;
+        const expired     = isLotExpired(lot);
+        const priceUnit   = lot.unit === "TON" ? "/t" : lot.unit === "KG" ? "/kg" : "";
+        const canRegister = lot.phase === "COLLECTION" && !lot.isRegistered && isVerified;
+        const field = (label: string, value: string | null | undefined, mono = false) =>
+          value ? (
+            <div className="sl-preview-field">
+              <span className="sl-preview-label">{label}</span>
+              <span className="sl-preview-value" style={mono ? { fontFamily: "'IBM Plex Mono',monospace", fontSize: 12 } : {}}>{value}</span>
+            </div>
+          ) : null;
+
+        return (
+          <div className="sl-preview-overlay" onClick={() => setPreviewLot(null)}>
+            <div className="sl-preview" onClick={(e) => e.stopPropagation()}>
+
+              {/* Header */}
+              <div className="sl-preview-head">
+                <div>
+                  <div className="sl-preview-title">{lot.commodity}</div>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,.7)", marginTop: 4 }}>
+                    {Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}
+                    {lot.startPrice && ` · Limit: ${fmtEur(lot.startPrice)}${priceUnit}`}
+                    {lot.greenSteel && <span style={{ marginLeft: 8, background: "#16a34a", color: "#fff", fontSize: 10, fontWeight: 700, padding: "1px 6px" }}>GREEN STEEL</span>}
+                  </div>
+                </div>
+                <button className="sl-preview-close" onClick={() => setPreviewLot(null)}>✕</button>
+              </div>
+
+              <div className="sl-preview-body">
+
+                {/* Warenangaben */}
+                <div className="sl-preview-section">
+                  <div className="sl-preview-section-title">Warenangaben</div>
+                  <div className="sl-preview-grid">
+                    {field("Güte / Qualitätsnorm", lot.qualityGrade)}
+                    {field("HS-Code (Zolltarif)", lot.hsCode, true)}
+                    {field("Herkunftsland", lot.countryOfOrigin)}
+                    {field("CO₂-Emissionsfaktor", lot.co2PerTonne ? `${parseFloat(lot.co2PerTonne).toLocaleString("de-DE")} kg CO₂/t` : null)}
+                  </div>
+                </div>
+
+                {/* Lieferung */}
+                <div className="sl-preview-section">
+                  <div className="sl-preview-section-title">Lieferung</div>
+                  <div className="sl-preview-grid">
+                    {field("Lieferbedingung (Incoterms)", lot.incoterms)}
+                    {field("Max. Lieferzeit", lot.deliveryPeriod)}
+                    {field("Lieferort", lot.deliveryLocation)}
+                  </div>
+                </div>
+
+                {/* Vertrag */}
+                <div className="sl-preview-section">
+                  <div className="sl-preview-section-title">Vertragsangaben</div>
+                  <div className="sl-preview-grid">
+                    {field("Zahlungsbedingungen", lot.paymentTerms)}
+                    {field("USt.-Behandlung", lot.vatTreatment)}
+                  </div>
+                </div>
+
+                {/* Beschreibung */}
+                {lot.description && (
+                  <div className="sl-preview-section">
+                    <div className="sl-preview-section-title">Beschreibung / Spezifikation</div>
+                    <div className="sl-preview-desc">{lot.description}</div>
+                  </div>
+                )}
+
+                {/* Hinweis bei nicht-registriert + nicht-KYC */}
+                {!isVerified && !lot.isRegistered && lot.phase === "COLLECTION" && (
+                  <div style={{ padding: "12px 14px", background: "#fffbeb", border: "1px solid #fcd34d", fontSize: 12, color: "#92400e" }}>
+                    KYC-Verifizierung erforderlich, um sich zu registrieren.{" "}
+                    <a href="/dashboard/settings/verification" style={{ color: "#d97706", fontWeight: 600 }}>Jetzt verifizieren →</a>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="sl-preview-footer">
+                <button className="sl-preview-btn-cancel" onClick={() => setPreviewLot(null)}>
+                  Schließen
+                </button>
+                {lot.isRegistered && lot.phase === "COLLECTION" && (
+                  <span className="sl-badge-reg">✓ Bereits registriert</span>
+                )}
+                {canRegister && (
+                  <button
+                    className="sl-preview-btn-reg"
+                    disabled={registering === lot.id}
+                    onClick={() => {
+                      void registerForLot(lot.id);
+                      setPreviewLot(null);
+                    }}
+                  >
+                    {registering === lot.id ? "Wird registriert…" : "Jetzt registrieren →"}
+                  </button>
+                )}
+                {(lot.phase === "PROPOSAL" || lot.phase === "REDUCTION") && lot.isRegistered && !expired && (
+                  <a href={`/dashboard/seller/auction/${lot.id}`} className="sl-preview-btn-reg" style={{ textDecoration: "none", display: "inline-block" }}>
+                    Zur Auktion →
+                  </a>
+                )}
+              </div>
+
+            </div>
+          </div>
+        );
+      })()}
     </>
   );
 }
