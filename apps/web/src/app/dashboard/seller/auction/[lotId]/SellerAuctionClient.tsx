@@ -463,22 +463,22 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
 
         {/* Verkäufer-Identitätsstreifen */}
         <div style={{
-          background: "linear-gradient(90deg,#78350f 0%,#92400e 100%)",
-          borderBottom: "1px solid #b45309",
+          background: "#0d1e4a",
+          borderBottom: "1px solid #1a2d5a",
           padding: "0 28px", height: 36,
           display: "flex", alignItems: "center",
           fontFamily: "'IBM Plex Sans', Arial, sans-serif",
         }}>
           <div style={{ maxWidth: 1080, margin: "0 auto", width: "100%", display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#fde68a", background: "rgba(255,255,255,.12)", padding: "3px 10px" }}>
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,.9)", background: "rgba(255,255,255,.12)", padding: "3px 10px" }}>
               HANDELSSITZUNG
             </span>
-            <span style={{ fontSize: 11, color: "rgba(253,230,138,.7)", letterSpacing: "0.02em" }}>
+            <span style={{ fontSize: 11, color: "rgba(255,255,255,.55)", letterSpacing: "0.02em" }}>
               Ref. {lot.id.slice(0, 8).toUpperCase()} · {lot.commodity} · {lot.quantity} {lot.unit}
             </span>
             <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
               <span className={`sa-dot${connected && !isExpired ? "" : " off"}`} />
-              <span style={{ fontSize: 11, color: "rgba(253,230,138,.6)" }}>{isExpired ? "Beendet" : connected ? "Live" : "Verbinde…"}</span>
+              <span style={{ fontSize: 11, color: "rgba(255,255,255,.5)" }}>{isExpired ? "Beendet" : connected ? "Live" : "Verbinde…"}</span>
             </div>
           </div>
         </div>
