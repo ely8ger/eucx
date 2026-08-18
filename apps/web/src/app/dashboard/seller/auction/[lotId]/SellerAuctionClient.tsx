@@ -378,19 +378,19 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
 
         .sa-status { padding:24px 28px; display:grid; grid-template-columns:1fr auto; gap:20px; align-items:center; }
         .sa-status.leading  { background:#f0fdf4; border:2px solid #16a34a; }
-        .sa-status.trailing { background:#fffbeb; border:2px solid #d97706; }
+        .sa-status.trailing { background:#fff5f5; border:2px solid #dc2626; }
         .sa-status.idle     { background:#fff; border:1px solid #e5e7eb; border-left:4px solid #154194; }
         .sa-status-left {}
         .sa-status-kpi-label { font-size:11px; font-weight:700; letter-spacing:.08em; color:#9ca3af; text-transform:uppercase; margin-bottom:6px; }
         .sa-status-title { font-size:17px; font-weight:700; margin-bottom:4px; color:#111827; }
         .sa-status-title.leading  { color:#14532d; }
-        .sa-status-title.trailing { color:#92400e; }
+        .sa-status-title.trailing { color:#991b1b; }
         .sa-status-sub { font-size:12px; color:#6b7280; }
         .sa-status-sub.leading  { color:#166534; }
-        .sa-status-sub.trailing { color:#b45309; }
+        .sa-status-sub.trailing { color:#dc2626; }
         .sa-status-price { font-family:'IBM Plex Mono',monospace; font-size:48px; font-weight:600; color:#0d1b2a; text-align:right; white-space:nowrap; line-height:1; }
         .sa-status-price.leading  { color:#16a34a; }
-        .sa-status-price.trailing { color:#d97706; }
+        .sa-status-price.trailing { color:#dc2626; }
         .sa-status-price.none { color:#9ca3af; }
         .sa-status-price.flash { animation:sa-flash .7s ease-out; }
         @media(max-width:640px) { .sa-status { grid-template-columns:1fr; } .sa-status-price { font-size:32px; text-align:left; } }
@@ -620,7 +620,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                   <div className="sa-kpi-sub">
                     {myRank === 1
                       ? <span style={{ color: "#16a34a", fontWeight: 600 }}>{isExpired ? "Rang 1 bei Auktionsende" : "Rang 1 - Führend"}</span>
-                      : <span style={{ color: "#d97706", fontWeight: 600 }}>{isExpired ? `Rang #${myRank} bei Auktionsende` : `Rang #${myRank} - Überboten`}</span>
+                      : <span style={{ color: "#d97706", fontWeight: 600 }}>{isExpired ? `Rang ${myRank} bei Auktionsende` : `Rang ${myRank} - Überboten`}</span>
                     }
                   </div>
                 </div>
@@ -654,7 +654,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                       {isLeading
                         ? "Sie halten das beste Angebot"
                         : myRank !== null
-                          ? `Überboten - Rang #${myRank}`
+                          ? `Überboten - Rang ${myRank}`
                           : "Noch kein Gebot abgegeben"}
                     </div>
                     <div className={`sa-status-sub${isLeading ? " leading" : myRank !== null ? " trailing" : ""}`}>
