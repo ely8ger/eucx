@@ -20,6 +20,8 @@ const PUBLIC_PREFIXES = [
   "/api/og",
   // Interner Cron-Endpunkt - hat eigene Auth (CRON_SECRET Bearer)
   "/api/auction/cron",
+  // Produktkatalog — öffentliche Referenzdaten, kein sensitiver Inhalt
+  "/api/catalog",
   // Öffentliche Inhaltsseiten
   "/agb",
   "/datenschutz",

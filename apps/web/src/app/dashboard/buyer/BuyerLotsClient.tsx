@@ -369,9 +369,13 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     if (catalogQuery.length < 1) { setCatalogResults([]); setCatalogOpen(false); setCatalogBrowseMode(false); return; }
     setCatalogBrowseMode(false);
     const t = setTimeout(() => {
-      fetch(`/api/catalog?q=${encodeURIComponent(catalogQuery)}`, { headers: { Authorization: `Bearer ${token}` } })
+      fetch(`/api/catalog?q=${encodeURIComponent(catalogQuery)}`)
         .then((r) => r.json())
-        .then((d) => { setCatalogResults(d.products ?? []); setCatalogOpen(true); })
+        .then((d) => {
+          const products = d.products ?? [];
+          setCatalogResults(products);
+          setCatalogOpen(products.length > 0);
+        })
         .catch(() => {});
     }, 300);
     return () => clearTimeout(t);
@@ -1112,9 +1116,14 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         if (catalogOpen) {
                           setCatalogOpen(false);
                         } else {
-                          fetch(`/api/catalog?browse=1`, { headers: { Authorization: `Bearer ${token}` } })
+                          fetch(`/api/catalog?browse=1`)
                             .then((r) => r.json())
-                            .then((d) => { setCatalogResults(d.products ?? []); setCatalogBrowseMode(true); setCatalogOpen(true); })
+                            .then((d) => {
+                              const products = d.products ?? [];
+                              setCatalogResults(products);
+                              setCatalogBrowseMode(true);
+                              setCatalogOpen(products.length > 0);
+                            })
                             .catch(() => {});
                         }
                       }}
