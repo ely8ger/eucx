@@ -437,7 +437,8 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         .sa-dl-btn:hover { background:#0f3070; }
 
         /* ── Sticky Statusleiste ── */
-        .sa-sticky { position:sticky; top:0; z-index:100; display:flex; align-items:center; padding:0 28px; height:44px; gap:24px; font-family:"IBM Plex Sans",Arial,sans-serif; border-bottom:1px solid rgba(0,0,0,.12); }
+        .sa-sticky { position:fixed; top:0; left:0; right:0; z-index:200; display:flex; align-items:center; padding:0 28px; height:44px; gap:24px; font-family:"IBM Plex Sans",Arial,sans-serif; border-bottom:1px solid rgba(0,0,0,.12); }
+        .sa-sticky-spacer { height:44px; }
         .sa-sticky.leading  { background:#166534; }
         .sa-sticky.trailing { background:#dc2626; }
         .sa-sticky.idle     { background:#154194; }
@@ -484,6 +485,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         </div>
 
         {/* ── Sticky Statusleiste (nur wenn Gebot vorhanden) ── */}
+        {canBid && myBids.length > 0 && <div className="sa-sticky-spacer" />}
         {canBid && myBids.length > 0 && (
           <div className={`sa-sticky${isLeading ? " leading" : " trailing"}`}>
             <div>
