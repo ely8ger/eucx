@@ -268,26 +268,49 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
         /* Loading */
         .sl-loading { color:#9ca3af; font-size:13px; padding:40px 24px; text-align:center; }
 
-        /* Lot-Vorschau Modal */
-        .sl-preview-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; display:flex; align-items:center; justify-content:center; padding:24px; }
-        .sl-preview { background:#fff; width:100%; max-width:620px; max-height:90vh; overflow-y:auto; display:flex; flex-direction:column; }
-        .sl-preview-head { background:#154194; padding:18px 22px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; position:sticky; top:0; }
-        .sl-preview-title { font-size:16px; font-weight:700; color:#fff; line-height:1.3; }
-        .sl-preview-close { background:none; border:none; color:rgba(255,255,255,.7); font-size:20px; cursor:pointer; line-height:1; padding:0; flex-shrink:0; }
-        .sl-preview-close:hover { color:#fff; }
-        .sl-preview-body { padding:22px; flex:1; }
-        .sl-preview-section { margin-bottom:20px; }
-        .sl-preview-section-title { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#9ca3af; border-bottom:1px solid #e5e7eb; padding-bottom:6px; margin-bottom:12px; }
-        .sl-preview-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 20px; }
-        .sl-preview-field { display:flex; flex-direction:column; gap:2px; }
-        .sl-preview-label { font-size:10px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:#9ca3af; }
-        .sl-preview-value { font-size:13px; color:#111827; font-weight:500; }
-        .sl-preview-desc { font-size:12.5px; color:#374151; line-height:1.6; white-space:pre-wrap; background:#f9fafb; border:1px solid #e5e7eb; padding:12px; }
-        .sl-preview-footer { padding:16px 22px; border-top:1px solid #e5e7eb; background:#f9fafb; display:flex; gap:10px; align-items:center; justify-content:flex-end; position:sticky; bottom:0; }
-        .sl-preview-btn-cancel { padding:9px 18px; background:#fff; border:1px solid #d1d5db; color:#374151; font-size:13px; cursor:pointer; font-weight:500; transition:background .15s; }
-        .sl-preview-btn-cancel:hover { background:#f3f4f6; }
-        .sl-preview-btn-reg { padding:10px 22px; background:#d97706; color:#fff; border:none; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s; }
-        .sl-preview-btn-reg:hover:not(:disabled) { background:#b45309; }
+        /* ── Lot-Vorschau Modal ── */
+        .sl-preview-overlay { position:fixed; inset:0; background:rgba(10,20,50,.55); backdrop-filter:blur(2px); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
+        .sl-preview { background:#fff; width:100%; max-width:640px; max-height:92vh; overflow-y:auto; display:flex; flex-direction:column; box-shadow:0 24px 64px rgba(0,0,0,.22); }
+
+        /* Header */
+        .sl-preview-head { background:#0d1e4a; padding:20px 26px 18px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; position:sticky; top:0; z-index:10; }
+        .sl-preview-eyebrow { font-size:9.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.45); margin-bottom:5px; }
+        .sl-preview-title { font-size:18px; font-weight:700; color:#fff; line-height:1.25; }
+        .sl-preview-subtitle { margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+        .sl-preview-sub-chip { font-size:11px; font-weight:600; color:rgba(255,255,255,.65); background:rgba(255,255,255,.1); padding:3px 9px; letter-spacing:.02em; }
+        .sl-preview-close { background:none; border:1px solid rgba(255,255,255,.2); color:rgba(255,255,255,.6); font-size:14px; cursor:pointer; padding:4px 9px; line-height:1; flex-shrink:0; transition:all .15s; margin-top:2px; }
+        .sl-preview-close:hover { background:rgba(255,255,255,.1); color:#fff; border-color:rgba(255,255,255,.4); }
+
+        /* Body */
+        .sl-preview-body { padding:0; flex:1; }
+        .sl-preview-section { border-bottom:1px solid #f0f2f5; }
+        .sl-preview-section:last-child { border-bottom:none; }
+        .sl-preview-section-head { padding:14px 26px 0; display:flex; align-items:center; gap:8px; }
+        .sl-preview-section-marker { width:3px; height:14px; background:#154194; flex-shrink:0; }
+        .sl-preview-section-title { font-size:9.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#6b7280; }
+        .sl-preview-rows { padding:10px 0 14px; }
+        .sl-preview-row { display:flex; align-items:baseline; padding:5px 26px; gap:12px; }
+        .sl-preview-row:hover { background:#f8faff; }
+        .sl-preview-row-label { flex:0 0 160px; font-size:11px; color:#9ca3af; font-weight:500; }
+        .sl-preview-row-value { flex:1; font-size:13px; color:#111827; font-weight:600; line-height:1.4; }
+        .sl-preview-row-value.mono { font-family:"IBM Plex Mono",monospace; font-size:12px; }
+
+        /* Preis-Banner */
+        .sl-preview-price-banner { background:#f0f4ff; border-bottom:1px solid #dbeafe; padding:12px 26px; display:flex; align-items:center; gap:20px; }
+        .sl-preview-price-item { display:flex; flex-direction:column; gap:2px; }
+        .sl-preview-price-label { font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#6b7280; }
+        .sl-preview-price-value { font-family:"IBM Plex Mono",monospace; font-size:17px; font-weight:700; color:#154194; }
+
+        /* Beschreibung */
+        .sl-preview-desc-wrap { padding:14px 26px 18px; }
+        .sl-preview-desc { font-size:12.5px; color:#374151; line-height:1.7; white-space:pre-wrap; border-left:3px solid #154194; padding:10px 14px; background:#f8faff; }
+
+        /* Footer */
+        .sl-preview-footer { padding:14px 26px; border-top:2px solid #e5e7eb; background:#fff; display:flex; gap:10px; align-items:center; justify-content:flex-end; position:sticky; bottom:0; }
+        .sl-preview-btn-cancel { padding:9px 20px; background:#fff; border:1px solid #d1d5db; color:#374151; font-size:12.5px; cursor:pointer; font-weight:500; letter-spacing:.02em; transition:all .15s; }
+        .sl-preview-btn-cancel:hover { border-color:#9ca3af; background:#f9fafb; }
+        .sl-preview-btn-reg { padding:10px 24px; background:#154194; color:#fff; border:none; font-size:13px; font-weight:700; cursor:pointer; letter-spacing:.03em; transition:background .15s; }
+        .sl-preview-btn-reg:hover:not(:disabled) { background:#1a52c2; }
         .sl-preview-btn-reg:disabled { opacity:.4; cursor:not-allowed; }
 
         /* Lot-Zeile klickbar */
@@ -549,11 +572,12 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
         const expired     = isLotExpired(lot);
         const priceUnit   = lot.unit === "TON" ? "/t" : lot.unit === "KG" ? "/kg" : "";
         const canRegister = lot.phase === "COLLECTION" && !lot.isRegistered && isVerified;
-        const field = (label: string, value: string | null | undefined, mono = false) =>
+
+        const row = (label: string, value: string | null | undefined, mono = false) =>
           value ? (
-            <div className="sl-preview-field">
-              <span className="sl-preview-label">{label}</span>
-              <span className="sl-preview-value" style={mono ? { fontFamily: "'IBM Plex Mono',monospace", fontSize: 12 } : {}}>{value}</span>
+            <div className="sl-preview-row">
+              <span className="sl-preview-row-label">{label}</span>
+              <span className={`sl-preview-row-value${mono ? " mono" : ""}`}>{value}</span>
             </div>
           ) : null;
 
@@ -563,62 +587,98 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
 
               {/* Header */}
               <div className="sl-preview-head">
-                <div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="sl-preview-eyebrow">Ausschreibung — Vertragsbedingungen</div>
                   <div className="sl-preview-title">{lot.commodity}</div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,.7)", marginTop: 4 }}>
-                    {Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}
-                    {lot.startPrice && ` · Limit: ${fmtEur(lot.startPrice)}${priceUnit}`}
-                    {lot.greenSteel && <span style={{ marginLeft: 8, background: "#16a34a", color: "#fff", fontSize: 10, fontWeight: 700, padding: "1px 6px" }}>GREEN STEEL</span>}
+                  <div className="sl-preview-subtitle">
+                    <span className="sl-preview-sub-chip">{Number(lot.quantity).toLocaleString("de-DE")} {lot.unit}</span>
+                    {lot.incoterms && <span className="sl-preview-sub-chip">{lot.incoterms}</span>}
+                    {lot.countryOfOrigin && <span className="sl-preview-sub-chip">{lot.countryOfOrigin}</span>}
+                    {lot.greenSteel && <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "#16a34a", padding: "3px 8px", letterSpacing: ".05em" }}>GREEN STEEL</span>}
                   </div>
                 </div>
                 <button className="sl-preview-close" onClick={() => setPreviewLot(null)}>✕</button>
               </div>
 
+              {/* Preis-Banner */}
+              {lot.startPrice && (
+                <div className="sl-preview-price-banner">
+                  <div className="sl-preview-price-item">
+                    <span className="sl-preview-price-label">Maximallimit</span>
+                    <span className="sl-preview-price-value">{fmtEur(lot.startPrice)}{priceUnit}</span>
+                  </div>
+                  {lot.currentBest && (
+                    <div className="sl-preview-price-item">
+                      <span className="sl-preview-price-label">Aktuell bestes Gebot</span>
+                      <span className="sl-preview-price-value" style={{ color: "#16a34a" }}>{fmtEur(lot.currentBest)}{priceUnit}</span>
+                    </div>
+                  )}
+                  <div className="sl-preview-price-item">
+                    <span className="sl-preview-price-label">Gebote</span>
+                    <span className="sl-preview-price-value" style={{ fontSize: 14, color: "#374151" }}>{lot._count.bids}</span>
+                  </div>
+                </div>
+              )}
+
               <div className="sl-preview-body">
 
-                {/* Warenangaben */}
+                {/* Ware */}
                 <div className="sl-preview-section">
-                  <div className="sl-preview-section-title">Warenangaben</div>
-                  <div className="sl-preview-grid">
-                    {field("Güte / Qualitätsnorm", lot.qualityGrade)}
-                    {field("HS-Code (Zolltarif)", lot.hsCode, true)}
-                    {field("Herkunftsland", lot.countryOfOrigin)}
-                    {field("CO₂-Emissionsfaktor", lot.co2PerTonne ? `${parseFloat(lot.co2PerTonne).toLocaleString("de-DE")} kg CO₂/t` : null)}
+                  <div className="sl-preview-section-head">
+                    <div className="sl-preview-section-marker" />
+                    <div className="sl-preview-section-title">Warenangaben</div>
+                  </div>
+                  <div className="sl-preview-rows">
+                    {row("Güte / Qualitätsnorm", lot.qualityGrade)}
+                    {row("HS-Code (Zolltarif)", lot.hsCode, true)}
+                    {row("Herkunftsland", lot.countryOfOrigin)}
+                    {row("CO₂-Emissionsfaktor", lot.co2PerTonne ? `${parseFloat(lot.co2PerTonne).toLocaleString("de-DE")} kg CO₂/t` : null)}
                   </div>
                 </div>
 
                 {/* Lieferung */}
                 <div className="sl-preview-section">
-                  <div className="sl-preview-section-title">Lieferung</div>
-                  <div className="sl-preview-grid">
-                    {field("Lieferbedingung (Incoterms)", lot.incoterms)}
-                    {field("Max. Lieferzeit", lot.deliveryPeriod)}
-                    {field("Lieferort", lot.deliveryLocation)}
+                  <div className="sl-preview-section-head">
+                    <div className="sl-preview-section-marker" />
+                    <div className="sl-preview-section-title">Lieferung</div>
+                  </div>
+                  <div className="sl-preview-rows">
+                    {row("Lieferbedingung", lot.incoterms)}
+                    {row("Max. Lieferzeit", lot.deliveryPeriod)}
+                    {row("Lieferort", lot.deliveryLocation)}
                   </div>
                 </div>
 
                 {/* Vertrag */}
                 <div className="sl-preview-section">
-                  <div className="sl-preview-section-title">Vertragsangaben</div>
-                  <div className="sl-preview-grid">
-                    {field("Zahlungsbedingungen", lot.paymentTerms)}
-                    {field("USt.-Behandlung", lot.vatTreatment)}
+                  <div className="sl-preview-section-head">
+                    <div className="sl-preview-section-marker" />
+                    <div className="sl-preview-section-title">Vertragsangaben</div>
+                  </div>
+                  <div className="sl-preview-rows">
+                    {row("Zahlungsbedingungen", lot.paymentTerms)}
+                    {row("USt.-Behandlung", lot.vatTreatment)}
                   </div>
                 </div>
 
                 {/* Beschreibung */}
                 {lot.description && (
                   <div className="sl-preview-section">
-                    <div className="sl-preview-section-title">Beschreibung / Spezifikation</div>
-                    <div className="sl-preview-desc">{lot.description}</div>
+                    <div className="sl-preview-section-head">
+                      <div className="sl-preview-section-marker" />
+                      <div className="sl-preview-section-title">Beschreibung / Spezifikation</div>
+                    </div>
+                    <div className="sl-preview-desc-wrap">
+                      <div className="sl-preview-desc">{lot.description}</div>
+                    </div>
                   </div>
                 )}
 
-                {/* Hinweis bei nicht-registriert + nicht-KYC */}
+                {/* KYC-Hinweis */}
                 {!isVerified && !lot.isRegistered && lot.phase === "COLLECTION" && (
-                  <div style={{ padding: "12px 14px", background: "#fffbeb", border: "1px solid #fcd34d", fontSize: 12, color: "#92400e" }}>
-                    KYC-Verifizierung erforderlich, um sich zu registrieren.{" "}
-                    <a href="/dashboard/settings/verification" style={{ color: "#d97706", fontWeight: 600 }}>Jetzt verifizieren →</a>
+                  <div style={{ margin: "0 26px 16px", padding: "11px 14px", background: "#fffbeb", borderLeft: "3px solid #d97706", fontSize: 12, color: "#92400e" }}>
+                    KYC-Verifizierung erforderlich.{" "}
+                    <a href="/dashboard/settings/verification" style={{ color: "#d97706", fontWeight: 700 }}>Jetzt verifizieren →</a>
                   </div>
                 )}
               </div>
