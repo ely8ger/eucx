@@ -270,7 +270,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
 
         /* ── Lot-Vorschau Modal ── */
         .sl-preview-overlay { position:fixed; inset:0; background:rgba(10,20,50,.45); backdrop-filter:blur(6px); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
-        .sl-preview { background:#fff; width:100%; max-width:660px; max-height:90vh; overflow:hidden; display:flex; flex-direction:column; border-radius:16px; border-top:4px solid #154194; box-shadow:0 24px 60px rgba(0,0,0,.22), 0 4px 16px rgba(21,65,148,.12), inset 0 1px 0 rgba(255,255,255,.9); }
+        .sl-preview { background:#fff; width:100%; max-width:660px; max-height:90vh; overflow:hidden; display:flex; flex-direction:column; border-radius:16px; box-shadow:0 24px 60px rgba(0,0,0,.22), 0 4px 16px rgba(21,65,148,.12), inset 0 1px 0 rgba(255,255,255,.9); }
 
         /* Header */
         .sl-preview-head { background:linear-gradient(160deg,#f8faff 0%,#fff 100%); border-bottom:1px solid #e9edf5; border-radius:12px 12px 0 0; padding:22px 28px 18px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-shrink:0; }
