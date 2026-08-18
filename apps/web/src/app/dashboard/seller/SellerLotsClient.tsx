@@ -270,10 +270,10 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
 
         /* ── Lot-Vorschau Modal ── */
         .sl-preview-overlay { position:fixed; inset:0; background:rgba(10,20,50,.45); backdrop-filter:blur(6px); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
-        .sl-preview { background:#fff; width:100%; max-width:660px; max-height:90vh; overflow-y:auto; display:flex; flex-direction:column; border-radius:16px; border-top:4px solid #154194; box-shadow:0 24px 60px rgba(0,0,0,.22), 0 4px 16px rgba(21,65,148,.12), inset 0 1px 0 rgba(255,255,255,.9); }
+        .sl-preview { background:#fff; width:100%; max-width:660px; max-height:90vh; overflow:hidden; display:flex; flex-direction:column; border-radius:16px; border-top:4px solid #154194; box-shadow:0 24px 60px rgba(0,0,0,.22), 0 4px 16px rgba(21,65,148,.12), inset 0 1px 0 rgba(255,255,255,.9); }
 
         /* Header */
-        .sl-preview-head { background:linear-gradient(160deg,#f8faff 0%,#fff 100%); border-bottom:1px solid #e9edf5; border-radius:12px 12px 0 0; padding:22px 28px 18px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; position:sticky; top:0; z-index:10; }
+        .sl-preview-head { background:linear-gradient(160deg,#f8faff 0%,#fff 100%); border-bottom:1px solid #e9edf5; border-radius:12px 12px 0 0; padding:22px 28px 18px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-shrink:0; }
         .sl-preview-eyebrow { font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#9ca3af; margin-bottom:6px; }
         .sl-preview-title { font-size:19px; font-weight:300; color:#0d1e4a; line-height:1.2; letter-spacing:-.01em; }
         .sl-preview-title strong { font-weight:700; }
@@ -284,14 +284,14 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
         .sl-preview-close:hover { background:#e2e8f0; color:#111827; }
 
         /* Preis-Zeile */
-        .sl-preview-price-row { border-bottom:1px solid #e9edf5; padding:14px 28px; display:flex; gap:28px; background:linear-gradient(90deg,#f8faff 0%,#f0f4ff 100%); }
+        .sl-preview-price-row { border-bottom:1px solid #e9edf5; padding:14px 28px; display:flex; gap:28px; flex-shrink:0; background:linear-gradient(90deg,#f8faff 0%,#f0f4ff 100%); }
         .sl-preview-price-cell { display:flex; flex-direction:column; gap:2px; }
         .sl-preview-price-label { font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#9ca3af; }
         .sl-preview-price-val { font-family:"IBM Plex Mono",monospace; font-size:16px; font-weight:600; color:#0d1e4a; }
         .sl-preview-price-val.best { color:#15803d; }
 
         /* Body */
-        .sl-preview-body { flex:1; padding:4px 0; }
+        .sl-preview-body { flex:1; overflow-y:auto; padding:4px 0; }
 
         /* Sections */
         .sl-preview-section { padding:16px 28px 8px; border-bottom:1px solid #f1f5f9; }
@@ -311,7 +311,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
         .sl-preview-desc { font-size:12.5px; color:#374151; line-height:1.75; white-space:pre-wrap; margin-bottom:16px; background:#f8faff; border-radius:8px; padding:12px 14px; border:1px solid #e9edf5; }
 
         /* Footer */
-        .sl-preview-footer { padding:14px 28px; border-top:1px solid #e9edf5; border-radius:0 0 16px 16px; display:flex; gap:10px; align-items:center; justify-content:flex-end; position:sticky; bottom:0; background:linear-gradient(160deg,#fff 0%,#f8faff 100%); }
+        .sl-preview-footer { padding:14px 28px; border-top:1px solid #e9edf5; border-radius:0 0 16px 16px; display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-shrink:0; background:linear-gradient(160deg,#fff 0%,#f8faff 100%); }
         .sl-preview-btn-cancel { padding:9px 20px; background:#fff; border:1px solid #e2e8f0; color:#374151; font-size:12px; cursor:pointer; font-weight:500; transition:all .15s; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
         .sl-preview-btn-cancel:hover { border-color:#9ca3af; background:#f8faff; }
         .sl-preview-btn-reg { padding:9px 24px; background:linear-gradient(135deg,#1a52c2 0%,#154194 100%); color:#fff; border:none; font-size:12.5px; font-weight:600; cursor:pointer; letter-spacing:.04em; transition:all .15s; text-transform:uppercase; border-radius:8px; box-shadow:0 2px 8px rgba(21,65,148,.35); }
