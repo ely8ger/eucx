@@ -725,7 +725,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   return (
     <>
       <style>{`
-        .bl-root { font-family:"IBM Plex Sans",Helvetica Neue,Arial,sans-serif; min-height:100vh; background:#f9fafb; color:#1a1a1a; }
+        .bl-root { font-family:"IBM Plex Sans",Helvetica Neue,Arial,sans-serif; min-height:100vh; background:#f8faff; color:#1a1a1a; }
 
         /* Header */
         .bl-hdr { display:none; }
@@ -747,7 +747,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         /* Stats row */
         .bl-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px; }
         @media (max-width:640px) { .bl-stats { grid-template-columns:repeat(2,1fr); } }
-        .bl-stat { background:#fff; border:1px solid #e5e7eb; padding:16px 18px; position:relative; overflow:hidden; }
+        .bl-stat { background:#fff; border:1px solid #e9edf5; padding:16px 18px; position:relative; overflow:hidden; }
         .bl-stat-num { font-family:"IBM Plex Mono",monospace; font-size:32px; font-weight:700; line-height:1; }
         .bl-stat-label { font-size:11px; font-weight:700; letter-spacing:.06em; color:#9ca3af; text-transform:uppercase; margin-top:6px; }
         .bl-stat-sub { font-size:10.5px; color:#c4c9d4; margin-top:5px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -760,13 +760,13 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-btn-new:disabled { opacity:.5; cursor:not-allowed; }
 
         /* Create form */
-        .bl-form-wrap { background:#fff; border:1px solid #e5e7eb; border-top:3px solid #154194; margin-bottom:24px; }
-        .bl-form-header { padding:20px 28px; border-bottom:1px solid #f3f4f6; }
+        .bl-form-wrap { background:#fff; border:1px solid #e9edf5; border-top:3px solid #154194; margin-bottom:24px; }
+        .bl-form-header { padding:20px 28px; border-bottom:1px solid #f1f5f9; }
         .bl-form-title { font-size:15px; font-weight:700; color:#111827; margin:0; }
         .bl-form-body { display:flex; align-items:flex-start; }
         .bl-form-left { flex:1; min-width:0; padding:24px 28px 28px; }
-        .bl-form-summary { width:272px; flex-shrink:0; border-left:1px solid #e5e7eb; background:#f8fafc; padding:24px 20px; position:sticky; top:100px; align-self:flex-start; }
-        @media (max-width:800px) { .bl-form-body { flex-direction:column; } .bl-form-summary { width:100%; border-left:none; border-top:1px solid #e5e7eb; position:static; } }
+        .bl-form-summary { width:272px; flex-shrink:0; border-left:1px solid #e9edf5; background:#f8fafc; padding:24px 20px; position:sticky; top:100px; align-self:flex-start; }
+        @media (max-width:800px) { .bl-form-body { flex-direction:column; } .bl-form-summary { width:100%; border-left:none; border-top:1px solid #e9edf5; position:static; } }
         .bl-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
         @media (max-width:640px) { .bl-form-grid { grid-template-columns:1fr; } }
         .bl-form-group { display:flex; flex-direction:column; gap:6px; }
@@ -785,21 +785,21 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-btn-submit:hover:not(:disabled) { background:#1a52c2; }
         .bl-btn-submit:disabled { opacity:.5; cursor:not-allowed; }
         .bl-btn-cancel { padding:10px 20px; background:#fff; color:#374151; font-size:13px; font-weight:600; border:1px solid #d1d5db; cursor:pointer; transition:background .15s; }
-        .bl-btn-cancel:hover { background:#f9fafb; }
+        .bl-btn-cancel:hover { background:#f8faff; }
         .bl-maxvol { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f0f5ff; border:1px solid #c7d7fc; margin-top:12px; }
         .bl-sum-row { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; font-size:12.5px; }
         .bl-sum-label { color:#6b7280; font-weight:500; }
         .bl-sum-value { color:#111827; font-weight:600; text-align:right; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .bl-sum-vol { margin:16px 0; padding:14px; background:#fff; border:1px solid #e5e7eb; }
+        .bl-sum-vol { margin:16px 0; padding:14px; background:#fff; border:1px solid #e9edf5; }
         .bl-btn-draft { width:100%; padding:11px; background:#154194; color:#fff; font-size:13px; font-weight:700; border:none; cursor:pointer; transition:background .15s; margin-bottom:10px; }
         .bl-btn-draft:hover:not(:disabled) { background:#1a52c2; }
         .bl-btn-draft:disabled { opacity:.5; cursor:not-allowed; }
 
         /* Table */
         .bl-table-wrap { overflow-x:auto; }
-        .bl-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e5e7eb; font-size:13px; table-layout:fixed; }
+        .bl-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e9edf5; font-size:13px; table-layout:fixed; }
         .bl-table th { padding:9px 12px; text-align:left; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#9ca3af; border-bottom:2px solid #154194; background:#fff; white-space:nowrap; }
-        .bl-table td { padding:11px 12px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+        .bl-table td { padding:11px 12px; border-bottom:1px solid #f1f5f9; vertical-align:middle; }
         .bl-table tr:last-child td { border-bottom:none; }
         .bl-table tr:hover td { background:#fafafa; }
 
@@ -846,7 +846,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-pub-timing-sub { font-size:11px; color:#6b7280; }
         /* Rechtliche Bestätigung */
         .bl-pub-legal { padding:16px 28px; }
-        .bl-pub-legal-box { border:1px solid #e5e7eb; border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:12px; cursor:pointer; transition:border-color .15s,background .15s; }
+        .bl-pub-legal-box { border:1px solid #e9edf5; border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:12px; cursor:pointer; transition:border-color .15s,background .15s; }
         .bl-pub-legal-box:hover { border-color:#154194; }
         .bl-pub-legal-box.checked { border-color:#154194; background:#f0f5ff; }
         .bl-pub-legal-check { width:18px; height:18px; border:2px solid #d1d5db; border-radius:4px; flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; transition:background .15s, border-color .15s; }
@@ -865,15 +865,15 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-btn-contract:hover { background:#0f3073; }
 
         /* Empty */
-        .bl-empty { padding:60px 24px; text-align:center; color:#9ca3af; font-size:13px; background:#fff; border:1px solid #e5e7eb; }
+        .bl-empty { padding:60px 24px; text-align:center; color:#9ca3af; font-size:13px; background:#fff; border:1px solid #e9edf5; }
         .bl-empty-hint { margin-top:12px; font-size:12px; color:#d1d5db; }
 
         /* Pre-Flight-Check */
-        .bl-pf { background:#fff; border:1px solid #e5e7eb; border-top:3px solid #154194; padding:24px 28px; margin-bottom:24px; }
+        .bl-pf { background:#fff; border:1px solid #e9edf5; border-top:3px solid #154194; padding:24px 28px; margin-bottom:24px; }
         .bl-pf-title { font-size:14px; font-weight:700; color:#111827; margin-bottom:4px; }
         .bl-pf-sub { font-size:12px; color:#6b7280; margin-bottom:20px; }
         .bl-pf-checks { display:flex; flex-direction:column; gap:12px; margin-bottom:24px; }
-        .bl-pf-row { display:flex; align-items:center; gap:14px; padding:12px 16px; border:1px solid #e5e7eb; }
+        .bl-pf-row { display:flex; align-items:center; gap:14px; padding:12px 16px; border:1px solid #e9edf5; }
         .bl-pf-row.ok  { border-color:#bbf7d0; background:#f0fdf4; }
         .bl-pf-row.nok { border-color:#fecaca; background:#fef2f2; }
         .bl-pf-icon { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:13px; }
@@ -898,30 +898,30 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-cbam-hint { font-size:11.5px; color:#6b7280; margin-bottom:16px; }
 
         /* CO₂-Widget */
-        .bl-co2-widget { background:#fff; border:1px solid #e5e7eb; border-top:3px solid #154194; padding:16px 20px; margin-bottom:20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+        .bl-co2-widget { background:#fff; border:1px solid #e9edf5; border-top:3px solid #154194; padding:16px 20px; margin-bottom:20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
         .bl-co2-main { flex:1; min-width:160px; }
         .bl-co2-num  { font-size:28px; font-weight:700; font-family:"IBM Plex Mono",monospace; color:#16a34a; line-height:1; }
         .bl-co2-unit { font-size:11px; color:#6b7280; font-weight:600; letter-spacing:.04em; margin-top:3px; }
         .bl-co2-label { font-size:11px; color:#9ca3af; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
         .bl-co2-breakdown { display:flex; gap:16px; flex-wrap:wrap; }
-        .bl-co2-item { text-align:center; padding:8px 14px; border:1px solid #f3f4f6; }
+        .bl-co2-item { text-align:center; padding:8px 14px; border:1px solid #f1f5f9; }
         .bl-co2-item-num { font-size:15px; font-weight:700; font-family:"IBM Plex Mono",monospace; color:#374151; }
         .bl-co2-item-label { font-size:10px; color:#9ca3af; font-weight:600; text-transform:uppercase; margin-top:2px; }
         .bl-co2-export { padding:8px 16px; background:#16a34a; color:#fff; font-size:11.5px; font-weight:700; border:none; cursor:pointer; white-space:nowrap; transition:background .15s; align-self:flex-start; }
         .bl-co2-export:hover { background:#15803d; }
 
         /* Status-Tabs */
-        .bl-tabs { display:flex; gap:0; border-bottom:2px solid #e5e7eb; margin-bottom:20px; overflow-x:auto; scrollbar-width:none; }
+        .bl-tabs { display:flex; gap:0; border-bottom:2px solid #e9edf5; margin-bottom:20px; overflow-x:auto; scrollbar-width:none; }
         .bl-tabs::-webkit-scrollbar { display:none; }
         .bl-tab { padding:9px 18px; font-size:12.5px; font-weight:600; color:#6b7280; background:none; border:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap; transition:color .15s, border-color .15s; font-family:inherit; }
         .bl-tab:hover { color:#154194; }
         .bl-tab.active { color:#154194; border-bottom-color:#154194; }
-        .bl-tab-count { display:inline-block; margin-left:6px; padding:1px 6px; font-size:10px; font-weight:700; background:#f3f4f6; color:#6b7280; border-radius:10px; }
+        .bl-tab-count { display:inline-block; margin-left:6px; padding:1px 6px; font-size:10px; font-weight:700; background:#f1f5f9; color:#6b7280; border-radius:10px; }
         .bl-tab.active .bl-tab-count { background:#e8edf8; color:#154194; }
 
         /* Gewinner-Zeile */
         .bl-winner { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; background:#f0fdf4; border:1px solid #bbf7d0; font-size:11px; font-weight:700; color:#14532d; }
-        .bl-no-winner { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; background:#f9fafb; border:1px solid #e5e7eb; font-size:11px; color:#6b7280; }
+        .bl-no-winner { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; background:#f8faff; border:1px solid #e9edf5; font-size:11px; color:#6b7280; }
 
       `}</style>
 
@@ -999,7 +999,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   {totalCo2Tonnes.toLocaleString("de-DE", { maximumFractionDigits: 2 })}
                 </div>
                 <div className="bl-co2-unit">Tonnen CO₂-Äq. · CBAM-meldepflichtig ab 2026</div>
-                <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid #e5e7eb" }}>
+                <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid #e9edf5" }}>
                   <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".06em", color: "#9ca3af", textTransform: "uppercase" as const }}>
                     Geschätzte Zertifikatkosten · EU-ETS 75 €/t
                   </div>
@@ -1245,7 +1245,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           }}
                           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#f0f5ff"; }}
                           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ""; }}
-                          style={{ display: "grid", gridTemplateColumns: "36px 1fr 140px 52px", gap: "0 12px", padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f3f4f6", alignItems: "center" }}
+                          style={{ display: "grid", gridTemplateColumns: "36px 1fr 140px 52px", gap: "0 12px", padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f1f5f9", alignItems: "center" }}
                         >
                           {/* Nr */}
                           <div style={{ fontSize: 11, color: "#c4c9d4", fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>
@@ -1314,8 +1314,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     const allMm = catalogSizes.length > 0 && catalogSizes.every((s) => /^\d+(\.\d+)?\s*mm$/.test(s));
                     const dimLabel = allMm ? "Ø Nenndurchmesser" : "Abmessung";
                     return (
-                      <div style={{ marginBottom: 20, border: "1px solid #e5e7eb" }}>
-                        <div style={{ padding: "8px 14px", borderBottom: "1px solid #e5e7eb", background: "#f9fafb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ marginBottom: 20, border: "1px solid #e9edf5" }}>
+                        <div style={{ padding: "8px 14px", borderBottom: "1px solid #e9edf5", background: "#f8faff", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <div>
                             <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".06em", color: "#374151", textTransform: "uppercase" as const }}>{dimLabel}</span>
                             <span style={{ fontSize: 11, color: "#9ca3af", marginLeft: 6 }}>· {catalogSizes.length} Größen</span>
@@ -1349,7 +1349,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           ))}
                         </div>
                         {selectedSize && (
-                          <div style={{ padding: "6px 14px", borderTop: "1px solid #e5e7eb", background: "#f8faff", fontSize: 12, color: "#154194", fontWeight: 600 }}>
+                          <div style={{ padding: "6px 14px", borderTop: "1px solid #e9edf5", background: "#f8faff", fontSize: 12, color: "#154194", fontWeight: 600 }}>
                             Gewählt: <span style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{selectedSize}</span>
                             {allMm && <span style={{ color: "#9ca3af", fontWeight: 400 }}> (Ø {selectedSize})</span>}
                           </div>
@@ -1371,9 +1371,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   const secondaries = selectedPrimary ? (grouped.get(selectedPrimary) ?? []) : [];
 
                   return (
-                    <div style={{ marginBottom: 20, border: "1px solid #e5e7eb" }}>
+                    <div style={{ marginBottom: 20, border: "1px solid #e9edf5" }}>
                       {/* Header mit Filter */}
-                      <div style={{ padding: "8px 14px", borderBottom: "1px solid #e5e7eb", background: "#f9fafb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ padding: "8px 14px", borderBottom: "1px solid #e9edf5", background: "#f8faff", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <span style={{ fontSize: 11, letterSpacing: ".06em", color: "#6b7280", textTransform: "uppercase" }}>
                           Abmessung <span style={{ color: "#9ca3af" }}>· {catalogSizes.length} Größen · {primaries.length} Profile</span>
                         </span>
@@ -1389,7 +1389,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       {/* Zwei-Spalten-Grid */}
                       <div style={{ display: "grid", gridTemplateColumns: "200px 1fr" }}>
                         {/* Links: Primärmaß-Liste */}
-                        <div style={{ borderRight: "1px solid #e5e7eb", maxHeight: 240, overflowY: "auto" }}>
+                        <div style={{ borderRight: "1px solid #e9edf5", maxHeight: 240, overflowY: "auto" }}>
                           {filteredPrimaries.map((p) => (
                             <div
                               key={p}
@@ -1398,7 +1398,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                                 padding: "7px 14px", cursor: "pointer", fontSize: 12, fontFamily: "monospace",
                                 background: selectedPrimary === p ? "#154194" : "transparent",
                                 color: selectedPrimary === p ? "#fff" : "#374151",
-                                borderBottom: "1px solid #f3f4f6",
+                                borderBottom: "1px solid #f1f5f9",
                                 display: "flex", justifyContent: "space-between",
                               }}
                             >
@@ -1410,7 +1410,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                         {/* Rechts: Wandstärke / Dicke */}
                         <div>
-                          <div style={{ padding: "8px 12px", fontSize: 11, color: "#9ca3af", borderBottom: "1px solid #f3f4f6" }}>
+                          <div style={{ padding: "8px 12px", fontSize: 11, color: "#9ca3af", borderBottom: "1px solid #f1f5f9" }}>
                             {selectedPrimary
                               ? `Wandstärke / Dicke für ${selectedPrimary} (${secondaries.length})`
                               : "← Profil auswählen"}
@@ -1435,7 +1435,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                       {/* Gewählte Abmessung */}
                       {selectedSize && (
-                        <div style={{ padding: "6px 14px", borderTop: "1px solid #e5e7eb", background: "#f8faff", fontSize: 12, color: "#154194" }}>
+                        <div style={{ padding: "6px 14px", borderTop: "1px solid #e9edf5", background: "#f8faff", fontSize: 12, color: "#154194" }}>
                           Gewählt: <strong style={{ fontFamily: "monospace" }}>{selectedSize}</strong>
                         </div>
                       )}
@@ -1535,7 +1535,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     alignItems: "center",
                     gap: 14,
                     padding: "14px 18px",
-                    border: `2px solid ${greenSteel ? "#16a34a" : "#e5e7eb"}`,
+                    border: `2px solid ${greenSteel ? "#16a34a" : "#e9edf5"}`,
                     background: greenSteel ? "#f0fdf4" : "#fafafa",
                     cursor: "pointer",
                     transition: "border-color .15s, background .15s",
@@ -1672,7 +1672,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                               key={c.code}
                               onMouseDown={(e) => { e.preventDefault(); selectCountry(c); }}
                               style={{
-                                padding:"9px 14px", cursor:"pointer", borderBottom:"1px solid #f3f4f6",
+                                padding:"9px 14px", cursor:"pointer", borderBottom:"1px solid #f1f5f9",
                                 display:"flex", alignItems:"center", gap:10,
                               }}
                               onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f4ff")}
@@ -1693,7 +1693,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       {countryInput.length >= 1 && countryFiltered.length === 0 && !countryConfirmed && (
                         <div style={{
                           position:"absolute", zIndex:200, left:0, right:0,
-                          background:"#fff", border:"1px solid #e5e7eb",
+                          background:"#fff", border:"1px solid #e9edf5",
                           borderTop:"none", padding:"10px 14px",
                           fontSize:12.5, color:"#dc2626",
                         }}>
@@ -1930,7 +1930,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                                 key={i}
                                 onMouseDown={(e) => { e.preventDefault(); selectAddress(f); }}
                                 style={{
-                                  padding:"10px 14px", cursor:"pointer", borderBottom:"1px solid #f3f4f6",
+                                  padding:"10px 14px", cursor:"pointer", borderBottom:"1px solid #f1f5f9",
                                   display:"flex", alignItems:"center", gap:12,
                                 }}
                                 onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f4ff")}

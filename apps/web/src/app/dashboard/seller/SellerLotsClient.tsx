@@ -195,7 +195,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
   return (
     <>
       <style>{`
-        .sl-root { font-family:"IBM Plex Sans",Helvetica Neue,Arial,sans-serif; min-height:100vh; background:#f9fafb; color:#1a1a1a; }
+        .sl-root { font-family:"IBM Plex Sans",Helvetica Neue,Arial,sans-serif; min-height:100vh; background:#f8faff; color:#1a1a1a; }
 
         /* Header */
         .sl-hdr { background:#154194; height:56px; padding:0 28px; display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:0; z-index:50; }
@@ -226,9 +226,9 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
 
         /* Table */
         .sl-table-wrap { overflow-x:auto; }
-        .sl-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e5e7eb; font-size:13px; table-layout:fixed; }
+        .sl-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e9edf5; font-size:13px; table-layout:fixed; }
         .sl-table th { padding:9px 12px; text-align:left; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#9ca3af; border-bottom:2px solid #d97706; background:#fff; white-space:nowrap; }
-        .sl-table td { padding:11px 12px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+        .sl-table td { padding:11px 12px; border-bottom:1px solid #f1f5f9; vertical-align:middle; }
         .sl-table tr:last-child td { border-bottom:none; }
         .sl-table tr:hover td { background:#fffbf5; }
 
@@ -252,12 +252,12 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
         .sl-badge-reg { display:inline-flex; align-items:center; gap:5px; padding:5px 10px; background:#f0fdf4; border:1px solid #bbf7d0; color:#15803d; font-size:11.5px; font-weight:600; }
 
         /* Empty */
-        .sl-empty { padding:60px 24px; text-align:center; color:#9ca3af; font-size:13px; background:#fff; border:1px solid #e5e7eb; }
+        .sl-empty { padding:60px 24px; text-align:center; color:#9ca3af; font-size:13px; background:#fff; border:1px solid #e9edf5; }
 
         /* Stats */
         .sl-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px; }
         @media(max-width:640px){.sl-stats{grid-template-columns:repeat(2,1fr);}}
-        .sl-stat { background:#fff; border:1px solid #e5e7eb; padding:16px 18px; }
+        .sl-stat { background:#fff; border:1px solid #e9edf5; padding:16px 18px; }
         .sl-stat-num { font-family:"IBM Plex Mono",monospace; font-size:28px; font-weight:700; line-height:1; }
         .sl-stat-label { font-size:11px; font-weight:700; letter-spacing:.06em; color:#9ca3af; text-transform:uppercase; margin-top:6px; }
         .sl-stat-sub { font-size:10.5px; color:#c4c9d4; margin-top:4px; }
@@ -383,7 +383,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
               ].map(s => {
                 const highlight = s.label === "Ich kann bieten" && s.num > 0;
                 return (
-                  <div key={s.label} className="sl-stat" style={{ borderTop: `3px solid ${highlight ? "#dc2626" : "#e5e7eb"}` }}>
+                  <div key={s.label} className="sl-stat" style={{ borderTop: `3px solid ${highlight ? "#dc2626" : "#e9edf5"}` }}>
                     <div className="sl-stat-num" style={{ color: highlight ? "#dc2626" : "#111827" }}>{s.num}</div>
                     <div className="sl-stat-label">{s.label}</div>
                     <div className="sl-stat-sub">{s.sub}</div>
