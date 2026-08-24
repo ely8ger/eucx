@@ -256,33 +256,11 @@ export function InsightsClient() {
         {/* Hero */}
         <div style={{ backgroundColor: DARK, padding: "52px 24px 0" }}>
           <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
-              <p style={{ fontSize: 11, color: "#4a6fa1", margin: 0, letterSpacing: "0.06em" }}>
-                <a href="/" style={{ color: "#4a6fa1", textDecoration: "none" }}>EUCX</a>
-                {" / "}
-                <span style={{ color: "#7aa4d4" }}>Marktwissen & Insights</span>
-              </p>
-              <a
-                href="/insights/feed"
-                title="RSS-Feed abonnieren"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  padding: "4px 10px", border: "1px solid rgba(255,255,255,.12)",
-                  fontSize: 10, fontWeight: 700, letterSpacing: ".06em", textTransform: "uppercase",
-                  color: "rgba(255,255,255,.45)", textDecoration: "none",
-                  transition: "border-color .15s, color .15s",
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = "#f57c00"; e.currentTarget.style.color = "#f57c00"; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,.12)"; e.currentTarget.style.color = "rgba(255,255,255,.45)"; }}
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                  <circle cx="5" cy="19" r="3"/>
-                  <path d="M4 4a16 16 0 0 1 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                  <path d="M4 11a9 9 0 0 1 9 9" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                </svg>
-                RSS
-              </a>
-            </div>
+            <p style={{ fontSize: 11, color: "#4a6fa1", marginBottom: 16, letterSpacing: "0.06em" }}>
+              <a href="/" style={{ color: "#4a6fa1", textDecoration: "none" }}>EUCX</a>
+              {" / "}
+              <span style={{ color: "#7aa4d4" }}>Marktwissen & Insights</span>
+            </p>
             <h1 style={{ fontSize: 42, fontWeight: 300, color: "#fff", margin: "0 0 14px", lineHeight: 1.1 }}>
               Marktwissen &<br /><strong style={{ fontWeight: 700 }}>Insights</strong>
             </h1>
