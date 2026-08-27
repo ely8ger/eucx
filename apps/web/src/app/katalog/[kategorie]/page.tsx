@@ -161,7 +161,7 @@ function Suchleiste({ s, set }: { s: SearchState; set: (v: SearchState) => void 
           <div style={{ position: "relative" }}>
             <select value={s.laenge} onChange={onChange("laenge")} style={{ ...fieldStyle, paddingRight: 28 }}>
               <option value="">{t("lbl_all")}</option>
-              {ALLE_LAENGEN.map(l => <option key={l} value={l}>{formatLaenge(l)}</option>)}
+              {ALLE_LAENGEN.filter(l => l !== 0).map(l => <option key={l} value={l}>{formatLaenge(l)}</option>)}
             </select>
             <Chevron />
           </div>
@@ -234,7 +234,7 @@ export default function KatalogPage() {
   // Ist die globale Suche aktiv?
   const searchAktiv = Object.values(search).some(v => v !== "");
 
-  // ── Globale Suche über alle 42 Kategorien ──────────────────────────────────
+  // ── Globale Suche über alle 15 Kategorien ──────────────────────────────────
   const globalErgebnisse = useMemo<ErweitertesProd[]>(() => {
     if (!searchAktiv) return [];
     const txt = search.text.toLowerCase().trim();

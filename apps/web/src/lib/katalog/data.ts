@@ -190,7 +190,7 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     id: "ammoniumnitrat-34", katId: "harnstoff",
     name: "Ammoniumnitrat 34,4 % N (AN Granular)",
     werkstoff: "NH₄NO₃ · 34,4 % N", norm: "EN 13463 · EU-VO 2019/1009",
-    hsCode: "3102 30 90", cbam: null, inco: "DAP",
+    hsCode: "3102 30 90", cbam: null, inco: "EXW",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
     desc: "Ammoniumnitrat-Dünger 34,4 % N, granuliert. Detonationssicherheitsprüfung nach Anhang III der Verordnung (EG) 2003/2003 erforderlich. Lieferung in Big Bag oder Schüttgut. ADR-Kennzeichnung. EU-VO 2019/1009 konform.",
   },
@@ -515,18 +515,17 @@ export function formatDim(d: number, unit: string): string {
 }
 
 export function formatLaenge(l: number): string {
-  if (l === 0 || l === Infinity) return "Coil / variabel";
+  if (l === 0)        return "—";
+  if (l === Infinity) return "Coil / variabel";
   return `${(l / 1000).toLocaleString("de-DE")} m`;
 }
 
-// Gruppierung nach Kategorie für Dropdown
+// Gruppierung nach katId für Dropdown (Key = katId, z.B. "betonstahl")
 export function getTradeableByKat(): Map<string, TradeableProduct[]> {
   const map = new Map<string, TradeableProduct[]>();
   for (const p of TRADEABLE_PRODUCTS) {
-    const kat = KATALOG[p.katId];
-    const label = kat?.label ?? p.katId;
-    if (!map.has(label)) map.set(label, []);
-    map.get(label)!.push(p);
+    if (!map.has(p.katId)) map.set(p.katId, []);
+    map.get(p.katId)!.push(p);
   }
   return map;
 }

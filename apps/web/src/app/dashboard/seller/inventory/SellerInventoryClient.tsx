@@ -404,7 +404,7 @@ export function SellerInventoryClient() {
                         const val = e.target.value;
                         setFMaterial(val);
                         const prod = TRADEABLE_PRODUCTS.find((p) => p.name === val);
-                        if (prod && !fSpec) setFSpec(prod.werkstoff + " · " + prod.norm);
+                        if (prod) setFSpec(prod.werkstoff + " · " + prod.norm);
                       }}
                       required
                       style={{ cursor: "pointer" }}
