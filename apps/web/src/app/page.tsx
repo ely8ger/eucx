@@ -5,6 +5,7 @@ import {
   ShieldCheck, TrendingUp, FileText, Users,
   ArrowRight, BarChart3, Layers, Lock,
   Globe, Building2, FlaskConical, Trees, Package,
+  Package2, UserCheck,
 } from "lucide-react";
 import { EucxLogo } from "@/components/logo/EucxLogo";
 import { useI18n } from "@/lib/i18n/context";
@@ -50,7 +51,7 @@ export default function HomePage() {
           <p className="r-hero-sub">{t("hero_sub")}</p>
 
           <div className="flex flex-wrap gap-4">
-            <Link href="/login"
+            <Link href="/register"
               style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, color: "#154194", backgroundColor: "#fff", padding: "13px 28px", textDecoration: "none", transition: "background .15s" }}
               onMouseEnter={e => (e.currentTarget.style.backgroundColor="#f0f4ff")}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor="#fff")}>
@@ -66,9 +67,9 @@ export default function HomePage() {
 
           <div className="flex flex-wrap gap-6" style={{ marginTop: 48, paddingTop: 36, borderTop: "1px solid rgba(255,255,255,.08)" }}>
             {([
-              { icon: ShieldCheck, key: "hero_bafin" as const },
-              { icon: Globe,       key: "hero_eu"    as const },
-              { icon: Lock,        key: "hero_iso"   as const },
+              { icon: Package2,    key: "hero_bafin" as const },
+              { icon: Lock,        key: "hero_eu"    as const },
+              { icon: UserCheck,   key: "hero_iso"   as const },
               { icon: FileText,    key: "hero_dsgvo" as const },
             ]).map(({ icon: Icon, key }) => (
               <div key={key} className="flex items-center gap-2" style={{ fontSize: 13, color: "rgba(255,255,255,.35)" }}>
@@ -313,19 +314,19 @@ export default function HomePage() {
                 { label: t("footer_markets_link"), href: "#marktbereiche" },
                 { label: t("footer_sessions"),     href: "#wie-es-funktioniert" },
                 { label: t("footer_orderbook"),    href: "#wie-es-funktioniert" },
-                { label: t("footer_api"),          href: "#" },
+                { label: t("footer_api"),          href: "/katalog" },
               ]},
               { titleKey: "footer_members" as const, links: [
                 { label: t("footer_registration"),  href: "/register" },
                 { label: t("footer_accreditation"), href: "/register" },
                 { label: t("footer_wissen"),        href: "/wissen" },
-                { label: t("footer_support"),       href: "#" },
+                { label: t("footer_support"),       href: "/impressum" },
               ]},
               { titleKey: "footer_legal" as const, links: [
                 { label: t("footer_imprint"),       href: "/impressum" },
                 { label: t("footer_privacy"),       href: "/datenschutz" },
                 { label: t("footer_terms"),         href: "/agb" },
-                { label: t("footer_accessibility"), href: "#" },
+                { label: t("footer_accessibility"), href: "/regelwerk" },
               ]},
             ].map(({ titleKey, links }) => (
               <div key={titleKey}>
