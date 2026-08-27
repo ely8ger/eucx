@@ -10,6 +10,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
 import { toast } from "sonner";
+import { TRADEABLE_PRODUCTS, getTradeableByKat, SIDEBAR } from "@/lib/katalog/data";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -215,26 +216,9 @@ const CBAM_GROUPS = [
 ] as const;
 type CbamGroupId = typeof CBAM_GROUPS[number]["id"];
 
-// ── Warenkatalog - EUCX-Produktpalette ────────────────────────────────────────
-// Jede Vorlage befüllt Pflichtfelder vor; Käufer passt Menge, Preis, Lieferzeitraum an.
-const COMMODITY_CATALOG = [
-  // Stahl - Langprodukte
-  { id: "rebar-bst500",   cat: "Stahl - Langprodukte",     cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Betonstahl BST 500 (Rebar)",                hsCode: "7214 20 00", qualityGrade: "B500B · EN 10080",             inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Gerippter Betonstahl BST 500, Ø 8–40 mm. Normen: EN 10080, DIN 488. Lieferung in Stäben 6 m / 12 m oder Ring. 3.1-Werkzeugnis nach EN 10204 beizufügen. Anwendung: Stahlbetonkonstruktionen." },
-  { id: "rebar-bst500s",  cat: "Stahl - Langprodukte",     cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Betonstahl BST 500S (seismisch)",            hsCode: "7214 20 00", qualityGrade: "B500S · EN 10080",             inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Gerippter Betonstahl BST 500S, erhöhte Duktilität Klasse S für Erdbebengebiete. Ø 8–32 mm. Normen: EN 10080, DIN 488-2, EC 8. 3.1-Werkzeugnis nach EN 10204 erforderlich." },
-  { id: "wire-rod",       cat: "Stahl - Langprodukte",     cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Walzdraht (Wire Rod) SAE 1008",              hsCode: "7213 91 10", qualityGrade: "SAE 1008 · EN 10016-2",        inco: "EXW", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Walzdraht unlegiert, niedriggekohlter Stahl SAE 1008 / DD11. Coil, Ø 5,5–16 mm. Normen: EN 10016-2. Schmelznachweis 3.1 nach EN 10204 erforderlich. Anwendung: Zieherei, Betonstahlproduktion." },
-  // Stahl - Flachprodukte
-  { id: "flat-s235",      cat: "Stahl - Flachprodukte",    cbam: "STEEL_PRIMARY" as CbamGroupId,      name: "Warmgewalzter Stahl S235JR (Blech / Coil)", hsCode: "7208 51 20", qualityGrade: "S235JR · EN 10025-2",          inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Warmgewalzte Bleche / Coils, S235JR. Breite 600–2000 mm, Dicke 2–25 mm. Normen: EN 10025-2, EN 10051. Anwendung: Konstruktionsstahl, Maschinenbau. 3.1-Zeugnis nach EN 10204 beizufügen." },
-  { id: "flat-s355",      cat: "Stahl - Flachprodukte",    cbam: "STEEL_PRIMARY" as CbamGroupId,      name: "Feinkornbaustahl S355JR (Blech)",            hsCode: "7208 51 91", qualityGrade: "S355JR · EN 10025-2",          inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Warmgewalzte Feinkornbaustahl-Bleche S355JR. Dicke 3–80 mm, Breite bis 3000 mm. Normen: EN 10025-2. Anwendung: Brückenbau, Schweißkonstruktionen. 3.1-Werkzeugnis nach EN 10204." },
-  // Stahl - Träger / Profile
-  { id: "beams-hea-heb",  cat: "Stahl - Träger / Profile", cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "HEA / HEB Stahlträger S235 / S355",         hsCode: "7216 33 10", qualityGrade: "S235JR / S355JR · EN 10025-2", inco: "DAP", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Breitflanschträger HEA/HEB nach EN 10365, S235JR oder S355JR. Größen HEA 100–900, HEB 100–1000. Anwendung: Stahlbau, Hallenkonstruktionen. 3.1-Werkzeugnis nach EN 10204." },
-  // Stahl - Rohre
-  { id: "pipes-welded",   cat: "Stahl - Rohre",            cbam: "STEEL_PROCESSED" as CbamGroupId,    name: "Nahtgeschweißte Hohlprofile S235JRH",       hsCode: "7306 30 51", qualityGrade: "S235JRH · EN 10210-1",         inco: "EXW", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Nahtgeschweißte Hohlprofile (quadratisch, rechteckig, rund), S235JRH. Wandstärke 2–16 mm. Normen: EN 10210-1, EN 10219. Anwendung: Stahlbau, Konstruktionsprofile. 3.1-Zeugnis EN 10204." },
-  // NE-Metalle
-  { id: "copper-cathodes", cat: "NE-Metalle",              cbam: null,                                 name: "Kupferkathoden Grade A",                    hsCode: "7403 11 00", qualityGrade: "Cu-CATH-1 · EN 1978 Grade A",  inco: "CIF", vat: "Umsatzsteuer 19 % (Regelbesteuerung)",             desc: "Elektrolyt-Kupferkathoden EN 1978 Grade A, Reinheit min. 99,99 % Cu. Standardkathode ca. 110–130 kg/Stück. LME-konforme Qualität, palettiert. Analysezertifikat erforderlich." },
-  { id: "aluminium-1050",  cat: "NE-Metalle",              cbam: "ALUMINIUM_UNWROUGHT" as CbamGroupId, name: "Aluminiumbarren (Primär) EN AW-1050A",      hsCode: "7601 10 00", qualityGrade: "EN AW-1050A · EN 573-3",       inco: "CIF", vat: "Umsatzsteuer 19 % (Regelbesteuerung)",             desc: "Primär-Aluminiumbarren EN AW-1050A (Al 99,5 %), T-Barren oder Masseln. LME-Spezifikation P1020. Analysezertifikat und Ursprungsnachweis erforderlich. CBAM-pflichtig ab 2026." },
-  // Schrott
-  { id: "scrap-hms",       cat: "Stahl - Schrott",         cbam: null,                                 name: "Stahlschrott HMS 1/2 (Heavy Melting Scrap)", hsCode: "7204 10 00", qualityGrade: "HMS 1/2 · ISRI 200–212",      inco: "FOB", vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",    desc: "Schwerer Stahlschrott HMS 1/2, ISRI-Spezifikation 200 (HMS1) / 210 (HMS2). Feuchtigkeitsgehalt max. 1 %. Analyse: C ≤ 0,4 %, S ≤ 0,05 %. Sichtkontrolle bei Übernahme." },
-] as const;
+// COMMODITY_CATALOG = einheitlich aus lib/katalog/data.ts (TRADEABLE_PRODUCTS)
+const COMMODITY_CATALOG = TRADEABLE_PRODUCTS;
+const CATALOG_BY_KAT    = getTradeableByKat();
 
 interface KycInfo {
   verificationStatus: "GUEST" | "PENDING_VERIFICATION" | "VERIFIED" | "REJECTED" | "SUSPENDED";
@@ -490,9 +474,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     if (!p) return;
     setCommodity(p.name);
     setHsCode(p.hsCode);
-    setQualityGrade(p.qualityGrade);
+    setQualityGrade(p.werkstoff + " · " + p.norm);
     setDescription(p.desc);
-    if (p.cbam) setCbamCategory(p.cbam);  // CBAM-Gruppe aus Katalog vorbelegen
+    if (p.cbam) setCbamCategory(p.cbam);
     setIncoterms(p.inco);
     setVatTreatment(p.vat);
   }
@@ -1444,6 +1428,32 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     </div>
                   );
                 })()}
+
+                {/* ── Warenvorlage (Schnellauswahl) ── */}
+                <div style={{ marginBottom: 20 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, paddingLeft: 12, borderLeft: "3px solid #9ca3af" }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "#6b7280", textTransform: "uppercase" as const }}>Warenvorlage</span>
+                    <span style={{ fontSize: 11, color: "#9ca3af" }}>Felder werden automatisch befüllt</span>
+                  </div>
+                  <select
+                    className="bl-select"
+                    value={selectedPreset}
+                    onChange={(e) => { setSelectedPreset(e.target.value); if (e.target.value) applyPreset(e.target.value); }}
+                  >
+                    <option value="">— Vorlage wählen (optional) —</option>
+                    {SIDEBAR.map((sektion) => {
+                      const sektionProdukte = sektion.kategorien.flatMap((kat) => CATALOG_BY_KAT.get(kat.id) ?? []);
+                      if (sektionProdukte.length === 0) return null;
+                      return (
+                        <optgroup key={sektion.key} label={sektion.label}>
+                          {sektionProdukte.map((p) => (
+                            <option key={p.id} value={p.id}>{p.name}</option>
+                          ))}
+                        </optgroup>
+                      );
+                    })}
+                  </select>
+                </div>
 
                 <div className="bl-form-grid">
                   <div className="bl-form-group">

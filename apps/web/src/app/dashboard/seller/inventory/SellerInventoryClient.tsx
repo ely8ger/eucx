@@ -3,6 +3,17 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
+import { TRADEABLE_PRODUCTS, SIDEBAR } from "@/lib/katalog/data";
+
+const CATALOG_BY_KAT_SELLER = (() => {
+  const m = new Map<string, typeof TRADEABLE_PRODUCTS>();
+  for (const p of TRADEABLE_PRODUCTS) {
+    const arr = m.get(p.katId) ?? [];
+    arr.push(p);
+    m.set(p.katId, arr);
+  }
+  return m;
+})();
 
 const A  = "#d97706";
 const A2 = "#b45309";
@@ -386,7 +397,31 @@ export function SellerInventoryClient() {
                 <div className="inv-form-grid">
                   <div>
                     <label className="inv-label">Material / Produkt *</label>
-                    <input className="inv-input" placeholder="z.B. Betonstahl BST 500S" value={fMaterial} onChange={(e) => setFMaterial(e.target.value)} required />
+                    <select
+                      className="inv-input"
+                      value={fMaterial}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFMaterial(val);
+                        const prod = TRADEABLE_PRODUCTS.find((p) => p.name === val);
+                        if (prod && !fSpec) setFSpec(prod.werkstoff + " · " + prod.norm);
+                      }}
+                      required
+                      style={{ cursor: "pointer" }}
+                    >
+                      <option value="">— Produkt wählen —</option>
+                      {SIDEBAR.map((sektion) => {
+                        const produkte = sektion.kategorien.flatMap((kat) => CATALOG_BY_KAT_SELLER.get(kat.id) ?? []);
+                        if (produkte.length === 0) return null;
+                        return (
+                          <optgroup key={sektion.key} label={sektion.label}>
+                            {produkte.map((p) => (
+                              <option key={p.id} value={p.name}>{p.name}</option>
+                            ))}
+                          </optgroup>
+                        );
+                      })}
+                    </select>
                   </div>
                   <div>
                     <label className="inv-label">
@@ -395,7 +430,7 @@ export function SellerInventoryClient() {
                     </label>
                     <input className="inv-input" placeholder="z.B. EN 10080 - Ø12mm BST 500S" value={fSpec} onChange={(e) => setFSpec(e.target.value)} />
                     <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>
-                      EN 10080 = EU-Norm für Betonstahl · DIN 488 = Deutsche Norm · EN 10025 = Baustahl
+                      Wird automatisch aus Vorlage vorbelegt · bei Bedarf anpassen
                     </div>
                   </div>
                   <div>
