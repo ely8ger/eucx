@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { SiteNav } from "@/components/SiteNav";
 import {
@@ -275,6 +275,24 @@ export default function KatalogPage() {
   const dimUnit    = kat?.dimUnit  ?? "";
 
   const produkte = searchAktiv ? globalErgebnisse : katGefiltert;
+
+  // Suche ohne Ergebnis tracken (debounced, nur bei aktiver Textsuche)
+  const noResultTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (noResultTimerRef.current) clearTimeout(noResultTimerRef.current);
+    if (!searchAktiv || !search.text.trim() || produkte.length > 0) return;
+    noResultTimerRef.current = setTimeout(() => {
+      void fetch("/api/track/event", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({
+          action: "CATALOG_SEARCH_NO_RESULT",
+          meta:   { query: search.text.trim(), kategorie: katId },
+        }),
+      });
+    }, 1500); // 1,5 Sek Debounce — nur wenn User aufgehört hat zu tippen
+    return () => { if (noResultTimerRef.current) clearTimeout(noResultTimerRef.current); };
+  }, [search.text, searchAktiv, produkte.length, katId]);
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#f4f6f9", fontFamily: F }}>

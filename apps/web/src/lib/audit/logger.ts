@@ -1,15 +1,29 @@
 /**
- * Audit Logger - Skill #3: Event Sourcing & Audit Logs.
- * In einer Börse ist "Löschen" verboten. Jeder Klick wird als
- * unveränderlicher Zeitstempel gespeichert.
+ * Audit Logger — immutable event sourcing.
+ * Regel: NIEMALS löschen/updaten. Nur INSERT.
  */
-import { db } from "@/lib/db/client";
+import { db }        from "@/lib/db/client";
+import { Prisma }    from "@prisma/client";
 
 export type AuditAction =
+  // Auth
   | "USER_LOGIN"
   | "USER_LOGIN_FAILED"
   | "USER_REGISTER"
   | "USER_LOGOUT"
+  // KYC
+  | "KYC_STEP_COMPLETED"
+  | "KYC_SUBMITTED"
+  // Käufer-Funnel
+  | "LOT_CREATED"
+  | "LOT_PUBLISHED"
+  // Verkäufer-Funnel
+  | "INVENTORY_CHARGE_CREATED"
+  | "BID_SUBMITTED"
+  | "BID_BLOCKED_DEAL_LIMIT"
+  // Katalog
+  | "CATALOG_SEARCH_NO_RESULT"
+  // Abschlüsse
   | "ORDER_SUBMITTED"
   | "ORDER_CANCELLED"
   | "ORDER_MATCHED"
@@ -28,6 +42,9 @@ export type AuditAction =
 
 export type AuditEntityType =
   | "User"
+  | "Lot"
+  | "Bid"
+  | "SellerCharge"
   | "Order"
   | "Deal"
   | "Contract"
@@ -48,24 +65,22 @@ interface AuditParams {
 
 /**
  * Write an immutable audit log entry.
- * Never throws - audit must not break the main flow.
+ * Never throws — audit must not break the main flow.
  */
 export async function audit(params: AuditParams): Promise<void> {
   try {
     await db.auditLog.create({
       data: {
         userId:     params.userId,
-        action:     params.meta
-          ? `${params.action} ${JSON.stringify(params.meta)}`
-          : params.action,
+        action:     params.action,
         entityType: params.entityType,
         entityId:   params.entityId,
         ipAddress:  params.ipAddress,
         userAgent:  params.userAgent,
+        meta:       params.meta ? (params.meta as Prisma.InputJsonValue) : undefined,
       },
     });
   } catch {
-    // Audit failures are silent - never block business logic
     console.error("[audit] Failed to write audit log:", params.action);
   }
 }

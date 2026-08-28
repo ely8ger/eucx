@@ -220,6 +220,15 @@ export function KycWizard() {
   const [error,   setError  ] = useState("");
 
   const navigate = (next: number) => {
+    // Step-Completion tracken (Vorwärts-Navigation = Schritt abgeschlossen)
+    if (next > step) {
+      const tkn = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
+      void fetch("/api/track/event", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json", ...(tkn ? { Authorization: `Bearer ${tkn}` } : {}) },
+        body:    JSON.stringify({ action: "KYC_STEP_COMPLETED", meta: { step, stepName: ["company_info", "documents", "review"][step] } }),
+      });
+    }
     setDir(next > step ? 1 : -1);
     setStep(next);
   };

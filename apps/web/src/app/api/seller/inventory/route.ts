@@ -7,6 +7,7 @@ import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { ChargeStatus } from "@prisma/client";
 import { z } from "zod";
+import { audit } from "@/lib/audit/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -103,6 +104,13 @@ export async function POST(req: NextRequest) {
         cbamCertificate:   d.cbamCertificate,
         notes:             d.notes,
       },
+    });
+    void audit({
+      userId:     token.userId,
+      action:     "INVENTORY_CHARGE_CREATED",
+      entityType: "SellerCharge",
+      entityId:   charge.id,
+      meta:       { material: charge.material, quantity: charge.quantity.toString() },
     });
     return NextResponse.json(charge, { status: 201 });
   } catch (err) {

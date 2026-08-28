@@ -12,6 +12,7 @@ import { verifyAccessToken } from "@/lib/auth/jwt";
 import { z } from "zod";
 import { CbamCategory } from "@prisma/client";
 import { runAuctionTimer } from "@/lib/auction/auction-timer";
+import { audit } from "@/lib/audit/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -117,6 +118,14 @@ export async function POST(req: NextRequest) {
     console.error("[POST /api/auction/lots] DB error:", msg);
     return NextResponse.json({ error: "Datenbankfehler beim Erstellen des Lots", detail: msg.slice(0, 200) }, { status: 500 });
   }
+
+  void audit({
+    userId:     lot.buyerId,
+    action:     "LOT_CREATED",
+    entityType: "Lot",
+    entityId:   lot.id,
+    meta:       { commodity: lot.commodity, quantity: lot.quantity.toString(), cbam: lot.cbamCategory ?? null },
+  });
 
   return NextResponse.json({ lotId: lot.id, phase: lot.phase }, { status: 201 });
 }

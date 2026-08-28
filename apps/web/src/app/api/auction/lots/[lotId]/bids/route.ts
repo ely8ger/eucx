@@ -16,6 +16,7 @@ import { notifyOutbid, notifyLeading } from "@/lib/notifications/notification-se
 import { db } from "@/lib/db/client";
 import { z } from "zod";
 import Decimal from "decimal.js";
+import { audit } from "@/lib/audit/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -138,6 +139,13 @@ async function _handlePost(
   const effectiveLimit = Decimal.min(HARD_LIMIT, walletMaxDeal.gt(0) ? walletMaxDeal : HARD_LIMIT);
 
   if (dealValue.gt(effectiveLimit)) {
+    void audit({
+      userId:     token.userId,
+      action:     "BID_BLOCKED_DEAL_LIMIT",
+      entityType: "Bid",
+      entityId:   lotId,
+      meta:       { dealValue: dealValue.toFixed(0), limit: effectiveLimit.toFixed(0), lotId },
+    });
     return NextResponse.json(
       {
         error:       `Deal-Volumen (${dealValue.toFixed(0)} €) übersteigt Ihr Transaktionslimit (${effectiveLimit.toFixed(0)} €). Bitte erhöhen Sie Ihr Wallet-Depot oder bieten Sie einen niedrigeren Preis.`,
@@ -173,12 +181,18 @@ async function _handlePost(
   }
 
   // ── Notifications (fire-and-forget) ──────────────────────────────
-  // Führender benachrichtigen: Neues Gebot ist besser → er wurde überboten
   if (prevLeader && prevLeader.sellerId !== token.userId) {
     notifyOutbid(prevLeader.sellerId, lotId, result.newBest, 1).catch(console.error);
   }
-  // Neuer Bieter: er führt jetzt
   notifyLeading(token.userId, lotId, result.newBest).catch(console.error);
+
+  void audit({
+    userId:     token.userId,
+    action:     "BID_SUBMITTED",
+    entityType: "Bid",
+    entityId:   result.bidId,
+    meta:       { lotId, price: parsed.data.price, hasCbam: !!parsed.data.cbam },
+  });
 
   return NextResponse.json({ bidId: result.bidId, newBest: result.newBest }, { status: 201 });
 }
