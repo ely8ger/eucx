@@ -1,5 +1,12 @@
 import { SignJWT, jwtVerify, type JWTPayload } from "jose";
 
+// Produktions-Guard: in NODE_ENV=production muss JWT_SECRET explizit gesetzt sein.
+if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
+  throw new Error(
+    "[FATAL] JWT_SECRET ist nicht gesetzt. Deployment in Produktion ohne explizites Secret ist nicht erlaubt."
+  );
+}
+
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET ?? "dev-secret-CHANGE-IN-PRODUCTION-min-32-chars"
 );

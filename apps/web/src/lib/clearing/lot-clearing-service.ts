@@ -69,8 +69,19 @@ export async function lockEscrowForLot(lotContractId: string): Promise<void> {
   });
   if (!contract) throw new Error(`LotContract ${lotContractId} nicht gefunden`);
 
-  const gross         = new Decimal(contract.totalValue.toString());
-  const buyerWallet   = await getOrCreateWalletByUser(contract.buyerId, contract.buyer.organizationId, "EUR");
+  const gross       = new Decimal(contract.totalValue.toString());
+  const buyerWallet = await getOrCreateWalletByUser(contract.buyerId, contract.buyer.organizationId, "EUR");
+
+  // Deckungsprüfung: verfügbares Guthaben = balance - reservedBalance
+  const available = new Decimal(buyerWallet.balance.toString())
+    .minus(new Decimal(buyerWallet.reservedBalance.toString()));
+  if (available.lt(gross)) {
+    throw new Error(
+      `Unzureichendes Wallet-Guthaben: verfügbar ${available.toFixed(2)} EUR, ` +
+      `benötigt ${gross.toFixed(2)} EUR (LotContract ${lotContractId})`
+    );
+  }
+
   const correlationId = `lot:${lotContractId}:escrow-lock`;
 
   const entries = [
@@ -251,5 +262,6 @@ async function getOrCreateWalletByUser(
     where:  { organizationId },
     create: { organizationId, currency: currency as Currency, balance: "0", reservedBalance: "0" },
     update: {},
+    select: { id: true, balance: true, reservedBalance: true },
   });
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyAccessToken } from "@/lib/auth/jwt";
+import { verifyAccessToken }         from "@/lib/auth/jwt";
+import { checkRateLimit, rateLimitHeaders, type LimitBucket } from "@/lib/rate-limit";
 
 const PUBLIC_EXACT = new Set(["/", "/login", "/register"]);
 
@@ -41,13 +42,52 @@ const PUBLIC_PREFIXES = [
 
 const ADMIN_ROLES = ["ADMIN", "COMPLIANCE", "SUPER_ADMIN"] as const;
 
+// ─── Rate-Limit-Bucket pro Pfad ───────────────────────────────────────────────
+
+function getBucket(pathname: string): LimitBucket {
+  if (pathname === "/api/auth/login" || pathname === "/api/auth/register") return "auth";
+  if (pathname.includes("/bids"))                                           return "bid";
+  return "api";
+}
+
+function getClientIp(req: NextRequest): string {
+  return (
+    req.headers.get("x-forwarded-for")?.split(",").at(0)?.trim() ??
+    req.headers.get("x-real-ip") ??
+    "unknown"
+  );
+}
+
+// ─── Middleware ───────────────────────────────────────────────────────────────
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const ip           = getClientIp(req);
 
+  // ── Rate Limiting (vor allem anderen) ────────────────────────────────────
+  // Gilt für Auth-Endpunkte und Bids auch wenn sie PUBLIC_PREFIXES sind.
+  const isRateLimited =
+    pathname === "/api/auth/login"    ||
+    pathname === "/api/auth/register" ||
+    pathname.includes("/bids");
+
+  if (isRateLimited) {
+    const bucket = getBucket(pathname);
+    const rl     = await checkRateLimit(ip, bucket);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { code: "RATE_LIMITED", message: "Zu viele Anfragen. Bitte warten Sie kurz." },
+        { status: 429, headers: rateLimitHeaders(rl) },
+      );
+    }
+  }
+
+  // ── Öffentliche Routen durchlassen ────────────────────────────────────────
   if (PUBLIC_EXACT.has(pathname) || PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
 
+  // ── API: JWT-Verifikation ─────────────────────────────────────────────────
   if (pathname.startsWith("/api/")) {
     // SSE-Endpoints senden Token als Query-Parameter (EventSource unterstützt keine Header)
     const queryToken = req.nextUrl.searchParams.get("token");
@@ -69,18 +109,25 @@ export async function middleware(req: NextRequest) {
         }
       }
 
+      // Allgemeines API-Rate-Limit (authentifiziert — großzügiger)
+      const apiRl = await checkRateLimit(`user:${payload.userId}`, "api");
+      if (!apiRl.allowed) {
+        return NextResponse.json(
+          { code: "RATE_LIMITED", message: "Zu viele Anfragen. Bitte warten Sie kurz." },
+          { status: 429, headers: rateLimitHeaders(apiRl) },
+        );
+      }
+
       return NextResponse.next();
     } catch {
       return NextResponse.json({ code: "INVALID_TOKEN", message: "Ungültiger Token" }, { status: 401 });
     }
   }
 
+  // ── Seiten: Cookie-basierte Auth ──────────────────────────────────────────
   const token        = req.cookies.get("access_token")?.value;
   const refreshToken = req.cookies.get("refresh_token")?.value;
 
-  // Kein Access Token → prüfen ob Refresh Token vorhanden ist.
-  // Falls ja: Seite durchlassen, AuthGuard im Client übernimmt den Refresh.
-  // Falls nein: direkt zu /login.
   if (!token) {
     if (refreshToken) return NextResponse.next();
     const loginUrl = new URL("/login", req.url);
@@ -91,28 +138,24 @@ export async function middleware(req: NextRequest) {
   try {
     const payload = await verifyAccessToken(token);
 
-    // /admin/** - RBAC: nur ADMIN/COMPLIANCE/SUPER_ADMIN
     if (pathname.startsWith("/admin")) {
       if (!ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
         return NextResponse.redirect(new URL("/dashboard?error=forbidden", req.url));
       }
     }
 
-    // /dashboard/buyer/** - nur BUYER (und Admins zur Überwachung)
     if (pathname.startsWith("/dashboard/buyer")) {
       if (payload.role !== "BUYER" && !ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
         return NextResponse.redirect(new URL("/dashboard/seller", req.url));
       }
     }
 
-    // /dashboard/seller/** - nur SELLER (und Admins zur Überwachung)
     if (pathname.startsWith("/dashboard/seller")) {
       if (payload.role !== "SELLER" && !ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
         return NextResponse.redirect(new URL("/dashboard/buyer", req.url));
       }
     }
 
-    // Alte /(app)/ Routen → rollenbasierter Redirect auf neue Struktur
     const OLD_ROUTES = ["/orders", "/trading", "/portfolio", "/deals", "/reports", "/products", "/personal", "/kyc"];
     const isOldDashboard = pathname === "/dashboard";
     const isOldRoute     = OLD_ROUTES.some((p) => pathname === p || pathname.startsWith(p + "/"));
@@ -129,8 +172,6 @@ export async function middleware(req: NextRequest) {
 
     return NextResponse.next();
   } catch {
-    // Access Token ungültig (abgelaufen) → Refresh Token prüfen.
-    // Falls vorhanden: Seite durchlassen, AuthGuard übernimmt den Refresh.
     if (refreshToken) return NextResponse.next();
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("next", pathname);

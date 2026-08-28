@@ -132,11 +132,17 @@ async function _handlePost(
 
   const userWallet = await db.wallet.findFirst({
     where: { organization: { users: { some: { id: token.userId } } } },
-    select: { balance: true },
+    select: { balance: true, reservedBalance: true },
   });
+  // Verfügbares Guthaben = balance − reservedBalance (nicht gesperrte Beträge)
   const walletBalance  = new Decimal(userWallet?.balance?.toString() ?? "0");
-  const walletMaxDeal  = walletBalance.times(20);
-  const effectiveLimit = Decimal.min(HARD_LIMIT, walletMaxDeal.gt(0) ? walletMaxDeal : HARD_LIMIT);
+  const walletReserved = new Decimal(userWallet?.reservedBalance?.toString() ?? "0");
+  const availableBalance = walletBalance.minus(walletReserved);
+  // Leverage 20×: Seller kann Deals bis 20× sein verfügbares Guthaben abschließen.
+  // Kein Guthaben → Fallback auf 100.000 € (Pilot-Limit bis Wallet-Top-Up aktiv).
+  const PILOT_LIMIT    = new Decimal("100000");
+  const walletMaxDeal  = availableBalance.gt(0) ? availableBalance.times(20) : PILOT_LIMIT;
+  const effectiveLimit = Decimal.min(HARD_LIMIT, walletMaxDeal);
 
   if (dealValue.gt(effectiveLimit)) {
     void audit({
