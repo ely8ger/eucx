@@ -34,6 +34,8 @@
     "@tanstack/react-virtual": "^3.13.23",
     "@types/bcryptjs": "^2.4.6",
     "@types/qrcode.react": "^1.0.5",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.3",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

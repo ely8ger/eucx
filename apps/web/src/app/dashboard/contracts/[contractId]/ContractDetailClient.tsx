@@ -12,7 +12,9 @@ type DeliveryStatus =
   | "READY_FOR_PICKUP"
   | "IN_TRANSIT"
   | "DELIVERED"
-  | "COMPLETED";
+  | "COMPLETED"
+  | "DISPUTED"
+  | "DEFAULTED";
 
 interface ContractDetail {
   id:             string;
@@ -68,6 +70,7 @@ const STEPS: { key: DeliveryStatus; label: string; hint: string }[] = [
 
 const STATUS_IDX: Record<DeliveryStatus, number> = {
   MATCHED: 0, AWAITING_PAYMENT: 1, READY_FOR_PICKUP: 2, IN_TRANSIT: 3, DELIVERED: 4, COMPLETED: 5,
+  DISPUTED: 4, DEFAULTED: 4,
 };
 
 const NEXT_STATUS: Record<DeliveryStatus, DeliveryStatus | null> = {
@@ -77,6 +80,8 @@ const NEXT_STATUS: Record<DeliveryStatus, DeliveryStatus | null> = {
   IN_TRANSIT:       "DELIVERED",
   DELIVERED:        "COMPLETED",
   COMPLETED:        null,
+  DISPUTED:         null,
+  DEFAULTED:        null,
 };
 
 const STATUS_COLORS: Record<DeliveryStatus, string> = {
@@ -86,6 +91,8 @@ const STATUS_COLORS: Record<DeliveryStatus, string> = {
   IN_TRANSIT:       "#2563eb",
   DELIVERED:        "#16a34a",
   COMPLETED:        "#7c3aed",
+  DISPUTED:         "#dc2626",
+  DEFAULTED:        "#7f1d1d",
 };
 
 const NEXT_LABELS: Partial<Record<DeliveryStatus, string>> = {
@@ -121,6 +128,10 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
   const [uploading,      setUploading]      = useState(false);
   const [sendingPayment, setSendingPayment] = useState(false);
   const [actionErr,      setActionErr]      = useState("");
+  const [disputeOpen,    setDisputeOpen]    = useState(false);
+  const [disputeReason,  setDisputeReason]  = useState("");
+  const [disputing,      setDisputing]      = useState(false);
+  const [disputeDone,    setDisputeDone]    = useState(false);
 
   useEffect(() => {
     const tkn = localStorage.getItem("accessToken") ?? "";
@@ -249,6 +260,29 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
       }
     } catch { setActionErr("Netzwerkfehler."); }
     finally { setConfirming(false); }
+  }
+
+  async function raiseDispute() {
+    if (!contract || !disputeReason.trim()) return;
+    setDisputing(true);
+    setActionErr("");
+    try {
+      const r = await fetch(`/api/auction/lots/${contract.lotId}/dispute`, {
+        method:  "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body:    JSON.stringify({ reason: disputeReason.trim() }),
+      });
+      if (r.ok) {
+        setDisputeDone(true);
+        setDisputeOpen(false);
+        setDisputeReason("");
+        await load();
+      } else {
+        const d = await r.json() as { error?: string };
+        setActionErr(d.error ?? "Fehler beim Eröffnen des Streitfalls.");
+      }
+    } catch { setActionErr("Netzwerkfehler."); }
+    finally { setDisputing(false); }
   }
 
   async function downloadPdf() {
@@ -406,6 +440,27 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
         .cd-fin-total { font-weight:700; color:#154194; font-size:15px; }
         .cd-fee-unpaid { color:#dc2626; }
         .cd-fee-paid   { color:#16a34a; }
+
+        /* Dispute */
+        .cd-btn-danger { background:#fff; color:#dc2626; border:1px solid #fca5a5; margin-top:8px; }
+        .cd-btn-danger:hover { background:#fef2f2; }
+        .cd-dispute-banner { margin-top:12px; padding:12px 16px; background:#fef2f2; border:1px solid #fca5a5; border-left:3px solid #dc2626; }
+        .cd-dispute-banner-title { font-size:12px; font-weight:700; color:#dc2626; margin-bottom:4px; text-transform:uppercase; letter-spacing:.06em; }
+        .cd-dispute-banner-text  { font-size:12.5px; color:#7f1d1d; }
+        .cd-dispute-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
+        .cd-dispute-modal  { background:#fff; border-top:3px solid #dc2626; padding:24px; width:100%; max-width:480px; box-shadow:0 10px 40px rgba(0,0,0,.2); }
+        .cd-dispute-title  { font-size:15px; font-weight:700; color:#111827; margin-bottom:6px; }
+        .cd-dispute-hint   { font-size:12.5px; color:#6b7280; margin-bottom:14px; line-height:1.5; }
+        .cd-dispute-cats   { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:12px; }
+        .cd-dispute-cat    { padding:5px 11px; font-size:11.5px; border:1px solid #d1d5db; background:#fff; cursor:pointer; color:#374151; }
+        .cd-dispute-cat.sel{ background:#dc2626; color:#fff; border-color:#dc2626; }
+        .cd-dispute-label  { font-size:11.5px; font-weight:700; color:#374151; margin-bottom:6px; display:block; }
+        .cd-dispute-ta     { width:100%; box-sizing:border-box; padding:9px 12px; border:1px solid #d1d5db; font-size:13px; font-family:"IBM Plex Sans",sans-serif; resize:vertical; min-height:80px; }
+        .cd-dispute-ta:focus { outline:none; border-color:#dc2626; }
+        .cd-dispute-actions{ display:flex; gap:10px; margin-top:14px; }
+        .cd-dispute-submit { flex:1; padding:9px; font-size:13px; font-weight:700; background:#dc2626; color:#fff; border:none; cursor:pointer; }
+        .cd-dispute-submit:disabled { background:#d1d5db; cursor:not-allowed; }
+        .cd-dispute-cancel { flex:1; padding:9px; font-size:13px; font-weight:600; background:#fff; color:#374151; border:1px solid #d1d5db; cursor:pointer; }
 
         @keyframes spin { to { transform:rotate(360deg) } }
       `}</style>
@@ -582,6 +637,31 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
                           {confirming ? "Wird gespeichert…" : "Wareneingang bestätigen"}
                         </button>
                       )}
+
+                      {/* Buyer: Dispute-Button bei DELIVERED (48h Qualitätsfenster) */}
+                      {isBuyer && contract.deliveryStatus === "DELIVERED" && !disputeDone && (
+                        <button
+                          className="cd-btn cd-btn-danger"
+                          onClick={() => { setDisputeOpen(true); setActionErr(""); }}
+                        >
+                          Lieferung reklamieren →
+                        </button>
+                      )}
+                      {isBuyer && disputeDone && (
+                        <div style={{ marginTop: 10, padding: "10px 14px", background: "#fef2f2", border: "1px solid #fca5a5", fontSize: 12.5, color: "#dc2626", fontWeight: 600 }}>
+                          Streitfall eingereicht — EUCX-Compliance prüft Ihre Reklamation.
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* DISPUTED-Status-Banner */}
+                  {contract.deliveryStatus === "DISPUTED" && (
+                    <div className="cd-dispute-banner">
+                      <div className="cd-dispute-banner-title">Streitfall aktiv</div>
+                      <div className="cd-dispute-banner-text">
+                        EUCX-Compliance prüft den Streitfall. Beide Parteien werden per E-Mail informiert. Ungerechtfertigte Reklamationen können zu einer Bearbeitungsgebühr führen.
+                      </div>
                     </div>
                   )}
 
@@ -807,6 +887,66 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
           </div>
         </div>
       </div>
+
+      {/* Dispute-Modal (Buyer) */}
+      {disputeOpen && contract && (
+        <div className="cd-dispute-overlay" onClick={() => setDisputeOpen(false)}>
+          <div className="cd-dispute-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="cd-dispute-title">Lieferung reklamieren</div>
+            <div className="cd-dispute-hint">
+              Beschreiben Sie den Mangel oder die Abweichung vom Vertrag. EUCX-Compliance nimmt innerhalb von 48 Stunden Kontakt auf. Bitte legen Sie Belege bereit (Fotos, Messberichte, Zeugnisse).
+            </div>
+
+            {/* Schnell-Kategorien */}
+            <label className="cd-dispute-label">Kategorie (Schnellauswahl)</label>
+            <div className="cd-dispute-cats">
+              {["Qualitätsmangel", "Falsche Menge", "Falsches Werkszeugnis", "Lieferverzug", "Beschädigung", "Sonstiges"].map((cat) => (
+                <button
+                  key={cat}
+                  className={`cd-dispute-cat${disputeReason.startsWith(cat) ? " sel" : ""}`}
+                  onClick={() => setDisputeReason((prev) => prev.startsWith(cat) ? prev : `${cat}: ${prev.replace(/^[^:]+: ?/, "")}`)}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            <label className="cd-dispute-label">Begründung *</label>
+            <textarea
+              className="cd-dispute-ta"
+              placeholder="z.B. Qualitätsmangel: Lieferung entspricht nicht der vereinbarten Norm B500B. Stabdurchmesser weicht um 2mm ab, Werkszeugnis fehlt."
+              value={disputeReason}
+              onChange={(e) => setDisputeReason(e.target.value)}
+              maxLength={2000}
+            />
+            <div style={{ fontSize: 11, color: "#9ca3af", textAlign: "right", marginTop: 3 }}>
+              {disputeReason.length}/2000
+            </div>
+
+            {actionErr && (
+              <div style={{ marginTop: 10, padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", fontSize: 12.5, color: "#dc2626" }}>
+                {actionErr}
+              </div>
+            )}
+
+            <div className="cd-dispute-actions">
+              <button
+                className="cd-dispute-cancel"
+                onClick={() => { setDisputeOpen(false); setDisputeReason(""); setActionErr(""); }}
+              >
+                Abbrechen
+              </button>
+              <button
+                className="cd-dispute-submit"
+                disabled={!disputeReason.trim() || disputing}
+                onClick={() => void raiseDispute()}
+              >
+                {disputing ? "Wird eingereicht…" : "Reklamation einreichen"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
