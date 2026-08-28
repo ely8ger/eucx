@@ -884,10 +884,12 @@ model LedgerEntry {
 
   // ── Referenzen ───────────────────────────────────────────────────────────────
   dealId         String?
+  lotContractId  String?   // Lot-Auktionssystem (alternativ zu dealId)
   invoiceId      String?
 
   // ── Idempotenz-Schutz (verhindert Doppelbuchung bei Retry) ───────────────────
   // Format: "deal:{dealId}:step:{stepName}:{DEBIT|CREDIT}"
+  //      oder: "lot:{lotContractId}:phase{1|2}:step:{stepName}:{DEBIT|CREDIT}"
   idempotencyKey String          @unique
 
   createdAt      DateTime        @default(now())
@@ -897,6 +899,7 @@ model LedgerEntry {
   @@index([correlationId])  // für Bilanzprüfung
   @@index([walletId])
   @@index([dealId])
+  @@index([lotContractId])
   @@index([createdAt])
   @@map("ledger_entries")
 }

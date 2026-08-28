@@ -16,6 +16,7 @@ import Decimal from "decimal.js";
 import { db } from "@/lib/db/client";
 import { calcSellerFee, calcBuyerFee } from "./fee-engine";
 import { generateLotContract } from "./lot-contract-generator";
+import { lockEscrowForLot } from "@/lib/clearing/lot-clearing-service";
 
 // ─── Kontrakt-Nummer Generator ────────────────────────────────────────────────
 
@@ -225,6 +226,16 @@ export async function processLotConclusion(lotId: string): Promise<void> {
       },
     });
   });
+
+  // Phase 1 Escrow-Sperre: Käufer-Wallet → Escrow (fire-and-forget mit Fehlerprotokoll)
+  // Der Kontrakt ist bereits erstellt — Escrow-Lock ist logisch nachgelagert,
+  // wird bei Fehler vom nächsten Retry-Job nachgeholt (idempotent durch idempotencyKey).
+  const createdContract = await db.lotContract.findUnique({ where: { lotId }, select: { id: true } });
+  if (createdContract) {
+    lockEscrowForLot(createdContract.id).catch((err) =>
+      console.error(`[PostTrade] Escrow-Lock fehlgeschlagen für ${createdContract.id}:`, err)
+    );
+  }
 
   // E-Mails senden (fire-and-forget - kein await um Haupt-Flow nicht zu blockieren)
   const tv = totalValue.toLocaleString();

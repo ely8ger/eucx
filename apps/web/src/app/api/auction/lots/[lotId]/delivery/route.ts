@@ -9,10 +9,12 @@
  *
  * Auth: Bearer JWT - Seller (Eigentümer) oder Admin
  */
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db/client";
-import { verifyAccessToken } from "@/lib/auth/jwt";
-import { DeliveryStatus } from "@prisma/client";
+import { NextRequest, NextResponse }    from "next/server";
+import { db }                           from "@/lib/db/client";
+import { verifyAccessToken }            from "@/lib/auth/jwt";
+import { DeliveryStatus }               from "@prisma/client";
+import { settleEscrowForLot }           from "@/lib/clearing/lot-clearing-service";
+import { audit }                        from "@/lib/audit/logger";
 import { z } from "zod";
 import crypto from "crypto";
 
@@ -124,6 +126,37 @@ export async function PATCH(
       cmrUploadedAt:  true,
     },
   });
+
+  // Phase 2 Settlement: COMPLETED → Escrow auflösen und Verkäufer auszahlen
+  if (newStatus === DeliveryStatus.COMPLETED) {
+    settleEscrowForLot(contract.id)
+      .then((res) => {
+        void audit({
+          userId:     token.userId,
+          action:     "SETTLEMENT_COMPLETED",
+          entityType: "Settlement",
+          entityId:   contract.id,
+          meta: {
+            lotId,
+            netToSeller:     res.netToSeller,
+            platformFee:     res.platformFee,
+            vatAmount:       res.vatAmount,
+            isReverseCharge: res.isReverseCharge,
+            ledgerEntries:   res.ledgerEntryCount,
+          },
+        });
+      })
+      .catch((err) => {
+        console.error(`[Delivery] Settlement fehlgeschlagen für ${contract.id}:`, err);
+        void audit({
+          userId:     token.userId,
+          action:     "SETTLEMENT_FAILED",
+          entityType: "Settlement",
+          entityId:   contract.id,
+          meta: { lotId, error: String(err) },
+        });
+      });
+  }
 
   return NextResponse.json(updated);
 }
