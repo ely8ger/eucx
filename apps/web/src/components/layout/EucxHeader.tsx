@@ -49,11 +49,11 @@ interface BreadcrumbConfig {
 //
 const NAV: Record<string, NavItem[]> = {
   buyer: [
-    { label: "Übersicht",      href: "/dashboard/buyer",         activePrefix: "/dashboard/buyer" },
-    { label: "Handelssitzung", href: "/dashboard/buyer/auctions", activePrefix: "/dashboard/buyer/auction" },
-    { label: "Verträge",       href: "/dashboard/contracts",     activePrefix: "/dashboard/contracts" },
+    { label: "Übersicht",      href: "/dashboard/buyer",           activePrefix: "/dashboard/buyer" },
+    { label: "Handelssitzung", href: "/dashboard/buyer/auctions",  activePrefix: "/dashboard/buyer/auction" },
+    { label: "Verträge",       href: "/dashboard/contracts",       activePrefix: "/dashboard/contracts" },
     { label: "Portfolio",      href: "/dashboard/buyer/portfolio", activePrefix: "/dashboard/buyer/portfolio" },
-    { label: "Abschlüsse",     href: "/dashboard/contracts", activePrefix: "/dashboard/contracts" },
+    { label: "Wallet",         href: "/dashboard/buyer/wallet",    activePrefix: "/dashboard/buyer/wallet" },
   ],
   seller: [
     { label: "Ausschreibungen",    href: "/dashboard/seller/auctions",   activePrefix: "/dashboard/seller/auctions" },
@@ -99,6 +99,14 @@ const BREADCRUMB_MAP: Array<{
   {
     match:  (p) => p.startsWith("/dashboard/buyer/auction"),
     config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Handelssitzung", pageHref: "/dashboard/buyer" }),
+  },
+  {
+    match:  (p) => p.startsWith("/dashboard/buyer/portfolio"),
+    config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Portfolio", pageHref: "/dashboard/buyer/portfolio" }),
+  },
+  {
+    match:  (p) => p.startsWith("/dashboard/buyer/wallet"),
+    config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Wallet & Guthaben", pageHref: "/dashboard/buyer/wallet" }),
   },
   // ── Verkäufer-Portal ───────────────────────────────────────────────────────
   {

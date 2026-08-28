@@ -6,7 +6,7 @@ import { EucxHeader } from "@/components/layout/EucxHeader";
 
 const A = "#d97706";
 
-type DeliveryStatus = "MATCHED" | "AWAITING_PAYMENT" | "READY_FOR_PICKUP" | "IN_TRANSIT" | "DELIVERED" | "COMPLETED";
+type DeliveryStatus = "MATCHED" | "AWAITING_PAYMENT" | "READY_FOR_PICKUP" | "IN_TRANSIT" | "DELIVERED" | "COMPLETED" | "DISPUTED" | "DEFAULTED";
 
 interface Delivery {
   id:             string;
@@ -41,6 +41,7 @@ const STEPS: { key: DeliveryStatus; label: string; hint: string }[] = [
 
 const STATUS_IDX: Record<DeliveryStatus, number> = {
   MATCHED: 0, AWAITING_PAYMENT: 1, READY_FOR_PICKUP: 2, IN_TRANSIT: 3, DELIVERED: 4, COMPLETED: 5,
+  DISPUTED: 4, DEFAULTED: 4,
 };
 
 const NEXT_STATUS: Record<DeliveryStatus, DeliveryStatus | null> = {
@@ -50,6 +51,8 @@ const NEXT_STATUS: Record<DeliveryStatus, DeliveryStatus | null> = {
   IN_TRANSIT:       "DELIVERED",
   DELIVERED:        "COMPLETED",
   COMPLETED:        null,
+  DISPUTED:         null,
+  DEFAULTED:        null,
 };
 
 const fmtEur = (v: string) =>
@@ -63,10 +66,14 @@ export function SellerLogisticsClient() {
   const [token,     setToken]     = useState("");
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading,   setLoading]   = useState(true);
-  const [selected,  setSelected]  = useState<string | null>(null);
-  const [advancing, setAdvancing] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [error,     setError]     = useState("");
+  const [selected,      setSelected]      = useState<string | null>(null);
+  const [advancing,     setAdvancing]     = useState(false);
+  const [uploading,     setUploading]     = useState(false);
+  const [error,         setError]         = useState("");
+  const [disputeOpen,   setDisputeOpen]   = useState(false);
+  const [disputeReason, setDisputeReason] = useState("");
+  const [disputing,     setDisputing]     = useState(false);
+  const [disputeDone,   setDisputeDone]   = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -124,6 +131,32 @@ export function SellerLogisticsClient() {
       setError("Netzwerkfehler.");
     } finally {
       setAdvancing(false);
+    }
+  }
+
+  async function raiseDispute(lotId: string) {
+    if (!disputeReason.trim()) return;
+    setDisputing(true);
+    setError("");
+    try {
+      const r = await fetch(`/api/auction/lots/${lotId}/dispute`, {
+        method:  "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body:    JSON.stringify({ reason: disputeReason.trim() }),
+      });
+      if (r.ok) {
+        setDisputeDone(true);
+        setDisputeOpen(false);
+        setDisputeReason("");
+        await load();
+      } else {
+        const d = await r.json() as { error?: string };
+        setError(d.error ?? "Fehler beim Eröffnen des Streitfalls.");
+      }
+    } catch {
+      setError("Netzwerkfehler.");
+    } finally {
+      setDisputing(false);
     }
   }
 
@@ -210,6 +243,21 @@ export function SellerLogisticsClient() {
         .log-err { background:#fef2f2; border:1px solid #fecaca; padding:10px 14px; margin-bottom:14px; font-size:12.5px; color:#dc2626; }
         .log-empty { padding:40px; text-align:center; color:#9ca3af; font-size:13px; background:#fff; border:1px solid #e5e7eb; }
         .log-loading { padding:40px; text-align:center; color:#9ca3af; font-size:13px; }
+        .log-btn-danger { background:#fff; color:#dc2626; border:1px solid #fca5a5; margin-top:8px; }
+        .log-btn-danger:hover { background:#fef2f2; }
+        .log-dispute-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:100; display:flex; align-items:center; justify-content:center; padding:20px; }
+        .log-dispute-modal { background:#fff; border-top:3px solid #dc2626; padding:24px; width:100%; max-width:460px; }
+        .log-dispute-title { font-size:15px; font-weight:700; color:#111827; margin-bottom:6px; }
+        .log-dispute-hint { font-size:12px; color:#6b7280; margin-bottom:14px; line-height:1.5; }
+        .log-dispute-label { font-size:11.5px; font-weight:700; color:#374151; margin-bottom:6px; display:block; }
+        .log-dispute-textarea { width:100%; box-sizing:border-box; padding:9px 12px; border:1px solid #d1d5db; font-size:13px; font-family:"IBM Plex Sans",sans-serif; resize:vertical; min-height:90px; }
+        .log-dispute-textarea:focus { outline:none; border-color:#dc2626; }
+        .log-dispute-actions { display:flex; gap:10px; margin-top:14px; }
+        .log-dispute-submit { flex:1; padding:9px; font-size:13px; font-weight:700; background:#dc2626; color:#fff; border:none; cursor:pointer; }
+        .log-dispute-submit:disabled { background:#d1d5db; cursor:not-allowed; }
+        .log-dispute-cancel { flex:1; padding:9px; font-size:13px; font-weight:600; background:#fff; color:#374151; border:1px solid #d1d5db; cursor:pointer; }
+        .log-dispute-success { background:#fef2f2; border:1px solid #fca5a5; padding:10px 14px; font-size:12.5px; color:#dc2626; font-weight:600; margin-top:8px; }
+        .log-disputed-badge { background:#dc2626; color:#fff; padding:3px 9px; font-size:10.5px; font-weight:700; display:inline-block; margin-bottom:12px; }
       `}</style>
 
       <div className="log">
@@ -447,9 +495,74 @@ export function SellerLogisticsClient() {
                       CBAM-Zollquittung exportieren →
                     </button>
                   )}
+
+                  {/* Dispute-Status */}
+                  {sel.deliveryStatus === "DISPUTED" && (
+                    <div className="log-dispute-success" style={{ marginTop: 14 }}>
+                      <span className="log-disputed-badge">STREITFALL</span>
+                      <div style={{ marginTop: 4 }}>Streitfall aktiv — wird von EUCX-Compliance geprüft. Sie erhalten eine E-Mail sobald eine Entscheidung vorliegt.</div>
+                    </div>
+                  )}
+
+                  {/* Dispute-Button: sichtbar bei DELIVERED (48h Qualitätsprüfung) */}
+                  {sel.deliveryStatus === "DELIVERED" && !disputeDone && (
+                    <button
+                      className="log-btn log-btn-danger"
+                      onClick={() => { setDisputeOpen(true); setError(""); }}
+                      style={{ marginTop: sel.deliveryStatus === "DELIVERED" ? 0 : 8 }}
+                    >
+                      Streitfall eröffnen →
+                    </button>
+                  )}
+                  {disputeDone && sel.deliveryStatus === "DELIVERED" && (
+                    <div className="log-dispute-success" style={{ marginTop: 8 }}>
+                      Streitfall eingereicht. EUCX-Compliance prüft Ihren Fall.
+                    </div>
+                  )}
                 </>
               )}
             </div>
+
+            {/* Dispute-Modal */}
+            {disputeOpen && sel && (
+              <div className="log-dispute-overlay" onClick={() => setDisputeOpen(false)}>
+                <div className="log-dispute-modal" onClick={(e) => e.stopPropagation()}>
+                  <div className="log-dispute-title">Streitfall eröffnen</div>
+                  <div className="log-dispute-hint">
+                    Schildern Sie den Mangel oder die Abweichung zur Vertragsvereinbarung. EUCX-Compliance nimmt innerhalb von 48h Kontakt auf. Ungerechtfertigte Streitfälle können zu einer Gebühr führen.
+                  </div>
+                  <label className="log-dispute-label">Begründung *</label>
+                  <textarea
+                    className="log-dispute-textarea"
+                    placeholder="z.B. Ware entspricht nicht der vereinbarten Qualität B500B, Liefermenge weicht ab, Beschädigungen festgestellt…"
+                    value={disputeReason}
+                    onChange={(e) => setDisputeReason(e.target.value)}
+                    maxLength={2000}
+                  />
+                  <div style={{ fontSize: 11, color: "#9ca3af", textAlign: "right", marginTop: 3 }}>
+                    {disputeReason.length}/2000
+                  </div>
+                  {error && (
+                    <div className="log-err" style={{ marginTop: 10, marginBottom: 0 }}>{error}</div>
+                  )}
+                  <div className="log-dispute-actions">
+                    <button
+                      className="log-dispute-cancel"
+                      onClick={() => { setDisputeOpen(false); setDisputeReason(""); setError(""); }}
+                    >
+                      Abbrechen
+                    </button>
+                    <button
+                      className="log-dispute-submit"
+                      disabled={!disputeReason.trim() || disputing}
+                      onClick={() => void raiseDispute(sel.lotId)}
+                    >
+                      {disputing ? "Wird eingereicht…" : "Streitfall einreichen"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
