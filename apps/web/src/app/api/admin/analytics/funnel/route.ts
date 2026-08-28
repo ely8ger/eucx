@@ -6,6 +6,8 @@
  *   - Verkäufer-Funnel: Registrierung → KYC → Charge → Gebot
  *   - CBAM-Blocker-Events
  *   - Top-Suchanfragen ohne Ergebnis
+ *   - time_to_first_bid (Ø Sekunden von LOT_CREATED bis erstem BID_SUBMITTED)
+ *   - lot_created_vs_matched (Conversion: Lots → Deals)
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
@@ -76,9 +78,40 @@ export async function GET(req: NextRequest) {
       LIMIT 15
     `;
     topSearches = rows.map((r) => ({ query: r.query, count: Number(r.cnt) }));
-  } catch {
-    // Falls Meta-Abfrage fehlschlägt (z.B. kein Event noch) — leer zurückgeben
-  }
+  } catch { /* leer */ }
+
+  // ── time_to_first_bid (Ø Sekunden von LOT_CREATED bis erstem BID_SUBMITTED) ──
+  type TtfbRow = { avg_seconds: bigint | null };
+  let timeToFirstBidSeconds: number | null = null;
+  try {
+    const [row] = await db.$queryRaw<TtfbRow[]>`
+      WITH lot_first_bid AS (
+        SELECT
+          lot.entity_id   AS lot_id,
+          lot.created_at  AS lot_time,
+          MIN(bid.created_at) AS first_bid_time
+        FROM audit_log lot
+        JOIN audit_log bid
+          ON bid.action = 'BID_SUBMITTED'
+          AND bid.meta->>'lotId' = lot.entity_id
+        WHERE lot.action    = 'LOT_CREATED'
+          AND lot.created_at >= ${since}
+        GROUP BY lot.entity_id, lot.created_at
+      )
+      SELECT AVG(EXTRACT(EPOCH FROM (first_bid_time - lot_time)))::bigint AS avg_seconds
+      FROM lot_first_bid
+    `;
+    if (row?.avg_seconds != null) {
+      timeToFirstBidSeconds = Number(row.avg_seconds);
+    }
+  } catch { /* leer */ }
+
+  // ── lot_created_vs_matched (Conversion-Rate) ──────────────────────
+  const lotsCreated = get("LOT_CREATED");
+  const dealsConfirmed = get("DEAL_CONFIRMED");
+  const lotConversionPct = lotsCreated > 0
+    ? Math.round((dealsConfirmed / lotsCreated) * 100)
+    : null;
 
   return NextResponse.json({
     period: "30d",
@@ -94,8 +127,12 @@ export async function GET(req: NextRequest) {
       { step: "Charge angelegt",    action: "INVENTORY_CHARGE_CREATED", count: get("INVENTORY_CHARGE_CREATED") },
       { step: "Gebot abgegeben",    action: "BID_SUBMITTED",            count: get("BID_SUBMITTED") },
     ],
-    cbamBlocked:  get("BID_BLOCKED_DEAL_LIMIT"),
-    contractsSigned: get("CONTRACT_SIGNED"),
-    topSearchesNoResult: topSearches,
+    cbamBlocked:           get("BID_BLOCKED_DEAL_LIMIT"),
+    contractsSigned:       get("CONTRACT_SIGNED"),
+    topSearchesNoResult:   topSearches,
+    timeToFirstBidSeconds,
+    lotConversionPct,
+    lotsCreated,
+    dealsConfirmed,
   });
 }

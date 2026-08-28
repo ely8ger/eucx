@@ -33,12 +33,16 @@ interface FunnelStep {
 }
 
 interface FunnelResponse {
-  period:              string;
-  buyerFunnel:         FunnelStep[];
-  sellerFunnel:        FunnelStep[];
-  cbamBlocked:         number;
-  contractsSigned:     number;
-  topSearchesNoResult: { query: string; count: number }[];
+  period:               string;
+  buyerFunnel:          FunnelStep[];
+  sellerFunnel:         FunnelStep[];
+  cbamBlocked:          number;
+  contractsSigned:      number;
+  topSearchesNoResult:  { query: string; count: number }[];
+  timeToFirstBidSeconds: number | null;
+  lotConversionPct:     number | null;
+  lotsCreated:          number;
+  dealsConfirmed:       number;
 }
 
 // ─── Fetch ────────────────────────────────────────────────────────────────────
@@ -210,6 +214,28 @@ export function AnalyticsCharts() {
           sub="in 30 Tagen"
         />
       </div>
+
+      {/* ── Matching-KPIs ───────────────────────────────────────── */}
+      {!funnelLoading && funnel && (
+        <div className="grid grid-cols-2 gap-4">
+          <KpiCard
+            label="Ø Zeit bis erstes Gebot"
+            value={
+              funnel.timeToFirstBidSeconds != null
+                ? funnel.timeToFirstBidSeconds < 3600
+                  ? `${Math.round(funnel.timeToFirstBidSeconds / 60)} min`
+                  : `${(funnel.timeToFirstBidSeconds / 3600).toFixed(1)} h`
+                : "—"
+            }
+            sub="LOT_CREATED → erstes BID_SUBMITTED"
+          />
+          <KpiCard
+            label="Lot-zu-Deal Conversion"
+            value={funnel.lotConversionPct != null ? `${funnel.lotConversionPct} %` : "—"}
+            sub={`${funnel.dealsConfirmed} Deals / ${funnel.lotsCreated} Lots`}
+          />
+        </div>
+      )}
 
       {/* ── Funnel-Sektion ──────────────────────────────────────── */}
       <Card

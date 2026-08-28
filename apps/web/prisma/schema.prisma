@@ -143,6 +143,8 @@ enum DeliveryStatus {
   IN_TRANSIT         // CMR hochgeladen, Transport läuft
   DELIVERED          // Empfangsbestätigung beim Käufer
   COMPLETED          // CBAM-Zollquittung erhalten, vollständig abgeschlossen
+  DISPUTED           // Streitfall eröffnet — Escrow eingefroren
+  DEFAULTED          // Verkäufer ausgefallen nach 48h-Nachfrist — Pönale berechnet
 
   @@map("delivery_status")
 }
@@ -322,7 +324,9 @@ model User {
   backupCodes             BackupCode[]
   emailVerifications      EmailVerification[]
   passwordResetTokens     PasswordResetToken[]
-  sellerCharges           SellerCharge[]           @relation("SellerCharges")
+  sellerCharges             SellerCharge[]           @relation("SellerCharges")
+  lotDisputesRaised         LotDispute[]             @relation("LotDisputeRaiser")
+  lotDisputesReviewed       LotDispute[]             @relation("LotDisputeReviewer")
 
   @@index([organizationId])
   @@index([verificationStatus])   // KYC-Queue: alle PENDING_VERIFICATION schnell abrufen
@@ -1302,13 +1306,19 @@ model LotContract {
   cmrUploadedAt  DateTime?
   paymentSentAt  DateTime?      // Zeitpunkt: Käufer meldet Zahlung angewiesen
   deliveredAt    DateTime?
+  // ── Dispute / Default ──────────────────────────────────────────────────────
+  disputedAt     DateTime?      // Zeitpunkt: Streitfall eröffnet (Escrow eingefroren)
+  defaultedAt    DateTime?      // Zeitpunkt: Verkäufer-Ausfall festgestellt
+  penaltyAmount  Decimal?       @db.Decimal(18, 2)  // 2% Pönale vom Vertragswert
+  penaltyPaid    Boolean        @default(false)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  lot    Lot  @relation(fields: [lotId],    references: [id])
-  buyer  User @relation("LotContractBuyer",  fields: [buyerId],  references: [id])
-  seller User @relation("LotContractSeller", fields: [sellerId], references: [id])
-  fees   LotFee[]
+  lot     Lot         @relation(fields: [lotId],    references: [id])
+  buyer   User        @relation("LotContractBuyer",  fields: [buyerId],  references: [id])
+  seller  User        @relation("LotContractSeller", fields: [sellerId], references: [id])
+  fees    LotFee[]
+  dispute LotDispute?
 
   @@index([buyerId])
   @@index([sellerId])
@@ -1330,6 +1340,33 @@ model LotFee {
   @@index([contractId])
   @@index([userId])
   @@map("lot_fees")
+}
+
+// ─── LotDispute — Streitfall auf LotContract-Ebene ───────────────────────────
+// Käufer oder Verkäufer fechten einen abgeschlossenen Lot-Kontrakt an.
+// Bei Erstellung: LotContract.deliveryStatus → DISPUTED (Escrow eingefroren).
+// Auflösung durch COMPLIANCE_OFFICER oder SUPER_ADMIN.
+model LotDispute {
+  id                 String            @id @default(cuid())
+  contractId         String            @unique
+  raisedById         String
+  reviewedById       String?
+  status             DisputeStatus     @default(OPEN)
+  reason             String            // Freitext: "Qualität weicht von Lieferschein ab"
+  evidenceUrls       String[]          // Links zu hochgeladenen Beweisdokumenten
+  adminComment       String?
+  manualRefundAmount Decimal?          @db.Decimal(18, 2)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  resolvedAt         DateTime?
+
+  contract   LotContract @relation(fields: [contractId],   references: [id])
+  raisedBy   User        @relation("LotDisputeRaiser",   fields: [raisedById],   references: [id])
+  reviewedBy User?       @relation("LotDisputeReviewer", fields: [reviewedById], references: [id])
+
+  @@index([status])
+  @@index([raisedById])
+  @@map("lot_disputes")
 }
 
 // ─── SellerCharge — physische Lagercharge eines Verkäufers ───────────────────
