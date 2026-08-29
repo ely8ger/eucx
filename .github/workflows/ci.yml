@@ -66,7 +66,7 @@ jobs:
         run: npx jest --coverage --coverageReporters=text-summary --passWithNoTests
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: web-coverage
