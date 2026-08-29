@@ -4,6 +4,7 @@ import { hashPassword }              from "@/lib/auth/password";
 import { registerSchema }            from "@/lib/validation/schemas";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
 import { generateEucxMemberId }      from "@/lib/members/eucx-id";
+import { isPwnedPassword }           from "@/lib/auth/pwned-password";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,18 @@ export async function POST(req: NextRequest) {
     }
 
     const { email, password, organizationName, taxId, lei, country, city, street, postalCode, phone, hrb, legalForm, foundedAt, naceCode, role, contactName, contactPosition, isGeschaeftsfuehrer } = parsed.data;
+
+    // HaveIBeenPwned — Passwort gegen bekannte Leaks prüfen
+    const pwned = await isPwnedPassword(password);
+    if (pwned) {
+      return NextResponse.json(
+        {
+          code:    "PASSWORD_PWNED",
+          message: "Dieses Passwort ist in bekannten Datenlecks aufgetaucht und kann nicht verwendet werden. Bitte wählen Sie ein anderes Passwort.",
+        },
+        { status: 422 },
+      );
+    }
 
     // Duplikat-Prüfung
     const existing = await db.user.findUnique({ where: { email } });

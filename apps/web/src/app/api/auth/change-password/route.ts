@@ -3,6 +3,7 @@ import { z }                         from "zod";
 import { db }                        from "@/lib/db/client";
 import { verifyAccessToken }         from "@/lib/auth/jwt";
 import { verifyPassword, hashPassword } from "@/lib/auth/password";
+import { isPwnedPassword }           from "@/lib/auth/pwned-password";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +36,14 @@ export async function POST(req: NextRequest) {
 
   const ok = await verifyPassword(parsed.data.currentPassword, user.passwordHash);
   if (!ok) return NextResponse.json({ error: "Aktuelles Passwort ist falsch." }, { status: 400 });
+
+  const pwned = await isPwnedPassword(parsed.data.newPassword);
+  if (pwned) {
+    return NextResponse.json(
+      { error: "Dieses Passwort ist in bekannten Datenlecks aufgetaucht. Bitte wählen Sie ein anderes." },
+      { status: 422 },
+    );
+  }
 
   const newHash = await hashPassword(parsed.data.newPassword);
   await db.user.update({ where: { id: payload.userId }, data: { passwordHash: newHash } });

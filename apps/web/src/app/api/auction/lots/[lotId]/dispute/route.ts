@@ -47,10 +47,20 @@ export async function POST(
   try { token = await verifyAccessToken(auth.slice(7)); }
   catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
 
-  const contract = await db.lotContract.findUnique({
-    where:  { lotId },
-    select: { id: true, buyerId: true, sellerId: true, deliveryStatus: true, totalValue: true, dispute: { select: { id: true } } },
-  });
+  let contract;
+  try {
+    contract = await db.lotContract.findUnique({
+      where:  { lotId },
+      select: { id: true, buyerId: true, sellerId: true, deliveryStatus: true, totalValue: true, dispute: { select: { id: true } } },
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[dispute/route] DB-Fehler:", msg);
+    return NextResponse.json(
+      { error: "Dispute-System vorübergehend nicht verfügbar. Bitte wenden Sie sich an den Support." },
+      { status: 503 }
+    );
+  }
   if (!contract) {
     return NextResponse.json({ error: "Kontrakt nicht gefunden" }, { status: 404 });
   }

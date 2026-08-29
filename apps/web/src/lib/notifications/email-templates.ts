@@ -225,6 +225,50 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
     </p>
   `,
 
+  contract_buyer: (d) => `
+    <div style="background:#f0fdf4;border-left:4px solid #16a34a;padding:14px 16px;margin-bottom:20px;">
+      <p style="margin:0;font-size:13px;color:#16a34a;font-weight:600;">Ihr Kaufvertrag wurde automatisch erstellt.</p>
+    </div>
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Kaufvertrag ${d.contractNumber ?? "-"}</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Sehr geehrte Damen und Herren,<br><br>
+      Ihre Ausschreibung wurde erfolgreich abgeschlossen. Der Kaufvertrag wurde generiert und steht in Ihrem Konto zum Download bereit.
+    </p>
+    ${infoTable(
+      infoRow("Vertrags-Nr.:", d.contractNumber ?? "-") +
+      infoRow("Ware:", d.commodity ?? "-") +
+      infoRow("Gesamtwert:", `${d.totalValue ?? "-"} EUR`) +
+      infoRow("Plattformgebühr:", `${d.feeAmount ?? "-"} EUR`)
+    )}
+    ${primaryBtn("https://eucx.eu/dashboard/contracts", "Kaufvertrag herunterladen →")}
+    <p style="margin:20px 0 0;font-size:12px;color:#9ca3af;">
+      Bitte überweisen Sie den Gesamtbetrag gemäß den Zahlungsbedingungen im Vertrag.
+      Bei Fragen wenden Sie sich an <a href="mailto:support@eucx.eu" style="color:#154194;">support@eucx.eu</a>.
+    </p>
+  `,
+
+  contract_seller: (d) => `
+    <div style="background:#f0fdf4;border-left:4px solid #16a34a;padding:14px 16px;margin-bottom:20px;">
+      <p style="margin:0;font-size:13px;color:#16a34a;font-weight:600;">Glückwunsch — Sie erhalten den Zuschlag!</p>
+    </div>
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Kaufvertrag ${d.contractNumber ?? "-"}</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Sehr geehrte Damen und Herren,<br><br>
+      Ihr Angebot hat den Zuschlag erhalten. Der Kaufvertrag wurde automatisch erstellt und steht in Ihrem Konto zum Download bereit.
+    </p>
+    ${infoTable(
+      infoRow("Vertrags-Nr.:", d.contractNumber ?? "-") +
+      infoRow("Ware:", d.commodity ?? "-") +
+      infoRow("Gesamtwert:", `${d.totalValue ?? "-"} EUR`) +
+      infoRow("Plattformgebühr:", `${d.feeAmount ?? "-"} EUR`)
+    )}
+    ${primaryBtn("https://eucx.eu/dashboard/contracts", "Kaufvertrag herunterladen →")}
+    <p style="margin:20px 0 0;font-size:12px;color:#9ca3af;">
+      Bitte bereiten Sie die Ware gemäß den Lieferbedingungen im Vertrag vor.
+      Bei Fragen wenden Sie sich an <a href="mailto:support@eucx.eu" style="color:#154194;">support@eucx.eu</a>.
+    </p>
+  `,
+
   registration_rejected: (d) => `
     ${alertBox("Registrierung nicht genehmigt", "#dc2626")}
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Registrierung abgelehnt</h2>

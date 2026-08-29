@@ -22,6 +22,11 @@ export async function GET(req: NextRequest) {
   try { token = await verifyAccessToken(auth.slice(7)); }
   catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
 
+  const BUYER_ROLES = ["BUYER", "BROKER", "ADMIN", "SUPER_ADMIN", "COMPLIANCE_OFFICER"];
+  if (!BUYER_ROLES.includes(token.role)) {
+    return NextResponse.json({ error: "Wallet-Zugriff nur für Käufer" }, { status: 403 });
+  }
+
   const wallet = await db.wallet.findFirst({
     where:  { organization: { users: { some: { id: token.userId } } } },
     select: {

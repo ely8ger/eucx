@@ -17,6 +17,7 @@ import { db } from "@/lib/db/client";
 import { calcSellerFee, calcBuyerFee } from "./fee-engine";
 import { generateLotContract } from "./lot-contract-generator";
 import { lockEscrowForLot } from "@/lib/clearing/lot-clearing-service";
+import { sendAuctionMail } from "@/lib/notifications/mailer";
 
 // ─── Kontrakt-Nummer Generator ────────────────────────────────────────────────
 
@@ -27,34 +28,6 @@ async function generateContractNumber(): Promise<string> {
   return `EUCX-LOT-${year}-${seq}`;
 }
 
-// ─── E-Mail Stub ─────────────────────────────────────────────────────────────
-// Kein SMTP-Paket installiert - Stub loggt und kann später mit Resend/Nodemailer
-// vervollständigt werden. Struktur bleibt stabil.
-
-async function sendContractEmail(params: {
-  to:             string;
-  recipientName:  string;
-  contractNumber: string;
-  lotId:          string;
-  commodity:      string;
-  totalValue:     string;
-  feeAmount:      string;
-  role:           "buyer" | "seller";
-}): Promise<void> {
-  // TODO: Echte E-Mail-Implementierung (z.B. Resend, Nodemailer, AWS SES)
-  // Beispiel mit Resend:
-  //   await resend.emails.send({
-  //     from: "noreply@eucx.eu",
-  //     to: params.to,
-  //     subject: `Kaufvertrag ${params.contractNumber} - EUCX`,
-  //     html: buildEmailHtml(params),
-  //   });
-  console.log(`[PostTrade] E-Mail würde gesendet an ${params.to}`, {
-    contractNumber: params.contractNumber,
-    role: params.role,
-    totalValue: params.totalValue,
-  });
-}
 
 // ─── Haupt-Funktion ───────────────────────────────────────────────────────────
 
@@ -237,28 +210,30 @@ export async function processLotConclusion(lotId: string): Promise<void> {
     );
   }
 
-  // E-Mails senden (fire-and-forget - kein await um Haupt-Flow nicht zu blockieren)
-  const tv = totalValue.toLocaleString();
+  // E-Mails via Resend (fire-and-forget — Haupt-Flow nicht blockieren)
+  const tv = totalValue.toNumber().toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  sendContractEmail({
-    to:             lot.buyer.email,
-    recipientName:  lot.buyer.organization.name,
-    contractNumber,
-    lotId,
-    commodity:      lot.commodity,
-    totalValue:     tv,
-    feeAmount:      buyerFee.amount.toString(),
-    role:           "buyer",
+  sendAuctionMail({
+    to:       lot.buyer.email,
+    subject:  `Kaufvertrag ${contractNumber} - EUCX`,
+    template: "contract_buyer",
+    data: {
+      contractNumber,
+      commodity:  lot.commodity,
+      totalValue: tv,
+      feeAmount:  buyerFee.amount.toFixed(2),
+    },
   }).catch(console.error);
 
-  sendContractEmail({
-    to:             lot.winner.email,
-    recipientName:  lot.winner.organization.name,
-    contractNumber,
-    lotId,
-    commodity:      lot.commodity,
-    totalValue:     tv,
-    feeAmount:      sellerFee.amount.toString(),
-    role:           "seller",
+  sendAuctionMail({
+    to:       lot.winner.email,
+    subject:  `Kaufvertrag ${contractNumber} - EUCX`,
+    template: "contract_seller",
+    data: {
+      contractNumber,
+      commodity:  lot.commodity,
+      totalValue: tv,
+      feeAmount:  sellerFee.amount.toFixed(2),
+    },
   }).catch(console.error);
 }

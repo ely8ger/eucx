@@ -34,6 +34,7 @@
     "@tanstack/react-virtual": "^3.13.23",
     "@types/bcryptjs": "^2.4.6",
     "@types/qrcode.react": "^1.0.5",
+    "@upstash/qstash": "^2.11.3",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.3",
     "bcryptjs": "^3.0.3",
@@ -41,6 +42,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "decimal.js": "^10.6.0",
+    "exceljs": "^4.4.0",
     "flag-icons": "^7.5.0",
     "framer-motion": "^12.37.0",
     "jose": "^6.2.1",
@@ -63,11 +65,11 @@
     "swagger-ui-dist": "^5.17.14",
     "swagger-ui-react": "^5.32.1",
     "tailwind-merge": "^2.6.1",
-    "xlsx": "^0.18.5",
     "zod": "^4.3.6",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4.0.6",
     "@types/decimal.js": "^0.0.32",
     "@types/jest": "^30.0.0",

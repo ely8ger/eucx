@@ -18,7 +18,7 @@ export interface TokenPayload extends JWTPayload {
   email:   string;
 }
 
-// Access Token: 15 Minuten
+// Access Token: 15 Minuten (mit JTI für Revokation)
 export async function signAccessToken(payload: Omit<TokenPayload, keyof JWTPayload>): Promise<string> {
   return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: "HS256" })
@@ -26,6 +26,7 @@ export async function signAccessToken(payload: Omit<TokenPayload, keyof JWTPaylo
     .setExpirationTime("15m")
     .setIssuer("eucx.eu")
     .setAudience("eucx-api")
+    .setJti(globalThis.crypto.randomUUID())
     .sign(JWT_SECRET);
 }
 

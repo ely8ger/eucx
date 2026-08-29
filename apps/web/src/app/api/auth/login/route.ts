@@ -5,12 +5,15 @@ import { verifyPassword }            from "@/lib/auth/password";
 import { signAccessToken, signRefreshToken } from "@/lib/auth/jwt";
 import { loginSchema }               from "@/lib/validation/schemas";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
+import { getClientIp }               from "@/lib/net/get-client-ip";
+import { logSecurityEvent, persistAuditLog } from "@/lib/audit/log-event";
 
 export const dynamic = "force-dynamic";
 
 const MAX_FAILED_ATTEMPTS = 5;
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
   try {
     const body   = await req.json() as unknown;
     const parsed = loginSchema.safeParse(body);
@@ -59,29 +62,56 @@ export async function POST(req: NextRequest) {
     const passwordOk = await verifyPassword(password, user.passwordHash);
 
     if (!passwordOk) {
-      const newCount = user.failedLoginCount + 1;
+      // Atomares Increment — verhindert Race Condition bei simultanen Brute-Force-Angriffen.
+      // Frühere Implementierung nutzte user.failedLoginCount + 1 (OLD-Wert), was bei
+      // parallelen Requests dazu führte, dass alle denselben Zählerstand (z.B. 1) schrieben
+      // und der Account nie gesperrt wurde.
+      const updated = await db.user.update({
+        where:  { id: user.id },
+        data:   { failedLoginCount: { increment: 1 } },
+        select: { failedLoginCount: true, lockedUntil: true },
+      });
+      const newCount = updated.failedLoginCount;
+
+      // Ein paralleler Request könnte inzwischen bereits den Lock gesetzt haben
+      if (updated.lockedUntil && updated.lockedUntil > new Date()) {
+        logSecurityEvent({ event: "AUTH_ACCOUNT_LOCKED", ip, userId: user.id, detail: `Concurrent lock (${newCount} Versuche)` });
+        return NextResponse.json(
+          { code: "ACCOUNT_LOCKED", message: "Ihr Konto ist gesperrt. Bitte setzen Sie Ihr Passwort per E-Mail zurück." },
+          { status: 423 },
+        );
+      }
 
       if (newCount >= MAX_FAILED_ATTEMPTS) {
-        // Account sperren + Reset-Token generieren + Mail senden
-        const rawToken  = randomBytes(32).toString("hex");
-        const tokenHash = createHash("sha256").update(rawToken).digest("hex");
         const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 Stunde
 
-        await db.$transaction([
-          db.user.update({
-            where: { id: user.id },
-            data:  { failedLoginCount: newCount, lockedUntil: expiresAt },
-          }),
-          db.passwordResetToken.create({
-            data: { userId: user.id, tokenHash, expiresAt, reason: "BRUTE_FORCE_LOCK" },
-          }),
-        ]);
+        // updateMany mit WHERE lockedUntil IS NULL stellt sicher, dass nur der erste
+        // parallele Request, der die Schwelle erreicht, den Lock setzt und die Mail schickt.
+        const lockResult = await db.user.updateMany({
+          where: { id: user.id, lockedUntil: null },
+          data:  { lockedUntil: expiresAt },
+        });
 
-        await sendAuctionMail({
-          to:       user.email,
-          subject:  "EUCX - Konto gesperrt: Bitte Passwort zurücksetzen",
-          template: "password_reset",
-          data:     { token: rawToken, reason: "BRUTE_FORCE_LOCK", email: user.email },
+        if (lockResult.count > 0) {
+          // Dieser Request hat den Lock gesetzt → Reset-Token + Mail
+          const rawToken  = randomBytes(32).toString("hex");
+          const tokenHash = createHash("sha256").update(rawToken).digest("hex");
+          await db.passwordResetToken.create({
+            data: { userId: user.id, tokenHash, expiresAt, reason: "BRUTE_FORCE_LOCK" },
+          });
+          await sendAuctionMail({
+            to:       user.email,
+            subject:  "EUCX - Konto gesperrt: Bitte Passwort zurücksetzen",
+            template: "password_reset",
+            data:     { token: rawToken, reason: "BRUTE_FORCE_LOCK", email: user.email },
+          });
+        }
+
+        logSecurityEvent({ event: "AUTH_ACCOUNT_LOCKED", ip, userId: user.id, detail: `${newCount} Fehlversuche` });
+        void persistAuditLog({
+          action: "AUTH_ACCOUNT_LOCKED", userId: user.id, entityType: "user",
+          entityId: user.id, ipAddress: ip, userAgent: req.headers.get("user-agent") ?? undefined,
+          meta: { failedAttempts: newCount },
         });
 
         return NextResponse.json(
@@ -93,12 +123,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Fehlversuch zählen, noch nicht gesperrt
-      await db.user.update({
-        where: { id: user.id },
-        data:  { failedLoginCount: newCount },
-      });
-
+      logSecurityEvent({ event: "AUTH_LOGIN_FAILED", ip, userId: user.id, detail: `Versuch ${newCount}/${MAX_FAILED_ATTEMPTS}` });
       const remaining = MAX_FAILED_ATTEMPTS - newCount;
       return NextResponse.json(
         {
@@ -115,6 +140,14 @@ export async function POST(req: NextRequest) {
         where: { id: user.id },
         data:  { failedLoginCount: 0, lockedUntil: null },
       });
+    }
+
+    // 2FA erzwingen wenn aktiviert
+    if (user.totpEnabled) {
+      return NextResponse.json(
+        { code: "TOTP_REQUIRED", message: "Bitte geben Sie Ihren Authenticator-Code ein.", email: user.email },
+        { status: 200 },
+      );
     }
 
     // Account-Status prüfen
@@ -152,20 +185,15 @@ export async function POST(req: NextRequest) {
         userId:    user.id,
         tokenHash,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        ipAddress: req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? "unbekannt",
+        ipAddress: ip,
         userAgent: req.headers.get("user-agent") ?? "unbekannt",
       },
     });
 
-    await db.auditLog.create({
-      data: {
-        userId:     user.id,
-        action:     "LOGIN",
-        entityType: "user",
-        entityId:   user.id,
-        ipAddress:  req.headers.get("x-forwarded-for") ?? "unknown",
-        userAgent:  req.headers.get("user-agent"),
-      },
+    logSecurityEvent({ event: "AUTH_LOGIN_SUCCESS", ip, userId: user.id });
+    void persistAuditLog({
+      action: "AUTH_LOGIN_SUCCESS", userId: user.id, entityType: "user",
+      entityId: user.id, ipAddress: ip, userAgent: req.headers.get("user-agent") ?? undefined,
     });
 
     const response = NextResponse.json({

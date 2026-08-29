@@ -22,7 +22,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
 import { verifyAccessToken }         from "@/lib/auth/jwt";
-import * as XLSX                     from "xlsx";
+import ExcelJS                       from "exceljs";
 
 export const dynamic = "force-dynamic";
 
@@ -198,51 +198,48 @@ export async function GET(req: NextRequest) {
 
   // ── XLSX-Format ───────────────────────────────────────────────────────────
   if (format === "xlsx") {
-    const wsData = [HEADERS, ...rows];
-    const ws     = XLSX.utils.aoa_to_sheet(wsData);
+    const wb = new ExcelJS.Workbook();
+    wb.creator  = "EUCX";
+    wb.created  = new Date();
 
-    // Spaltenbreiten anpassen
-    ws["!cols"] = [
-      { wch: 38 }, // Deal-ID
-      { wch: 20 }, // Datum
-      { wch: 30 }, // Produkt
-      { wch: 18 }, // Kategorie
-      { wch: 10 }, // Richtung
-      { wch: 12 }, // Menge
-      { wch: 8  }, // Einheit
-      { wch: 18 }, // Preis/Einheit
-      { wch: 18 }, // Gesamtwert
-      { wch: 18 }, // EUCX-Gebühr
-      { wch: 14 }, // MwSt.
-      { wch: 18 }, // Nettobetrag
-      { wch: 30 }, // Gegenseite
-      { wch: 18 }, // Status
-      { wch: 22 }, // Rechnungsnummer
+    const ws = wb.addWorksheet("EUCX Trades");
+
+    // Spaltenbreiten und Header
+    ws.columns = [
+      { header: HEADERS[0],  key: "c0",  width: 38 },
+      { header: HEADERS[1],  key: "c1",  width: 20 },
+      { header: HEADERS[2],  key: "c2",  width: 30 },
+      { header: HEADERS[3],  key: "c3",  width: 18 },
+      { header: HEADERS[4],  key: "c4",  width: 10 },
+      { header: HEADERS[5],  key: "c5",  width: 12 },
+      { header: HEADERS[6],  key: "c6",  width: 8  },
+      { header: HEADERS[7],  key: "c7",  width: 18 },
+      { header: HEADERS[8],  key: "c8",  width: 18 },
+      { header: HEADERS[9],  key: "c9",  width: 18 },
+      { header: HEADERS[10], key: "c10", width: 14 },
+      { header: HEADERS[11], key: "c11", width: 18 },
+      { header: HEADERS[12], key: "c12", width: 30 },
+      { header: HEADERS[13], key: "c13", width: 18 },
+      { header: HEADERS[14], key: "c14", width: 22 },
     ];
 
-    // Header-Zeile formatieren (fett)
-    const headerRange = XLSX.utils.decode_range(ws["!ref"] ?? "A1");
-    for (let col = headerRange.s.c; col <= headerRange.e.c; col++) {
-      const cellRef = XLSX.utils.encode_cell({ r: 0, c: col });
-      if (ws[cellRef]) {
-        ws[cellRef].s = { font: { bold: true } };
-      }
-    }
+    // Header-Zeile fett
+    ws.getRow(1).font = { bold: true };
 
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "EUCX Trades");
+    // Daten einfügen
+    rows.forEach((row) => ws.addRow(row));
 
     // Metadaten-Sheet
-    const metaSheet = XLSX.utils.aoa_to_sheet([
+    const meta = wb.addWorksheet("Export-Info");
+    meta.addRows([
       ["Export erstellt am:", new Date().toLocaleString("de-DE")],
       ["Organisation:",       user.organization.name],
       ["Zeitraum von:",       fromDate?.toLocaleDateString("de-DE") ?? "-"],
       ["Zeitraum bis:",       toDate?.toLocaleDateString("de-DE")   ?? "-"],
       ["Anzahl Trades:",      deals.length],
     ]);
-    XLSX.utils.book_append_sheet(wb, metaSheet, "Export-Info");
 
-    const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
+    const buffer = await wb.xlsx.writeBuffer();
 
     return new Response(buffer, {
       headers: {

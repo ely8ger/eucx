@@ -1,6 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { verifyAccessToken }         from "@/lib/auth/jwt";
+import { NextRequest, NextResponse }                         from "next/server";
+import { verifyAccessToken }                                from "@/lib/auth/jwt";
 import { checkRateLimit, rateLimitHeaders, type LimitBucket } from "@/lib/rate-limit";
+import { getClientIp }                                      from "@/lib/net/get-client-ip";
+import { isJtiBlacklistedEdge }                             from "@/lib/auth/token-blacklist";
+import { logSecurityEvent }                                 from "@/lib/audit/log-event";
 
 const PUBLIC_EXACT = new Set(["/", "/login", "/register"]);
 
@@ -8,6 +11,7 @@ const PUBLIC_PREFIXES = [
   // Auth-Endpunkte
   "/api/auth/login",
   "/api/auth/register",
+  "/api/auth/logout",    // Logout muss auch mit abgelaufenem Access-Token erreichbar sein
   "/api/auth/refresh",
   "/api/auth/forgot-password",
   "/api/auth/reset-password",
@@ -19,8 +23,11 @@ const PUBLIC_PREFIXES = [
   "/api/lookup-hrb",
   "/api/enrich-company",
   "/api/og",
-  // Interner Cron-Endpunkt - hat eigene Auth (CRON_SECRET Bearer)
+  // Interne Server-zu-Server-Endpunkte — haben eigene Auth (CRON_SECRET / QStash-Signatur)
   "/api/auction/cron",
+  "/api/workers/",
+  // Test-Utilities — nur in Dev, Route selbst prüft NODE_ENV
+  ...(process.env.NODE_ENV !== "production" ? ["/api/test/"] : []),
   // Produktkatalog — öffentliche Referenzdaten, kein sensitiver Inhalt
   "/api/catalog",
   // Öffentliche Inhaltsseiten
@@ -42,6 +49,10 @@ const PUBLIC_PREFIXES = [
 
 const ADMIN_ROLES = ["ADMIN", "COMPLIANCE", "SUPER_ADMIN"] as const;
 
+// Admin-Subdomain: me8.eucx.eu → nur Admin-Routen erreichbar
+// eucx.eu → /admin/** und /api/admin/** geblockt (404), auch bei gültiger Admin-Rolle
+const ADMIN_HOST = "me8.eucx.eu";
+
 // ─── Rate-Limit-Bucket pro Pfad ───────────────────────────────────────────────
 
 function getBucket(pathname: string): LimitBucket {
@@ -50,19 +61,25 @@ function getBucket(pathname: string): LimitBucket {
   return "api";
 }
 
-function getClientIp(req: NextRequest): string {
-  return (
-    req.headers.get("x-forwarded-for")?.split(",").at(0)?.trim() ??
-    req.headers.get("x-real-ip") ??
-    "unknown"
-  );
-}
-
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const ip           = getClientIp(req);
+  const host         = req.headers.get("host") ?? "";
+  const isAdminHost  = host === ADMIN_HOST;
+
+  // ── Domain-Isolation ─────────────────────────────────────────────────────
+  // Auf eucx.eu: /admin und /api/admin sind unsichtbar (404)
+  // Auf me8.eucx.eu: alles außer /admin, /api/admin, /api/auth und /login wird geblockt
+  if (!isAdminHost && (pathname.startsWith("/admin") || pathname.startsWith("/api/admin/"))) {
+    return new NextResponse(null, { status: 404 });
+  }
+  if (isAdminHost && !pathname.startsWith("/admin") && !pathname.startsWith("/api/admin/") &&
+      !pathname.startsWith("/api/auth") && !pathname.startsWith("/api/workers/") &&
+      pathname !== "/login" && pathname !== "/") {
+    return NextResponse.redirect(new URL("/admin", req.url));
+  }
 
   // ── Rate Limiting (vor allem anderen) ────────────────────────────────────
   // Gilt für Auth-Endpunkte und Bids auch wenn sie PUBLIC_PREFIXES sind.
@@ -75,6 +92,7 @@ export async function middleware(req: NextRequest) {
     const bucket = getBucket(pathname);
     const rl     = await checkRateLimit(ip, bucket);
     if (!rl.allowed) {
+      logSecurityEvent({ event: "RATE_LIMITED", ip, path: pathname, bucket });
       return NextResponse.json(
         { code: "RATE_LIMITED", message: "Zu viele Anfragen. Bitte warten Sie kurz." },
         { status: 429, headers: rateLimitHeaders(rl) },
@@ -94,14 +112,40 @@ export async function middleware(req: NextRequest) {
     const authHeader = req.headers.get("authorization");
     const auth = authHeader ?? (queryToken ? `Bearer ${queryToken}` : null);
     if (!auth?.startsWith("Bearer ")) {
+      logSecurityEvent({ event: "AUTH_INVALID_TOKEN", ip, path: pathname, detail: "Kein Bearer-Token" });
       return NextResponse.json({ code: "UNAUTHORIZED", message: "Token fehlt" }, { status: 401 });
     }
     try {
       const payload = await verifyAccessToken(auth.slice(7));
 
+      // JTI-Blacklist prüfen (Token nach Logout gesperrt)
+      if (payload.jti) {
+        const revoked = await isJtiBlacklistedEdge(payload.jti, req.nextUrl.origin);
+        if (revoked) {
+          logSecurityEvent({
+            event:  "AUTH_TOKEN_REVOKED",
+            ip,
+            userId: payload.userId,
+            path:   pathname,
+            detail: `JTI ${payload.jti}`,
+          });
+          return NextResponse.json(
+            { code: "TOKEN_REVOKED", message: "Sitzung wurde beendet. Bitte erneut anmelden." },
+            { status: 401 },
+          );
+        }
+      }
+
       // /api/admin/** - RBAC: nur ADMIN/COMPLIANCE/SUPER_ADMIN
       if (pathname.startsWith("/api/admin/")) {
         if (!ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
+          logSecurityEvent({
+            event:  "AUTH_FORBIDDEN",
+            ip,
+            userId: payload.userId,
+            path:   pathname,
+            detail: `Rolle ${payload.role} hat keine Admin-Berechtigung`,
+          });
           return NextResponse.json(
             { code: "FORBIDDEN", message: "Keine Administrationsberechtigung" },
             { status: 403 },
@@ -112,6 +156,13 @@ export async function middleware(req: NextRequest) {
       // Allgemeines API-Rate-Limit (authentifiziert — großzügiger)
       const apiRl = await checkRateLimit(`user:${payload.userId}`, "api");
       if (!apiRl.allowed) {
+        logSecurityEvent({
+          event:  "RATE_LIMITED",
+          ip,
+          userId: payload.userId,
+          path:   pathname,
+          bucket: "api",
+        });
         return NextResponse.json(
           { code: "RATE_LIMITED", message: "Zu viele Anfragen. Bitte warten Sie kurz." },
           { status: 429, headers: rateLimitHeaders(apiRl) },
@@ -120,6 +171,7 @@ export async function middleware(req: NextRequest) {
 
       return NextResponse.next();
     } catch {
+      logSecurityEvent({ event: "AUTH_INVALID_TOKEN", ip, path: pathname, detail: "JWT-Verifikation fehlgeschlagen" });
       return NextResponse.json({ code: "INVALID_TOKEN", message: "Ungültiger Token" }, { status: 401 });
     }
   }
@@ -137,6 +189,18 @@ export async function middleware(req: NextRequest) {
 
   try {
     const payload = await verifyAccessToken(token);
+
+    // JTI-Blacklist für Cookie-basierte Sitzungen
+    if (payload.jti) {
+      const revoked = await isJtiBlacklistedEdge(payload.jti, req.nextUrl.origin);
+      if (revoked) {
+        const loginUrl = new URL("/login", req.url);
+        loginUrl.searchParams.set("next", pathname);
+        const res = NextResponse.redirect(loginUrl);
+        res.cookies.delete("access_token");
+        return res;
+      }
+    }
 
     if (pathname.startsWith("/admin")) {
       if (!ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
