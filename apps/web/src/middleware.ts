@@ -118,23 +118,6 @@ export async function middleware(req: NextRequest) {
         }
       }
 
-      // /api/admin/** - RBAC: nur ADMIN/COMPLIANCE/SUPER_ADMIN
-      if (pathname.startsWith("/api/admin/")) {
-        if (!ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
-          logSecurityEvent({
-            event:  "AUTH_FORBIDDEN",
-            ip,
-            userId: payload.userId,
-            path:   pathname,
-            detail: `Rolle ${payload.role} hat keine Admin-Berechtigung`,
-          });
-          return NextResponse.json(
-            { code: "FORBIDDEN", message: "Keine Administrationsberechtigung" },
-            { status: 403 },
-          );
-        }
-      }
-
       // Allgemeines API-Rate-Limit (authentifiziert — großzügiger)
       const apiRl = await checkRateLimit(`user:${payload.userId}`, "api");
       if (!apiRl.allowed) {
@@ -184,12 +167,6 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    if (pathname.startsWith("/admin")) {
-      if (!ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
-        return NextResponse.redirect(new URL("/dashboard?error=forbidden", req.url));
-      }
-    }
-
     if (pathname.startsWith("/dashboard/buyer")) {
       if (payload.role !== "BUYER" && !ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
         return NextResponse.redirect(new URL("/dashboard/seller", req.url));
@@ -207,9 +184,6 @@ export async function middleware(req: NextRequest) {
     const isOldRoute     = OLD_ROUTES.some((p) => pathname === p || pathname.startsWith(p + "/"));
 
     if (isOldDashboard || isOldRoute) {
-      if (ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
-        return NextResponse.redirect(new URL("/admin", req.url));
-      }
       if (payload.role === "SELLER") {
         return NextResponse.redirect(new URL("/dashboard/seller", req.url));
       }

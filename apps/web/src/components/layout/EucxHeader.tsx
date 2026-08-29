@@ -70,13 +70,7 @@ const NAV: Record<string, NavItem[]> = {
     { label: "Benachrichtigungen", href: "/dashboard/settings/notifications",activePrefix: "/dashboard/settings/notifications" },
     { label: "API-Schlüssel",      href: "/dashboard/settings/api-keys",     activePrefix: "/dashboard/settings/api-keys" },
   ],
-  admin: [
-    { label: "Analytik",          href: "/admin",                  activePrefix: "/admin" },
-    { label: "Registrierungen",   href: "/admin/registrations",    activePrefix: "/admin/registrations" },
-    { label: "KYC-Prüfung",       href: "/admin/kyc",              activePrefix: "/admin/kyc" },
-    { label: "Nutzerverwaltung",  href: "/admin/users",            activePrefix: "/admin/users" },
-    { label: "Notfall-System",    href: "/admin/emergency",        activePrefix: "/admin/emergency" },
-  ],
+  admin: [],
 };
 
 // ─── Hierarchical Page Map ────────────────────────────────────────────────────
@@ -169,31 +163,6 @@ const BREADCRUMB_MAP: Array<{
     match:  (p) => p.startsWith("/dashboard/buyer/portfolio"),
     config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Portfolio", pageHref: "/dashboard/buyer/portfolio" }),
   },
-  // ── Administration ─────────────────────────────────────────────────────────
-  {
-    match:  (p) => p === "/admin",
-    config: ()  => ({ area: "Administration", areaHref: "/admin", page: "Analytik", pageHref: "/admin" }),
-  },
-  {
-    match:  (p) => p.startsWith("/admin/registrations"),
-    config: ()  => ({ area: "Administration", areaHref: "/admin", page: "Registrierungen", pageHref: "/admin/registrations" }),
-  },
-  {
-    match:  (p) => p.startsWith("/admin/kyc"),
-    config: ()  => ({ area: "Administration", areaHref: "/admin", page: "KYC-Prüfung", pageHref: "/admin/kyc" }),
-  },
-  {
-    match:  (p) => p.startsWith("/admin/users"),
-    config: ()  => ({ area: "Administration", areaHref: "/admin", page: "Nutzerverwaltung", pageHref: "/admin/users" }),
-  },
-  {
-    match:  (p) => p.startsWith("/admin/emergency"),
-    config: ()  => ({ area: "Administration", areaHref: "/admin", page: "Notfall-System", pageHref: "/admin/emergency" }),
-  },
-  {
-    match:  (p) => p.startsWith("/admin/markets"),
-    config: ()  => ({ area: "Administration", areaHref: "/admin", page: "Marktüberwachung", pageHref: "/admin/markets" }),
-  },
 ];
 
 function resolveBreadcrumb(path: string): BreadcrumbConfig | null {
@@ -204,13 +173,12 @@ function resolveBreadcrumb(path: string): BreadcrumbConfig | null {
 }
 
 // ─── Context resolver ─────────────────────────────────────────────────────────
-function resolveContext(path: string): "buyer" | "seller" | "settings" | "admin" | null {
+function resolveContext(path: string): "buyer" | "seller" | "settings" | null {
   if (path.startsWith("/dashboard/buyer"))     return "buyer";
   if (path.startsWith("/dashboard/seller"))    return "seller";
   if (path.startsWith("/dashboard/settings"))  return "settings";
   if (path.startsWith("/dashboard/contracts")) return "settings";
   if (path.startsWith("/dashboard/profile"))   return "settings";
-  if (path.startsWith("/admin"))               return "admin";
   return null;
 }
 
@@ -553,8 +521,7 @@ export function EucxHeader() {
       // Root-Einträge nur bei exaktem Pfad aktiv (sonst matchen alle Unterseiten)
       if (
         (item.href === "/dashboard/buyer"  && item.activePrefix === "/dashboard/buyer") ||
-        (item.href === "/dashboard/seller" && item.activePrefix === "/dashboard/seller") ||
-        (item.href === "/admin"            && item.activePrefix === "/admin")
+        (item.href === "/dashboard/seller" && item.activePrefix === "/dashboard/seller")
       ) {
         return pathname === item.href;
       }

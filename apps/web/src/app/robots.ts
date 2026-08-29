@@ -13,7 +13,6 @@ export default function robots(): MetadataRoute.Robots {
         allow:     ["/", "/trading/", "/products/", "/api/docs", "/faq", "/wissen/", "/insights/", "/marktpreise", "/katalog"],
         disallow:  [
           "/api/",
-          "/admin/",
           "/settings/",
           "/portfolio/",
           "/kyc/",
@@ -29,7 +28,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "Googlebot",
         allow:     "/",
-        disallow:  ["/api/", "/admin/"],
+        disallow:  ["/api/"],
         crawlDelay: undefined,
       },
     ],
