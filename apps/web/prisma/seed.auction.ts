@@ -37,7 +37,7 @@ async function main() {
   // ── Test-User anlegen ─────────────────────────────────────────────
   const buyer = await prisma.user.upsert({
     where:  { email: "buyer@eucx-test.de" },
-    update: {},
+    update: { totpEnabled: false, totpSecret: null, failedLoginCount: 0, lockedUntil: null },
     create: {
       id:                 "seed-user-buyer",
       organizationId:     org.id,
@@ -46,6 +46,7 @@ async function main() {
       role:               "BUYER",
       status:             "ACTIVE",
       verificationStatus: "VERIFIED",
+      totpEnabled:        false,
     },
   });
 
@@ -53,7 +54,7 @@ async function main() {
     [1, 2, 3].map((i) =>
       prisma.user.upsert({
         where:  { email: `seller${i}@eucx-test.de` },
-        update: {},
+        update: { totpEnabled: false, totpSecret: null, failedLoginCount: 0, lockedUntil: null },
         create: {
           id:                 `seed-user-seller-${i}`,
           organizationId:     org.id,
@@ -62,6 +63,7 @@ async function main() {
           role:               "SELLER",
           status:             "ACTIVE",
           verificationStatus: "VERIFIED",
+          totpEnabled:        false,
         },
       })
     )

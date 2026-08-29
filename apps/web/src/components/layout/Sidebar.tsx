@@ -29,7 +29,6 @@ const NAV_ITEMS: SidebarItem[] = [
   { href: "/deals",      label: "Abschlüsse",    icon: <IcoDeals />, badge: "3" },
   { href: "/reports",    label: "Berichte",      icon: <IcoReports />   },
   { href: "/settings",   label: "Einstellungen", icon: <IcoSettings />  },
-  { href: "/admin",      label: "Admin",         icon: <IcoAdmin />     },
 ];
 
 export function Sidebar() {

@@ -134,15 +134,6 @@ export function Navbar() {
               <span className="absolute" style={{ top: 7, right: 7, width: 6, height: 6, backgroundColor: "#cc0000", borderRadius: "50%" }} />
             </button>
 
-            <Link href="/admin"
-              className="flex items-center justify-center transition-colors"
-              style={{ width: 34, height: 34, color: "#505050", backgroundColor: "transparent" }}
-              aria-label="Administration"
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f5f5f5")}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
-              <Shield size={15} />
-            </Link>
-
             <div style={{ width: 1, height: 20, backgroundColor: "#e8e8e8" }} />
 
             {/* User Pill - HSBC-Stil: eckig, klar */}

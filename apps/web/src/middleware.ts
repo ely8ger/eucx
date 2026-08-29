@@ -49,10 +49,6 @@ const PUBLIC_PREFIXES = [
 
 const ADMIN_ROLES = ["ADMIN", "COMPLIANCE", "SUPER_ADMIN"] as const;
 
-// Admin-Subdomain: me8.eucx.eu → nur Admin-Routen erreichbar
-// eucx.eu → /admin/** und /api/admin/** geblockt (404), auch bei gültiger Admin-Rolle
-const ADMIN_HOST = "me8.eucx.eu";
-
 // ─── Rate-Limit-Bucket pro Pfad ───────────────────────────────────────────────
 
 function getBucket(pathname: string): LimitBucket {
@@ -66,20 +62,6 @@ function getBucket(pathname: string): LimitBucket {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const ip           = getClientIp(req);
-  const host         = req.headers.get("host") ?? "";
-  const isAdminHost  = host === ADMIN_HOST;
-
-  // ── Domain-Isolation ─────────────────────────────────────────────────────
-  // Auf eucx.eu: /admin und /api/admin sind unsichtbar (404)
-  // Auf me8.eucx.eu: alles außer /admin, /api/admin, /api/auth und /login wird geblockt
-  if (!isAdminHost && (pathname.startsWith("/admin") || pathname.startsWith("/api/admin/"))) {
-    return new NextResponse(null, { status: 404 });
-  }
-  if (isAdminHost && !pathname.startsWith("/admin") && !pathname.startsWith("/api/admin/") &&
-      !pathname.startsWith("/api/auth") && !pathname.startsWith("/api/workers/") &&
-      pathname !== "/login" && pathname !== "/") {
-    return NextResponse.redirect(new URL("/admin", req.url));
-  }
 
   // ── Rate Limiting (vor allem anderen) ────────────────────────────────────
   // Gilt für Auth-Endpunkte und Bids auch wenn sie PUBLIC_PREFIXES sind.
@@ -136,23 +118,6 @@ export async function middleware(req: NextRequest) {
         }
       }
 
-      // /api/admin/** - RBAC: nur ADMIN/COMPLIANCE/SUPER_ADMIN
-      if (pathname.startsWith("/api/admin/")) {
-        if (!ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
-          logSecurityEvent({
-            event:  "AUTH_FORBIDDEN",
-            ip,
-            userId: payload.userId,
-            path:   pathname,
-            detail: `Rolle ${payload.role} hat keine Admin-Berechtigung`,
-          });
-          return NextResponse.json(
-            { code: "FORBIDDEN", message: "Keine Administrationsberechtigung" },
-            { status: 403 },
-          );
-        }
-      }
-
       // Allgemeines API-Rate-Limit (authentifiziert — großzügiger)
       const apiRl = await checkRateLimit(`user:${payload.userId}`, "api");
       if (!apiRl.allowed) {
@@ -202,12 +167,6 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    if (pathname.startsWith("/admin")) {
-      if (!ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
-        return NextResponse.redirect(new URL("/dashboard?error=forbidden", req.url));
-      }
-    }
-
     if (pathname.startsWith("/dashboard/buyer")) {
       if (payload.role !== "BUYER" && !ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
         return NextResponse.redirect(new URL("/dashboard/seller", req.url));
@@ -225,9 +184,6 @@ export async function middleware(req: NextRequest) {
     const isOldRoute     = OLD_ROUTES.some((p) => pathname === p || pathname.startsWith(p + "/"));
 
     if (isOldDashboard || isOldRoute) {
-      if (ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
-        return NextResponse.redirect(new URL("/admin", req.url));
-      }
       if (payload.role === "SELLER") {
         return NextResponse.redirect(new URL("/dashboard/seller", req.url));
       }
