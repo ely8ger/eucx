@@ -49,10 +49,6 @@ const PUBLIC_PREFIXES = [
 
 const ADMIN_ROLES = ["ADMIN", "COMPLIANCE", "SUPER_ADMIN"] as const;
 
-// Admin-Subdomain: me8.eucx.eu → nur Admin-Routen erreichbar
-// eucx.eu → /admin/** und /api/admin/** geblockt (404), auch bei gültiger Admin-Rolle
-const ADMIN_HOST = "me8.eucx.eu";
-
 // ─── Rate-Limit-Bucket pro Pfad ───────────────────────────────────────────────
 
 function getBucket(pathname: string): LimitBucket {
@@ -66,20 +62,6 @@ function getBucket(pathname: string): LimitBucket {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const ip           = getClientIp(req);
-  const host         = req.headers.get("host") ?? "";
-  const isAdminHost  = host === ADMIN_HOST;
-
-  // ── Domain-Isolation ─────────────────────────────────────────────────────
-  // Auf eucx.eu: /admin und /api/admin sind unsichtbar (404)
-  // Auf me8.eucx.eu: alles außer /admin, /api/admin, /api/auth und /login wird geblockt
-  if (!isAdminHost && (pathname.startsWith("/admin") || pathname.startsWith("/api/admin/"))) {
-    return new NextResponse(null, { status: 404 });
-  }
-  if (isAdminHost && !pathname.startsWith("/admin") && !pathname.startsWith("/api/admin/") &&
-      !pathname.startsWith("/api/auth") && !pathname.startsWith("/api/workers/") &&
-      pathname !== "/login" && pathname !== "/") {
-    return NextResponse.redirect(new URL("/admin", req.url));
-  }
 
   // ── Rate Limiting (vor allem anderen) ────────────────────────────────────
   // Gilt für Auth-Endpunkte und Bids auch wenn sie PUBLIC_PREFIXES sind.
