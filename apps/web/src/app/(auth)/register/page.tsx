@@ -493,6 +493,10 @@ export default function RegisterPage() {
   const [verifyLoading,   setVerifyLoading]   = useState(false);
   const [verifyError,     setVerifyError]     = useState("");
   const [resendCooldown,  setResendCooldown]  = useState(false);
+  const [changingEmail,   setChangingEmail]   = useState(false);
+  const [newEmail,        setNewEmail]        = useState("");
+  const [changeEmailErr,  setChangeEmailErr]  = useState("");
+  const [changeEmailLoading, setChangeEmailLoading] = useState(false);
   const [btnHover, setBtnHover] = useState(false);
   const [role,     setRole]     = useState("");
   const [consentPep, setConsentPep] = useState(false);
@@ -755,6 +759,91 @@ export default function RegisterPage() {
                 {resendCooldown ? "Code wurde erneut gesendet" : "Neuen Code senden"}
               </button>
             </p>
+
+            {/* E-Mail-Adresse ändern */}
+            {!changingEmail ? (
+              <p style={{ fontSize: 12, color: MUTED, fontFamily: F, margin: 0, textAlign: "center" }}>
+                E-Mail falsch eingegeben?{" "}
+                <button
+                  onClick={() => { setChangingEmail(true); setNewEmail(regEmail); setChangeEmailErr(""); }}
+                  style={{
+                    background: "none", border: "none", padding: 0,
+                    color: BLUE, fontSize: 12, fontFamily: F, cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                >
+                  E-Mail-Adresse ändern
+                </button>
+              </p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, borderTop: `1px solid ${BORDER}`, paddingTop: 16 }}>
+                <label style={{ fontSize: 12, fontWeight: 600, color: TEXT, fontFamily: F }}>
+                  Neue E-Mail-Adresse <span style={{ color: RED }}>*</span>
+                </label>
+                <input
+                  type="email"
+                  value={newEmail}
+                  autoFocus
+                  onChange={(e) => { setNewEmail(e.target.value); setChangeEmailErr(""); }}
+                  placeholder="name@firma.de"
+                  style={{
+                    height: 42, borderRadius: 0,
+                    border: `1px solid ${changeEmailErr ? RED : BORDER}`,
+                    padding: "0 12px", fontSize: 14, color: TEXT, fontFamily: F,
+                    outline: "none", width: "100%", boxSizing: "border-box",
+                  }}
+                />
+                {changeEmailErr && (
+                  <p style={{ fontSize: 11, color: RED, fontFamily: F, margin: 0 }}>{changeEmailErr}</p>
+                )}
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    onClick={async () => {
+                      setChangeEmailErr("");
+                      setChangeEmailLoading(true);
+                      try {
+                        const res  = await fetch("/api/auth/verify-email", {
+                          method:  "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          body:    JSON.stringify({ userId, newEmail: newEmail.trim() }),
+                        });
+                        const data = await res.json() as { code?: string; message?: string; data?: { email?: string } };
+                        if (!res.ok) { setChangeEmailErr(data.message ?? "Fehler beim Ändern der E-Mail."); return; }
+                        setRegEmail(data.data?.email ?? newEmail.trim());
+                        setVerifyCode("");
+                        setVerifyError("");
+                        setChangingEmail(false);
+                        setResendCooldown(true);
+                        setTimeout(() => setResendCooldown(false), 60_000);
+                      } catch {
+                        setChangeEmailErr("Verbindungsfehler. Bitte versuchen Sie es erneut.");
+                      } finally {
+                        setChangeEmailLoading(false);
+                      }
+                    }}
+                    disabled={changeEmailLoading || !newEmail.trim()}
+                    style={{
+                      flex: 1, height: 38, borderRadius: 0, border: "none",
+                      backgroundColor: changeEmailLoading || !newEmail.trim() ? "#93a3be" : BLUE,
+                      color: "#fff", fontSize: 13, fontWeight: 600,
+                      fontFamily: F, cursor: changeEmailLoading ? "wait" : "pointer",
+                    }}
+                  >
+                    {changeEmailLoading ? "Wird geändert…" : "Bestätigen & Code senden"}
+                  </button>
+                  <button
+                    onClick={() => { setChangingEmail(false); setChangeEmailErr(""); }}
+                    style={{
+                      height: 38, padding: "0 14px", borderRadius: 0,
+                      border: `1px solid ${BORDER}`, background: "#fff",
+                      fontSize: 13, color: TEXT, fontFamily: F, cursor: "pointer",
+                    }}
+                  >
+                    Abbrechen
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
