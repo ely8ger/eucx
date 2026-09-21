@@ -1290,7 +1290,7 @@ export default function RegisterPage() {
 
               {/* ── 5. Einwilligungen ───────────────────────────────────── */}
               <div>
-                <SectionHead>{t("register_section_consent")}</SectionHead>
+                <SectionHead>{t("register_section_consent")} <span style={{ color: "#dc2626", fontWeight: 700 }}>*</span></SectionHead>
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   <ConsentBox
                     name="consentDsgvo" checked={consentDsgvo}
@@ -1301,6 +1301,7 @@ export default function RegisterPage() {
                       Datenschutzerklärung
                     </a>
                     {t("register_consent_dsgvo").split("Datenschutzerklärung")[1]}
+                    {" "}<span style={{ color: "#dc2626", fontWeight: 700 }}>*</span>
                   </ConsentBox>
                   <ConsentBox
                     name="consentAgb" checked={consentAgb}
@@ -1311,8 +1312,12 @@ export default function RegisterPage() {
                       Allgemeinen Geschäftsbedingungen
                     </a>
                     {t("register_consent_agb").split("Allgemeinen Geschäftsbedingungen")[1]}
+                    {" "}<span style={{ color: "#dc2626", fontWeight: 700 }}>*</span>
                   </ConsentBox>
                 </div>
+                <p style={{ margin: "10px 0 0", fontSize: 11, color: "#9ca3af", fontFamily: F }}>
+                  <span style={{ color: "#dc2626", fontWeight: 700 }}>*</span> Pflichtfeld — Zustimmung erforderlich
+                </p>
               </div>
 
               {/* ── Fehler ──────────────────────────────────────────────── */}
