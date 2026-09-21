@@ -226,7 +226,7 @@ export function VerificationClient() {
           const queued = perDocFiles[type] ?? [];
           const canAdd = (st === "missing" || st === "rejected") && canUpload;
           return (
-            <div key={type}>
+            <div key={type} className="ver-doc-block">
               {canAdd && (
                 <input
                   type="file"
@@ -368,8 +368,9 @@ export function VerificationClient() {
         /* Checklist */
         .ver-cl { background:#fff; border:1px solid #e5e7eb; margin-bottom:18px; }
         .ver-cl-head { padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11.5px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:.06em; }
-        .ver-cl-row  { display:flex; align-items:flex-start; gap:14px; padding:13px 20px; border-bottom:1px solid #f9fafb; }
-        .ver-cl-row:last-child { border-bottom:none; }
+        .ver-doc-block { border-bottom:1px solid #e5e7eb; }
+        .ver-doc-block:last-child { border-bottom:none; }
+        .ver-cl-row  { display:flex; align-items:flex-start; gap:14px; padding:13px 20px; }
         .ver-cl-dot  { width:24px; height:24px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; margin-top:1px; }
         .ver-cl-dot.approved { background:#dcfce7; color:#16a34a; }
         .ver-cl-dot.pending  { background:#fef9c3; color:#92400e; }
@@ -388,7 +389,7 @@ export function VerificationClient() {
         .ver-cl-seller-note { padding:11px 20px; background:#f8fafc; border-top:1px solid #f3f4f6; font-size:12px; color:#64748b; line-height:1.5; }
 
         /* Inline-Dropzone unter jedem Dokument */
-        .ver-inline-drop { display:flex; align-items:center; gap:10px; padding:10px 20px; background:#fafafa; border-top:1px solid #f3f4f6; cursor:pointer; transition:background .12s; }
+        .ver-inline-drop { display:flex; align-items:center; gap:10px; padding:10px 20px; background:#fafafa; cursor:pointer; transition:background .12s; }
         .ver-inline-drop:hover, .ver-inline-drop.drag { background:#eff4ff; }
         .ver-inline-drop-icon { width:28px; height:28px; background:#f3f4f6; border:1px solid #e5e7eb; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .12s, border-color .12s; }
         .ver-inline-drop:hover .ver-inline-drop-icon, .ver-inline-drop.drag .ver-inline-drop-icon { background:#dbeafe; border-color:#93c5fd; }
