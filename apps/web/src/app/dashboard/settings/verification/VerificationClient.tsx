@@ -99,7 +99,7 @@ export function VerificationClient() {
   const [isGeschaeftsfuehrer, setIsGeschaeftsfuehrer] = useState<boolean | null>(null);
   const [kycStatus,    setKycStatus]    = useState<VerificationStatus>("GUEST");
   const [existingDocs, setExistingDocs] = useState<ExistingDoc[]>([]);
-  const [perDocFiles,  setPerDocFiles]  = useState<Partial<Record<DocType, File>>>({});
+  const [perDocFiles,  setPerDocFiles]  = useState<Partial<Record<DocType, File[]>>>({});
   const [activeDrag,   setActiveDrag]   = useState<DocType | null>(null);
   const [notes,        setNotes]        = useState("");
   const [submitting,   setSubmitting]   = useState(false);
@@ -131,24 +131,31 @@ export function VerificationClient() {
 
   function queueFile(type: DocType, file: File) {
     if (file.size > 15 * 1024 * 1024) { toast.error("Maximale Dateigröße: 15 MB"); return; }
-    setPerDocFiles((prev) => ({ ...prev, [type]: file }));
+    setPerDocFiles((prev) => ({ ...prev, [type]: [...(prev[type] ?? []), file] }));
   }
 
-  function removeDocFile(type: DocType) {
-    setPerDocFiles((prev) => { const n = { ...prev }; delete n[type]; return n; });
+  function removeDocFile(type: DocType, index: number) {
+    setPerDocFiles((prev) => {
+      const arr = (prev[type] ?? []).filter((_, i) => i !== index);
+      const n = { ...prev };
+      if (arr.length === 0) delete n[type]; else n[type] = arr;
+      return n;
+    });
   }
 
   async function handleSubmit() {
-    const queued = Object.entries(perDocFiles) as [DocType, File][];
+    const queued = Object.entries(perDocFiles) as [DocType, File[]][];
     if (!token || queued.length === 0) return;
     setSubmitting(true);
     try {
-      const documents = queued.map(([type, file]) => ({
-        name:   file.name,
-        type,
-        sizeMb: parseFloat((file.size / 1024 / 1024).toFixed(2)),
-        url:    null,
-      }));
+      const documents = queued.flatMap(([type, files]) =>
+        files.map((file) => ({
+          name:   file.name,
+          type,
+          sizeMb: parseFloat((file.size / 1024 / 1024).toFixed(2)),
+          url:    null,
+        }))
+      );
       const res  = await fetch("/api/kyc/submit", {
         method:  "POST",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
@@ -216,12 +223,10 @@ export function VerificationClient() {
         {types.map((type) => {
           const st     = docStatusForType(type);
           const rejDoc = existingDocs.find((d) => d.type === type && d.status === "REJECTED");
-          const queued = perDocFiles[type];
+          const queued = perDocFiles[type] ?? [];
           const canAdd = (st === "missing" || st === "rejected") && canUpload;
-          const ext    = queued ? queued.name.split(".").pop()?.toUpperCase() ?? "DOC" : "";
           return (
             <div key={type}>
-              {/* versteckter File-Input pro Dokumenttyp */}
               {canAdd && (
                 <input
                   type="file"
@@ -236,8 +241,8 @@ export function VerificationClient() {
                 />
               )}
               <div className="ver-cl-row">
-                <div className={`ver-cl-dot ${queued ? "approved" : st}`}>
-                  {queued ? "✓" : dotContent[st]}
+                <div className={`ver-cl-dot ${queued.length > 0 ? "approved" : st}`}>
+                  {queued.length > 0 ? "✓" : dotContent[st]}
                 </div>
                 <div className="ver-cl-info">
                   <div className="ver-cl-label" style={optional ? { color: "#374151" } : undefined}>
@@ -248,13 +253,41 @@ export function VerificationClient() {
                   )}
                 </div>
                 <div className="ver-cl-right">
-                  {(st !== "missing" || !optional) && !queued && (
+                  {(st !== "missing" || !optional) && queued.length === 0 && (
                     <span className={`ver-cl-status ${st}`}>{CHECK_STATUS_LABEL[st]}</span>
                   )}
                 </div>
               </div>
-              {/* Inline-Dropzone — immer sichtbar wenn uploadfähig und noch keine Datei */}
-              {canAdd && !queued && (
+              {/* Datei-Karten für alle gewählten Dateien */}
+              {queued.length > 0 && (
+                <div className="ver-queued-wrap">
+                  {queued.map((file, idx) => {
+                    const fileExt = file.name.split(".").pop()?.toLowerCase();
+                    const iconBg = fileExt === "pdf" ? "#ef4444"
+                      : (fileExt === "jpg" || fileExt === "jpeg" || fileExt === "png" || fileExt === "webp") ? "#3b82f6"
+                      : "#6b7280";
+                    return (
+                      <div key={idx} className="ver-queued-card">
+                        <div className="ver-queued-filetype" style={{ background: iconBg }}>
+                          <span className="ver-queued-ext">{fileExt?.toUpperCase() ?? "DOC"}</span>
+                        </div>
+                        <div className="ver-queued-info">
+                          <span className="ver-queued-name">{file.name}</span>
+                          <span className="ver-queued-meta">{(file.size / 1024 / 1024).toFixed(1)} MB</span>
+                        </div>
+                        <button className="ver-queued-rm" title="Entfernen" onClick={() => removeDocFile(type, idx)}>
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <circle cx="7" cy="7" r="6.5" fill="#e5e7eb"/>
+                            <path d="M4.5 4.5l5 5M9.5 4.5l-5 5" stroke="#6b7280" strokeWidth="1.4" strokeLinecap="round"/>
+                          </svg>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {/* Drop-Zone — immer sichtbar wenn uploadfähig */}
+              {canAdd && (
                 <div
                   className={`ver-inline-drop${activeDrag === type ? " drag" : ""}`}
                   onDragOver={(e) => { e.preventDefault(); setActiveDrag(type); }}
@@ -271,7 +304,7 @@ export function VerificationClient() {
                   </svg>
                   <div className="ver-inline-drop-body">
                     <span className="ver-inline-drop-text">
-                      {activeDrag === type ? "Datei loslassen …" : "Datei hier ablegen"}
+                      {activeDrag === type ? "Datei loslassen …" : queued.length > 0 ? "Weitere Datei hinzufügen" : "Datei hier ablegen"}
                     </span>
                     <span className="ver-inline-drop-hint">PDF, JPG, PNG, WEBP · max. 15 MB</span>
                   </div>
@@ -280,45 +313,8 @@ export function VerificationClient() {
                     type="button"
                     onClick={(e) => { e.stopPropagation(); fileInputRefs.current[type]?.click(); }}
                   >
-                    Datei auswählen
+                    {queued.length > 0 ? "Datei ergänzen" : "Datei auswählen"}
                   </button>
-                </div>
-              )}
-              {/* Datei-Karte nach Auswahl (ChatGPT-Stil) */}
-              {queued && (
-                <div className="ver-queued-wrap">
-                  <div className="ver-queued-card">
-                    <div className="ver-queued-filetype" style={{
-                      background: (() => {
-                        const ext = queued.name.split(".").pop()?.toLowerCase();
-                        if (ext === "pdf") return "#ef4444";
-                        if (ext === "jpg" || ext === "jpeg" || ext === "png" || ext === "webp") return "#3b82f6";
-                        return "#6b7280";
-                      })()
-                    }}>
-                      <span className="ver-queued-ext">{queued.name.split(".").pop()?.toUpperCase() ?? "DOC"}</span>
-                    </div>
-                    <div className="ver-queued-info">
-                      <span className="ver-queued-name">{queued.name}</span>
-                      <span className="ver-queued-meta">{(queued.size / 1024 / 1024).toFixed(1)} MB</span>
-                    </div>
-                    {canAdd && (
-                      <button
-                        className="ver-queued-replace"
-                        type="button"
-                        title="Andere Datei wählen"
-                        onClick={() => fileInputRefs.current[type]?.click()}
-                      >
-                        Ersetzen
-                      </button>
-                    )}
-                    <button className="ver-queued-rm" title="Entfernen" onClick={() => removeDocFile(type)}>
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <circle cx="7" cy="7" r="6.5" fill="#e5e7eb"/>
-                        <path d="M4.5 4.5l5 5M9.5 4.5l-5 5" stroke="#6b7280" strokeWidth="1.4" strokeLinecap="round"/>
-                      </svg>
-                    </button>
-                  </div>
                 </div>
               )}
             </div>
@@ -404,8 +400,8 @@ export function VerificationClient() {
         .ver-inline-drop-btn:hover { background:#1a51b8; }
 
         /* Hochgeladene Datei — Bestätigungszeile */
-        .ver-queued-wrap { padding:8px 20px 10px; background:#fafafa; border-top:1px solid #e5e7eb; }
-        .ver-queued-card { display:inline-flex; align-items:center; gap:10px; background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:8px 10px; position:relative; max-width:100%; min-width:0; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+        .ver-queued-wrap { padding:8px 20px 4px; background:#fafafa; border-top:1px solid #e5e7eb; display:flex; flex-direction:column; gap:6px; }
+        .ver-queued-card { display:flex; align-items:center; gap:10px; background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:8px 10px; max-width:100%; min-width:0; box-shadow:0 1px 3px rgba(0,0,0,.06); }
         .ver-queued-filetype { width:36px; height:36px; background:#ef4444; border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0; }
         .ver-queued-ext { font-size:9px; font-weight:700; color:#fff; letter-spacing:.04em; line-height:1; text-transform:uppercase; }
         .ver-queued-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; }
