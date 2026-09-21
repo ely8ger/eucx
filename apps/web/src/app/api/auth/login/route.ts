@@ -151,12 +151,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Account-Status prüfen
-    if (user.status === "PENDING") {
-      return NextResponse.json(
-        { code: "ACCOUNT_PENDING", message: "Ihr Konto wird noch geprüft. Sie erhalten eine E-Mail sobald es freigeschaltet wurde." },
-        { status: 403 },
-      );
-    }
     if (user.status === "REJECTED") {
       return NextResponse.json(
         { code: "ACCOUNT_REJECTED", message: "Ihre Registrierung wurde abgelehnt. Bitte wenden Sie sich an support@eucx.eu." },

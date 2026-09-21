@@ -876,18 +876,18 @@ export default function RegisterPage() {
           </div>
           <div style={{ padding: "28px 32px" }}>
             <p style={{ fontSize: 14, color: "#444", fontFamily: F, lineHeight: 1.6, marginBottom: 24 }}>
-              Ihre E-Mail-Adresse wurde bestätigt. Ihr Konto wird nun von unserem Team geprüft.
-              Sie erhalten eine E-Mail sobald Ihr Zugang freigeschaltet wurde.
+              Ihre E-Mail-Adresse wurde bestätigt. Sie können sich jetzt anmelden.
+              Für Handelsaktivitäten ist eine KYC-Verifizierung erforderlich — diese können Sie nach dem Login einreichen.
             </p>
             <button
               onClick={() => router.push("/login")}
               style={{
                 height: 38, padding: "0 20px", borderRadius: 0,
-                border: `1px solid ${BORDER}`, backgroundColor: "#fff",
-                fontSize: 13, fontWeight: 500, color: TEXT, fontFamily: F, cursor: "pointer",
+                border: "none", backgroundColor: "#154194",
+                fontSize: 13, fontWeight: 600, color: "#fff", fontFamily: F, cursor: "pointer",
               }}
             >
-              {t("register_back")}
+              Jetzt anmelden
             </button>
           </div>
         </div>

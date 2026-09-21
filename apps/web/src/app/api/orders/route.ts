@@ -53,11 +53,14 @@ export async function POST(req: NextRequest) {
   try {
     const user = await db.user.findUnique({
       where: { id: tokenPayload.sub },
-      select: { id: true, organizationId: true, status: true, role: true },
+      select: { id: true, organizationId: true, status: true, role: true, verificationStatus: true },
     });
 
     if (!user || user.status !== "ACTIVE") {
       return NextResponse.json({ error: "Benutzer inaktiv oder nicht gefunden" }, { status: 403 });
+    }
+    if (user.verificationStatus !== "VERIFIED") {
+      return NextResponse.json({ error: "KYC-Verifizierung erforderlich. Bitte laden Sie Ihre Dokumente hoch." }, { status: 403 });
     }
 
     // ── Role-Direction-Check ───────────────────────────────────────

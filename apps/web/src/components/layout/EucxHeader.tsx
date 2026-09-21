@@ -618,6 +618,43 @@ export function EucxHeader() {
 
       {/* ── Breadcrumb - scrollt mit der Seite, zeigt den exakten Pfad ─────── */}
       <BreadcrumbBar pathname={pathname} role={me?.role} />
+
+      {/* ── KYC-Banner ───────────────────────────────────────────────────────── */}
+      {me && ["BUYER", "SELLER", "BROKER"].includes(me.role) && me.verificationStatus !== "VERIFIED" && (
+        <div style={{
+          background: me.verificationStatus === "PENDING_VERIFICATION" ? "#fffbeb" : "#fff7ed",
+          borderBottom: `1px solid ${me.verificationStatus === "PENDING_VERIFICATION" ? "#fde68a" : "#fed7aa"}`,
+          padding: "9px 28px",
+          display: "flex", alignItems: "center", gap: 12,
+          fontFamily: F, fontSize: 13,
+        }}>
+          <span style={{
+            width: 7, height: 7, borderRadius: "50%", flexShrink: 0,
+            background: me.verificationStatus === "PENDING_VERIFICATION" ? "#d97706" : "#ea580c",
+            display: "inline-block",
+          }} />
+          <span style={{ color: "#92400e" }}>
+            {me.verificationStatus === "PENDING_VERIFICATION"
+              ? "Ihre KYC-Unterlagen werden geprüft. Kaufen und Verkaufen ist bis zur Freigabe gesperrt."
+              : "Handelsaktivitäten erfordern eine Identitätsverifizierung (KYC)."}
+          </span>
+          {me.verificationStatus !== "PENDING_VERIFICATION" && (
+            <a
+              href="/dashboard/settings/verification"
+              style={{
+                marginLeft: "auto", flexShrink: 0,
+                fontSize: 12, fontWeight: 600, color: "#154194",
+                textDecoration: "none", padding: "4px 12px",
+                border: "1px solid #154194",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = "#154194"; e.currentTarget.style.color = "#fff"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#154194"; }}
+            >
+              Jetzt verifizieren →
+            </a>
+          )}
+        </div>
+      )}
     </>
   );
 }

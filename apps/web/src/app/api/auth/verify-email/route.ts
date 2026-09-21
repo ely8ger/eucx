@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Code als verwendet markieren + User als verifiziert setzen
+    // Code als verwendet markieren + User als verifiziert und sofort aktiv setzen
     await db.$transaction([
       db.emailVerification.update({
         where: { id: verification.id },
@@ -50,12 +50,12 @@ export async function POST(req: NextRequest) {
       }),
       db.user.update({
         where: { id: userId },
-        data:  { emailVerified: true },
+        data:  { emailVerified: true, status: "ACTIVE" },
       }),
     ]);
 
     return NextResponse.json({
-      data: { message: "E-Mail-Adresse bestätigt. Ihr Konto wird nun von unserem Team geprüft. Sie erhalten eine Benachrichtigung per E-Mail." },
+      data: { message: "E-Mail-Adresse bestätigt. Sie können sich jetzt anmelden." },
     });
   } catch (err) {
     console.error("[auth/verify-email]", err);
