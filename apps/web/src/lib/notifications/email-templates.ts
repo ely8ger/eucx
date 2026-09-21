@@ -186,7 +186,7 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
         : "Wir haben eine Anfrage zum Zurücksetzen Ihres Passworts erhalten."}
     </p>
     ${d.reason === "BRUTE_FORCE_LOCK" ? alertBox("Konto gesperrt - zu viele Fehlversuche", "#e67e22") : ""}
-    ${primaryBtn(`https://eucx.eu/reset-password?token=${d.token ?? ""}`, "Passwort jetzt zurücksetzen →")}
+    ${primaryBtn(`${process.env.NEXT_PUBLIC_APP_URL ?? "https://eucx.eu"}/reset-password?token=${d.token ?? ""}`, "Passwort jetzt zurücksetzen →")}
     <p style="margin:16px 0 0;font-size:12px;color:#9ca3af;">
       Dieser Link ist <strong>1 Stunde</strong> gültig. Falls Sie keine Anfrage gestellt haben, ignorieren Sie diese E-Mail.
     </p>
