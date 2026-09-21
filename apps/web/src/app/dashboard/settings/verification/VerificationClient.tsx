@@ -102,8 +102,9 @@ export function VerificationClient() {
   const [perDocFiles,  setPerDocFiles]  = useState<Partial<Record<DocType, File[]>>>({});
   const [activeDrag,   setActiveDrag]   = useState<DocType | null>(null);
   const [notes,        setNotes]        = useState("");
-  const [submitting,   setSubmitting]   = useState(false);
-  const [submitted,    setSubmitted]    = useState(false);
+  const [submitting,     setSubmitting]     = useState(false);
+  const [uploadStatus,   setUploadStatus]   = useState("");
+  const [submitted,      setSubmitted]      = useState(false);
   const fileInputRefs = useRef<Partial<Record<DocType, HTMLInputElement>>>({});
 
   useEffect(() => {
@@ -143,6 +144,36 @@ export function VerificationClient() {
     });
   }
 
+  async function uploadFiles(
+    freshToken: string,
+    queued: [DocType, File[]][],
+  ): Promise<{ name: string; type: string; sizeMb: number; url: string }[]> {
+    const results: { name: string; type: string; sizeMb: number; url: string }[] = [];
+    let done = 0;
+    const total = queued.reduce((s, [, files]) => s + files.length, 0);
+    for (const [type, files] of queued) {
+      for (const file of files) {
+        done++;
+        setUploadStatus(`Hochladen ${done}/${total}: ${file.name}`);
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("docType", type);
+        const res = await fetch("/api/kyc/upload", {
+          method:  "POST",
+          headers: { Authorization: `Bearer ${freshToken}` },
+          body:    fd,
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({})) as { error?: string };
+          throw new Error(err.error ?? `Upload fehlgeschlagen: ${file.name}`);
+        }
+        const data = await res.json() as { url: string; name: string; sizeMb: number };
+        results.push({ name: data.name, type, sizeMb: data.sizeMb, url: data.url });
+      }
+    }
+    return results;
+  }
+
   async function getFreshToken(): Promise<string | null> {
     try {
       const res = await fetch("/api/auth/refresh", { method: "POST", credentials: "include" });
@@ -161,17 +192,16 @@ export function VerificationClient() {
     const queued = Object.entries(perDocFiles) as [DocType, File[]][];
     if (!token || queued.length === 0) return;
     setSubmitting(true);
+    setUploadStatus("");
     try {
-      const documents = queued.flatMap(([type, files]) =>
-        files.map((file) => ({
-          name:   file.name,
-          type,
-          sizeMb: parseFloat((file.size / 1024 / 1024).toFixed(2)),
-          url:    null,
-        }))
-      );
-      // Token vor dem Einreichen frisch holen
+      // 1. Token erneuern
       const freshToken = await getFreshToken() ?? token;
+
+      // 2. Dateien hochladen → echte Blob-URLs
+      const documents = await uploadFiles(freshToken, queued);
+
+      // 3. KYC-Antrag einreichen
+      setUploadStatus("Antrag wird eingereicht …");
       const res  = await fetch("/api/kyc/submit", {
         method:  "POST",
         headers: { Authorization: `Bearer ${freshToken}`, "Content-Type": "application/json" },
@@ -187,10 +217,11 @@ export function VerificationClient() {
         setKycStatus("PENDING_VERIFICATION");
         await loadStatus(freshToken);
       }
-    } catch {
-      toast.error("Netzwerkfehler");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Netzwerkfehler");
     } finally {
       setSubmitting(false);
+      setUploadStatus("");
     }
   }
 
@@ -435,6 +466,9 @@ export function VerificationClient() {
         .ver-notes-inp:focus { border-color:#154194; }
 
         /* Submit */
+        .ver-upload-progress { display:flex; align-items:center; gap:10px; padding:10px 14px; background:#eff4ff; border:1px solid #bfdbfe; margin-top:12px; font-size:12.5px; color:#1e3a8a; }
+        .ver-upload-spinner { width:14px; height:14px; border:2px solid #93c5fd; border-top-color:#154194; border-radius:50%; animation:ver-spin .7s linear infinite; flex-shrink:0; }
+        @keyframes ver-spin { to { transform:rotate(360deg); } }
         .ver-btn { width:100%; height:50px; background:#154194; color:#fff; font-size:14.5px; font-weight:700; border:none; cursor:pointer; margin-top:16px; letter-spacing:.04em; transition:background .15s; }
         .ver-btn:hover:not(:disabled) { background:#0f3073; }
         .ver-btn:disabled { opacity:.5; cursor:not-allowed; }
@@ -563,14 +597,23 @@ export function VerificationClient() {
                 onChange={(e) => setNotes(e.target.value)}
                 maxLength={2000}
               />
+              {submitting && uploadStatus && (
+                <div className="ver-upload-progress">
+                  <div className="ver-upload-spinner"/>
+                  <span>{uploadStatus}</span>
+                </div>
+              )}
               <button
                 className="ver-btn"
                 disabled={submitting}
                 onClick={handleSubmit}
               >
                 {submitting
-                  ? "Wird eingereicht …"
-                  : `${Object.keys(perDocFiles).length} Dokument${Object.keys(perDocFiles).length > 1 ? "e" : ""} einreichen`}
+                  ? uploadStatus ? "Hochladen …" : "Wird eingereicht …"
+                  : (() => {
+                      const total = Object.values(perDocFiles).reduce((s, f) => s + (f?.length ?? 0), 0);
+                      return `${total} Dokument${total !== 1 ? "e" : ""} einreichen`;
+                    })()}
               </button>
             </>
           )}
