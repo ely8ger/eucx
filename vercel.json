@@ -20,7 +20,7 @@
   "crons": [
     {
       "path":     "/api/auction/cron",
-      "schedule": "* * * * *"
+      "schedule": "0 * * * *"
     }
   ],
 
