@@ -50,7 +50,7 @@ const DOC_TYPE_HELP: Record<DocType, string> = {
 
 // Role-specific doc config - evaluated at render time
 const REQUIRED_BASE: DocType[] = ["TRADE_REGISTER", "VAT_CONFIRMATION", "ID_DOCUMENT", "UBO_DOCUMENT"];
-const BUYER_REQUIRED_EXTRA: DocType[] = ["SOLVENCY_PROOF"];
+const BUYER_REQUIRED_EXTRA: DocType[] = [];
 const SELLER_OPTIONAL: DocType[] = ["EORI_CERTIFICATE", "ISO_CERTIFICATE", "CBAM_REGISTRATION"];
 
 const CHECK_STATUS_LABEL: Record<CheckStatus, string> = {
