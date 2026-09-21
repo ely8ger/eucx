@@ -5,7 +5,7 @@ import { getClientIp }                                      from "@/lib/net/get-
 import { isJtiBlacklistedEdge }                             from "@/lib/auth/token-blacklist";
 import { logSecurityEvent }                                 from "@/lib/audit/log-event";
 
-const PUBLIC_EXACT = new Set(["/", "/login", "/register"]);
+const PUBLIC_EXACT = new Set(["/", "/login", "/register", "/forgot-password", "/reset-password"]);
 
 const PUBLIC_PREFIXES = [
   // Auth-Endpunkte
