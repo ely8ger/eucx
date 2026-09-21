@@ -283,6 +283,23 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
     </p>
   `,
 
+  register_duplicate: (d) => `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Registrierungsversuch erkannt</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Jemand hat versucht, ein neues EUCX-Konto mit Ihrer E-Mail-Adresse
+      <strong>${d.email ?? ""}</strong> zu erstellen.
+    </p>
+    <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Falls Sie das selbst waren und Ihr Passwort vergessen haben, können Sie es zurücksetzen.
+      Falls Sie das <strong>nicht</strong> waren, besteht kein Handlungsbedarf — Ihr Konto ist sicher.
+    </p>
+    ${primaryBtn("https://eucx.eu/forgot-password", "Passwort zurücksetzen →")}
+    <p style="margin:20px 0 0;font-size:13px;color:#9ca3af;">
+      Bei Fragen wenden Sie sich bitte an
+      <a href="mailto:support@eucx.eu" style="color:#154194;">support@eucx.eu</a>.
+    </p>
+  `,
+
 };
 
 function fallback(template: string, data: Record<string, string>): string {

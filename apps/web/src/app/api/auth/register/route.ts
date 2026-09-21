@@ -5,6 +5,8 @@ import { registerSchema }            from "@/lib/validation/schemas";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
 import { generateEucxMemberId }      from "@/lib/members/eucx-id";
 import { isPwnedPassword }           from "@/lib/auth/pwned-password";
+import { checkRateLimit }            from "@/lib/rate-limit";
+import { getClientIp }               from "@/lib/net/get-client-ip";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +18,21 @@ function generateVerificationCode(): string {
   return String(buf.readUInt32BE(0) % 1_000_000).padStart(6, "0");
 }
 
+// Generische Erfolgsmeldung — identisch für neue und bereits existierende E-Mails
+const GENERIC_RESPONSE = { data: { message: "Registrierung gestartet. Bitte prüfen Sie Ihr E-Mail-Postfach und geben Sie den Code ein.", userId: "__pending__" } };
+
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+
+  // Rate-Limit: max. 5 Versuche pro IP / Minute
+  const rl = await checkRateLimit(ip, "auth");
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { code: "RATE_LIMIT", message: "Zu viele Versuche. Bitte warten Sie kurz." },
+      { status: 429, headers: { "Retry-After": "60" } },
+    );
+  }
+
   try {
     const body   = await req.json() as unknown;
     const parsed = registerSchema.safeParse(body);
@@ -41,13 +57,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Duplikat-Prüfung
+    // Duplikat-Prüfung — gleiche Antwort wie bei neuer Registrierung (kein User-Enumeration-Leak)
     const existing = await db.user.findUnique({ where: { email } });
     if (existing) {
-      return NextResponse.json(
-        { data: { message: "Falls diese E-Mail noch nicht registriert ist, erhalten Sie in Kürze einen Bestätigungscode.", userId: null } },
-        { status: 201 },
-      );
+      // Bestehenden Account-Inhaber diskret benachrichtigen
+      await sendAuctionMail({
+        to:       email,
+        subject:  "EUCX - Registrierungsversuch mit Ihrer E-Mail",
+        template: "register_duplicate",
+        data:     { email },
+      }).catch(() => {}); // Fehler nicht nach außen leaken
+      return NextResponse.json(GENERIC_RESPONSE, { status: 201 });
     }
 
     const passwordHash = await hashPassword(password);
@@ -85,7 +105,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(
-      { data: { message: "Registrierung gestartet. Bitte prüfen Sie Ihr E-Mail-Postfach und geben Sie den Code ein.", userId: user.id } },
+      { data: { message: GENERIC_RESPONSE.data.message, userId: user.id } },
       { status: 201 },
     );
   } catch (err) {
