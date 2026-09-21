@@ -143,6 +143,20 @@ export function VerificationClient() {
     });
   }
 
+  async function getFreshToken(): Promise<string | null> {
+    try {
+      const res = await fetch("/api/auth/refresh", { method: "POST", credentials: "include" });
+      if (!res.ok) return null;
+      const data = await res.json() as { accessToken?: string };
+      if (data.accessToken) {
+        localStorage.setItem("accessToken", data.accessToken);
+        setToken(data.accessToken);
+        return data.accessToken;
+      }
+    } catch { /* ignore */ }
+    return null;
+  }
+
   async function handleSubmit() {
     const queued = Object.entries(perDocFiles) as [DocType, File[]][];
     if (!token || queued.length === 0) return;
@@ -156,9 +170,11 @@ export function VerificationClient() {
           url:    null,
         }))
       );
+      // Token vor dem Einreichen frisch holen
+      const freshToken = await getFreshToken() ?? token;
       const res  = await fetch("/api/kyc/submit", {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        headers: { Authorization: `Bearer ${freshToken}`, "Content-Type": "application/json" },
         body:    JSON.stringify({ documents, notes: notes || undefined }),
       });
       const data = await res.json() as { error?: string };
@@ -169,7 +185,7 @@ export function VerificationClient() {
         setNotes("");
         setSubmitted(true);
         setKycStatus("PENDING_VERIFICATION");
-        await loadStatus(token);
+        await loadStatus(freshToken);
       }
     } catch {
       toast.error("Netzwerkfehler");
