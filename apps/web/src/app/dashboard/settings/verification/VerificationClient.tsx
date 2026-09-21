@@ -357,7 +357,7 @@ export function VerificationClient() {
         <EucxHeader />
 
         <div className="ver-main">
-          <h1 className="ver-title">Identitäts-<strong>prüfung</strong></h1>
+          <h1 className="ver-title">Identitätsprüfung</h1>
           <p className="ver-sub">
             {userRole === "SELLER"
               ? "Reichen Sie Ihre Unterlagen ein, um als verifizierter Verkäufer Gebote abgeben zu können. Die Prüfung dauert in der Regel unter 24 Stunden."
