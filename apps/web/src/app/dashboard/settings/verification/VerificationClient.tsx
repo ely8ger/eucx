@@ -542,11 +542,7 @@ export function VerificationClient() {
             <div className="ver-alert green">
               <div className="ver-alert-title">Dokumente erfolgreich eingereicht</div>
               <div className="ver-alert-body">
-                Wir benachrichtigen Sie per E-Mail an <strong>{userEmail}</strong>, sobald die Prüfung abgeschlossen ist - in der Regel unter 24 Stunden.
-                <br />
-                {userRole === "SELLER"
-                  ? "Nach erfolgreicher Verifikation können Sie sich für Ausschreibungen registrieren und Gebote abgeben."
-                  : "Nach erfolgreicher Verifikation können Sie Ausschreibungen erstellen und Angebote von Verkäufern empfangen."}
+                Wir benachrichtigen Sie per E-Mail an <strong>{userEmail}</strong>, sobald die Prüfung abgeschlossen ist — in der Regel unter 24 Stunden.
               </div>
             </div>
           )}
