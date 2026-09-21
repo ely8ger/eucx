@@ -266,11 +266,9 @@ export function VerificationClient() {
                     if (f) queueFile(type, f);
                   }}
                 >
-                  <div className="ver-inline-drop-icon">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                      <path d="M11.5 6L6.5 11C5.12 12.38 2.88 12.38 1.5 11C.12 9.62.12 7.38 1.5 6L6 1.5C6.97.53 8.53.53 9.5 1.5C10.47 2.47 10.47 4.03 9.5 5L5 9.5C4.45 10.05 3.55 10.05 3 9.5C2.45 8.95 2.45 8.05 3 7.5L7 3.5" stroke="#6b7280" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
+                  <svg width="14" height="14" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0, opacity: 0.45 }}>
+                    <path d="M11.5 6L6.5 11C5.12 12.38 2.88 12.38 1.5 11C.12 9.62.12 7.38 1.5 6L6 1.5C6.97.53 8.53.53 9.5 1.5C10.47 2.47 10.47 4.03 9.5 5L5 9.5C4.45 10.05 3.55 10.05 3 9.5C2.45 8.95 2.45 8.05 3 7.5L7 3.5" stroke="#374151" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                   <div className="ver-inline-drop-body">
                     <span className="ver-inline-drop-text">
                       {activeDrag === type ? "Datei loslassen …" : "Datei hier ablegen"}
