@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { email, password, organizationName, taxId, lei, country, city, street, postalCode, phone, hrb, legalForm, foundedAt, naceCode, role, contactName, contactPosition, isGeschaeftsfuehrer } = parsed.data;
+    const now = new Date();
 
     // HaveIBeenPwned — Passwort gegen bekannte Leaks prüfen
     const pwned = await isPwnedPassword(password);
@@ -86,7 +87,15 @@ export async function POST(req: NextRequest) {
     await db.organization.update({ where: { id: org.id }, data: { memberId } });
 
     const user = await db.user.create({
-      data: { email, passwordHash, role, organizationId: org.id, status: "PENDING", emailVerified: false },
+      data: {
+        email, passwordHash, role, organizationId: org.id,
+        status: "PENDING", emailVerified: false,
+        pepDeclarationAt:  now,
+        uboDeclarationAt:  now,
+        termsAcceptedAt:   now,
+        privacyAcceptedAt: now,
+        registrationIp:    ip,
+      },
     });
 
     // E-Mail-Bestätigungscode generieren (gültig 15 Min.)

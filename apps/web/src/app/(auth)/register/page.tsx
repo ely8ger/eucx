@@ -637,6 +637,8 @@ export default function RegisterPage() {
           contactName,
           contactPosition,
           isGeschaeftsfuehrer: isGeschaeftsfuehrer ?? true,
+          consentPep:       true,
+          consentUbo:       true,
           consentDsgvo:     true,
           consentAgb:       true,
         }),
@@ -1256,7 +1258,7 @@ export default function RegisterPage() {
 
               {/* ── 4. Compliance-Erklärungen (GwG) ────────────────────── */}
               <div>
-                <SectionHead>Compliance-Erklärungen</SectionHead>
+                <SectionHead>Compliance-Erklärungen <span style={{ color: "#dc2626", fontWeight: 700 }}>*</span></SectionHead>
                 <div style={{
                   backgroundColor: "rgba(21,65,148,.03)", border: "1px solid rgba(21,65,148,.12)",
                   padding: "14px 16px", marginBottom: 14,
@@ -1275,6 +1277,7 @@ export default function RegisterPage() {
                     Ich erkläre, dass weder ich persönlich noch Gesellschafter mit mehr als 25 % Unternehmensanteil
                     eine politisch exponierte Person (PEP) im Sinne des § 2 Abs. 12 GwG sind oder waren.
                     Ich werde EUCX unverzüglich informieren, sollte sich dieser Status ändern.
+                    {" "}<span style={{ color: "#dc2626", fontWeight: 700 }}>*</span>
                   </ConsentBox>
                   <ConsentBox
                     name="consentUbo" checked={consentUbo}
@@ -1284,8 +1287,12 @@ export default function RegisterPage() {
                     Ich erkläre, dass alle wirtschaftlich Berechtigten (Gesellschafter mit mehr als 25 % Anteil)
                     gemäß § 19 GwG im Transparenzregister eingetragen sind und keine abweichenden wirtschaftlich
                     Berechtigten existieren. Ich verpflichte mich, Änderungen unverzüglich zu melden.
+                    {" "}<span style={{ color: "#dc2626", fontWeight: 700 }}>*</span>
                   </ConsentBox>
                 </div>
+                <p style={{ margin: "10px 0 0", fontSize: 11, color: "#9ca3af", fontFamily: F }}>
+                  <span style={{ color: "#dc2626", fontWeight: 700 }}>*</span> Pflichtfeld — gesetzlich vorgeschrieben (GwG)
+                </p>
               </div>
 
               {/* ── 5. Einwilligungen ───────────────────────────────────── */}

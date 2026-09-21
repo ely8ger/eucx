@@ -34,6 +34,10 @@ export const registerSchema = z.object({
   contactName:           z.string().min(2).max(100),
   contactPosition:       z.string().min(2).max(100),
   isGeschaeftsfuehrer:   z.boolean(),
+  consentPep:            z.literal(true, { message: "PEP-Erklärung ist pflichtgemäß (§ 2 Abs. 12 GwG)." }),
+  consentUbo:            z.literal(true, { message: "UBO-Erklärung ist pflichtgemäß (§ 19 GwG)." }),
+  consentDsgvo:          z.literal(true, { message: "Zustimmung zur Datenschutzerklärung erforderlich." }),
+  consentAgb:            z.literal(true, { message: "Zustimmung zu den AGB erforderlich." }),
 });
 
 // ─── Warengruppen ─────────────────────────────────────────────────────────────

@@ -301,6 +301,12 @@ model User {
   failedLoginCount    Int                @default(0)       // Fehlversuche seit letztem Erfolg
   lockedUntil         DateTime?                            // Account gesperrt bis (null = nicht gesperrt)
   rejectionReason     String?                              // Grund der Ablehnung durch Admin
+  // Compliance-Nachweise (GwG + DSGVO) — Zeitstempel der Zustimmung bei Registrierung
+  pepDeclarationAt    DateTime?                            // § 2 Abs. 12 GwG — PEP-Selbstauskunft
+  uboDeclarationAt    DateTime?                            // § 19 GwG — Wirtschaftlich Berechtigte
+  termsAcceptedAt     DateTime?                            // AGB-Zustimmung
+  privacyAcceptedAt   DateTime?                            // DSGVO Art. 6 Abs. 1 lit. a — Datenschutzerklärung
+  registrationIp      String?                              // IP-Adresse bei Registrierung (Nachweis)
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt
 
