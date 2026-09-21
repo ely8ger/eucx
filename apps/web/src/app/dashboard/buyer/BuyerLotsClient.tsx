@@ -948,7 +948,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 {kyc.verificationStatus === "SUSPENDED"            && "Konto gesperrt - bitte Support kontaktieren."}
               </div>
               {(kyc.verificationStatus === "GUEST" || kyc.verificationStatus === "REJECTED") && (
-                <a href="/dashboard/settings/verification" className="bl-kyc-link">Jetzt verifizieren →</a>
+                <a href="/dashboard/settings/verification" className="bl-kyc-link">Jetzt verifizieren</a>
               )}
             </div>
           )}

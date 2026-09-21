@@ -368,7 +368,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
               </div>
               {(kyc.verificationStatus === "GUEST" || kyc.verificationStatus === "REJECTED") && (
                 <a href="/dashboard/settings/verification" className="sl-kyc-warn-link">
-                  Jetzt verifizieren →
+                  Jetzt verifizieren
                 </a>
               )}
             </div>
@@ -687,7 +687,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                 {!isVerified && !lot.isRegistered && lot.phase === "COLLECTION" && (
                   <div style={{ margin: "0 30px 16px", padding: "10px 14px", background: "#fffbeb", borderLeft: "2px solid #d97706", fontSize: 12, color: "#92400e" }}>
                     KYC-Verifizierung erforderlich.{" "}
-                    <a href="/dashboard/settings/verification" style={{ color: "#d97706", fontWeight: 600 }}>Jetzt verifizieren →</a>
+                    <a href="/dashboard/settings/verification" style={{ color: "#d97706", fontWeight: 600 }}>Jetzt verifizieren</a>
                   </div>
                 )}
               </div>

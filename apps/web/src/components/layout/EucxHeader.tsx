@@ -650,7 +650,7 @@ export function EucxHeader() {
               onMouseEnter={e => { e.currentTarget.style.background = "#154194"; e.currentTarget.style.color = "#fff"; }}
               onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#154194"; }}
             >
-              Jetzt verifizieren →
+              Jetzt verifizieren
             </a>
           )}
         </div>
