@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { useDropzone } from "react-dropzone";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { KycStatusBadge } from "@/components/KycStatusBadge";
 import { EucxHeader } from "@/components/layout/EucxHeader";
@@ -77,26 +76,10 @@ function detectType(filename: string): DocType {
   return "OTHER";
 }
 
-function readPreview(file: File): Promise<string | null> {
-  if (!file.type.startsWith("image/")) return Promise.resolve(null);
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload  = (e) => resolve((e.target?.result as string) ?? null);
-    reader.onerror = ()  => resolve(null);
-    reader.readAsDataURL(file);
-  });
-}
-
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
 
 // ── Interfaces ────────────────────────────────────────────────────────────────
-
-interface UploadFile {
-  file:    File;
-  type:    DocType;
-  preview: string | null;
-}
 
 interface ExistingDoc {
   id:        string;
@@ -110,17 +93,18 @@ interface ExistingDoc {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function VerificationClient() {
-  const [token,                setToken]                = useState("");
-  const [userEmail,            setUserEmail]            = useState("");
-  const [userRole,             setUserRole]             = useState<"BUYER" | "SELLER">("BUYER");
-  const [isGeschaeftsfuehrer,  setIsGeschaeftsfuehrer]  = useState<boolean | null>(null);
+  const [token,               setToken]               = useState("");
+  const [userEmail,           setUserEmail]           = useState("");
+  const [userRole,            setUserRole]            = useState<"BUYER" | "SELLER">("BUYER");
+  const [isGeschaeftsfuehrer, setIsGeschaeftsfuehrer] = useState<boolean | null>(null);
   const [kycStatus,    setKycStatus]    = useState<VerificationStatus>("GUEST");
   const [existingDocs, setExistingDocs] = useState<ExistingDoc[]>([]);
-  const [files,        setFiles]        = useState<UploadFile[]>([]);
+  const [perDocFiles,  setPerDocFiles]  = useState<Partial<Record<DocType, File>>>({});
+  const [activeDrag,   setActiveDrag]   = useState<DocType | null>(null);
   const [notes,        setNotes]        = useState("");
   const [submitting,   setSubmitting]   = useState(false);
   const [submitted,    setSubmitted]    = useState(false);
-  const [resubmitType, setResubmitType] = useState<DocType | null>(null);
+  const fileInputRefs = useRef<Partial<Record<DocType, HTMLInputElement>>>({});
 
   useEffect(() => {
     const tkn = localStorage.getItem("accessToken") ?? "";
@@ -137,8 +121,7 @@ export function VerificationClient() {
       setUserRole(data.role === "SELLER" ? "SELLER" : "BUYER");
       setIsGeschaeftsfuehrer(data.organization?.isGeschaeftsfuehrer ?? null);
       setKycStatus(data.verificationStatus ?? "GUEST");
-
-      const docsRes  = await fetch("/api/kyc/documents", { headers: { Authorization: `Bearer ${tkn}` } });
+      const docsRes = await fetch("/api/kyc/documents", { headers: { Authorization: `Bearer ${tkn}` } });
       if (docsRes.ok) {
         const docsData = await docsRes.json() as { documents?: ExistingDoc[] };
         setExistingDocs(docsData.documents ?? []);
@@ -146,43 +129,24 @@ export function VerificationClient() {
     } catch { /* ignore */ }
   }
 
-  const onDrop = useCallback(async (accepted: File[]) => {
-    const newFiles = await Promise.all(
-      accepted.map(async (f) => ({
-        file:    f,
-        type:    resubmitType ?? detectType(f.name),
-        preview: await readPreview(f),
-      }))
-    );
-    setFiles((prev) => [...prev, ...newFiles]);
-  }, [resubmitType]);
+  function queueFile(type: DocType, file: File) {
+    if (file.size > 15 * 1024 * 1024) { toast.error("Maximale Dateigröße: 15 MB"); return; }
+    setPerDocFiles((prev) => ({ ...prev, [type]: file }));
+  }
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "application/pdf": [".pdf"],
-      "image/jpeg":      [".jpg", ".jpeg"],
-      "image/png":       [".png"],
-      "image/webp":      [".webp"],
-    },
-    maxSize:  15 * 1024 * 1024,
-    multiple: true,
-  });
-
-  const setFileType = (idx: number, type: DocType) =>
-    setFiles((prev) => prev.map((f, i) => i === idx ? { ...f, type } : f));
-
-  const removeFile = (idx: number) =>
-    setFiles((prev) => prev.filter((_, i) => i !== idx));
+  function removeDocFile(type: DocType) {
+    setPerDocFiles((prev) => { const n = { ...prev }; delete n[type]; return n; });
+  }
 
   async function handleSubmit() {
-    if (!token || files.length === 0) return;
+    const queued = Object.entries(perDocFiles) as [DocType, File][];
+    if (!token || queued.length === 0) return;
     setSubmitting(true);
     try {
-      const documents = files.map((f) => ({
-        name:   f.file.name,
-        type:   f.type,
-        sizeMb: parseFloat((f.file.size / 1024 / 1024).toFixed(2)),
+      const documents = queued.map(([type, file]) => ({
+        name:   file.name,
+        type,
+        sizeMb: parseFloat((file.size / 1024 / 1024).toFixed(2)),
         url:    null,
       }));
       const res  = await fetch("/api/kyc/submit", {
@@ -194,10 +158,9 @@ export function VerificationClient() {
       if (!res.ok) {
         toast.error(data.error ?? "Fehler beim Einreichen");
       } else {
-        setFiles([]);
+        setPerDocFiles({});
         setNotes("");
         setSubmitted(true);
-        setResubmitType(null);
         setKycStatus("PENDING_VERIFICATION");
         await loadStatus(token);
       }
@@ -240,6 +203,93 @@ export function VerificationClient() {
   const optionalTypes: DocType[] = userRole === "SELLER" ? SELLER_OPTIONAL : [];
 
   const canUpload = kycStatus !== "VERIFIED";
+
+  function renderChecklist(types: DocType[], optional: boolean) {
+    const dotContent: Record<CheckStatus, string> = { approved: "✓", rejected: "✗", pending: "⋯", missing: "–" };
+    return (
+      <div className="ver-cl">
+        <div className="ver-cl-head" style={optional ? { color: "#64748b" } : undefined}>
+          {optional
+            ? "Optionale Unterlagen — Verkäufer"
+            : `Pflichtunterlagen (${types.filter((t) => docStatusForType(t) === "approved").length}/${types.length} genehmigt)`}
+        </div>
+        {types.map((type) => {
+          const st     = docStatusForType(type);
+          const rejDoc = existingDocs.find((d) => d.type === type && d.status === "REJECTED");
+          const queued = perDocFiles[type];
+          const canAdd = (st === "missing" || st === "rejected") && canUpload;
+          const ext    = queued ? queued.name.split(".").pop()?.toUpperCase() ?? "DOC" : "";
+          return (
+            <div key={type}>
+              {/* versteckter File-Input pro Dokumenttyp */}
+              {canAdd && (
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png,.webp"
+                  style={{ display: "none" }}
+                  ref={(el) => { if (el) fileInputRefs.current[type] = el; }}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) queueFile(type, f);
+                    e.target.value = "";
+                  }}
+                />
+              )}
+              <div
+                className={`ver-cl-row${activeDrag === type ? " drag-over" : ""}`}
+                onDragOver={canAdd ? (e) => { e.preventDefault(); setActiveDrag(type); } : undefined}
+                onDragLeave={canAdd ? () => setActiveDrag(null) : undefined}
+                onDrop={canAdd ? (e) => {
+                  e.preventDefault();
+                  setActiveDrag(null);
+                  const f = e.dataTransfer.files[0];
+                  if (f) queueFile(type, f);
+                } : undefined}
+              >
+                <div className={`ver-cl-dot ${st}`}>{dotContent[st]}</div>
+                <div className="ver-cl-info">
+                  <div className="ver-cl-label" style={optional ? { color: "#374151" } : undefined}>
+                    {DOC_TYPE_LABELS[type]}
+                  </div>
+                  <div className="ver-cl-help">{DOC_TYPE_HELP[type]}</div>
+                  {rejDoc?.adminNote && (
+                    <div className="ver-cl-note">Prüfer-Hinweis: {rejDoc.adminNote}</div>
+                  )}
+                </div>
+                <div className="ver-cl-right">
+                  {(st !== "missing" || !optional) && (
+                    <span className={`ver-cl-status ${st}`}>{CHECK_STATUS_LABEL[st]}</span>
+                  )}
+                  {canAdd && !queued && (
+                    <button
+                      className="ver-upbtn"
+                      onClick={() => fileInputRefs.current[type]?.click()}
+                    >
+                      {st === "rejected" ? "Erneut einreichen" : "Hochladen"}
+                    </button>
+                  )}
+                </div>
+              </div>
+              {/* Inline-Datei nach Auswahl */}
+              {queued && (
+                <div className="ver-queued">
+                  <div className="ver-queued-icon">{ext}</div>
+                  <span className="ver-queued-name">{queued.name}</span>
+                  <span className="ver-queued-size">{(queued.size / 1024 / 1024).toFixed(1)} MB</span>
+                  <button className="ver-queued-rm" onClick={() => removeDocFile(type)}>×</button>
+                </div>
+              )}
+            </div>
+          );
+        })}
+        {optional && (
+          <div className="ver-cl-seller-note">
+            Diese Dokumente beschleunigen die Lot-Freigabe. CBAM-Nachweis und EN 10204 3.1 Werkszeugnis sind beim ersten Lot mit Nicht-EU-Ware Pflicht.
+          </div>
+        )}
+      </div>
+    );
+  }
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -299,32 +349,21 @@ export function VerificationClient() {
         .ver-cl-status.missing  { color:#9ca3af; }
         .ver-cl-seller-note { padding:11px 20px; background:#f8fafc; border-top:1px solid #f3f4f6; font-size:12px; color:#64748b; line-height:1.5; }
 
-        /* Resubmit btn */
-        .ver-rsub { font-size:11.5px; font-weight:700; color:#154194; background:none; border:1px solid #154194; padding:4px 10px; cursor:pointer; white-space:nowrap; transition:all .12s; }
-        .ver-rsub:hover  { background:#f0f4ff; }
-        .ver-rsub.active { background:#154194; color:#fff; }
+        /* Upload-Button */
+        .ver-upbtn { font-size:11.5px; font-weight:700; color:#154194; background:none; border:1px solid #154194; padding:4px 12px; cursor:pointer; white-space:nowrap; transition:all .12s; }
+        .ver-upbtn:hover { background:#f0f4ff; }
 
-        /* Resubmit target hint */
-        .ver-rsub-hint { padding:10px 14px; background:#f0f4ff; border:1px solid #c7d7fc; margin-bottom:10px; font-size:13px; color:#1e3a8a; display:flex; align-items:center; justify-content:space-between; }
+        /* Drag-aktive Zeile */
+        .ver-cl-row.drag-over { background:#eff4ff; border-left:3px solid #154194; }
 
-        /* Dropzone */
-        .ver-drop { border:2px dashed #d1d5db; padding:42px 24px; text-align:center; cursor:pointer; transition:all .15s; background:#fff; margin-bottom:14px; }
-        .ver-drop.drag  { border-color:#154194; background:#eff4ff; }
-        .ver-drop:hover { border-color:#9ca3af; }
-        .ver-drop.rsub  { border-color:#154194; border-style:solid; background:#f0f4ff; }
-        .ver-drop-icon  { font-size:34px; margin-bottom:8px; }
-        .ver-drop-text  { font-size:14px; font-weight:600; color:#0d1b2a; margin-bottom:4px; }
-        .ver-drop-hint  { font-size:12.5px; color:#9ca3af; }
-        .ver-drop-types { font-size:12px; color:#6b7280; margin-top:5px; }
-
-        /* File list */
-        .ver-file { background:#fff; border:1px solid #e5e7eb; padding:11px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-        .ver-file-thumb { width:38px; height:38px; object-fit:cover; border:1px solid #e5e7eb; flex-shrink:0; }
-        .ver-file-pdf   { width:38px; height:38px; background:#fee2e2; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#dc2626; flex-shrink:0; letter-spacing:.03em; }
-        .ver-file-name  { font-size:13px; font-weight:600; flex:1; min-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .ver-file-size  { font-size:12px; color:#9ca3af; white-space:nowrap; }
-        .ver-file-sel   { border:1px solid #d1d5db; padding:6px 10px; font-size:12.5px; font-family:inherit; outline:none; cursor:pointer; }
-        .ver-file-rm    { background:none; border:none; color:#dc2626; font-size:20px; cursor:pointer; padding:0 4px; line-height:1; flex-shrink:0; }
+        /* Queued-Datei unter der Zeile */
+        .ver-queued { display:flex; align-items:center; gap:10px; padding:8px 20px 10px 58px; background:#f8faff; border-top:1px dashed #c7d7fc; }
+        .ver-queued-icon { width:30px; height:30px; background:#dbeafe; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#1e40af; flex-shrink:0; letter-spacing:.03em; }
+        .ver-queued-name { font-size:12.5px; font-weight:600; color:#0d1b2a; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .ver-queued-size { font-size:11.5px; color:#9ca3af; white-space:nowrap; }
+        .ver-queued-rm   { background:none; border:none; color:#9ca3af; font-size:18px; cursor:pointer; padding:0 2px; line-height:1; flex-shrink:0; transition:color .1s; }
+        .ver-queued-rm:hover { color:#dc2626; }
+        .ver-queued-drag { font-size:11px; color:#9ca3af; }
 
         /* Notes */
         .ver-notes-lbl { font-size:13px; font-weight:600; color:#0d1b2a; margin:14px 0 6px; display:block; }
@@ -432,81 +471,10 @@ export function VerificationClient() {
           )}
 
           {/* Dokument-Checkliste - Pflichtunterlagen */}
-          <div className="ver-cl">
-            <div className="ver-cl-head">
-              Pflichtunterlagen ({requiredTypes.filter((t) => docStatusForType(t) === "approved").length}/{requiredTypes.length} genehmigt)
-            </div>
-            {requiredTypes.map((type) => {
-              const st     = docStatusForType(type);
-              const rejDoc = existingDocs.find((d) => d.type === type && d.status === "REJECTED");
-              const dotContent: Record<CheckStatus, string> = { approved: "✓", rejected: "✗", pending: "⋯", missing: "–" };
-              return (
-                <div className="ver-cl-row" key={type}>
-                  <div className={`ver-cl-dot ${st}`}>{dotContent[st]}</div>
-                  <div className="ver-cl-info">
-                    <div className="ver-cl-label">{DOC_TYPE_LABELS[type]}</div>
-                    <div className="ver-cl-help">{DOC_TYPE_HELP[type]}</div>
-                    {rejDoc?.adminNote && (
-                      <div className="ver-cl-note">Prüfer-Hinweis: {rejDoc.adminNote}</div>
-                    )}
-                  </div>
-                  <div className="ver-cl-right">
-                    <span className={`ver-cl-status ${st}`}>{CHECK_STATUS_LABEL[st]}</span>
-                    {(st === "missing" || st === "rejected") && canUpload && (
-                      <button
-                        className={`ver-rsub${resubmitType === type ? " active" : ""}`}
-                        onClick={() => setResubmitType(resubmitType === type ? null : type)}
-                      >
-                        {st === "rejected" ? "Erneut einreichen" : "Hochladen"}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          {renderChecklist(requiredTypes, false)}
 
           {/* Optionale Unterlagen - nur Verkäufer */}
-          {optionalTypes.length > 0 && (
-            <div className="ver-cl">
-              <div className="ver-cl-head" style={{ color: "#64748b" }}>
-                Optionale Unterlagen - Verkäufer
-              </div>
-              {optionalTypes.map((type) => {
-                const st     = docStatusForType(type);
-                const rejDoc = existingDocs.find((d) => d.type === type && d.status === "REJECTED");
-                const dotContent: Record<CheckStatus, string> = { approved: "✓", rejected: "✗", pending: "⋯", missing: "–" };
-                return (
-                  <div className="ver-cl-row" key={type}>
-                    <div className={`ver-cl-dot ${st}`}>{dotContent[st]}</div>
-                    <div className="ver-cl-info">
-                      <div className="ver-cl-label" style={{ color: "#374151" }}>{DOC_TYPE_LABELS[type]}</div>
-                      <div className="ver-cl-help">{DOC_TYPE_HELP[type]}</div>
-                      {rejDoc?.adminNote && (
-                        <div className="ver-cl-note">Prüfer-Hinweis: {rejDoc.adminNote}</div>
-                      )}
-                    </div>
-                    <div className="ver-cl-right">
-                      {st !== "missing" && (
-                        <span className={`ver-cl-status ${st}`}>{CHECK_STATUS_LABEL[st]}</span>
-                      )}
-                      {(st === "missing" || st === "rejected") && canUpload && (
-                        <button
-                          className={`ver-rsub${resubmitType === type ? " active" : ""}`}
-                          onClick={() => setResubmitType(resubmitType === type ? null : type)}
-                        >
-                          {st === "rejected" ? "Erneut einreichen" : "Jetzt einreichen"}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-              <div className="ver-cl-seller-note">
-                Diese Dokumente beschleunigen die Lot-Freigabe. CBAM-Nachweis und EN 10204 3.1 Werkszeugnis sind beim ersten Lot mit Nicht-EU-Ware Pflicht.
-              </div>
-            </div>
-          )}
+          {optionalTypes.length > 0 && renderChecklist(optionalTypes, true)}
 
           {/* VERIFIED */}
           {kycStatus === "VERIFIED" && (
@@ -520,75 +488,26 @@ export function VerificationClient() {
             </div>
           )}
 
-          {/* Upload-Bereich */}
-          {canUpload && (
+          {/* Submit-Bereich — erscheint sobald mindestens eine Datei ausgewählt */}
+          {canUpload && Object.keys(perDocFiles).length > 0 && (
             <>
-              {resubmitType && (
-                <div className="ver-rsub-hint">
-                  <span>Neues Dokument für: <strong>{DOC_TYPE_LABELS[resubmitType]}</strong></span>
-                  <button
-                    style={{ background: "none", border: "none", color: "#6b7280", cursor: "pointer", fontSize: 18, lineHeight: 1 }}
-                    onClick={() => setResubmitType(null)}
-                  >
-                    ×
-                  </button>
-                </div>
-              )}
-
-              <div
-                {...getRootProps()}
-                className={`ver-drop${isDragActive ? " drag" : ""}${resubmitType ? " rsub" : ""}`}
+              <label className="ver-notes-lbl">Optionale Notiz an den Prüfer:</label>
+              <textarea
+                className="ver-notes-inp"
+                placeholder="z. B. 'Unternehmen wurde 2024 gegründet, Handelsregister noch in Bearbeitung'"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                maxLength={2000}
+              />
+              <button
+                className="ver-btn"
+                disabled={submitting}
+                onClick={handleSubmit}
               >
-                <input {...getInputProps()} />
-                <div className="ver-drop-icon">📎</div>
-                <div className="ver-drop-text">
-                  {isDragActive ? "Dateien loslassen …" : "Dateien hier ablegen oder tippen zum Auswählen"}
-                </div>
-                <div className="ver-drop-hint">Typ wird automatisch erkannt · Auch auf dem iPad: Foto direkt aus Kamera</div>
-                <div className="ver-drop-types">PDF, JPG, PNG, WEBP - max. 15 MB pro Datei</div>
-              </div>
-
-              {files.length > 0 && (
-                <>
-                  {files.map((f, idx) => (
-                    <div className="ver-file" key={idx}>
-                      {f.preview
-                        ? <img src={f.preview} className="ver-file-thumb" alt="" />
-                        : <div className="ver-file-pdf">PDF</div>
-                      }
-                      <span className="ver-file-name">{f.file.name}</span>
-                      <span className="ver-file-size">{(f.file.size / 1024 / 1024).toFixed(1)} MB</span>
-                      <select
-                        className="ver-file-sel"
-                        value={f.type}
-                        onChange={(e) => setFileType(idx, e.target.value as DocType)}
-                      >
-                        {(Object.entries(DOC_TYPE_LABELS) as [DocType, string][]).map(([val, label]) => (
-                          <option key={val} value={val}>{label}</option>
-                        ))}
-                      </select>
-                      <button className="ver-file-rm" onClick={() => removeFile(idx)}>×</button>
-                    </div>
-                  ))}
-
-                  <label className="ver-notes-lbl">Optionale Notiz an den Prüfer:</label>
-                  <textarea
-                    className="ver-notes-inp"
-                    placeholder="z. B. 'Unternehmen wurde 2024 gegründet, Handelsregister noch in Bearbeitung'"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    maxLength={2000}
-                  />
-
-                  <button
-                    className="ver-btn"
-                    disabled={submitting || files.length === 0}
-                    onClick={handleSubmit}
-                  >
-                    {submitting ? "Wird eingereicht …" : `${files.length} Dokument${files.length > 1 ? "e" : ""} einreichen →`}
-                  </button>
-                </>
-              )}
+                {submitting
+                  ? "Wird eingereicht …"
+                  : `${Object.keys(perDocFiles).length} Dokument${Object.keys(perDocFiles).length > 1 ? "e" : ""} einreichen`}
+              </button>
             </>
           )}
 
@@ -614,8 +533,8 @@ export function VerificationClient() {
                       </span>
                       {doc.status === "REJECTED" && canUpload && (
                         <button
-                          className={`ver-rsub${resubmitType === doc.type ? " active" : ""}`}
-                          onClick={() => setResubmitType(resubmitType === doc.type as DocType ? null : doc.type as DocType)}
+                          className="ver-upbtn"
+                          onClick={() => fileInputRefs.current[doc.type as DocType]?.click()}
                         >
                           Erneut einreichen
                         </button>
