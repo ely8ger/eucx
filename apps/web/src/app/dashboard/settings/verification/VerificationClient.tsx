@@ -265,20 +265,25 @@ export function VerificationClient() {
                     const f = e.dataTransfer.files[0];
                     if (f) queueFile(type, f);
                   }}
-                  onClick={() => fileInputRefs.current[type]?.click()}
                 >
                   <div className="ver-inline-drop-icon">
-                    {/* Büroklammer-SVG */}
                     <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                       <path d="M11.5 6L6.5 11C5.12 12.38 2.88 12.38 1.5 11C.12 9.62.12 7.38 1.5 6L6 1.5C6.97.53 8.53.53 9.5 1.5C10.47 2.47 10.47 4.03 9.5 5L5 9.5C4.45 10.05 3.55 10.05 3 9.5C2.45 8.95 2.45 8.05 3 7.5L7 3.5" stroke="#6b7280" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </div>
                   <div className="ver-inline-drop-body">
                     <span className="ver-inline-drop-text">
-                      {activeDrag === type ? "Datei loslassen …" : "Datei hier ablegen oder klicken zum Auswählen"}
+                      {activeDrag === type ? "Datei loslassen …" : "Datei hier ablegen"}
                     </span>
-                    <span className="ver-inline-drop-hint">PDF, JPG, PNG, WEBP · max. 15 MB pro Datei</span>
+                    <span className="ver-inline-drop-hint">PDF, JPG, PNG, WEBP · max. 15 MB</span>
                   </div>
+                  <button
+                    className="ver-inline-drop-btn"
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); fileInputRefs.current[type]?.click(); }}
+                  >
+                    Datei auswählen
+                  </button>
                 </div>
               )}
               {/* Datei-Karte nach Auswahl (ChatGPT-Stil) */}
@@ -297,8 +302,18 @@ export function VerificationClient() {
                     </div>
                     <div className="ver-queued-info">
                       <span className="ver-queued-name">{queued.name}</span>
-                      <span className="ver-queued-meta">{queued.type || "Dokument"} · {(queued.size / 1024 / 1024).toFixed(1)} MB</span>
+                      <span className="ver-queued-meta">{(queued.size / 1024 / 1024).toFixed(1)} MB</span>
                     </div>
+                    {canAdd && (
+                      <button
+                        className="ver-queued-replace"
+                        type="button"
+                        title="Andere Datei wählen"
+                        onClick={() => fileInputRefs.current[type]?.click()}
+                      >
+                        Ersetzen
+                      </button>
+                    )}
                     <button className="ver-queued-rm" title="Entfernen" onClick={() => removeDocFile(type)}>
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                         <circle cx="7" cy="7" r="6.5" fill="#e5e7eb"/>
@@ -387,6 +402,8 @@ export function VerificationClient() {
         .ver-inline-drop-text { font-size:12px; font-weight:500; color:#374151; display:block; line-height:1.4; }
         .ver-inline-drop:hover .ver-inline-drop-text, .ver-inline-drop.drag .ver-inline-drop-text { color:#154194; }
         .ver-inline-drop-hint { font-size:11px; color:#9ca3af; display:block; margin-top:1px; letter-spacing:.01em; }
+        .ver-inline-drop-btn { flex-shrink:0; background:#154194; color:#fff; border:none; font-size:11.5px; font-weight:600; padding:5px 12px; cursor:pointer; letter-spacing:.02em; transition:background .12s; white-space:nowrap; }
+        .ver-inline-drop-btn:hover { background:#1a51b8; }
 
         /* Hochgeladene Datei — Bestätigungszeile */
         .ver-queued-wrap { padding:8px 20px 10px; background:#fafafa; border-top:1px solid #e5e7eb; }
@@ -396,6 +413,8 @@ export function VerificationClient() {
         .ver-queued-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; }
         .ver-queued-name { font-size:12.5px; font-weight:600; color:#111827; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block; }
         .ver-queued-meta { font-size:11px; color:#9ca3af; display:block; }
+        .ver-queued-replace { background:none; border:1px solid #d1d5db; color:#374151; font-size:11px; font-weight:500; padding:3px 8px; cursor:pointer; flex-shrink:0; transition:border-color .1s, color .1s; white-space:nowrap; }
+        .ver-queued-replace:hover { border-color:#154194; color:#154194; }
         .ver-queued-rm { background:none; border:none; cursor:pointer; padding:0; line-height:1; flex-shrink:0; display:flex; align-items:center; transition:opacity .1s; }
         .ver-queued-rm:hover { opacity:.7; }
 
