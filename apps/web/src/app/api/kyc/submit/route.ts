@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
 import { verifyAccessToken }         from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
+import { sendAuctionMail }           from "@/lib/notifications/mailer";
 import { z }                         from "zod";
 
 export const dynamic = "force-dynamic";
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
 
   const user = await db.user.findUnique({
     where:  { id: tokenPayload.userId },
-    select: { verificationStatus: true },
+    select: { verificationStatus: true, email: true, role: true, organization: { select: { name: true } } },
   });
 
   if (!user) return NextResponse.json({ error: "Nutzer nicht gefunden" }, { status: 404 });
@@ -91,6 +92,22 @@ export async function POST(req: NextRequest) {
       documents:     parsed.data.documents.map((d) => ({ name: d.name, type: d.type })),
     },
   });
+
+  // Admin-Benachrichtigung (fire-and-forget)
+  const adminEmail = process.env.EUCX_ADMIN_EMAIL ?? "compliance@eucx.eu";
+  const now = new Date().toLocaleString("de-DE", { timeZone: "Europe/Berlin", dateStyle: "short", timeStyle: "short" });
+  sendAuctionMail({
+    to:       adminEmail,
+    subject:  `KYC-Antrag eingereicht — ${user?.organization?.name ?? user?.email ?? tokenPayload.userId}`,
+    template: "kyc_submitted_admin",
+    data: {
+      email:       user?.email ?? "—",
+      orgName:     user?.organization?.name ?? "—",
+      role:        user?.role ?? "—",
+      docCount:    `${parsed.data.documents.length} Dokument${parsed.data.documents.length !== 1 ? "e" : ""}`,
+      submittedAt: now,
+    },
+  }).catch((e) => console.error("[KYC Submit] Admin-Mail fehlgeschlagen:", e));
 
   return NextResponse.json({ ok: true, message: "KYC-Antrag eingereicht. Sie werden benachrichtigt sobald Ihr Konto verifiziert ist." });
 }

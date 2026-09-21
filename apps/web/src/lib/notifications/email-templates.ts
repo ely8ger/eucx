@@ -283,6 +283,25 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
     </p>
   `,
 
+  kyc_submitted_admin: (d) => `
+    ${alertBox("Neuer KYC-Antrag eingereicht", "#154194")}
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">KYC-Prüfung erforderlich</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Ein Nutzer hat soeben KYC-Unterlagen eingereicht und wartet auf Prüfung.
+    </p>
+    ${infoTable(
+      infoRow("Nutzer:",       d.email ?? "—") +
+      infoRow("Organisation:", d.orgName ?? "—") +
+      infoRow("Rolle:",        d.role ?? "—") +
+      infoRow("Dokumente:",    d.docCount ?? "—") +
+      infoRow("Eingereicht:",  d.submittedAt ?? "—")
+    )}
+    ${primaryBtn("https://me8.eucx.eu/admin/kyc", "Jetzt prüfen →")}
+    <p style="margin:20px 0 0;font-size:12px;color:#9ca3af;">
+      Diese Nachricht wurde automatisch generiert. Antworten Sie bitte nicht auf diese E-Mail.
+    </p>
+  `,
+
   register_duplicate: (d) => `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Registrierungsversuch erkannt</h2>
     <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
