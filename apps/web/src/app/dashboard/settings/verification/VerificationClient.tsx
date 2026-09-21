@@ -205,7 +205,7 @@ export function VerificationClient() {
   const canUpload = kycStatus !== "VERIFIED";
 
   function renderChecklist(types: DocType[], optional: boolean) {
-    const dotContent: Record<CheckStatus, string> = { approved: "✓", rejected: "✗", pending: "⋯", missing: "–" };
+    const dotContent: Record<CheckStatus, string> = { approved: "✓", rejected: "✗", pending: "⋯", missing: "" };
     return (
       <div className="ver-cl">
         <div className="ver-cl-head" style={optional ? { color: "#64748b" } : undefined}>
@@ -243,7 +243,6 @@ export function VerificationClient() {
                   <div className="ver-cl-label" style={optional ? { color: "#374151" } : undefined}>
                     {DOC_TYPE_LABELS[type]}
                   </div>
-                  <div className="ver-cl-help">{DOC_TYPE_HELP[type]}</div>
                   {rejDoc?.adminNote && (
                     <div className="ver-cl-note">Prüfer-Hinweis: {rejDoc.adminNote}</div>
                   )}
