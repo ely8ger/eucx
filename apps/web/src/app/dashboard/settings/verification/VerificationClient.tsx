@@ -282,16 +282,31 @@ export function VerificationClient() {
                   </div>
                 </div>
               )}
-              {/* Bestätigungszeile nach Auswahl */}
+              {/* Datei-Karte nach Auswahl (ChatGPT-Stil) */}
               {queued && (
-                <div className="ver-queued">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-                    <circle cx="8" cy="8" r="6.5" stroke="#16a34a" strokeWidth="1.3"/>
-                    <path d="M5 8l2.2 2.2L11 6" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <span className="ver-queued-name">{queued.name}</span>
-                  <span className="ver-queued-size">{(queued.size / 1024 / 1024).toFixed(1)} MB</span>
-                  <button className="ver-queued-rm" title="Entfernen" onClick={() => removeDocFile(type)}>×</button>
+                <div className="ver-queued-wrap">
+                  <div className="ver-queued-card">
+                    <div className="ver-queued-filetype" style={{
+                      background: (() => {
+                        const ext = queued.name.split(".").pop()?.toLowerCase();
+                        if (ext === "pdf") return "#ef4444";
+                        if (ext === "jpg" || ext === "jpeg" || ext === "png" || ext === "webp") return "#3b82f6";
+                        return "#6b7280";
+                      })()
+                    }}>
+                      <span className="ver-queued-ext">{queued.name.split(".").pop()?.toUpperCase() ?? "DOC"}</span>
+                    </div>
+                    <div className="ver-queued-info">
+                      <span className="ver-queued-name">{queued.name}</span>
+                      <span className="ver-queued-meta">{queued.type || "Dokument"} · {(queued.size / 1024 / 1024).toFixed(1)} MB</span>
+                    </div>
+                    <button className="ver-queued-rm" title="Entfernen" onClick={() => removeDocFile(type)}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <circle cx="7" cy="7" r="6.5" fill="#e5e7eb"/>
+                        <path d="M4.5 4.5l5 5M9.5 4.5l-5 5" stroke="#6b7280" strokeWidth="1.4" strokeLinecap="round"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -375,11 +390,15 @@ export function VerificationClient() {
         .ver-inline-drop-hint { font-size:11px; color:#9ca3af; display:block; margin-top:1px; letter-spacing:.01em; }
 
         /* Hochgeladene Datei — Bestätigungszeile */
-        .ver-queued { display:flex; align-items:center; gap:10px; padding:10px 20px; background:#f0fdf4; border-top:1px solid #bbf7d0; }
-        .ver-queued-name { font-size:12.5px; font-weight:500; color:#14532d; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .ver-queued-size { font-size:11px; color:#6b7280; white-space:nowrap; font-variant-numeric:tabular-nums; }
-        .ver-queued-rm   { background:none; border:none; color:#9ca3af; font-size:16px; cursor:pointer; padding:0 2px; line-height:1; flex-shrink:0; transition:color .1s; }
-        .ver-queued-rm:hover { color:#dc2626; }
+        .ver-queued-wrap { padding:8px 20px 10px; background:#fafafa; border-top:1px solid #e5e7eb; }
+        .ver-queued-card { display:inline-flex; align-items:center; gap:10px; background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:8px 10px; position:relative; max-width:100%; min-width:0; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+        .ver-queued-filetype { width:36px; height:36px; background:#ef4444; border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0; }
+        .ver-queued-ext { font-size:9px; font-weight:700; color:#fff; letter-spacing:.04em; line-height:1; text-transform:uppercase; }
+        .ver-queued-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; }
+        .ver-queued-name { font-size:12.5px; font-weight:600; color:#111827; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block; }
+        .ver-queued-meta { font-size:11px; color:#9ca3af; display:block; }
+        .ver-queued-rm { background:none; border:none; cursor:pointer; padding:0; line-height:1; flex-shrink:0; display:flex; align-items:center; transition:opacity .1s; }
+        .ver-queued-rm:hover { opacity:.7; }
 
         /* Notes */
         .ver-notes-lbl { font-size:13px; font-weight:600; color:#0d1b2a; margin:14px 0 6px; display:block; }
