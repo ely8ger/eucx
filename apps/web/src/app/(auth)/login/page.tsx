@@ -181,7 +181,6 @@ export default function LoginPage() {
         const expiresAt = data.data.expiresAt ?? Date.now() + 15 * 60 * 1000;
         document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=900; samesite=lax${
           typeof window !== "undefined" && window.location.protocol === "https:" ? "; secure" : ""}`;
-        localStorage.setItem("accessToken", data.data.accessToken);
         if (data.data.user) setAuth(data.data.user, expiresAt);
         scheduleAutoLogout(expiresAt);
         if (typeof window !== "undefined") localStorage.setItem("eucx_prev_login", new Date().toISOString());
@@ -210,7 +209,6 @@ export default function LoginPage() {
         const expiresAt = data.data.expiresAt ?? Date.now() + 15 * 60 * 1000;
         document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=900; samesite=lax${
           typeof window !== "undefined" && window.location.protocol === "https:" ? "; secure" : ""}`;
-        localStorage.setItem("accessToken", data.data.accessToken);
         if (data.data.user) setAuth(data.data.user, expiresAt);
         scheduleAutoLogout(expiresAt);
         if (typeof window !== "undefined") localStorage.setItem("eucx_prev_login", new Date().toISOString());
@@ -288,7 +286,7 @@ export default function LoginPage() {
                       </button>
                     </div>
                     <div style={{ textAlign: "right", marginTop: 6 }}>
-                      <a href="mailto:support@eucx.eu?subject=Passwort%20zur%C3%BCcksetzen"
+                      <a href="/forgot-password"
                         style={{ fontSize: 12, color: BLUE, textDecoration: "none", fontWeight: 500, fontFamily: F }}
                         onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
                         onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
