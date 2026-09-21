@@ -254,7 +254,7 @@ export function VerificationClient() {
                   )}
                 </div>
               </div>
-              {/* Inline-Dropzone (immer sichtbar wenn uploadfähig und noch keine Datei) */}
+              {/* Inline-Dropzone — immer sichtbar wenn uploadfähig und noch keine Datei */}
               {canAdd && !queued && (
                 <div
                   className={`ver-inline-drop${activeDrag === type ? " drag" : ""}`}
@@ -268,17 +268,21 @@ export function VerificationClient() {
                   }}
                   onClick={() => fileInputRefs.current[type]?.click()}
                 >
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, opacity: .5 }}>
-                    <path d="M7 1v8M4 6l3 3 3-3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M1 11h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-                  </svg>
-                  <span className="ver-inline-drop-text">
-                    {activeDrag === type ? "Datei loslassen …" : "Datei hier ablegen oder klicken zum Auswählen"}
-                  </span>
-                  <span className="ver-inline-drop-hint">PDF, JPG, PNG, WEBP · max. 15 MB</span>
+                  <div className="ver-inline-drop-icon">
+                    {/* Büroklammer-SVG */}
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                      <path d="M11.5 6L6.5 11C5.12 12.38 2.88 12.38 1.5 11C.12 9.62.12 7.38 1.5 6L6 1.5C6.97.53 8.53.53 9.5 1.5C10.47 2.47 10.47 4.03 9.5 5L5 9.5C4.45 10.05 3.55 10.05 3 9.5C2.45 8.95 2.45 8.05 3 7.5L7 3.5" stroke="#6b7280" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <div className="ver-inline-drop-body">
+                    <span className="ver-inline-drop-text">
+                      {activeDrag === type ? "Datei loslassen …" : "Datei hier ablegen oder klicken zum Auswählen"}
+                    </span>
+                    <span className="ver-inline-drop-hint">PDF, JPG, PNG, WEBP · max. 15 MB pro Datei</span>
+                  </div>
                 </div>
               )}
-              {/* Hochgeladene Datei mit Häkchen */}
+              {/* Bestätigungszeile nach Auswahl */}
               {queued && (
                 <div className="ver-queued">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
@@ -361,16 +365,20 @@ export function VerificationClient() {
         .ver-cl-seller-note { padding:11px 20px; background:#f8fafc; border-top:1px solid #f3f4f6; font-size:12px; color:#64748b; line-height:1.5; }
 
         /* Inline-Dropzone unter jedem Dokument */
-        .ver-inline-drop { display:flex; align-items:center; gap:8px; padding:9px 20px 9px 58px; background:#fafafa; border-top:1px dashed #e5e7eb; cursor:pointer; transition:background .12s, border-color .12s; color:#6b7280; }
-        .ver-inline-drop:hover, .ver-inline-drop.drag { background:#eff4ff; border-top-color:#c7d7fc; color:#154194; }
-        .ver-inline-drop-text { font-size:12px; flex:1; }
-        .ver-inline-drop-hint { font-size:11px; color:#b0b7c3; white-space:nowrap; }
+        .ver-inline-drop { display:flex; align-items:center; gap:10px; padding:10px 20px 10px 20px; background:#fafafa; border-top:1px dashed #d1d5db; cursor:pointer; transition:background .12s, border-color .12s; }
+        .ver-inline-drop:hover, .ver-inline-drop.drag { background:#eff4ff; border-top-color:#93c5fd; }
+        .ver-inline-drop-icon { width:28px; height:28px; background:#f3f4f6; border:1px solid #e5e7eb; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .12s, border-color .12s; }
+        .ver-inline-drop:hover .ver-inline-drop-icon, .ver-inline-drop.drag .ver-inline-drop-icon { background:#dbeafe; border-color:#93c5fd; }
+        .ver-inline-drop-body { flex:1; min-width:0; }
+        .ver-inline-drop-text { font-size:12px; font-weight:500; color:#374151; display:block; line-height:1.4; }
+        .ver-inline-drop:hover .ver-inline-drop-text, .ver-inline-drop.drag .ver-inline-drop-text { color:#154194; }
+        .ver-inline-drop-hint { font-size:11px; color:#9ca3af; display:block; margin-top:1px; letter-spacing:.01em; }
 
-        /* Hochgeladene Datei mit Häkchen */
-        .ver-queued { display:flex; align-items:center; gap:10px; padding:8px 20px 9px 58px; background:#f0fdf4; border-top:1px solid #bbf7d0; }
-        .ver-queued-name { font-size:12.5px; font-weight:600; color:#14532d; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .ver-queued-size { font-size:11.5px; color:#6b7280; white-space:nowrap; }
-        .ver-queued-rm   { background:none; border:none; color:#9ca3af; font-size:18px; cursor:pointer; padding:0 2px; line-height:1; flex-shrink:0; transition:color .1s; }
+        /* Hochgeladene Datei — Bestätigungszeile */
+        .ver-queued { display:flex; align-items:center; gap:10px; padding:10px 20px; background:#f0fdf4; border-top:1px solid #bbf7d0; }
+        .ver-queued-name { font-size:12.5px; font-weight:500; color:#14532d; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .ver-queued-size { font-size:11px; color:#6b7280; white-space:nowrap; font-variant-numeric:tabular-nums; }
+        .ver-queued-rm   { background:none; border:none; color:#9ca3af; font-size:16px; cursor:pointer; padding:0 2px; line-height:1; flex-shrink:0; transition:color .1s; }
         .ver-queued-rm:hover { color:#dc2626; }
 
         /* Notes */
