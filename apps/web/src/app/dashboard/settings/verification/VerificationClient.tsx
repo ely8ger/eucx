@@ -235,18 +235,10 @@ export function VerificationClient() {
                   }}
                 />
               )}
-              <div
-                className={`ver-cl-row${activeDrag === type ? " drag-over" : ""}`}
-                onDragOver={canAdd ? (e) => { e.preventDefault(); setActiveDrag(type); } : undefined}
-                onDragLeave={canAdd ? () => setActiveDrag(null) : undefined}
-                onDrop={canAdd ? (e) => {
-                  e.preventDefault();
-                  setActiveDrag(null);
-                  const f = e.dataTransfer.files[0];
-                  if (f) queueFile(type, f);
-                } : undefined}
-              >
-                <div className={`ver-cl-dot ${st}`}>{dotContent[st]}</div>
+              <div className="ver-cl-row">
+                <div className={`ver-cl-dot ${queued ? "approved" : st}`}>
+                  {queued ? "✓" : dotContent[st]}
+                </div>
                 <div className="ver-cl-info">
                   <div className="ver-cl-label" style={optional ? { color: "#374151" } : undefined}>
                     {DOC_TYPE_LABELS[type]}
@@ -257,26 +249,45 @@ export function VerificationClient() {
                   )}
                 </div>
                 <div className="ver-cl-right">
-                  {(st !== "missing" || !optional) && (
+                  {(st !== "missing" || !optional) && !queued && (
                     <span className={`ver-cl-status ${st}`}>{CHECK_STATUS_LABEL[st]}</span>
-                  )}
-                  {canAdd && !queued && (
-                    <button
-                      className="ver-upbtn"
-                      onClick={() => fileInputRefs.current[type]?.click()}
-                    >
-                      {st === "rejected" ? "Erneut einreichen" : "Hochladen"}
-                    </button>
                   )}
                 </div>
               </div>
-              {/* Inline-Datei nach Auswahl */}
+              {/* Inline-Dropzone (immer sichtbar wenn uploadfähig und noch keine Datei) */}
+              {canAdd && !queued && (
+                <div
+                  className={`ver-inline-drop${activeDrag === type ? " drag" : ""}`}
+                  onDragOver={(e) => { e.preventDefault(); setActiveDrag(type); }}
+                  onDragLeave={() => setActiveDrag(null)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setActiveDrag(null);
+                    const f = e.dataTransfer.files[0];
+                    if (f) queueFile(type, f);
+                  }}
+                  onClick={() => fileInputRefs.current[type]?.click()}
+                >
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, opacity: .5 }}>
+                    <path d="M7 1v8M4 6l3 3 3-3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M1 11h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                  </svg>
+                  <span className="ver-inline-drop-text">
+                    {activeDrag === type ? "Datei loslassen …" : "Datei hier ablegen oder klicken zum Auswählen"}
+                  </span>
+                  <span className="ver-inline-drop-hint">PDF, JPG, PNG, WEBP · max. 15 MB</span>
+                </div>
+              )}
+              {/* Hochgeladene Datei mit Häkchen */}
               {queued && (
                 <div className="ver-queued">
-                  <div className="ver-queued-icon">{ext}</div>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+                    <circle cx="8" cy="8" r="6.5" stroke="#16a34a" strokeWidth="1.3"/>
+                    <path d="M5 8l2.2 2.2L11 6" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                   <span className="ver-queued-name">{queued.name}</span>
                   <span className="ver-queued-size">{(queued.size / 1024 / 1024).toFixed(1)} MB</span>
-                  <button className="ver-queued-rm" onClick={() => removeDocFile(type)}>×</button>
+                  <button className="ver-queued-rm" title="Entfernen" onClick={() => removeDocFile(type)}>×</button>
                 </div>
               )}
             </div>
@@ -349,21 +360,18 @@ export function VerificationClient() {
         .ver-cl-status.missing  { color:#9ca3af; }
         .ver-cl-seller-note { padding:11px 20px; background:#f8fafc; border-top:1px solid #f3f4f6; font-size:12px; color:#64748b; line-height:1.5; }
 
-        /* Upload-Button */
-        .ver-upbtn { font-size:11.5px; font-weight:700; color:#154194; background:none; border:1px solid #154194; padding:4px 12px; cursor:pointer; white-space:nowrap; transition:all .12s; }
-        .ver-upbtn:hover { background:#f0f4ff; }
+        /* Inline-Dropzone unter jedem Dokument */
+        .ver-inline-drop { display:flex; align-items:center; gap:8px; padding:9px 20px 9px 58px; background:#fafafa; border-top:1px dashed #e5e7eb; cursor:pointer; transition:background .12s, border-color .12s; color:#6b7280; }
+        .ver-inline-drop:hover, .ver-inline-drop.drag { background:#eff4ff; border-top-color:#c7d7fc; color:#154194; }
+        .ver-inline-drop-text { font-size:12px; flex:1; }
+        .ver-inline-drop-hint { font-size:11px; color:#b0b7c3; white-space:nowrap; }
 
-        /* Drag-aktive Zeile */
-        .ver-cl-row.drag-over { background:#eff4ff; border-left:3px solid #154194; }
-
-        /* Queued-Datei unter der Zeile */
-        .ver-queued { display:flex; align-items:center; gap:10px; padding:8px 20px 10px 58px; background:#f8faff; border-top:1px dashed #c7d7fc; }
-        .ver-queued-icon { width:30px; height:30px; background:#dbeafe; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#1e40af; flex-shrink:0; letter-spacing:.03em; }
-        .ver-queued-name { font-size:12.5px; font-weight:600; color:#0d1b2a; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .ver-queued-size { font-size:11.5px; color:#9ca3af; white-space:nowrap; }
+        /* Hochgeladene Datei mit Häkchen */
+        .ver-queued { display:flex; align-items:center; gap:10px; padding:8px 20px 9px 58px; background:#f0fdf4; border-top:1px solid #bbf7d0; }
+        .ver-queued-name { font-size:12.5px; font-weight:600; color:#14532d; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .ver-queued-size { font-size:11.5px; color:#6b7280; white-space:nowrap; }
         .ver-queued-rm   { background:none; border:none; color:#9ca3af; font-size:18px; cursor:pointer; padding:0 2px; line-height:1; flex-shrink:0; transition:color .1s; }
         .ver-queued-rm:hover { color:#dc2626; }
-        .ver-queued-drag { font-size:11px; color:#9ca3af; }
 
         /* Notes */
         .ver-notes-lbl { font-size:13px; font-weight:600; color:#0d1b2a; margin:14px 0 6px; display:block; }
