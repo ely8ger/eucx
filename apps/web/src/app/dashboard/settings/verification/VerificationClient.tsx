@@ -260,14 +260,14 @@ export function VerificationClient() {
 
   const canUpload = kycStatus !== "VERIFIED";
 
-  function renderChecklist(types: DocType[], optional: boolean) {
+  function renderGroup(title: string, types: DocType[], bottomNote?: string) {
     const dotContent: Record<CheckStatus, string> = { approved: "✓", rejected: "✗", pending: "⋯", missing: "" };
+    const approvedCount = types.filter((t) => docStatusForType(t) === "approved").length;
     return (
       <div className="ver-cl">
-        <div className="ver-cl-head" style={optional ? { color: "#64748b" } : undefined}>
-          {optional
-            ? "Optionale Unterlagen - Verkäufer"
-            : `Pflichtunterlagen (${types.filter((t) => docStatusForType(t) === "approved").length}/${types.length} genehmigt)`}
+        <div className="ver-cl-head">
+          <span>{title}</span>
+          <span className="ver-cl-head-count">{approvedCount}/{types.length} genehmigt</span>
         </div>
         {types.map((type) => {
           const st     = docStatusForType(type);
@@ -279,12 +279,12 @@ export function VerificationClient() {
               {canAdd && (
                 <input
                   type="file"
+                  multiple
                   accept=".pdf,.jpg,.jpeg,.png,.webp"
                   style={{ display: "none" }}
                   ref={(el) => { if (el) fileInputRefs.current[type] = el; }}
                   onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) queueFile(type, f);
+                    Array.from(e.target.files ?? []).forEach((f) => queueFile(type, f));
                     e.target.value = "";
                   }}
                 />
@@ -294,20 +294,18 @@ export function VerificationClient() {
                   {queued.length > 0 ? "✓" : dotContent[st]}
                 </div>
                 <div className="ver-cl-info">
-                  <div className="ver-cl-label" style={optional ? { color: "#374151" } : undefined}>
-                    {DOC_TYPE_LABELS[type]}
-                  </div>
+                  <div className="ver-cl-label">{DOC_TYPE_LABELS[type]}</div>
+                  <div className="ver-cl-help">{DOC_TYPE_HELP[type]}</div>
                   {rejDoc?.adminNote && (
                     <div className="ver-cl-note">Prüfer-Hinweis: {rejDoc.adminNote}</div>
                   )}
                 </div>
                 <div className="ver-cl-right">
-                  {(st !== "missing" || !optional) && queued.length === 0 && (
+                  {queued.length === 0 && (
                     <span className={`ver-cl-status ${st}`}>{CHECK_STATUS_LABEL[st]}</span>
                   )}
                 </div>
               </div>
-              {/* Datei-Karten für alle gewählten Dateien */}
               {queued.length > 0 && (
                 <div className="ver-queued-wrap">
                   {queued.map((file, idx) => {
@@ -335,7 +333,6 @@ export function VerificationClient() {
                   })}
                 </div>
               )}
-              {/* Drop-Zone - immer sichtbar wenn uploadfähig */}
               {canAdd && (
                 <div
                   className={`ver-inline-drop${activeDrag === type ? " drag" : ""}`}
@@ -344,8 +341,7 @@ export function VerificationClient() {
                   onDrop={(e) => {
                     e.preventDefault();
                     setActiveDrag(null);
-                    const f = e.dataTransfer.files[0];
-                    if (f) queueFile(type, f);
+                    Array.from(e.dataTransfer.files).forEach((f) => queueFile(type, f));
                   }}
                 >
                   <svg width="14" height="14" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0, opacity: 0.45 }}>
@@ -353,26 +349,24 @@ export function VerificationClient() {
                   </svg>
                   <div className="ver-inline-drop-body">
                     <span className="ver-inline-drop-text">
-                      {activeDrag === type ? "Datei loslassen …" : queued.length > 0 ? "Weitere Datei hinzufügen" : "Datei hier ablegen"}
+                      {activeDrag === type ? "Datei(en) loslassen …" : queued.length > 0 ? "Weitere Datei(en) hinzufügen" : "Datei(en) hier ablegen"}
                     </span>
-                    <span className="ver-inline-drop-hint">PDF, JPG, PNG, WEBP · max. 15 MB</span>
+                    <span className="ver-inline-drop-hint">PDF, JPG, PNG, WEBP · max. 15 MB · mehrere Dateien möglich</span>
                   </div>
                   <button
                     className="ver-inline-drop-btn"
                     type="button"
                     onClick={(e) => { e.stopPropagation(); fileInputRefs.current[type]?.click(); }}
                   >
-                    {queued.length > 0 ? "Datei ergänzen" : "Datei auswählen"}
+                    {queued.length > 0 ? "Ergänzen" : "Auswählen"}
                   </button>
                 </div>
               )}
             </div>
           );
         })}
-        {optional && (
-          <div className="ver-cl-seller-note">
-            Diese Dokumente beschleunigen die Lot-Freigabe. CBAM-Nachweis und EN 10204 3.1 Werkszeugnis sind beim ersten Lot mit Nicht-EU-Ware Pflicht.
-          </div>
+        {bottomNote && (
+          <div className="ver-cl-seller-note">{bottomNote}</div>
         )}
       </div>
     );
@@ -415,9 +409,10 @@ export function VerificationClient() {
         .ver-unlock-dot   { width:6px; height:6px; border-radius:50%; background:#154194; flex-shrink:0; margin-top:5px; }
 
         /* Checklist */
-        .ver-cl { background:#fff; border:1px solid #e5e7eb; margin-bottom:18px; }
-        .ver-cl-head { padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11.5px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:.06em; }
-        .ver-doc-block { border-bottom:1px solid #e5e7eb; }
+        .ver-cl { background:#fff; border:1px solid #e5e7eb; margin-bottom:20px; }
+        .ver-cl-head { padding:13px 20px; border-bottom:1px solid #e5e7eb; font-size:12px; font-weight:700; color:#154194; text-transform:uppercase; letter-spacing:.07em; display:flex; align-items:center; justify-content:space-between; background:#f8faff; }
+        .ver-cl-head-count { font-size:11px; font-weight:600; color:#9ca3af; letter-spacing:0; text-transform:none; }
+        .ver-doc-block { border-bottom:1px solid #f3f4f6; }
         .ver-doc-block:last-child { border-bottom:none; }
         .ver-cl-row  { display:flex; align-items:flex-start; gap:14px; padding:13px 20px; }
         .ver-cl-dot  { width:24px; height:24px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; margin-top:1px; }
@@ -566,11 +561,24 @@ export function VerificationClient() {
             </div>
           )}
 
-          {/* Dokument-Checkliste - Pflichtunterlagen */}
-          {renderChecklist(requiredTypes, false)}
+          {/* Gruppe 1: Unternehmensregistrierung */}
+          {renderGroup(
+            "Unternehmensregistrierung",
+            requiredTypes.filter((t) => t === "TRADE_REGISTER" || t === "VAT_CONFIRMATION"),
+          )}
 
-          {/* Optionale Unterlagen - nur Verkäufer */}
-          {optionalTypes.length > 0 && renderChecklist(optionalTypes, true)}
+          {/* Gruppe 2: Identifikation & Berechtigte */}
+          {renderGroup(
+            "Identifikation & wirtschaftlich Berechtigte",
+            requiredTypes.filter((t) => t === "ID_DOCUMENT" || t === "UBO_DOCUMENT"),
+          )}
+
+          {/* Gruppe 3: Vollmacht - nur wenn kein Geschäftsführer */}
+          {requiredTypes.includes("POWER_OF_ATTORNEY") && renderGroup(
+            "Bevollmächtigung",
+            ["POWER_OF_ATTORNEY"],
+            "Erforderlich wenn Sie nicht Geschäftsführer der Organisation sind. Die Vollmacht muss Stahl-Warentermingeschäfte auf EUCX ausdrücklich einschließen.",
+          )}
 
           {/* VERIFIED */}
           {kycStatus === "VERIFIED" && (
