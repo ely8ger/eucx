@@ -5,12 +5,13 @@
  * Gibt die öffentliche URL zurück, die dann beim Submit mitgesendet wird.
  *
  * Body: multipart/form-data
- *   file    — die Datei (PDF, JPG, PNG, WEBP)
- *   docType — DocType-Enum-Wert (z. B. "TRADE_REGISTER")
+ *   file    - die Datei (PDF, JPG, PNG, WEBP)
+ *   docType - DocType-Enum-Wert (z. B. "TRADE_REGISTER")
  */
 import { NextRequest, NextResponse } from "next/server";
 import { put }                       from "@vercel/blob";
 import { verifyAccessToken }         from "@/lib/auth/jwt";
+import { apiRoute }                  from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
@@ -19,11 +20,11 @@ const MAX_BYTES     = 15 * 1024 * 1024; // 15 MB
 
 const VALID_DOC_TYPES = new Set([
   "TRADE_REGISTER", "VAT_CONFIRMATION", "ID_DOCUMENT", "UBO_DOCUMENT",
-  "SOLVENCY_PROOF", "POWER_OF_ATTORNEY", "EORI_CERTIFICATE",
-  "ISO_CERTIFICATE", "CBAM_REGISTRATION", "OTHER",
+  "BANK_CONFIRMATION", "SOLVENCY_PROOF", "POWER_OF_ATTORNEY",
+  "EORI_CERTIFICATE", "ISO_CERTIFICATE", "CBAM_REGISTRATION", "OTHER",
 ]);
 
-export async function POST(req: NextRequest) {
+async function _POST(req: NextRequest) {
   // ── Auth ─────────────────────────────────────────────────────────────────
   let token: Awaited<ReturnType<typeof verifyAccessToken>>;
   try {
@@ -62,10 +63,20 @@ export async function POST(req: NextRequest) {
   const blobPath  = `kyc/${token.userId}/${docType}/${timestamp}-${safeName}`;
 
   // ── Blob-Upload ───────────────────────────────────────────────────────────
-  const blob = await put(blobPath, file, {
-    access:      "public",
-    contentType: file.type,
-  });
+  let blob: Awaited<ReturnType<typeof put>>;
+  try {
+    blob = await put(blobPath, file, {
+      access:      "public",
+      contentType: file.type,
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Unbekannter Fehler";
+    console.error("[POST /api/kyc/upload] Blob-Fehler:", msg);
+    return NextResponse.json(
+      { error: `Upload-Fehler: ${msg}` },
+      { status: 502 },
+    );
+  }
 
   return NextResponse.json({
     url:    blob.url,
@@ -73,3 +84,5 @@ export async function POST(req: NextRequest) {
     sizeMb: parseFloat((file.size / 1024 / 1024).toFixed(2)),
   });
 }
+
+export const POST = apiRoute(_POST);
