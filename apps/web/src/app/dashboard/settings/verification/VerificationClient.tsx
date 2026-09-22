@@ -51,7 +51,7 @@ const DOC_TYPE_HELP: Record<DocType, string> = {
 // Role-specific doc config - evaluated at render time
 const REQUIRED_BASE: DocType[] = ["TRADE_REGISTER", "VAT_CONFIRMATION", "ID_DOCUMENT", "UBO_DOCUMENT"];
 const BUYER_REQUIRED_EXTRA: DocType[] = [];
-const SELLER_OPTIONAL: DocType[] = ["EORI_CERTIFICATE", "ISO_CERTIFICATE", "CBAM_REGISTRATION"];
+const SELLER_OPTIONAL: DocType[] = [];
 
 const CHECK_STATUS_LABEL: Record<CheckStatus, string> = {
   approved: "Genehmigt",
@@ -164,8 +164,10 @@ export function VerificationClient() {
           body:    fd,
         });
         if (!res.ok) {
-          const err = await res.json().catch(() => ({})) as { error?: string };
-          throw new Error(err.error ?? `Upload fehlgeschlagen: ${file.name}`);
+          const err = await res.json().catch(() => ({})) as { error?: string; message?: string; code?: string };
+          const msg = err.error ?? err.message;
+          if (!msg && res.status === 401) throw new Error("Sitzung abgelaufen - bitte neu anmelden");
+          throw new Error(msg ?? `Upload fehlgeschlagen: ${file.name}`);
         }
         const data = await res.json() as { url: string; name: string; sizeMb: number };
         results.push({ name: data.name, type, sizeMb: data.sizeMb, url: data.url });
@@ -264,7 +266,7 @@ export function VerificationClient() {
       <div className="ver-cl">
         <div className="ver-cl-head" style={optional ? { color: "#64748b" } : undefined}>
           {optional
-            ? "Optionale Unterlagen — Verkäufer"
+            ? "Optionale Unterlagen - Verkäufer"
             : `Pflichtunterlagen (${types.filter((t) => docStatusForType(t) === "approved").length}/${types.length} genehmigt)`}
         </div>
         {types.map((type) => {
@@ -333,7 +335,7 @@ export function VerificationClient() {
                   })}
                 </div>
               )}
-              {/* Drop-Zone — immer sichtbar wenn uploadfähig */}
+              {/* Drop-Zone - immer sichtbar wenn uploadfähig */}
               {canAdd && (
                 <div
                   className={`ver-inline-drop${activeDrag === type ? " drag" : ""}`}
@@ -447,7 +449,7 @@ export function VerificationClient() {
         .ver-inline-drop-btn { flex-shrink:0; background:#154194; color:#fff; border:none; font-size:11.5px; font-weight:600; padding:5px 12px; cursor:pointer; letter-spacing:.02em; transition:background .12s; white-space:nowrap; }
         .ver-inline-drop-btn:hover { background:#1a51b8; }
 
-        /* Hochgeladene Datei — Bestätigungszeile */
+        /* Hochgeladene Datei - Bestätigungszeile */
         .ver-queued-wrap { padding:8px 20px 4px; background:#fafafa; border-top:1px solid #e5e7eb; display:flex; flex-direction:column; gap:6px; }
         .ver-queued-card { display:flex; align-items:center; gap:10px; background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:8px 10px; max-width:100%; min-width:0; box-shadow:0 1px 3px rgba(0,0,0,.06); }
         .ver-queued-filetype { width:36px; height:36px; background:#ef4444; border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0; }
@@ -542,7 +544,7 @@ export function VerificationClient() {
             <div className="ver-alert green">
               <div className="ver-alert-title">Dokumente erfolgreich eingereicht</div>
               <div className="ver-alert-body">
-                Wir benachrichtigen Sie per E-Mail an <strong>{userEmail}</strong>, sobald die Prüfung abgeschlossen ist — in der Regel unter 24 Stunden.
+                Wir benachrichtigen Sie per E-Mail an <strong>{userEmail}</strong>, sobald die Prüfung abgeschlossen ist - in der Regel unter 24 Stunden.
               </div>
             </div>
           )}
@@ -582,7 +584,7 @@ export function VerificationClient() {
             </div>
           )}
 
-          {/* Submit-Bereich — erscheint sobald mindestens eine Datei ausgewählt */}
+          {/* Submit-Bereich - erscheint sobald mindestens eine Datei ausgewählt */}
           {canUpload && Object.keys(perDocFiles).length > 0 && (
             <>
               <label className="ver-notes-lbl">Optionale Notiz an den Prüfer:</label>
