@@ -20,7 +20,7 @@ const bodySchema = z.object({
   // Dokument-Metadaten (URLs aus vorherigem Upload-Schritt)
   documents: z.array(z.object({
     name:     z.string(),
-    url:      z.string().optional(),
+    url:      z.string().nullable().optional(),
     type:     z.string(),
     sizeMb:   z.number(),
   })).min(1, "Mindestens ein Dokument erforderlich"),
