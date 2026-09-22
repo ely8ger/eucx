@@ -295,7 +295,6 @@ export function VerificationClient() {
                 </div>
                 <div className="ver-cl-info">
                   <div className="ver-cl-label">{DOC_TYPE_LABELS[type]}</div>
-                  <div className="ver-cl-help">{DOC_TYPE_HELP[type]}</div>
                   {rejDoc?.adminNote && (
                     <div className="ver-cl-note">Prüfer-Hinweis: {rejDoc.adminNote}</div>
                   )}
