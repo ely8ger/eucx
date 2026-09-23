@@ -11,6 +11,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Bell } from "lucide-react";
 
 interface NotifItem {
@@ -36,7 +37,7 @@ const TYPE_ICON: Record<string, string> = {
   LOST:         "○",
   CLOSED_BUYER: "✓",
   DEPOSIT_WARN: "!",
-  KYC_INQUIRY:  "📋",
+  KYC_INQUIRY:  "?",
 };
 
 const TYPE_COLOR: Record<string, string> = {
@@ -52,6 +53,7 @@ const TYPE_COLOR: Record<string, string> = {
 };
 
 export function NotificationBell({ token }: Props) {
+  const router = useRouter();
   const [open,        setOpen]        = useState(false);
   const [items,       setItems]       = useState<NotifItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -227,12 +229,18 @@ export function NotificationBell({ token }: Props) {
               items.map((n) => (
                 <div
                   key={n.id}
-                  onClick={() => !n.isRead && markRead(n.id)}
+                  onClick={() => {
+                    if (!n.isRead) markRead(n.id);
+                    if (n.type === "KYC_INQUIRY") {
+                      setOpen(false);
+                      router.push("/dashboard/settings/verification");
+                    }
+                  }}
                   style={{
                     padding:       "10px 16px",
                     borderBottom:  "1px solid #f3f4f6",
                     background:    n.isRead ? "#fff" : "#f0f4ff",
-                    cursor:        n.isRead ? "default" : "pointer",
+                    cursor:        (n.isRead && n.type !== "KYC_INQUIRY") ? "default" : "pointer",
                     display:       "flex",
                     gap:           10,
                     alignItems:    "flex-start",
