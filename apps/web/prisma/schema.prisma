@@ -1468,6 +1468,7 @@ enum NotifType {
   LOST
   CLOSED_BUYER
   DEPOSIT_WARN
+  KYC_INQUIRY
 }
 
 model Notification {

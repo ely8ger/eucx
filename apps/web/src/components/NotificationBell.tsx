@@ -36,6 +36,7 @@ const TYPE_ICON: Record<string, string> = {
   LOST:         "○",
   CLOSED_BUYER: "✓",
   DEPOSIT_WARN: "!",
+  KYC_INQUIRY:  "📋",
 };
 
 const TYPE_COLOR: Record<string, string> = {
@@ -47,6 +48,7 @@ const TYPE_COLOR: Record<string, string> = {
   LOST:         "#6b7280",
   CLOSED_BUYER: "#154194",
   DEPOSIT_WARN: "#d97706",
+  KYC_INQUIRY:  "#154194",
 };
 
 export function NotificationBell({ token }: Props) {
