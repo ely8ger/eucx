@@ -131,7 +131,7 @@ export function VerificationClient() {
   }
 
   function queueFile(type: DocType, file: File) {
-    if (file.size > 15 * 1024 * 1024) { toast.error("Maximale Dateigröße: 15 MB"); return; }
+    if (file.size > 4 * 1024 * 1024) { toast.error("Maximale Dateigröße: 4 MB"); return; }
     setPerDocFiles((prev) => ({ ...prev, [type]: [...(prev[type] ?? []), file] }));
   }
 
@@ -350,7 +350,7 @@ export function VerificationClient() {
                     <span className="ver-inline-drop-text">
                       {activeDrag === type ? "Datei(en) loslassen …" : queued.length > 0 ? "Weitere Datei(en) hinzufügen" : "Datei(en) hier ablegen"}
                     </span>
-                    <span className="ver-inline-drop-hint">PDF, JPG, PNG, WEBP · max. 15 MB · mehrere Dateien möglich</span>
+                    <span className="ver-inline-drop-hint">PDF, JPG, PNG, WEBP · max. 4 MB · mehrere Dateien möglich</span>
                   </div>
                   <button
                     className="ver-inline-drop-btn"

@@ -16,7 +16,7 @@ import { apiRoute }                  from "@/lib/api/route-handler";
 export const dynamic = "force-dynamic";
 
 const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
-const MAX_BYTES     = 15 * 1024 * 1024; // 15 MB
+const MAX_BYTES     = 4 * 1024 * 1024; // 4 MB (Vercel Serverless limit ~4.5 MB)
 
 const VALID_DOC_TYPES = new Set([
   "TRADE_REGISTER", "VAT_CONFIRMATION", "ID_DOCUMENT", "UBO_DOCUMENT",
@@ -54,7 +54,7 @@ async function _POST(req: NextRequest) {
     return NextResponse.json({ error: "Nur PDF, JPG, PNG und WEBP erlaubt" }, { status: 422 });
   }
   if (file.size > MAX_BYTES) {
-    return NextResponse.json({ error: "Maximale Dateigröße: 15 MB" }, { status: 422 });
+    return NextResponse.json({ error: "Maximale Dateigröße: 4 MB" }, { status: 422 });
   }
 
   // ── Dateiname bereinigen ──────────────────────────────────────────────────
