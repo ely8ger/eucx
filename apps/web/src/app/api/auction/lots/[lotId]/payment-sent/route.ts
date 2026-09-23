@@ -9,10 +9,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
+import { apiRoute } from "@/lib/api/route-handler";
+import { sendAuctionMail } from "@/lib/notifications/mailer";
 
 export const dynamic = "force-dynamic";
 
-export async function POST(
+async function _POST(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> }
 ) {
@@ -53,8 +55,29 @@ export async function POST(
   const updated = await db.lotContract.update({
     where:  { id: contract.id },
     data:   { paymentSentAt: new Date() },
-    select: { id: true, lotId: true, deliveryStatus: true, paymentSentAt: true },
+    select: { id: true, lotId: true, deliveryStatus: true, paymentSentAt: true, contractNumber: true, totalValue: true, sellerId: true },
   });
+
+  // Verkäufer per E-Mail informieren
+  const seller = await db.user.findUnique({
+    where:  { id: updated.sellerId },
+    select: { email: true },
+  });
+  if (seller?.email) {
+    sendAuctionMail({
+      to:       seller.email,
+      subject:  `Zahlungseingang gemeldet — Kontrakt ${updated.contractNumber ?? updated.id}`,
+      template: "payment_reported",
+      data: {
+        contractNumber: updated.contractNumber ?? updated.id,
+        lotId,
+        totalValue:     updated.totalValue?.toString() ?? "—",
+        reportedAt:     new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }),
+      },
+    }).catch((err: unknown) => console.error("[payment-sent] Mailer-Fehler:", err));
+  }
 
   return NextResponse.json(updated);
 }
+
+export const POST = apiRoute(_POST);

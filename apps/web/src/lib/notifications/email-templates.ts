@@ -249,7 +249,7 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
 
   contract_seller: (d) => `
     <div style="background:#f0fdf4;border-left:4px solid #16a34a;padding:14px 16px;margin-bottom:20px;">
-      <p style="margin:0;font-size:13px;color:#16a34a;font-weight:600;">Glückwunsch — Sie erhalten den Zuschlag!</p>
+      <p style="margin:0;font-size:13px;color:#16a34a;font-weight:600;">Glückwunsch - Sie erhalten den Zuschlag!</p>
     </div>
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Kaufvertrag ${d.contractNumber ?? "-"}</h2>
     <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
@@ -290,11 +290,11 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
       Ein Nutzer hat soeben KYC-Unterlagen eingereicht und wartet auf Prüfung.
     </p>
     ${infoTable(
-      infoRow("Nutzer:",       d.email ?? "—") +
-      infoRow("Organisation:", d.orgName ?? "—") +
-      infoRow("Rolle:",        d.role ?? "—") +
-      infoRow("Dokumente:",    d.docCount ?? "—") +
-      infoRow("Eingereicht:",  d.submittedAt ?? "—")
+      infoRow("Nutzer:",       d.email ?? "-") +
+      infoRow("Organisation:", d.orgName ?? "-") +
+      infoRow("Rolle:",        d.role ?? "-") +
+      infoRow("Dokumente:",    d.docCount ?? "-") +
+      infoRow("Eingereicht:",  d.submittedAt ?? "-")
     )}
     ${primaryBtn("https://me8.eucx.eu/admin/kyc", "Jetzt prüfen →")}
     <p style="margin:20px 0 0;font-size:12px;color:#9ca3af;">
@@ -310,13 +310,51 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
     </p>
     <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
       Falls Sie das selbst waren und Ihr Passwort vergessen haben, können Sie es zurücksetzen.
-      Falls Sie das <strong>nicht</strong> waren, besteht kein Handlungsbedarf — Ihr Konto ist sicher.
+      Falls Sie das <strong>nicht</strong> waren, besteht kein Handlungsbedarf - Ihr Konto ist sicher.
     </p>
     ${primaryBtn("https://eucx.eu/forgot-password", "Passwort zurücksetzen →")}
     <p style="margin:20px 0 0;font-size:13px;color:#9ca3af;">
       Bei Fragen wenden Sie sich bitte an
       <a href="mailto:support@eucx.eu" style="color:#154194;">support@eucx.eu</a>.
     </p>
+  `,
+
+  payment_reported: (d) => `
+    <h2 style="margin:0 0 16px;font-size:18px;font-weight:700;color:#154194;">Zahlungseingang gemeldet</h2>
+    <p style="margin:0 0 16px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Der Käufer hat die Zahlung für den folgenden Kontrakt als angewiesen gemeldet.
+    </p>
+    ${infoTable([
+      infoRow("Kontrakt-Nr.:", d.contractNumber ?? "—"),
+      infoRow("Lot-ID:", d.lotId ?? "—"),
+      infoRow("Betrag:", d.totalValue ?? "—"),
+      infoRow("Gemeldet am:", d.reportedAt ?? "—"),
+    ].join(""))}
+    <p style="margin:20px 0;font-size:14px;color:#4b5563;line-height:1.6;">
+      Bitte überprüfen Sie den Zahlungseingang auf Ihrem Konto und bestätigen Sie die Lieferfreigabe im Dashboard.
+    </p>
+    ${primaryBtn("https://eucx.eu/dashboard/contracts", "Kontrakt öffnen →")}
+    <p style="margin:20px 0 0;font-size:13px;color:#9ca3af;">
+      Bei Fragen wenden Sie sich bitte an
+      <a href="mailto:support@eucx.eu" style="color:#154194;">support@eucx.eu</a>.
+    </p>
+  `,
+
+  dispute_opened_admin: (d) => `
+    <h2 style="margin:0 0 16px;font-size:18px;font-weight:700;color:#dc2626;">Streitfall eröffnet — Compliance-Aktion erforderlich</h2>
+    ${alertBox("Ein Streitfall auf der EUCX-Plattform erfordert Ihre Überprüfung.")}
+    <p style="margin:16px 0;font-size:14px;color:#4b5563;line-height:1.6;">
+      Ein Teilnehmer hat einen Streitfall für einen Kontrakt eröffnet.
+    </p>
+    ${infoTable([
+      infoRow("Dispute-ID:", d.disputeId ?? "—"),
+      infoRow("Kontrakt:", d.contractId ?? "—"),
+      infoRow("Lot-ID:", d.lotId ?? "—"),
+      infoRow("Eröffnet von:", d.raisedByRole ?? "—"),
+      infoRow("Begründung:", d.reason ?? "—"),
+      infoRow("Eröffnet am:", d.openedAt ?? "—"),
+    ].join(""))}
+    ${primaryBtn("https://me8.eucx.eu/admin/escrow", "Escrow-Center öffnen →")}
   `,
 
 };

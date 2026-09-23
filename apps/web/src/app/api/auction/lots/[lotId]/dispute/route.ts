@@ -17,6 +17,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
 import { verifyAccessToken }         from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
+import { sendAuctionMail }           from "@/lib/notifications/mailer";
 import { DeliveryStatus }            from "@prisma/client";
 import { z }                         from "zod";
 
@@ -68,7 +69,7 @@ export async function POST(
   const isParty = contract.buyerId === token.userId || contract.sellerId === token.userId;
   const isAdmin = ["ADMIN", "SUPER_ADMIN", "COMPLIANCE_OFFICER"].includes(token.role);
   if (!isParty && !isAdmin) {
-    return NextResponse.json({ error: "Kein Zugriff — nur Käufer, Verkäufer oder Admin" }, { status: 403 });
+    return NextResponse.json({ error: "Kein Zugriff - nur Käufer, Verkäufer oder Admin" }, { status: 403 });
   }
 
   if (TERMINAL_STATUSES.includes(contract.deliveryStatus)) {
@@ -120,6 +121,23 @@ export async function POST(
     ipAddress:  ip,
     meta:       { lotId, reason: reason.slice(0, 100), evidenceCount: evidenceUrls.length },
   });
+
+  // Compliance-Team per E-Mail informieren
+  const raisedByRole = token.userId === contract.buyerId ? "Käufer" : "Verkäufer";
+  const complianceEmail = process.env.COMPLIANCE_EMAIL ?? "compliance@eucx.eu";
+  sendAuctionMail({
+    to:       complianceEmail,
+    subject:  `[EUCX Compliance] Streitfall eröffnet — Lot ${lotId}`,
+    template: "dispute_opened_admin",
+    data: {
+      disputeId:   dispute.id,
+      contractId:  contract.id,
+      lotId,
+      raisedByRole,
+      reason:      reason.slice(0, 300),
+      openedAt:    now.toLocaleString("de-DE", { timeZone: "Europe/Berlin" }),
+    },
+  }).catch((err: unknown) => console.error("[dispute] Compliance-Mailer-Fehler:", err));
 
   return NextResponse.json({ ok: true, disputeId: dispute.id }, { status: 201 });
 }
