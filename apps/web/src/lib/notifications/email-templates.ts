@@ -357,6 +357,40 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
     ${primaryBtn("https://me8.eucx.eu/admin/escrow", "Escrow-Center öffnen →")}
   `,
 
+  delivery_confirmed: (d) => `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Wareneingang bestätigt</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Der Käufer hat den Wareneingang für Ihren Kontrakt bestätigt.
+    </p>
+    ${infoTable([
+      infoRow("Kontrakt-Nr.:", d.contractNumber ?? "—"),
+      infoRow("Lot-ID:", d.lotId ?? "—"),
+      infoRow("Bestätigt am:", d.deliveredAt ?? "—"),
+    ].join(""))}
+    <p style="margin:20px 0;font-size:14px;color:#4b5563;line-height:1.6;">
+      Die Zahlung wird nun aus dem Escrow freigegeben und Ihrem Konto gutgeschrieben.
+    </p>
+    ${primaryBtn("https://eucx.eu/dashboard/contracts", "Kontrakt öffnen →")}
+    <p style="margin:20px 0 0;font-size:13px;color:#9ca3af;">
+      Bei Fragen wenden Sie sich bitte an
+      <a href="mailto:support@eucx.eu" style="color:#154194;">support@eucx.eu</a>.
+    </p>
+  `,
+
+  password_changed: (d) => `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Ihr Passwort wurde geändert</h2>
+    ${alertBox("Eine Passwortänderung wurde für Ihr EUCX-Konto durchgeführt.")}
+    ${infoTable([
+      infoRow("Geändert am:", d.changedAt ?? "—"),
+      infoRow("IP-Adresse:", d.ipAddress ?? "—"),
+    ].join(""))}
+    <p style="margin:20px 0;font-size:14px;color:#4b5563;line-height:1.6;">
+      Falls Sie diese Änderung <strong>nicht</strong> selbst vorgenommen haben, kontaktieren Sie uns
+      sofort unter <a href="mailto:security@eucx.eu" style="color:#154194;">security@eucx.eu</a>.
+    </p>
+    ${primaryBtn("https://eucx.eu/dashboard", "Zum Dashboard →")}
+  `,
+
 };
 
 function fallback(template: string, data: Record<string, string>): string {

@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
+import { sendAuctionMail } from "@/lib/notifications/mailer";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,7 @@ export async function POST(
 
   const contract = await db.lotContract.findUnique({
     where:  { lotId },
-    select: { id: true, buyerId: true, deliveryStatus: true },
+    select: { id: true, buyerId: true, sellerId: true, deliveryStatus: true, contractNumber: true },
   });
 
   if (!contract) {
@@ -50,6 +51,24 @@ export async function POST(
     },
     select: { deliveryStatus: true, deliveredAt: true },
   });
+
+  // Verkäufer über bestätigte Lieferung informieren
+  const seller = await db.user.findUnique({
+    where:  { id: contract.sellerId },
+    select: { email: true },
+  });
+  if (seller?.email) {
+    sendAuctionMail({
+      to:       seller.email,
+      subject:  `Wareneingang bestätigt — Kontrakt ${contract.contractNumber ?? contract.id}`,
+      template: "delivery_confirmed",
+      data: {
+        contractNumber: contract.contractNumber ?? contract.id,
+        lotId,
+        deliveredAt: new Date().toLocaleString("de-DE", { timeZone: "Europe/Berlin" }),
+      },
+    }).catch((err: unknown) => console.error("[buyer-delivery] Mailer-Fehler:", err));
+  }
 
   return NextResponse.json({
     deliveryStatus: updated.deliveryStatus,

@@ -4,6 +4,7 @@ import { db }                        from "@/lib/db/client";
 import { verifyAccessToken }         from "@/lib/auth/jwt";
 import { verifyPassword, hashPassword } from "@/lib/auth/password";
 import { isPwnedPassword }           from "@/lib/auth/pwned-password";
+import { sendAuctionMail }           from "@/lib/notifications/mailer";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Ungültige Eingabe" }, { status: 422 });
   }
 
-  const user = await db.user.findUnique({ where: { id: payload.userId }, select: { passwordHash: true } });
+  const user = await db.user.findUnique({ where: { id: payload.userId }, select: { passwordHash: true, email: true } });
   if (!user) return NextResponse.json({ error: "Nutzer nicht gefunden" }, { status: 404 });
 
   const ok = await verifyPassword(parsed.data.currentPassword, user.passwordHash);
@@ -47,6 +48,17 @@ export async function POST(req: NextRequest) {
 
   const newHash = await hashPassword(parsed.data.newPassword);
   await db.user.update({ where: { id: payload.userId }, data: { passwordHash: newHash } });
+
+  // Sicherheitsbenachrichtigung an User
+  sendAuctionMail({
+    to:       user.email,
+    subject:  "Ihr EUCX-Passwort wurde geändert",
+    template: "password_changed",
+    data: {
+      changedAt: new Date().toLocaleString("de-DE", { timeZone: "Europe/Berlin" }),
+      ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "—",
+    },
+  }).catch((err: unknown) => console.error("[change-password] Mailer-Fehler:", err));
 
   return NextResponse.json({ ok: true });
 }

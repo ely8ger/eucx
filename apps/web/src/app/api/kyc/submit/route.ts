@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
 import { verifyAccessToken }         from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
+import { sendAuctionMail }           from "@/lib/notifications/mailer";
 import { z }                         from "zod";
 
 export const dynamic = "force-dynamic";
@@ -91,6 +92,21 @@ export async function POST(req: NextRequest) {
       documents:     parsed.data.documents.map((d) => ({ name: d.name, type: d.type })),
     },
   });
+
+  // Compliance-Admin benachrichtigen
+  const complianceEmail = process.env.COMPLIANCE_EMAIL ?? "compliance@eucx.eu";
+  sendAuctionMail({
+    to:       complianceEmail,
+    subject:  `[EUCX KYC] Neuer Antrag von ${user.organization?.name ?? user.email}`,
+    template: "kyc_submitted_admin",
+    data: {
+      email:       user.email,
+      orgName:     user.organization?.name ?? "—",
+      role:        user.role,
+      docCount:    String(parsed.data.documents.length),
+      submittedAt: new Date().toLocaleString("de-DE", { timeZone: "Europe/Berlin" }),
+    },
+  }).catch((err: unknown) => console.error("[kyc submit] Compliance-Mailer-Fehler:", err));
 
   return NextResponse.json({ ok: true, message: "KYC-Antrag eingereicht. Sie werden benachrichtigt sobald Ihr Konto verifiziert ist." });
 }
