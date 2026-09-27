@@ -1,13 +1,13 @@
 /**
- * JTI-Blacklist — Access-Token-Revokation
+ * JTI-Blacklist - Access-Token-Revokation
  *
  * Wenn ein Nutzer sich ausloggt oder ein Admin einen Account sperrt, wird der JTI
  * (JWT ID) des aktuellen Access-Tokens in diese Blacklist eingetragen.
  * Die Middleware prüft bei jeder Anfrage, ob der JTI gesperrt ist.
  *
  * Backends:
- *   Production  — Upstash Redis (UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN)
- *   Dev / Test  — In-Memory Map (kein Redis erforderlich)
+ *   Production  - Upstash Redis (UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN)
+ *   Dev / Test  - In-Memory Map (kein Redis erforderlich)
  *
  * TTL: wird auf die verbleibende Lebensdauer des Tokens gesetzt (max. 15 Minuten).
  * Nach Ablauf der TTL gilt das Token ohnehin als abgelaufen → kein Speicherleck.

@@ -230,17 +230,17 @@ export function WalletClient() {
               {/* KPI-Kacheln */}
               <div className="wlt-kpi-row">
                 <div className="wlt-kpi">
-                  <div className="wlt-kpi-val available">{wallet ? fmtEur(wallet.available) : "—"}</div>
+                  <div className="wlt-kpi-val available">{wallet ? fmtEur(wallet.available) : "-"}</div>
                   <div className="wlt-kpi-label">Verfügbares Limit</div>
                   <div className="wlt-kpi-sub">Für neue Transaktionen freigegeben</div>
                 </div>
                 <div className="wlt-kpi">
-                  <div className="wlt-kpi-val reserved">{wallet ? fmtEur(wallet.reservedBalance) : "—"}</div>
+                  <div className="wlt-kpi-val reserved">{wallet ? fmtEur(wallet.reservedBalance) : "-"}</div>
                   <div className="wlt-kpi-label">Escrow-Reserve</div>
                   <div className="wlt-kpi-sub">Gesperrt für laufende Kontrakte</div>
                 </div>
                 <div className="wlt-kpi">
-                  <div className="wlt-kpi-val">{wallet ? fmtEur(wallet.balance) : "—"}</div>
+                  <div className="wlt-kpi-val">{wallet ? fmtEur(wallet.balance) : "-"}</div>
                   <div className="wlt-kpi-label">Gesamtlimit</div>
                   <div className="wlt-kpi-sub">
                     {wallet?.updatedAt ? `Stand: ${fmtDate(wallet.updatedAt)}` : "Noch nicht freigegeben"}
@@ -262,14 +262,14 @@ export function WalletClient() {
               <div className="wlt-pof">
                 <div className="wlt-pof-title">Sicherheitsleistung hinterlegen</div>
                 <div className="wlt-pof-hint">
-                  Um Ihr Trading-Limit auf EUCX zu erhöhen, laden Sie einen Finanznachweis hoch. Das EUCX-Compliance-Team prüft das Dokument und gibt das beantragte Limit in der Regel innerhalb von 1–2 Werktagen frei.
+                  Um Ihr Trading-Limit auf EUCX zu erhöhen, laden Sie einen Finanznachweis hoch. Das EUCX-Compliance-Team prüft das Dokument und gibt das beantragte Limit in der Regel innerhalb von 1-2 Werktagen frei.
                 </div>
 
                 {/* Prozess-Visualisierung */}
                 <div className="wlt-steps">
                   {[
                     { n: "01", t: "Dokument hochladen" },
-                    { n: "02", t: "Compliance-Prüfung (1–2 Werktage)" },
+                    { n: "02", t: "Compliance-Prüfung (1-2 Werktage)" },
                     { n: "03", t: "Limit freigegeben" },
                   ].map((s) => (
                     <div className="wlt-step" key={s.n}>
@@ -334,7 +334,7 @@ export function WalletClient() {
                           <div style={{ fontSize: 24 }}>✓</div>
                           <div className="wlt-file-name">{file.name}</div>
                           <div style={{ fontSize: 10.5, color: "#6b7280", marginTop: 2 }}>
-                            {(file.size / 1024).toFixed(0)} KB — Anderes Dokument wählen
+                            {(file.size / 1024).toFixed(0)} KB - Anderes Dokument wählen
                           </div>
                         </>
                       ) : (

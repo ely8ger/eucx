@@ -6,9 +6,9 @@
  *
  * Ablauf:
  *   1. Lots in Phase PROPOSAL/REDUCTION mit abgelaufenem auctionEnd → concludeLot()
- *      Cursor-basiertes Batching (100 pro Iteration) — kein OOM bei 10.000+ Lots.
- *   2. Lots mit auctionEnd in 9–11 Minuten → URGENCY_10M-Notification
- *   3. Lots mit auctionEnd in 4–6 Minuten → URGENCY_5M-Notification
+ *      Cursor-basiertes Batching (100 pro Iteration) - kein OOM bei 10.000+ Lots.
+ *   2. Lots mit auctionEnd in 9-11 Minuten → URGENCY_10M-Notification
+ *   3. Lots mit auctionEnd in 4-6 Minuten → URGENCY_5M-Notification
  *   4. Nach CONCLUSION: Event an QStash-Queue (PostTrade + Notifications im Worker)
  *      Fallback ohne QStash: direkt fire-and-forget (Dev/Test)
  *   5. Recovery: CONCLUSION-Lots ohne LotContract → Erneuter QStash-Event
@@ -112,7 +112,7 @@ export async function runAuctionTimer(): Promise<{
     if (batch.length < BATCH_SIZE) break;
   }
 
-  // ── 2. URGENCY_10M: Lots die in 9–11 Minuten enden ────────────────────────
+  // ── 2. URGENCY_10M: Lots die in 9-11 Minuten enden ────────────────────────
   const t10min = new Date(now.getTime() +  9 * 60_000);
   const t10max = new Date(now.getTime() + 11 * 60_000);
 
@@ -132,7 +132,7 @@ export async function runAuctionTimer(): Promise<{
     urgency10m.push(id);
   }
 
-  // ── 3. URGENCY_5M: Lots die in 4–6 Minuten enden ──────────────────────────
+  // ── 3. URGENCY_5M: Lots die in 4-6 Minuten enden ──────────────────────────
   const t5min = new Date(now.getTime() + 4 * 60_000);
   const t5max = new Date(now.getTime() + 6 * 60_000);
 

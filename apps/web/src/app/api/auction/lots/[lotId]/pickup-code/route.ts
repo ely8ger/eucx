@@ -11,10 +11,11 @@ import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { DeliveryStatus } from "@prisma/client";
 import crypto from "crypto";
+import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(
+async function _GET(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> }
 ) {
@@ -57,3 +58,5 @@ export async function GET(
 
   return NextResponse.json({ pickupCode: contract.pickupCode, lotId });
 }
+
+export const GET = apiRoute(_GET);

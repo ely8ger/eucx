@@ -76,7 +76,7 @@ export default function AgbPage() {
             <p style={{ ...S.p, marginBottom: 8 }}>
               Die EUCX GmbH (nachfolgend &ldquo;EUCX&rdquo; oder &ldquo;Betreiberin&rdquo;) betreibt die digitale Handelsplattform
               &ldquo;EUCX - European Union Commodity Exchange&rdquo; als Organisiertes Handelssystem (OTF) im Sinne
-              des § 72 Wertpapierhandelsgesetz (WpHG) in Verbindung mit Art. 4 Abs. 1 Nr. 23 und Art. 18–20 der
+              des § 72 Wertpapierhandelsgesetz (WpHG) in Verbindung mit Art. 4 Abs. 1 Nr. 23 und Art. 18-20 der
               Richtlinie 2014/65/EU (MiFID II).
             </p>
             <p style={{ ...S.p, marginBottom: 0 }}>
@@ -139,7 +139,7 @@ export default function AgbPage() {
             {[
               "Nachweis der Rechtspersönlichkeit (Handelsregisterauszug, nicht älter als 3 Monate)",
               "Nachweis der wirtschaftlichen Leistungsfähigkeit (aktuelle Jahresabschlüsse)",
-              "Identifizierung und Verifizierung der wirtschaftlich Berechtigten (KYC gem. §§ 10–17 GwG)",
+              "Identifizierung und Verifizierung der wirtschaftlich Berechtigten (KYC gem. §§ 10-17 GwG)",
               "Nachweis eines gültigen LEI (Legal Entity Identifier, ISO 17442)",
               "Unterzeichnung dieser AGB und der EUCX-Handelsordnung",
               "Hinterlegung der Kaution gemäß § 9 dieser AGB",
@@ -191,7 +191,7 @@ export default function AgbPage() {
           <h2 style={S.h2}>§ 5 Handelsbetrieb und Auftragserteilung</h2>
           <p style={S.p}>
             (1) Der Handelsbetrieb findet ausschließlich während der von der EUCX festgelegten Handelssitzungen
-            statt (Montag bis Freitag, 09:00–17:30 Uhr MEZ, außer an gesetzlichen Feiertagen in Hessen).
+            statt (Montag bis Freitag, 09:00-17:30 Uhr MEZ, außer an gesetzlichen Feiertagen in Hessen).
             Die EUCX behält sich das Recht vor, Handelssitzungen aus betrieblichen Gründen anzupassen.
           </p>
           <p style={S.p}>

@@ -5,7 +5,7 @@ import { LEXIKON } from "@/app/insights/data";
 import { LexikonClient } from "./LexikonClient";
 
 export const metadata = {
-  title: "Rohstoff-Lexikon A–Z | EUCX",
+  title: "Rohstoff-Lexikon A-Z | EUCX",
   description:
     "Rohstoff-Lexikon der EUCX: LME-Notierung, Incoterms 2020, CBAM, MiFID II OTF und mehr. Definitionen für den institutionellen EU-Rohstoffhandel.",
   alternates: { canonical: "https://eucx.eu/insights/lexikon" },
@@ -34,7 +34,7 @@ export default function LexikonPage() {
             Rohstoff-<strong style={{ fontWeight: 700 }}>Lexikon</strong>
           </h1>
           <p style={{ fontSize: 15, color: "#8aa8cc", margin: "0 0 28px", lineHeight: 1.6 }}>
-            A–Z Definitionen für den institutionellen Rohstoffhandel in der EU
+            A-Z Definitionen für den institutionellen Rohstoffhandel in der EU
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" as const }}>
             <span style={{ backgroundColor: "rgba(21,65,148,0.35)", color: "#a8c4f0", fontSize: 12, fontWeight: 700, padding: "6px 14px", letterSpacing: "0.06em" }}>

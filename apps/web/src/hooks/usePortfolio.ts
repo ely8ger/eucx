@@ -55,7 +55,7 @@ export interface PortfolioOrder {
   // Computed client-side
   remainingQty:   string;
   totalValue:     string;
-  filledPct:      number;   // 0–100
+  filledPct:      number;   // 0-100
 }
 
 export interface OrdersResponse {

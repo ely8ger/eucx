@@ -43,7 +43,7 @@ const PHASE_COLOR: Record<Phase, string> = {
 };
 
 const fmtEur = (v: string | null) =>
-  v == null ? "—" :
+  v == null ? "-" :
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
 
 const fmtQty = (qty: string, unit: string) =>
@@ -57,7 +57,7 @@ function useCountdown(isoEnd: string | null): string {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    if (!isoEnd) { setLabel("—"); return; }
+    if (!isoEnd) { setLabel("-"); return; }
     const calc = () => {
       const diff = new Date(isoEnd).getTime() - Date.now();
       if (diff <= 0) { setLabel("Abgelaufen"); return; }
@@ -78,7 +78,7 @@ function useCountdown(isoEnd: string | null): string {
 
 function CountdownCell({ isoEnd, phase }: { isoEnd: string | null; phase: Phase }) {
   const label = useCountdown(isoEnd);
-  if (phase === "CONCLUSION") return <span style={{ color: "#9ca3af" }}>—</span>;
+  if (phase === "CONCLUSION") return <span style={{ color: "#9ca3af" }}>-</span>;
   const urgent = isoEnd ? new Date(isoEnd).getTime() - Date.now() < 10 * 60_000 : false;
   return <span style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: 12, color: urgent ? "#dc2626" : "#374151", fontWeight: urgent ? 700 : 400 }}>{label}</span>;
 }
@@ -96,7 +96,7 @@ function RankBadge({ row }: { row: BidRow }) {
   if (row.rank != null) {
     return <span style={{ display: "inline-block", padding: "3px 9px", fontSize: 10.5, fontWeight: 700, background: "#e5e7eb", color: "#374151" }}>#{row.rank} von {row.totalBids}</span>;
   }
-  return <span style={{ color: "#9ca3af", fontSize: 12 }}>—</span>;
+  return <span style={{ color: "#9ca3af", fontSize: 12 }}>-</span>;
 }
 
 export function SellerActiveBidsClient() {
@@ -189,7 +189,7 @@ export function SellerActiveBidsClient() {
         <div className="ab-page">
           <div className="ab-title">Aktive Gebote</div>
           <div className="ab-sub">
-            Alle Lots auf die Sie ein Gebot abgegeben haben — mit aktuellem Rang und Preisentwicklung.
+            Alle Lots auf die Sie ein Gebot abgegeben haben - mit aktuellem Rang und Preisentwicklung.
           </div>
 
           {/* KPI-Kacheln */}

@@ -649,7 +649,7 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
                       )}
                       {isBuyer && disputeDone && (
                         <div style={{ marginTop: 10, padding: "10px 14px", background: "#fef2f2", border: "1px solid #fca5a5", fontSize: 12.5, color: "#dc2626", fontWeight: 600 }}>
-                          Streitfall eingereicht — EUCX-Compliance prüft Ihre Reklamation.
+                          Streitfall eingereicht - EUCX-Compliance prüft Ihre Reklamation.
                         </div>
                       )}
                     </div>

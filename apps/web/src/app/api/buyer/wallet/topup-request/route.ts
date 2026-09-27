@@ -13,6 +13,7 @@ import { verifyAccessToken }         from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
 import { db }                        from "@/lib/db/client";
 import { z }                         from "zod";
+import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ const bodySchema = z.object({
   reference: z.string().max(100).optional(),
 });
 
-export async function POST(req: NextRequest) {
+async function _POST(req: NextRequest) {
   const auth = req.headers.get("authorization");
   if (!auth?.startsWith("Bearer ")) {
     return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
@@ -73,6 +74,8 @@ export async function POST(req: NextRequest) {
     bic:          "COBADEFFXXX",
     beneficiary:  "EUCX GmbH",
     purpose:      transferRef,
-    message:      `Bitte überweisen Sie ${amount.toLocaleString("de-DE", { style: "currency", currency: "EUR" })} mit dem Verwendungszweck "${transferRef}". Ihr Guthaben wird nach Zahlungseingang (1–3 Werktage) gutgeschrieben.`,
+    message:      `Bitte überweisen Sie ${amount.toLocaleString("de-DE", { style: "currency", currency: "EUR" })} mit dem Verwendungszweck "${transferRef}". Ihr Guthaben wird nach Zahlungseingang (1-3 Werktage) gutgeschrieben.`,
   });
 }
+
+export const POST = apiRoute(_POST);

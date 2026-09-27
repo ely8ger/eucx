@@ -201,7 +201,7 @@ export async function processLotConclusion(lotId: string): Promise<void> {
   });
 
   // Phase 1 Escrow-Sperre: Käufer-Wallet → Escrow (fire-and-forget mit Fehlerprotokoll)
-  // Der Kontrakt ist bereits erstellt — Escrow-Lock ist logisch nachgelagert,
+  // Der Kontrakt ist bereits erstellt - Escrow-Lock ist logisch nachgelagert,
   // wird bei Fehler vom nächsten Retry-Job nachgeholt (idempotent durch idempotencyKey).
   const createdContract = await db.lotContract.findUnique({ where: { lotId }, select: { id: true } });
   if (createdContract) {
@@ -210,7 +210,7 @@ export async function processLotConclusion(lotId: string): Promise<void> {
     );
   }
 
-  // E-Mails via Resend (fire-and-forget — Haupt-Flow nicht blockieren)
+  // E-Mails via Resend (fire-and-forget - Haupt-Flow nicht blockieren)
   const tv = totalValue.toNumber().toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   sendAuctionMail({

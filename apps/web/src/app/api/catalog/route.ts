@@ -6,12 +6,13 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
+import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
 const SELECT = { id: true, nr: true, slug: true, nameDe: true, nameEn: true, nameRu: true, norm: true, _count: { select: { sizes: true } } } as const;
 
-export async function GET(req: NextRequest) {
+async function _GET(req: NextRequest) {
   const q      = req.nextUrl.searchParams.get("q")?.trim() ?? "";
   const slug   = req.nextUrl.searchParams.get("slug")?.trim() ?? "";
   const browse = req.nextUrl.searchParams.get("browse") === "1";
@@ -70,3 +71,5 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({ products });
 }
+
+export const GET = apiRoute(_GET);

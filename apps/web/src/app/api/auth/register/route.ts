@@ -18,7 +18,7 @@ function generateVerificationCode(): string {
   return String(buf.readUInt32BE(0) % 1_000_000).padStart(6, "0");
 }
 
-// Generische Erfolgsmeldung — identisch für neue und bereits existierende E-Mails
+// Generische Erfolgsmeldung - identisch für neue und bereits existierende E-Mails
 const GENERIC_RESPONSE = { data: { message: "Registrierung gestartet. Bitte prüfen Sie Ihr E-Mail-Postfach und geben Sie den Code ein.", userId: "__pending__" } };
 
 export async function POST(req: NextRequest) {
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     const { email, password, organizationName, taxId, lei, country, city, street, postalCode, phone, hrb, legalForm, foundedAt, naceCode, role, contactName, contactPosition, isGeschaeftsfuehrer } = parsed.data;
     const now = new Date();
 
-    // HaveIBeenPwned — Passwort gegen bekannte Leaks prüfen
+    // HaveIBeenPwned - Passwort gegen bekannte Leaks prüfen
     const pwned = await isPwnedPassword(password);
     if (pwned) {
       return NextResponse.json(
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Duplikat-Prüfung — gleiche Antwort wie bei neuer Registrierung (kein User-Enumeration-Leak)
+    // Duplikat-Prüfung - gleiche Antwort wie bei neuer Registrierung (kein User-Enumeration-Leak)
     const existing = await db.user.findUnique({ where: { email } });
     if (existing) {
       // Bestehenden Account-Inhaber diskret benachrichtigen

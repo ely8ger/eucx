@@ -6,10 +6,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
+import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
-export async function PATCH(
+async function _PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> }
 ) {
@@ -37,3 +38,5 @@ export async function PATCH(
 
   return NextResponse.json({ ok: true });
 }
+
+export const PATCH = apiRoute(_PATCH);

@@ -290,7 +290,7 @@ export default function KatalogPage() {
           meta:   { query: search.text.trim(), kategorie: katId },
         }),
       });
-    }, 1500); // 1,5 Sek Debounce — nur wenn User aufgehört hat zu tippen
+    }, 1500); // 1,5 Sek Debounce - nur wenn User aufgehört hat zu tippen
     return () => { if (noResultTimerRef.current) clearTimeout(noResultTimerRef.current); };
   }, [search.text, searchAktiv, produkte.length, katId]);
 

@@ -13,7 +13,7 @@ const F    = "'IBM Plex Sans', Arial, sans-serif";
 
 function IconKalium() {
   return <svg viewBox="0 0 80 60" width={80} height={60}>
-    {/* Kristallgitter – Kaliumchlorid-Würfelstruktur */}
+    {/* Kristallgitter - Kaliumchlorid-Würfelstruktur */}
     <rect x={12} y={16} width={22} height={22} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
     <rect x={18} y={22} width={10} height={10} fill="#c5d0de"/>
     <rect x={36} y={16} width={22} height={22} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
@@ -39,7 +39,7 @@ function IconNPK() {
 
 function IconStickstoff() {
   return <svg viewBox="0 0 80 60" width={80} height={60}>
-    {/* Prills – runde Granulate */}
+    {/* Prills - runde Granulate */}
     <circle cx={22} cy={22} r={11} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
     <circle cx={22} cy={22} r={6}  fill="#c5d0de"/>
     <circle cx={46} cy={18} r={11} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
@@ -53,7 +53,7 @@ function IconStickstoff() {
 
 function IconPhosphor() {
   return <svg viewBox="0 0 80 60" width={80} height={60}>
-    {/* Granulat – unregelmäßige Körner */}
+    {/* Granulat - unregelmäßige Körner */}
     <polygon points="14,18 28,12 36,22 26,32 12,28" fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
     <polygon points="18,20 27,15 33,22 25,29 16,26" fill="#c5d0de"/>
     <polygon points="36,14 52,10 58,24 46,30 32,24" fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>

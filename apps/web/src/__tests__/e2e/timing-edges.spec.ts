@@ -20,7 +20,7 @@
 import { test, expect } from "@playwright/test";
 
 const BASE       = "http://localhost:3000";
-const IP_TIMING  = "198.51.100.10"; // TEST-NET (RFC 5737) — exklusiv für timing-edges
+const IP_TIMING  = "198.51.100.10"; // TEST-NET (RFC 5737) - exklusiv für timing-edges
 
 // ─── Hilfsfunktionen ──────────────────────────────────────────────────────────
 
@@ -80,7 +80,7 @@ async function registerSeller(lotId: string, sellerToken: string): Promise<void>
 }
 
 async function openLot(lotId: string, buyerToken: string): Promise<void> {
-  // Open setzt auctionEnd server-seitig via getNextSlotEnd() — Body-Parameter wird ignoriert.
+  // Open setzt auctionEnd server-seitig via getNextSlotEnd() - Body-Parameter wird ignoriert.
   // Daher: erst öffnen (Pflicht für Phasenwechsel COLLECTION→PROPOSAL),
   // dann auctionEnd via Test-Endpunkt in der DB überschreiben.
   const res = await fetch(`${BASE}/api/auction/lots/${lotId}/open`, {
@@ -136,7 +136,7 @@ test.describe("Timing Edge-Cases", () => {
   let sellerToken: string;
 
   test.beforeAll(async () => {
-    // Rate-Limit zuerst zurücksetzen — verhindert 429 bei Logins nach anderen Test-Suites
+    // Rate-Limit zuerst zurücksetzen - verhindert 429 bei Logins nach anderen Test-Suites
     await resetRateLimit();
     buyerToken  = await login("buyer@eucx-test.de",   "Test1234!");
     sellerToken = await login("seller1@eucx-test.de", "Test1234!");

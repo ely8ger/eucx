@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
         await blacklistJti(payload.jti, payload.exp * 1000);
       }
     } catch {
-      // Abgelaufenes oder ungültiges Token — kein Blacklist-Eintrag nötig
+      // Abgelaufenes oder ungültiges Token - kein Blacklist-Eintrag nötig
     }
   }
 

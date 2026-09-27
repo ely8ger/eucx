@@ -79,7 +79,7 @@ export default function AkademiePage() {
             <li>Unternehmenstyp wählen: Händler/Importeur · Produzent · Finanzinstitut · Industrieabnehmer</li>
             <li>Pflichtdokumente hochladen (siehe Tabelle unten)</li>
             <li>Digitale Identitätsprüfung der UBOs via IDnow (Videoident, ca. 10 Min je Person)</li>
-            <li>Bestätigungs-E-Mail + Prüfung durch EUCX Compliance (1–2 Werktage)</li>
+            <li>Bestätigungs-E-Mail + Prüfung durch EUCX Compliance (1-2 Werktage)</li>
             <li>Freigabe und Zugang zum EUCX-Kundenportal</li>
           </ol>
 
@@ -182,8 +182,8 @@ export default function AkademiePage() {
               <tbody>
                 {[
                   ["bis 2 Mio. EUR", "10.000 EUR", "5,0 %"],
-                  ["2–10 Mio. EUR", "50.000 EUR", "2,5 %"],
-                  ["10–50 Mio. EUR", "150.000 EUR", "1,5 %"],
+                  ["2-10 Mio. EUR", "50.000 EUR", "2,5 %"],
+                  ["10-50 Mio. EUR", "150.000 EUR", "1,5 %"],
                   ["> 50 Mio. EUR", "Individuell", "1,0 %"],
                 ].map(([vol, margin, satz], i) => (
                   <tr key={i} style={{ backgroundColor: i % 2 === 0 ? "#fff" : "#f7f8fb" }}>
@@ -371,7 +371,7 @@ export default function AkademiePage() {
                   ["T+0", "Handelsabschluss (Matching)", "Sofort"],
                   ["T+1", "Handelsbestätigung und Dokumentenaustausch", "1 Werktag"],
                   ["T+2", "Zahlungsabwicklung (SEPA/SWIFT)", "2 Werktage"],
-                  ["T+3–7", "Physische Lieferung (abhängig von Incoterm/Entfernung)", "3–7 Werktage"],
+                  ["T+3-7", "Physische Lieferung (abhängig von Incoterm/Entfernung)", "3-7 Werktage"],
                   ["T+8", "Abschlussbestätigung und Margin-Freigabe", "8. Werktag"],
                 ].map(([phase, desc, frist], i) => (
                   <tr key={i} style={{ backgroundColor: i % 2 === 0 ? "#fff" : "#f7f8fb" }}>
@@ -458,7 +458,7 @@ export default function AkademiePage() {
                 name: "Wie lange dauert die KYC-Prüfung?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "1–2 Werktage bei vollständigen Unterlagen. Unvollständige Einreichungen können die Bearbeitungszeit um bis zu 3 Werktage verlängern.",
+                  text: "1-2 Werktage bei vollständigen Unterlagen. Unvollständige Einreichungen können die Bearbeitungszeit um bis zu 3 Werktage verlängern.",
                 },
               },
               {

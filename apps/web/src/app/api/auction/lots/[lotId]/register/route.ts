@@ -9,10 +9,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
+import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
-export async function POST(
+async function _POST(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> }
 ) {
@@ -76,7 +77,7 @@ export async function POST(
     select: { id: true, createdAt: true },
   });
 
-  // ── Auto-Start: Handelssitzung 13:00–15:00 Mo–Fr Berlin aktiv? ───
+  // ── Auto-Start: Handelssitzung 13:00-15:00 Mo-Fr Berlin aktiv? ───
   const now = new Date();
   let autoStarted = false;
 
@@ -114,3 +115,5 @@ function slotEndUTC(now: Date): Date {
   const berlinOffset = now.getTime() - berlinNow.getTime();
   return new Date(new Date(`${berlinDateStr}T15:00:00`).getTime() + berlinOffset);
 }
+
+export const POST = apiRoute(_POST);

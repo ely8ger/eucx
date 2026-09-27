@@ -853,7 +853,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
               {/* Gebot abgeben */}
               {canBid && (
                 <div className="sa-card sa-bid-card">
-                  {/* Mein Status — kompakt im Gebotsfeld */}
+                  {/* Mein Status - kompakt im Gebotsfeld */}
                   {myBids.length > 0 && (
                     <div className="sa-bid-status">
                       <span className={`sa-bid-status-chip${isLeading ? " leading" : " trailing"}`}>
@@ -884,7 +884,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                       disabled={!priceInput || btnState !== "idle"}
                       onClick={() => submitBid(Number(priceInput))}
                     >
-                      {btnState === "loading" ? "Wird übermittelt…" : btnState === "success" ? "✓ Gebot abgegeben" : btnState === "error" ? "Fehler — erneut versuchen" : "Gebot abgeben"}
+                      {btnState === "loading" ? "Wird übermittelt…" : btnState === "success" ? "✓ Gebot abgegeben" : btnState === "error" ? "Fehler - erneut versuchen" : "Gebot abgeben"}
                     </button>
                   </div>
                   <div className="sa-bid-hint">

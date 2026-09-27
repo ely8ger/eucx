@@ -28,7 +28,7 @@ export const COMMODITIES: Commodity[] = [
   {
     id: "betonstahl",
     name: "Betonstahl",
-    spec: "Ø 10–16 mm · B500B",
+    spec: "Ø 10-16 mm · B500B",
     category: "metalle",
     price: 698,
     unit: "t",
@@ -56,7 +56,7 @@ export const COMMODITIES: Commodity[] = [
   {
     id: "traeger-hea",
     name: "Träger HEA / HEB",
-    spec: "HEA 160–300 · S235JR",
+    spec: "HEA 160-300 · S235JR",
     category: "metalle",
     price: 745,
     unit: "t",
@@ -70,7 +70,7 @@ export const COMMODITIES: Commodity[] = [
   {
     id: "flachstahl",
     name: "Flachstahl warmgewalzt",
-    spec: "S235JR · 4–20 mm",
+    spec: "S235JR · 4-20 mm",
     category: "metalle",
     price: 720,
     unit: "t",
@@ -84,7 +84,7 @@ export const COMMODITIES: Commodity[] = [
   {
     id: "bleche-warmband",
     name: "Bleche Warmband",
-    spec: "S235 · 2–8 mm · gewalzt",
+    spec: "S235 · 2-8 mm · gewalzt",
     category: "metalle",
     price: 685,
     unit: "t",
@@ -98,7 +98,7 @@ export const COMMODITIES: Commodity[] = [
   {
     id: "rundrohre",
     name: "Rundrohre nahtlos",
-    spec: "Ø 21–168 mm · S235",
+    spec: "Ø 21-168 mm · S235",
     category: "metalle",
     price: 890,
     unit: "t",
@@ -230,7 +230,7 @@ export const COMMODITIES: Commodity[] = [
   {
     id: "fichte-rund",
     name: "Fichte Rundholz",
-    spec: "2b-Qualität · L 3–5 m",
+    spec: "2b-Qualität · L 3-5 m",
     category: "holz",
     price: 112,
     unit: "m³",

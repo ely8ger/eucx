@@ -2,12 +2,12 @@
  * Strukturiertes Security-Audit-Logging
  *
  * Sicherheitsereignisse werden auf zwei Wegen protokolliert:
- *   1. console.error / console.warn mit Präfix [SECURITY] — erscheint in Vercel-Logs
+ *   1. console.error / console.warn mit Präfix [SECURITY] - erscheint in Vercel-Logs
  *      und kann an jeden SIEM (Datadog, Logtail, Axiom) weitergeleitet werden.
- *   2. db.auditLog.create — persistente DB-Aufzeichnung für Forensik (nur in
+ *   2. db.auditLog.create - persistente DB-Aufzeichnung für Forensik (nur in
  *      API-Routes, nicht in Middleware/Edge Runtime).
  *
- * Alle Aufrufe sind fire-and-forget (kein await nötig) — blockieren nie die Response.
+ * Alle Aufrufe sind fire-and-forget (kein await nötig) - blockieren nie die Response.
  */
 
 export type SecurityEvent =
@@ -55,7 +55,7 @@ export function logSecurityEvent(payload: SecurityLogPayload): void {
 /**
  * Persistiert ein Sicherheitsereignis in der Datenbank.
  * NUR in Node.js API-Routes verwenden (nicht in Middleware/Edge Runtime).
- * Fire-and-forget — nie awaiten wenn nicht nötig.
+ * Fire-and-forget - nie awaiten wenn nicht nötig.
  */
 export async function persistAuditLog(params: {
   action:     SecurityEvent;

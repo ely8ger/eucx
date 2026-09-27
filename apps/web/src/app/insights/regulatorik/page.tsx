@@ -94,7 +94,7 @@ export default function RegulatoriePage() {
             Regulatorischer Rahmen
           </h1>
           <p style={{ fontSize: 15, color: "rgba(255,255,255,.5)", lineHeight: 1.7, margin: "0 0 28px", maxWidth: 640 }}>
-            MiFID II, CBAM, MAR, EMIR – die zentralen Regelwerke, die den institutionellen
+            MiFID II, CBAM, MAR, EMIR - die zentralen Regelwerke, die den institutionellen
             Rohstoffhandel auf EUCX formen. Kompakt erklärt, rechtlich fundiert.
           </p>
           {/* Regulierungs-Tags */}
@@ -263,7 +263,7 @@ export default function RegulatoriePage() {
             <p style={{ fontSize: 14, color: "#666", lineHeight: 1.8, margin: "0 0 24px", maxWidth: 780 }}>
               Der Carbon Border Adjustment Mechanism (CBAM) - Verordnung (EU) 2023/956 - tritt ab{" "}
               <strong>1. Januar 2026</strong> in seiner kostenpflichtigen Phase in Kraft. Die Übergangsphase
-              (Oktober 2023 – Dezember 2025) verpflichtete Importeure bereits zur Quartalsberichterstattung
+              (Oktober 2023 - Dezember 2025) verpflichtete Importeure bereits zur Quartalsberichterstattung
               ohne Zahlungspflicht. Ab 2026 müssen CBAM-Importeure (definiert als in der EU ansässige
               natürliche oder juristische Personen, die CBAM-Waren in das Zollgebiet einführen)
               CBAM-Zertifikate erwerben und vorhalten. Jedes Zertifikat entspricht einer Tonne CO₂e und
@@ -294,9 +294,9 @@ export default function RegulatoriePage() {
                 </thead>
                 <tbody>
                   {[
-                    { gruppe: "Stahl/Eisen (HS 72)", beispiele: "Betonstahl, Walzdraht, Brammen", co2: "1,6–2,0 tCO₂/t", aufschlag: "104–130 €/t" },
-                    { gruppe: "Aluminium (HS 76)", beispiele: "Primäraluminium, Pressbolzen", co2: "6,5–16 tCO₂/t", aufschlag: "423–1.040 €/t" },
-                    { gruppe: "Düngemittel (HS 31)", beispiele: "Harnstoff, Ammoniumnitrat", co2: "1,4–2,8 tCO₂/t", aufschlag: "91–182 €/t" },
+                    { gruppe: "Stahl/Eisen (HS 72)", beispiele: "Betonstahl, Walzdraht, Brammen", co2: "1,6-2,0 tCO₂/t", aufschlag: "104-130 €/t" },
+                    { gruppe: "Aluminium (HS 76)", beispiele: "Primäraluminium, Pressbolzen", co2: "6,5-16 tCO₂/t", aufschlag: "423-1.040 €/t" },
+                    { gruppe: "Düngemittel (HS 31)", beispiele: "Harnstoff, Ammoniumnitrat", co2: "1,4-2,8 tCO₂/t", aufschlag: "91-182 €/t" },
                     { gruppe: "Strom (HS 2716)", beispiele: "Elektrischer Strom", co2: "variabel", aufschlag: "variabel" },
                   ].map((row, i) => (
                     <tr key={i} style={{ backgroundColor: i % 2 === 0 ? "#fff" : "#fafbff" }}>
@@ -318,7 +318,7 @@ export default function RegulatoriePage() {
               {[
                 { datum: "Okt 2023", text: "Übergangsphase beginnt - nur Berichtspflicht (quartalsweise), keine Zahlungspflicht", aktiv: false },
                 { datum: "Jan 2026", text: "Kostenpflichtige Phase: CBAM-Zertifikate werden Pflicht. Preis orientiert sich am EU-ETS.", aktiv: true },
-                { datum: "2026–2034", text: "EU-ETS-Freiallokationen für betroffene Sektoren werden schrittweise abgebaut (ca. −10 % p.a.)", aktiv: false },
+                { datum: "2026-2034", text: "EU-ETS-Freiallokationen für betroffene Sektoren werden schrittweise abgebaut (ca. −10 % p.a.)", aktiv: false },
                 { datum: "Ab 2034", text: "Vollimplementierung: 100 % kostenpflichtig, keine Freiallokationen mehr für CBAM-Waren", aktiv: false },
               ].map((item, i) => (
                 <div key={i} style={{ display: "flex", gap: 0, alignItems: "stretch" }}>
@@ -350,7 +350,7 @@ export default function RegulatoriePage() {
               Mit der <strong>CSRD (Corporate Sustainability Reporting Directive)</strong> - Richtlinie
               2022/2464/EU - hat die EU eine umfassende Berichtspflicht für Nachhaltigkeitsinformationen
               eingeführt. Für große Unternehmen (mehr als 500 Mitarbeiter) gilt die Pflicht seit dem
-              Geschäftsjahr 2024, für kapitalmarktorientierte KMU stufenweise ab 2026–2027. Unternehmen,
+              Geschäftsjahr 2024, für kapitalmarktorientierte KMU stufenweise ab 2026-2027. Unternehmen,
               die auf EUCX handeln und in diese Schwellenwerte fallen, müssen ihren Nachhaltigkeitsbericht
               nach den European Sustainability Reporting Standards (ESRS) erstellen.
             </p>
@@ -495,7 +495,7 @@ export default function RegulatoriePage() {
               },
               {
                 q: "Ab wann ist CBAM kostenpflichtig?",
-                a: "Ab 1. Januar 2026 ist CBAM in seiner kostenpflichtigen Phase in Kraft. Importeure müssen ab diesem Zeitpunkt CBAM-Zertifikate erwerben, die dem EUA-Preis des EU-Emissionshandelssystems entsprechen. Die vorangehende Übergangsphase (Oktober 2023 – Dezember 2025) umfasste lediglich Berichtspflichten ohne Zahlungsverpflichtung.",
+                a: "Ab 1. Januar 2026 ist CBAM in seiner kostenpflichtigen Phase in Kraft. Importeure müssen ab diesem Zeitpunkt CBAM-Zertifikate erwerben, die dem EUA-Preis des EU-Emissionshandelssystems entsprechen. Die vorangehende Übergangsphase (Oktober 2023 - Dezember 2025) umfasste lediglich Berichtspflichten ohne Zahlungsverpflichtung.",
               },
               {
                 q: "Benötige ich als Händler auf EUCX eine eigene BaFin-Lizenz?",
@@ -507,7 +507,7 @@ export default function RegulatoriePage() {
               },
               {
                 q: "Welche ESG-Reportingpflichten habe ich als Rohstoffhändler?",
-                a: "Die Pflichten richten sich nach Unternehmensgröße und Kapitalmarktzugang. Große Unternehmen (>500 Mitarbeiter) unterliegen seit Geschäftsjahr 2024 der CSRD und müssen nach ESRS berichten. KMU folgen stufenweise ab 2026–2027. Auch ohne formelle Berichtspflicht sollten Händler Scope-3-Emissionen ihrer Transaktionen erfassen, da Geschäftspartner im Rahmen ihrer eigenen CSRD-Pflichten entsprechende Daten einfordern werden.",
+                a: "Die Pflichten richten sich nach Unternehmensgröße und Kapitalmarktzugang. Große Unternehmen (>500 Mitarbeiter) unterliegen seit Geschäftsjahr 2024 der CSRD und müssen nach ESRS berichten. KMU folgen stufenweise ab 2026-2027. Auch ohne formelle Berichtspflicht sollten Händler Scope-3-Emissionen ihrer Transaktionen erfassen, da Geschäftspartner im Rahmen ihrer eigenen CSRD-Pflichten entsprechende Daten einfordern werden.",
               },
             ].map(({ q, a }, i) => (
               <div key={i} className="reg-faq" style={{ backgroundColor: "#fff", padding: "24px 28px", borderBottom: "1px solid #f5f5f5" }}>
@@ -535,7 +535,7 @@ export default function RegulatoriePage() {
               {
                 "@type": "Question",
                 name: "Ab wann ist CBAM kostenpflichtig?",
-                acceptedAnswer: { "@type": "Answer", text: "Ab 1. Januar 2026 ist CBAM in seiner kostenpflichtigen Phase in Kraft. Importeure müssen CBAM-Zertifikate erwerben, die dem EUA-Preis des EU-ETS entsprechen. Die Übergangsphase (Oktober 2023 – Dezember 2025) umfasste nur Berichtspflichten." }
+                acceptedAnswer: { "@type": "Answer", text: "Ab 1. Januar 2026 ist CBAM in seiner kostenpflichtigen Phase in Kraft. Importeure müssen CBAM-Zertifikate erwerben, die dem EUA-Preis des EU-ETS entsprechen. Die Übergangsphase (Oktober 2023 - Dezember 2025) umfasste nur Berichtspflichten." }
               },
               {
                 "@type": "Question",
@@ -550,7 +550,7 @@ export default function RegulatoriePage() {
               {
                 "@type": "Question",
                 name: "Welche ESG-Reportingpflichten habe ich als Rohstoffhändler?",
-                acceptedAnswer: { "@type": "Answer", text: "Große Unternehmen (>500 Mitarbeiter) unterliegen seit Geschäftsjahr 2024 der CSRD und müssen nach ESRS berichten. KMU folgen stufenweise ab 2026–2027. Auch ohne formelle Pflicht sollten Händler Scope-3-Emissionen erfassen, da Geschäftspartner im Rahmen ihrer CSRD-Pflichten entsprechende Daten einfordern." }
+                acceptedAnswer: { "@type": "Answer", text: "Große Unternehmen (>500 Mitarbeiter) unterliegen seit Geschäftsjahr 2024 der CSRD und müssen nach ESRS berichten. KMU folgen stufenweise ab 2026-2027. Auch ohne formelle Pflicht sollten Händler Scope-3-Emissionen erfassen, da Geschäftspartner im Rahmen ihrer CSRD-Pflichten entsprechende Daten einfordern." }
               },
             ],
           }),

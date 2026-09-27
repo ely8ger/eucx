@@ -1,15 +1,15 @@
 /**
- * QStash Worker — Post-Trade-Verarbeitung nach Auktionsende
+ * QStash Worker - Post-Trade-Verarbeitung nach Auktionsende
  *
  * Wird von der QStash-Queue aufgerufen nachdem der Cronjob
  * einen Lot via concludeLot() in die CONCLUSION-Phase versetzt hat.
  *
  * Auth:
- *   Production  — Upstash-Signatur (QSTASH_CURRENT_SIGNING_KEY / QSTASH_NEXT_SIGNING_KEY)
- *   Dev / Test  — CRON_SECRET Bearer (gleiche Route, direkt aufrufbar)
+ *   Production  - Upstash-Signatur (QSTASH_CURRENT_SIGNING_KEY / QSTASH_NEXT_SIGNING_KEY)
+ *   Dev / Test  - CRON_SECRET Bearer (gleiche Route, direkt aufrufbar)
  *
  * QStash wiederholt den Aufruf bei non-2xx Antwort automatisch (konfiguriert: 5×).
- * processLotConclusion ist idempotent — Mehrfachaufrufe sind sicher.
+ * processLotConclusion ist idempotent - Mehrfachaufrufe sind sicher.
  */
 
 import { NextRequest, NextResponse } from "next/server";

@@ -1,5 +1,5 @@
 /**
- * RED TEAM — Angreifer-Perspektive
+ * RED TEAM - Angreifer-Perspektive
  *
  * Ziel: Das System aktiv angreifen und prüfen was durchkommt.
  * Jeder Test ist ein realer Angriffsvektor.
@@ -7,7 +7,7 @@
  * Legende im Testnamen:
  *   [BLOCKED]   → Angriff muss abgeblockt werden (Test schlägt fehl wenn er durchkommt)
  *   [LEAKS]     → bekannte Schwachstelle im Dev-Kontext, in Prod behoben
- *   [FINDING]   → echter Fund — Test dokumentiert eine offene Lücke
+ *   [FINDING]   → echter Fund - Test dokumentiert eine offene Lücke
  *
  * Voraussetzungen:
  *   - Dev-Server auf Port 3000
@@ -56,7 +56,7 @@ async function api(path: string, token: string | null, method = "GET", body?: un
 
 // ─── 1. AUTHENTIFIZIERUNG ─────────────────────────────────────────────────────
 
-test.describe("RED TEAM — Authentifizierung", () => {
+test.describe("RED TEAM - Authentifizierung", () => {
 
   test("[BLOCKED] Brute-Force: 6 Loginversuche → Account gesperrt", async () => {
     const email = "seller3@eucx-test.de";
@@ -73,7 +73,7 @@ test.describe("RED TEAM — Authentifizierung", () => {
     await fetch(`${BASE}/api/test/reset-accounts`, { method: "POST" });
   });
 
-  test("[BLOCKED] JWT alg:none — keine Signatur, trotzdem Zugriff?", async () => {
+  test("[BLOCKED] JWT alg:none - keine Signatur, trotzdem Zugriff?", async () => {
     // Angreifer baut Token ohne Signatur (alg: none Angriff)
     const header  = Buffer.from(JSON.stringify({ alg: "none", typ: "JWT" })).toString("base64url");
     const payload = Buffer.from(JSON.stringify({
@@ -136,7 +136,7 @@ test.describe("RED TEAM — Authentifizierung", () => {
 
 // ─── 2. RATE LIMIT BYPASS ─────────────────────────────────────────────────────
 
-test.describe("RED TEAM — Rate Limit", () => {
+test.describe("RED TEAM - Rate Limit", () => {
 
   test("[LEAKS] IP-Rotation via X-Forwarded-For umgeht Auth-Rate-Limit in Dev", async () => {
     // In Dev (kein Vercel-Proxy): X-Forwarded-For letzter Wert = unser getClientIp()
@@ -144,7 +144,7 @@ test.describe("RED TEAM — Rate Limit", () => {
     // ERWARTUNG: Alle 10 Anfragen kommen durch (zeigt Dev-Schwachstelle)
     // IN PROD behoben: x-vercel-forwarded-for ist nicht vom Client setzbar
     //
-    // WICHTIG: nicht-existierende E-Mail verwenden — login auf existierende Accounts
+    // WICHTIG: nicht-existierende E-Mail verwenden - login auf existierende Accounts
     // würde nach 5 Fehlversuchen den Account sperren und andere Tests beeinflussen.
     const results: number[] = [];
     for (let i = 1; i <= 10; i++) {
@@ -155,7 +155,7 @@ test.describe("RED TEAM — Rate Limit", () => {
     const rateLimited = results.filter(s => s === 429);
     expect(
       rateLimited.length,
-      `[FINDING] IP-Rotation in Dev: ${rateLimited.length}/10 blockiert — ${10 - rateLimited.length} Anfragen kamen durch`
+      `[FINDING] IP-Rotation in Dev: ${rateLimited.length}/10 blockiert - ${10 - rateLimited.length} Anfragen kamen durch`
     ).toBe(0); // Alle kommen durch → Dev-Schwachstelle bestätigt
   });
 
@@ -174,7 +174,7 @@ test.describe("RED TEAM — Rate Limit", () => {
 
 // ─── 3. AUTORISIERUNG / IDOR ─────────────────────────────────────────────────
 
-test.describe("RED TEAM — IDOR & Autorisierung", () => {
+test.describe("RED TEAM - IDOR & Autorisierung", () => {
   let buyerToken:   string;
   let seller1Token: string;
   let seller2Token: string;
@@ -248,7 +248,7 @@ test.describe("RED TEAM — IDOR & Autorisierung", () => {
 
 // ─── 4. BUSINESS LOGIC ───────────────────────────────────────────────────────
 
-test.describe("RED TEAM — Business Logic", () => {
+test.describe("RED TEAM - Business Logic", () => {
   let buyerToken:   string;
   let sellerToken:  string;
 
@@ -280,7 +280,7 @@ test.describe("RED TEAM — Business Logic", () => {
     ]);
 
     const statuses = [r1.status, r2.status].sort();
-    // Mindestens eines muss scheitern (422/409/429) — nie beide 201
+    // Mindestens eines muss scheitern (422/409/429) - nie beide 201
     expect(statuses).not.toEqual([201, 201]);
   });
 
@@ -310,7 +310,7 @@ test.describe("RED TEAM — Business Logic", () => {
       qualityGrade: "B500B", description: "Draft-Lot", greenSteel: false,
     });
     const lotId = (cr.body as { lotId: string }).lotId;
-    // Kein publish/register/open — Lot ist DRAFT
+    // Kein publish/register/open - Lot ist DRAFT
     const { status } = await api(`/api/auction/lots/${lotId}/bids`, sellerToken, "POST", { price: 250 });
     expect([403, 409, 422]).toContain(status);
   });
@@ -335,7 +335,7 @@ test.describe("RED TEAM — Business Logic", () => {
 
 // ─── 5. INJECTION & PAYLOADS ─────────────────────────────────────────────────
 
-test.describe("RED TEAM — Injection & Payloads", () => {
+test.describe("RED TEAM - Injection & Payloads", () => {
   let buyerToken: string;
 
   test.beforeAll(async () => {
@@ -370,7 +370,7 @@ test.describe("RED TEAM — Injection & Payloads", () => {
     for (const t of traversals) {
       const { status } = await api(`/api/auction/contracts/${t}/pdf`, buyerToken);
       // 404 = Route/Contract nicht gefunden, 400 = ungültige ID-Zeichen
-      // 200 ist nur akzeptabel wenn es eine Next.js-404-Seite (kein Leak) ist — wird durch
+      // 200 ist nur akzeptabel wenn es eine Next.js-404-Seite (kein Leak) ist - wird durch
       // den response body-Check ausgeschlossen: keine Systemdaten zurückgegeben.
       expect([400, 404]).toContain(status);
     }
@@ -394,7 +394,7 @@ test.describe("RED TEAM — Injection & Payloads", () => {
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${buyerToken}` },
       body: poisoned,
     });
-    // Muss abgeblockt oder sauber verarbeitet werden — kein 500, keine Rechteerhöhung
+    // Muss abgeblockt oder sauber verarbeitet werden - kein 500, keine Rechteerhöhung
     expect(res.status).not.toBe(500);
   });
 
@@ -406,7 +406,7 @@ test.describe("RED TEAM — Injection & Payloads", () => {
       // Falls der Client es durchlässt: Server muss 401 zurückgeben
       expect(status).toBe(401);
     } catch (e) {
-      // TypeError: invalid header value — korrekte Ablehnung durch HTTP-Client
+      // TypeError: invalid header value - korrekte Ablehnung durch HTTP-Client
       expect((e as Error).message.toLowerCase()).toMatch(/header|invalid/);
     }
   });
@@ -415,7 +415,7 @@ test.describe("RED TEAM — Injection & Payloads", () => {
 
 // ─── 6. SESSION & TOKEN ───────────────────────────────────────────────────────
 
-test.describe("RED TEAM — Session & Token", () => {
+test.describe("RED TEAM - Session & Token", () => {
 
   test("[BLOCKED] Token nach Logout weiterverwendbar? (JTI-Blacklist-Check)", async () => {
     // Login → Token holen → Logout → Token weiter verwenden
@@ -446,7 +446,7 @@ test.describe("RED TEAM — Session & Token", () => {
     });
     const setCookie = loginRes.headers.get("set-cookie") ?? "";
     const rtMatch   = setCookie.match(/refresh_token=([^;]+)/);
-    if (!rtMatch) { return; } // kein Cookie-Flow im Test-Kontext — skip
+    if (!rtMatch) { return; } // kein Cookie-Flow im Test-Kontext - skip
 
     // Logout
     await fetch(`${BASE}/api/auth/logout`, {

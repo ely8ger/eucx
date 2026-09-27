@@ -5,7 +5,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { FileText, Scale, ClipboardList, ArrowRight, BookOpen } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Regelwerk – Normative Dokumente & Rechtsrahmen",
+  title: "Regelwerk - Normative Dokumente & Rechtsrahmen",
   description:
     "Das vollständige Regelwerk der EUCX: Handelsordnung, normative Dokumente, EU-Rechtsrahmen und Formulare für Mitglieder.",
   keywords: [
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/regelwerk` },
   openGraph: {
-    title: "Regelwerk der EUCX – Normative Dokumente & Rechtsrahmen",
+    title: "Regelwerk der EUCX - Normative Dokumente & Rechtsrahmen",
     description: "Alle normativen Dokumente, EU-Rechtsgrundlagen und Formulare der EUCX auf einen Blick.",
     url: `${BASE_URL}/regelwerk`,
   },

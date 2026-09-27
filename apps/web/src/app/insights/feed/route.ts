@@ -41,7 +41,7 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>EUCX Insights – Rohstoff-Lexikon &amp; Marktanalysen</title>
+    <title>EUCX Insights - Rohstoff-Lexikon &amp; Marktanalysen</title>
     <link>${BASE}/insights</link>
     <description>Definitionen, Marktanalysen und Regulierungswissen für den professionellen B2B-Rohstoffhandel an der EUCX.</description>
     <language>de-DE</language>

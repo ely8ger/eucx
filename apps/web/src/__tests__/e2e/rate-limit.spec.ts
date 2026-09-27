@@ -3,11 +3,11 @@
  *
  * Testet die In-Memory-Rate-Limit-Implementierung auf zwei Ebenen:
  *
- * Ebene 1 — Bid-Route direkt (bypass Middleware via Public-Endpunkt):
+ * Ebene 1 - Bid-Route direkt (bypass Middleware via Public-Endpunkt):
  *   - /api/test/rate-limit-check ruft checkRateLimit() direkt auf
  *   - Kein Middleware-Interference, reine Logik-Tests
  *
- * Ebene 2 — E2E durch echte Bids:
+ * Ebene 2 - E2E durch echte Bids:
  *   - Gebot Nr. 21 muss 429 liefern (entweder Middleware-api oder Bid-Route-bid)
  *   - Beide Formate werden akzeptiert (Middleware: code, Route: error)
  *
@@ -19,8 +19,8 @@
 import { test, expect } from "@playwright/test";
 
 const BASE       = "http://localhost:3000";
-const TEST_IP    = "198.51.100.42"; // TEST-NET (RFC 5737) — für Bids
-const IP_RL_E2E  = "198.51.100.50"; // TEST-NET (RFC 5737) — exklusiv für E2E-Logins
+const TEST_IP    = "198.51.100.42"; // TEST-NET (RFC 5737) - für Bids
+const IP_RL_E2E  = "198.51.100.50"; // TEST-NET (RFC 5737) - exklusiv für E2E-Logins
 
 // ─── Hilfsfunktionen ──────────────────────────────────────────────────────────
 
@@ -73,10 +73,10 @@ function is429Block(status: number, body: Record<string, unknown>): boolean {
 }
 
 // ─── Suite 1: Direkte Logik-Tests über Public-Endpunkt ───────────────────────
-// Kein Middleware-Interference — testet checkRateLimit() in Isolation
+// Kein Middleware-Interference - testet checkRateLimit() in Isolation
 
-test.describe("Rate Limiter — Logik-Tests (direkt, kein Middleware)", () => {
-  const LOGIC_IP = "203.0.113.1"; // TEST-NET-3 (RFC 5737) — exklusiv für Logik-Tests
+test.describe("Rate Limiter - Logik-Tests (direkt, kein Middleware)", () => {
+  const LOGIC_IP = "203.0.113.1"; // TEST-NET-3 (RFC 5737) - exklusiv für Logik-Tests
 
   test.beforeEach(async () => {
     await resetRateLimit();
@@ -94,13 +94,13 @@ test.describe("Rate Limiter — Logik-Tests (direkt, kein Middleware)", () => {
     for (let i = 0; i < 20; i++) {
       await checkRateLimit(LOGIC_IP, "bid");
     }
-    // 21. Anfrage — muss abgelehnt werden
+    // 21. Anfrage - muss abgelehnt werden
     const result = await checkRateLimit(LOGIC_IP, "bid");
     expect(result.allowed).toBe(false);
     expect(result.remaining).toBe(0);
   });
 
-  test("L-3: auth-Bucket: Limit 5 — 6. Anfrage wird abgelehnt", async () => {
+  test("L-3: auth-Bucket: Limit 5 - 6. Anfrage wird abgelehnt", async () => {
     for (let i = 0; i < 5; i++) {
       await checkRateLimit(LOGIC_IP, "auth");
     }
@@ -109,7 +109,7 @@ test.describe("Rate Limiter — Logik-Tests (direkt, kein Middleware)", () => {
     expect(result.remaining).toBe(0);
   });
 
-  test("L-4: api-Bucket: Limit 120 — nach 120 Anfragen wird abgelehnt", async () => {
+  test("L-4: api-Bucket: Limit 120 - nach 120 Anfragen wird abgelehnt", async () => {
     for (let i = 0; i < 120; i++) {
       await checkRateLimit(LOGIC_IP, "api");
     }
@@ -163,7 +163,7 @@ test.describe("Rate Limiter — Logik-Tests (direkt, kein Middleware)", () => {
 // ─── Suite 2: E2E über echte Bid-Requests ────────────────────────────────────
 // Nachweis: HTTP-429 kommt spätestens beim 21. Bid-Request von derselben IP
 
-test.describe("Rate Limiter — E2E Bid-Request Nachweis", () => {
+test.describe("Rate Limiter - E2E Bid-Request Nachweis", () => {
   let sellerToken: string;
   let buyerToken:  string;
   let lotId:       string;

@@ -2,7 +2,7 @@
  * PATCH /api/test/set-lot-auction-end
  *
  * Setzt auctionEnd eines Lots direkt in der Datenbank.
- * Nur in Dev/Test — in Production immer 403.
+ * Nur in Dev/Test - in Production immer 403.
  *
  * Body: { lotId: string, auctionEnd: string (ISO-8601) }
  */

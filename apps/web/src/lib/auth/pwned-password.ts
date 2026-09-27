@@ -1,11 +1,11 @@
 /**
- * HaveIBeenPwned — k-Anonymity Passwort-Prüfung
+ * HaveIBeenPwned - k-Anonymity Passwort-Prüfung
  *
  * Prüft ob ein Passwort in bekannten Datenlecks vorkommt.
  * Verwendet die k-Anonymity-API: nur die ersten 5 Zeichen des SHA-1-Hashes
- * werden gesendet — das vollständige Passwort verlässt niemals den Server.
+ * werden gesendet - das vollständige Passwort verlässt niemals den Server.
  *
- * Verhalten bei API-Ausfall: fail open (kein Block) — Registrierung darf nicht
+ * Verhalten bei API-Ausfall: fail open (kein Block) - Registrierung darf nicht
  * an einem externen Dienst hängen. Timeout: 3 Sekunden.
  */
 import { createHash } from "crypto";

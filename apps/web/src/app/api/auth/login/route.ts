@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     const passwordOk = await verifyPassword(password, user.passwordHash);
 
     if (!passwordOk) {
-      // Atomares Increment — verhindert Race Condition bei simultanen Brute-Force-Angriffen.
+      // Atomares Increment - verhindert Race Condition bei simultanen Brute-Force-Angriffen.
       // Frühere Implementierung nutzte user.failedLoginCount + 1 (OLD-Wert), was bei
       // parallelen Requests dazu führte, dass alle denselben Zählerstand (z.B. 1) schrieben
       // und der Account nie gesperrt wurde.

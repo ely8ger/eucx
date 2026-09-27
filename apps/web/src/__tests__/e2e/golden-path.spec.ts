@@ -1,5 +1,5 @@
 /**
- * EUCX — Golden Path E2E-Test
+ * EUCX - Golden Path E2E-Test
  *
  * Testet den vollständigen Kernprozess der B2B-Warenbörse:
  *
@@ -81,7 +81,7 @@ test.beforeAll(async () => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SCHRITT 1 — SERVER-HEALTH
+// SCHRITT 1 - SERVER-HEALTH
 // ═══════════════════════════════════════════════════════════════════════════════
 
 test("Schritt 1a: Server antwortet auf GET /", async ({ page }) => {
@@ -102,10 +102,10 @@ test("Schritt 1c: API-Rate-Limit antwortet auf unautorisierten Zugriff mit 401",
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SCHRITT 2 — AUTH: Login via UI + API
+// SCHRITT 2 - AUTH: Login via UI + API
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// TEST-NET RFC 5737 — exklusiv für golden-path (kein Bucket-Overlap mit anderen Suites)
+// TEST-NET RFC 5737 - exklusiv für golden-path (kein Bucket-Overlap mit anderen Suites)
 const IP_GP = "198.51.100.30";
 
 test("Schritt 2a: Käufer kann sich über POST /api/auth/login authentifizieren", async ({ request }) => {
@@ -115,11 +115,11 @@ test("Schritt 2a: Käufer kann sich über POST /api/auth/login authentifizieren"
   });
 
   if (res.status() === 401) {
-    test.skip(); // Seed-User nicht in DB — Setup-Fehler, nicht Code-Fehler
+    test.skip(); // Seed-User nicht in DB - Setup-Fehler, nicht Code-Fehler
     return;
   }
 
-  expect(res.status(), `Login fehlgeschlagen: HTTP ${res.status()} — Seed-Daten vorhanden?`).toBe(200);
+  expect(res.status(), `Login fehlgeschlagen: HTTP ${res.status()} - Seed-Daten vorhanden?`).toBe(200);
   const body = await res.json() as Record<string, unknown>;
   // Response-Struktur: { data: { accessToken, user } }
   const data = body["data"] as Record<string, unknown> | undefined;
@@ -160,7 +160,7 @@ test("Schritt 2c: Verkäufer-Dashboard lädt", async ({ page }) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SCHRITT 3 — LOT ERSTELLEN (Käufer)
+// SCHRITT 3 - LOT ERSTELLEN (Käufer)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 test("Schritt 3: Käufer erstellt Lot via POST /api/auction/lots", async ({ request }) => {
@@ -176,12 +176,12 @@ test("Schritt 3: Käufer erstellt Lot via POST /api/auction/lots", async ({ requ
     vatTreatment:    "INLAND_19",
     hsCode:          "7214200010",
     qualityGrade:    "B500B / DIN 488",
-    description:     "E2E-Test Lot — automatisch erstellt",
+    description:     "E2E-Test Lot - automatisch erstellt",
     greenSteel:      false,
   });
 
   if (res.status() === 403) {
-    console.log("[SKIP] Lot-Erstellung: 403 Forbidden — Käufer-Account nicht verifiziert in DB?");
+    console.log("[SKIP] Lot-Erstellung: 403 Forbidden - Käufer-Account nicht verifiziert in DB?");
     test.skip();
     return;
   }
@@ -189,7 +189,7 @@ test("Schritt 3: Käufer erstellt Lot via POST /api/auction/lots", async ({ requ
   // API gibt 200 oder 201, je nach Implementierung
   expect(
     [200, 201],
-    `Lot-Erstellung fehlgeschlagen: HTTP ${res.status()} — Antwort: ${await res.text()}`
+    `Lot-Erstellung fehlgeschlagen: HTTP ${res.status()} - Antwort: ${await res.text()}`
   ).toContain(res.status());
 
   const body = await res.json() as Record<string, unknown>;
@@ -201,7 +201,7 @@ test("Schritt 3: Käufer erstellt Lot via POST /api/auction/lots", async ({ requ
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SCHRITT 4 — LOT ÖFFNEN (Admin: publizieren + Lot in PROPOSAL bringen)
+// SCHRITT 4 - LOT ÖFFNEN (Admin: publizieren + Lot in PROPOSAL bringen)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 test("Schritt 4a: Käufer publiziert Lot (isDraft → false via PATCH /publish)", async ({ request }) => {
@@ -215,7 +215,7 @@ test("Schritt 4a: Käufer publiziert Lot (isDraft → false via PATCH /publish)"
   // 200 = OK, 400 = bereits publiziert oder falsche Phase
   expect(
     [200, 201, 400],
-    `Publish: Unerwarteter Status ${publishRes.status()} — ${statusText}`
+    `Publish: Unerwarteter Status ${publishRes.status()} - ${statusText}`
   ).toContain(publishRes.status());
   console.log(`✓ Publish: HTTP ${publishRes.status()}`);
 });
@@ -223,13 +223,13 @@ test("Schritt 4a: Käufer publiziert Lot (isDraft → false via PATCH /publish)"
 test("Schritt 4b: Verkäufer registriert sich für das Lot (vor Open!)", async ({ request }) => {
   if (!createdLotId) { test.skip(); return; }
 
-  // /register muss VOR /open kommen — Open erfordert min. 1 registrierten Verkäufer
+  // /register muss VOR /open kommen - Open erfordert min. 1 registrierten Verkäufer
   const res = await api(request, "POST", `/api/auction/lots/${createdLotId}/register`, sellerToken);
 
   // 200/201 = erfolgreich; 409 = schon registriert; 403 = Phase falsch
   expect(
     [200, 201, 409, 403],
-    `Registrierung fehlgeschlagen: HTTP ${res.status()} — ${await res.text()}`
+    `Registrierung fehlgeschlagen: HTTP ${res.status()} - ${await res.text()}`
   ).toContain(res.status());
   console.log(`✓ Registrierung: HTTP ${res.status()}`);
 });
@@ -244,13 +244,13 @@ test("Schritt 4c: Käufer öffnet Auktionsfenster (COLLECTION → PROPOSAL via P
   const statusText = await res.text().catch(() => "");
   expect(
     [200, 201, 400, 409, 422],
-    `Open: Unerwarteter Status ${res.status()} — ${statusText}`
+    `Open: Unerwarteter Status ${res.status()} - ${statusText}`
   ).toContain(res.status());
   console.log(`✓ Open: HTTP ${res.status()}`);
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SCHRITT 5 — GEBOT ABGEBEN (Verkäufer)
+// SCHRITT 5 - GEBOT ABGEBEN (Verkäufer)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 test("Schritt 5: Verkäufer gibt Gebot ab via POST /api/auction/lots/[id]/bids", async ({ request }) => {
@@ -263,18 +263,18 @@ test("Schritt 5: Verkäufer gibt Gebot ab via POST /api/auction/lots/[id]/bids",
   // 403 = Phase noch COLLECTION oder Deal-Limit; 201 = Gebot erfolgreich
   if (res.status() === 403) {
     const body = await res.json() as Record<string, unknown>;
-    console.log(`[INFO] Gebot-403: ${String(body["error"] ?? "unbekannt")} — Phase noch nicht PROPOSAL?`);
+    console.log(`[INFO] Gebot-403: ${String(body["error"] ?? "unbekannt")} - Phase noch nicht PROPOSAL?`);
     // Das ist erwartet wenn Cron noch nicht gelaufen ist
     return;
   }
   if (res.status() === 422) {
-    console.log(`[INFO] Gebot-422: Validierungsfehler — ${await res.text()}`);
+    console.log(`[INFO] Gebot-422: Validierungsfehler - ${await res.text()}`);
     return;
   }
 
   expect(
     res.status(),
-    `Gebotsabgabe fehlgeschlagen: HTTP ${res.status()} — ${await res.text()}`
+    `Gebotsabgabe fehlgeschlagen: HTTP ${res.status()} - ${await res.text()}`
   ).toBe(201);
 
   const body = await res.json() as Record<string, unknown>;
@@ -283,7 +283,7 @@ test("Schritt 5: Verkäufer gibt Gebot ab via POST /api/auction/lots/[id]/bids",
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SCHRITT 6 — EXISTIERENDEN KONTRAKT TESTEN (aus Seed-Daten oder oben)
+// SCHRITT 6 - EXISTIERENDEN KONTRAKT TESTEN (aus Seed-Daten oder oben)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 test("Schritt 6: Vertragsliste via GET /api/auction/contracts lädt", async ({ request }) => {
@@ -308,13 +308,13 @@ test("Schritt 6: Vertragsliste via GET /api/auction/contracts lädt", async ({ r
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SCHRITT 7 — PDF-DOWNLOAD (Kritischer Punkt)
+// SCHRITT 7 - PDF-DOWNLOAD (Kritischer Punkt)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 test("Schritt 7: PDF-Vertrag abrufbar (contract/route.ts)", async ({ request }) => {
   const lotId = contractLotId ?? createdLotId;
   if (!lotId) {
-    console.log("[SKIP] Kein lotId verfügbar — Schritt 6 oder 3 gescheitert");
+    console.log("[SKIP] Kein lotId verfügbar - Schritt 6 oder 3 gescheitert");
     test.skip();
     return;
   }
@@ -328,19 +328,19 @@ test("Schritt 7: PDF-Vertrag abrufbar (contract/route.ts)", async ({ request }) 
     // Erwartet wenn Auktion noch nicht CONCLUSION
     expect(
       errMsg,
-      "404 ohne verständliche Fehlermeldung — Silent Fail!"
+      "404 ohne verständliche Fehlermeldung - Silent Fail!"
     ).not.toHaveLength(0);
     return;
   }
 
   if (res.status() === 403) {
-    console.log(`[INFO] Kein Zugriff auf PDF (403) — Käufer ist nicht Vertragspartei?`);
+    console.log(`[INFO] Kein Zugriff auf PDF (403) - Käufer ist nicht Vertragspartei?`);
     return;
   }
 
   expect(
     res.status(),
-    `PDF-Download fehlgeschlagen: HTTP ${res.status()} — ${await res.text().catch(() => "kein Body")}`
+    `PDF-Download fehlgeschlagen: HTTP ${res.status()} - ${await res.text().catch(() => "kein Body")}`
   ).toBe(200);
 
   const contentType = res.headers()["content-type"] ?? "";
@@ -355,7 +355,7 @@ test("Schritt 7: PDF-Vertrag abrufbar (contract/route.ts)", async ({ request }) 
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SCHRITT 8 — UI: VERTRAGS-DETAILSEITE RENDERT KORREKT
+// SCHRITT 8 - UI: VERTRAGS-DETAILSEITE RENDERT KORREKT
 // ═══════════════════════════════════════════════════════════════════════════════
 
 test("Schritt 8: Vertrags-Übersicht /dashboard/contracts lädt ohne Fehler", async ({ page }) => {
@@ -421,7 +421,7 @@ test("Schritt 10: Buyer Wallet-Seite rendert korrekt", async ({ page }) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SCHRITT 11 — STATE MACHINE: Lieferstatus-Übergänge sind defensiv
+// SCHRITT 11 - STATE MACHINE: Lieferstatus-Übergänge sind defensiv
 // ═══════════════════════════════════════════════════════════════════════════════
 
 test("Schritt 11: Delivery-API gibt sprechenden Fehler bei ungültigem Status-Sprung", async ({ request }) => {
@@ -459,7 +459,7 @@ test("Schritt 12: Bids-API gibt verständlichen Fehler bei ungültigem Lot", asy
   expect([404, 400, 403, 422]).toContain(res.status());
   const body = await res.json() as Record<string, unknown>;
   expect(typeof body["error"]).toBe("string");
-  console.log(`✓ Bid-Validierung: HTTP ${res.status()} — "${body["error"] as string}"`);
+  console.log(`✓ Bid-Validierung: HTTP ${res.status()} - "${body["error"] as string}"`);
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -467,8 +467,8 @@ test("Schritt 12: Bids-API gibt verständlichen Fehler bei ungültigem Lot", asy
 // ═══════════════════════════════════════════════════════════════════════════════
 
 test.afterAll(async () => {
-  console.log("\n═══════ EUCX E2E Golden Path — Zusammenfassung ═══════");
-  console.log(`Lot erstellt:    ${createdLotId ?? "—"}`);
-  console.log(`Kontrakt-LotId:  ${contractLotId ?? "—"}`);
+  console.log("\n═══════ EUCX E2E Golden Path - Zusammenfassung ═══════");
+  console.log(`Lot erstellt:    ${createdLotId ?? "-"}`);
+  console.log(`Kontrakt-LotId:  ${contractLotId ?? "-"}`);
   console.log("Alle Schritte abgeschlossen. Bericht: playwright-report/index.html");
 });

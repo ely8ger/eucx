@@ -1,16 +1,16 @@
 /**
- * EUCX — Unhappy Path / Sabotage-Test Suite
+ * EUCX - Unhappy Path / Sabotage-Test Suite
  *
  * Testet, ob das Backend illegale Aktionen korrekt blockiert.
  * Ein Test gilt als GRÜN, wenn das System mit 400/401/403/404/409/422 antwortet.
  * Ein Test gilt als ROT, wenn das System 200/201 zurückgibt (= Sicherheitslücke!).
  *
  * Kategorien:
- *   A. Rollenüberschreitung    — falscher User-Typ für eine Aktion
- *   B. Ungültige Eingabedaten  — Validierungsfehler (Schemas)
- *   C. State-Machine-Bruch     — Aktion zum falschen Zeitpunkt im Workflow
- *   D. ID-Spoofing             — Zugriff auf fremde Ressourcen
- *   E. Auth-Angriffe           — fehlende oder gefälschte Tokens
+ *   A. Rollenüberschreitung    - falscher User-Typ für eine Aktion
+ *   B. Ungültige Eingabedaten  - Validierungsfehler (Schemas)
+ *   C. State-Machine-Bruch     - Aktion zum falschen Zeitpunkt im Workflow
+ *   D. ID-Spoofing             - Zugriff auf fremde Ressourcen
+ *   E. Auth-Angriffe           - fehlende oder gefälschte Tokens
  *
  * Ausführen:
  *   npm run dev (muss laufen)
@@ -73,12 +73,12 @@ async function assertBlocked(
   expect(
     res.status(),
     `[SICHERHEITSLÜCKE] "${label}" wurde NICHT geblockt!\n` +
-    `HTTP ${res.status()} — Body: ${JSON.stringify(body).slice(0, 200)}`
+    `HTTP ${res.status()} - Body: ${JSON.stringify(body).slice(0, 200)}`
   ).not.toBe(200);
   expect(
     res.status(),
     `[SICHERHEITSLÜCKE] "${label}" wurde NICHT geblockt!\n` +
-    `HTTP ${res.status()} — Body: ${JSON.stringify(body).slice(0, 200)}`
+    `HTTP ${res.status()} - Body: ${JSON.stringify(body).slice(0, 200)}`
   ).not.toBe(201);
 
   expect(
@@ -89,7 +89,7 @@ async function assertBlocked(
   // Fehlermeldung muss menschenlesbar sein (kein Silent Fail)
   expect(
     errMsg.length,
-    `"${label}": error-Feld ist leer oder fehlt — Silent Fail!`
+    `"${label}": error-Feld ist leer oder fehlt - Silent Fail!`
   ).toBeGreaterThan(3);
 
   console.log(`✓ Geblockt [${res.status()}]: "${label}" → "${errMsg}"`);
@@ -259,7 +259,7 @@ test("C4: Lot öffnen ohne Verkäufer-Registrierung", async ({ request }) => {
 
   await api(request, "PATCH", `/api/auction/lots/${newLotId}/publish`, buyerToken);
 
-  // Direkt open — ohne einen Verkäufer zu registrieren → muss 422 sein
+  // Direkt open - ohne einen Verkäufer zu registrieren → muss 422 sein
   const openRes = await api(request, "POST", `/api/auction/lots/${newLotId}/open`, buyerToken, {
     auctionEnd: new Date(Date.now() + 3600_000).toISOString(),
   });
@@ -270,7 +270,7 @@ test("C5: Dispute auf Lot das nicht DELIVERED ist", async ({ request }) => {
   const res = await api(request, "POST", `/api/auction/lots/${LOT_CONCLUDED}/dispute`, buyerToken, {
     reason: "Test-Sabotage Qualitätsmangel detailliert",
   });
-  // COMPLETED-Lot ist bereits abgeschlossen — kein Dispute mehr möglich (409)
+  // COMPLETED-Lot ist bereits abgeschlossen - kein Dispute mehr möglich (409)
   // Falls lot_disputes-Tabelle fehlt → 503 (robuster DB-Fehler, kein leerer 500)
   // 403: Buyer ist nicht Vertragspartei dieses Lots
   await assertBlocked(res, [400, 403, 409, 422, 503], "Dispute auf COMPLETED-Lot");
@@ -312,7 +312,7 @@ test("D3: Unautorisierter Zugriff auf Wallet (kein Token)", async ({ request }) 
 
 test("D4: Verkäufer versucht Buyer-Wallet zu lesen", async ({ request }) => {
   const res = await api(request, "GET", "/api/buyer/wallet", seller1Token);
-  // Wallet ist ausschließlich für Käufer — Seller muss 403 bekommen
+  // Wallet ist ausschließlich für Käufer - Seller muss 403 bekommen
   await assertBlocked(res, [403], "Seller liest Buyer-Wallet (Rollenverstoß)");
 });
 
@@ -398,7 +398,7 @@ test("E4: XSS-Payload im Lot-Beschreibungsfeld", async ({ request }) => {
     const body = await res.json() as Record<string, unknown>;
     // Wir können nur prüfen, dass die API nicht abstürzt
     // Die eigentliche XSS-Prüfung erfolgt im Frontend (React escaped automatisch)
-    console.log(`[HINWEIS] XSS-String wurde akzeptiert (ID: ${body["lotId"] ?? body["id"] ?? "?"}) — React escaped beim Rendern`);
+    console.log(`[HINWEIS] XSS-String wurde akzeptiert (ID: ${body["lotId"] ?? body["id"] ?? "?"}) - React escaped beim Rendern`);
   } else {
     console.log(`✓ XSS-Payload abgelehnt [${res.status()}]`);
   }
@@ -409,7 +409,7 @@ test("E4: XSS-Payload im Lot-Beschreibungsfeld", async ({ request }) => {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 test.afterAll(async () => {
-  console.log("\n═══════ EUCX Negative Path Suite — Abgeschlossen ═══════");
+  console.log("\n═══════ EUCX Negative Path Suite - Abgeschlossen ═══════");
   console.log("Alle illegalen Aktionen wurden auf korrekte Backend-Ablehnung geprüft.");
   console.log("Bericht: playwright-report/index.html");
 });

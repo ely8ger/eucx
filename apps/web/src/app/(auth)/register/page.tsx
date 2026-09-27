@@ -879,7 +879,7 @@ export default function RegisterPage() {
           <div style={{ padding: "28px 32px" }}>
             <p style={{ fontSize: 14, color: "#444", fontFamily: F, lineHeight: 1.6, marginBottom: 24 }}>
               Ihre E-Mail-Adresse wurde bestätigt. Sie können sich jetzt anmelden.
-              Für Handelsaktivitäten ist eine KYC-Verifizierung erforderlich — diese können Sie nach dem Login einreichen.
+              Für Handelsaktivitäten ist eine KYC-Verifizierung erforderlich - diese können Sie nach dem Login einreichen.
             </p>
             <button
               onClick={() => router.push("/login")}
@@ -1291,7 +1291,7 @@ export default function RegisterPage() {
                   </ConsentBox>
                 </div>
                 <p style={{ margin: "10px 0 0", fontSize: 11, color: "#9ca3af", fontFamily: F }}>
-                  <span style={{ color: "#dc2626", fontWeight: 700 }}>*</span> Pflichtfeld — gesetzlich vorgeschrieben (GwG)
+                  <span style={{ color: "#dc2626", fontWeight: 700 }}>*</span> Pflichtfeld - gesetzlich vorgeschrieben (GwG)
                 </p>
               </div>
 
@@ -1323,7 +1323,7 @@ export default function RegisterPage() {
                   </ConsentBox>
                 </div>
                 <p style={{ margin: "10px 0 0", fontSize: 11, color: "#9ca3af", fontFamily: F }}>
-                  <span style={{ color: "#dc2626", fontWeight: 700 }}>*</span> Pflichtfeld — Zustimmung erforderlich
+                  <span style={{ color: "#dc2626", fontWeight: 700 }}>*</span> Pflichtfeld - Zustimmung erforderlich
                 </p>
               </div>
 

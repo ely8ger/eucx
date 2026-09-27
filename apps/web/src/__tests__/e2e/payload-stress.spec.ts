@@ -224,14 +224,14 @@ test.describe("Payload-Stress: Unicode & Emoji in Textfeldern", () => {
 
   test("Chinesische Schriftzeichen in deliveryLocation (< 200 Zeichen) → 201", async () => {
     const { status } = await createLot(buyerToken, IP_UNICODE, validLotBody({
-      deliveryLocation: "上海自由貿易試驗區 — 中国上海市浦東新区",
+      deliveryLocation: "上海自由貿易試驗區 - 中国上海市浦東新区",
     }));
     expect(status).toBe(201);
   });
 
   test("Arabische Schriftzeichen in deliveryLocation → 201", async () => {
     const { status } = await createLot(buyerToken, IP_UNICODE, validLotBody({
-      deliveryLocation: "منطقة دبي الصناعية — دبي، الإمارات",
+      deliveryLocation: "منطقة دبي الصناعية - دبي، الإمارات",
     }));
     expect(status).toBe(201);
   });
@@ -293,7 +293,7 @@ test.describe("Payload-Stress: PDF-Generierung mit Unicode-Inhalt", () => {
   test("Vollständiger Auktionszyklus mit Emoji-Feldern → PDF abrufbar (kein 500)", async () => {
     // Lot mit Unicode/Emojis erstellen
     const { status: cs, json: cj } = await createLot(buyerToken, IP_PDF, validLotBody({
-      deliveryLocation: "Werk Köln 🏭 — Bayerwerk-Allee",
+      deliveryLocation: "Werk Köln 🏭 - Bayerwerk-Allee",
       qualityGrade:     "B500B ✅ nach DIN 488",
       description:      "Bewehrungsstahl 📦 für Bauprojekt 🏗️ Hamburg",
       deliveryPeriod:   "4 Wochen 📅",

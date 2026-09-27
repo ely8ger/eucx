@@ -68,7 +68,7 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "definition",
         heading: "Definition und Eigenschaften",
-        body: "Betonstahl (Bewehrungsstahl) ist ein gerippter Stahlstab, der zur Bewehrung von Stahlbeton eingesetzt wird. Er überträgt Zugkräfte im Verbundbaustoff Stahlbeton, während der Beton die Druckkräfte übernimmt. Ohne Bewehrung wäre moderner Hoch- und Ingenieurbau nicht möglich.\n\nDie gängigste Handelsform ist Betonstahl BSt 500S (europäische Bezeichnung: B500B nach EN 10080) mit einer charakteristischen Streckgrenze von 500 N/mm². Lieferbar in Stangen (6–18 m) oder als Coil. Die gerippte Oberfläche sorgt für optimalen Verbund mit dem Beton.",
+        body: "Betonstahl (Bewehrungsstahl) ist ein gerippter Stahlstab, der zur Bewehrung von Stahlbeton eingesetzt wird. Er überträgt Zugkräfte im Verbundbaustoff Stahlbeton, während der Beton die Druckkräfte übernimmt. Ohne Bewehrung wäre moderner Hoch- und Ingenieurbau nicht möglich.\n\nDie gängigste Handelsform ist Betonstahl BSt 500S (europäische Bezeichnung: B500B nach EN 10080) mit einer charakteristischen Streckgrenze von 500 N/mm². Lieferbar in Stangen (6-18 m) oder als Coil. Die gerippte Oberfläche sorgt für optimalen Verbund mit dem Beton.",
         sub: [
           {
             id: "definition-abmessungen",
@@ -90,12 +90,12 @@ export const LEXIKON: LexikonEntry[] = [
           {
             id: "preisbildung-schrott",
             heading: "Stahlschrott als Primärkostenfaktor",
-            body: "Über 80 % des deutschen Betonstahlvolumens stammt aus Elektrolichtbogenöfen (EAF), die Stahlschrott verwenden. Ein Anstieg des Schrottpreises um 10 €/t erhöht die Produktionskosten für Betonstahl um ca. 8–9 €/t."
+            body: "Über 80 % des deutschen Betonstahlvolumens stammt aus Elektrolichtbogenöfen (EAF), die Stahlschrott verwenden. Ein Anstieg des Schrottpreises um 10 €/t erhöht die Produktionskosten für Betonstahl um ca. 8-9 €/t."
           },
           {
             id: "preisbildung-energie",
             heading: "Energiekosten und CO₂",
-            body: "EAF-Betriebe benötigen je Tonne Rohstahl ca. 350–400 kWh Strom. Bei einem Strompreis von 80 €/MWh entspricht das 28–32 €/t. CO₂-Zertifikate (EUA) kosten 2026 ca. 60–70 €/t CO₂ - bei 0,4–0,6 t CO₂/t Stahl summiert sich das auf 25–40 €/t."
+            body: "EAF-Betriebe benötigen je Tonne Rohstahl ca. 350-400 kWh Strom. Bei einem Strompreis von 80 €/MWh entspricht das 28-32 €/t. CO₂-Zertifikate (EUA) kosten 2026 ca. 60-70 €/t CO₂ - bei 0,4-0,6 t CO₂/t Stahl summiert sich das auf 25-40 €/t."
           },
           {
             id: "preisbildung-import",
@@ -112,7 +112,7 @@ export const LEXIKON: LexikonEntry[] = [
           {
             id: "handel-incoterms",
             heading: "Incoterms und Lieferkonditionen",
-            body: "Der EUCX-Standardkontrakt basiert auf FCA (Free Carrier) ab Lager Deutschland. Lieferzeiten: Lagerware 2–5 Werktage, Werksdirektlieferung 3–6 Wochen."
+            body: "Der EUCX-Standardkontrakt basiert auf FCA (Free Carrier) ab Lager Deutschland. Lieferzeiten: Lagerware 2-5 Werktage, Werksdirektlieferung 3-6 Wochen."
           },
           {
             id: "handel-qualitaet",
@@ -131,7 +131,7 @@ export const LEXIKON: LexikonEntry[] = [
     faq: [
       { q: "Was ist der aktuelle Betonstahl-Preis 2026?", a: "Betonstahl B500B notiert aktuell an der EUCX bei 698,00 €/t (frei Lager Deutschland, netto). Aktualisierung täglich um 08:00 Uhr." },
       { q: "Was bedeutet B500B beim Betonstahl?", a: "B500B bezeichnet die Güte nach EN 10080: B = Betonstahl, 500 = Streckgrenze 500 N/mm², B = hohe Duktilität (Klasse B)." },
-      { q: "Wie wird Betonstahl gehandelt?", a: "An der EUCX in Losen à 25 t. Preise in EUR/t (netto), frei Lager Deutschland. Handel täglich Mo–Fr 14–16 Uhr." },
+      { q: "Wie wird Betonstahl gehandelt?", a: "An der EUCX in Losen à 25 t. Preise in EUR/t (netto), frei Lager Deutschland. Handel täglich Mo-Fr 14-16 Uhr." },
       { q: "Was treibt den Betonstahl-Preis?", a: "Die wichtigsten Faktoren: Schrottpreis, Strompreise, CO₂-Zertifikate, Importvolumen und Baukonjunktur in der EU." },
     ],
   },
@@ -194,14 +194,14 @@ export const LEXIKON: LexikonEntry[] = [
           {
             id: "cbam-sektoren",
             heading: "Betroffene Sektoren und CN-Codes",
-            body: "Stahl und Eisen (HS 72 / CN 7206–7229): Roheisen, Ferrolegierungen, Rohblöcke, Halbzeug, Flacherzeugnisse, Langerzeugnisse (inkl. Betonstahl B500B, Walzdraht, Träger, Winkelprofile). Stahlrohre (HS 7304–7306) werden ab Phase 2 einbezogen.\n\nAluminium (HS 76 / CN 7601–7616): Primäraluminium (elektrolytisch), Sekundäraluminium, Pressbolzen, Bleche, Strangpressprofile.\n\nZement (HS 2523): Portlandzement, Tonerdezement, Schlackenzement.\n\nDüngemittel (HS 31 / CN 3102–3105): Harnstoff (Urea), Ammoniumnitrat (AN 34 %), NPK-Dünger, Kaliumnitrat.\n\nElektrischer Strom (HS 2716): Importierter Strom aus Drittstaaten über Interkonnektoren.\n\nWasserstoff (HS 2804 10): Grauer, blauer und grüner Wasserstoff.\n\nFür EUCX-Händler direkt relevant: Stahl/Eisen (primär) und Düngemittel (sekundär). Kupfer, Zink und Nickel sind derzeit nicht im Scope, werden aber für Phase 3 (ab 2030+) diskutiert."
+            body: "Stahl und Eisen (HS 72 / CN 7206-7229): Roheisen, Ferrolegierungen, Rohblöcke, Halbzeug, Flacherzeugnisse, Langerzeugnisse (inkl. Betonstahl B500B, Walzdraht, Träger, Winkelprofile). Stahlrohre (HS 7304-7306) werden ab Phase 2 einbezogen.\n\nAluminium (HS 76 / CN 7601-7616): Primäraluminium (elektrolytisch), Sekundäraluminium, Pressbolzen, Bleche, Strangpressprofile.\n\nZement (HS 2523): Portlandzement, Tonerdezement, Schlackenzement.\n\nDüngemittel (HS 31 / CN 3102-3105): Harnstoff (Urea), Ammoniumnitrat (AN 34 %), NPK-Dünger, Kaliumnitrat.\n\nElektrischer Strom (HS 2716): Importierter Strom aus Drittstaaten über Interkonnektoren.\n\nWasserstoff (HS 2804 10): Grauer, blauer und grüner Wasserstoff.\n\nFür EUCX-Händler direkt relevant: Stahl/Eisen (primär) und Düngemittel (sekundär). Kupfer, Zink und Nickel sind derzeit nicht im Scope, werden aber für Phase 3 (ab 2030+) diskutiert."
           }
         ]
       },
       {
         id: "uebergangsphasephase",
-        heading: "Übergangsphase 2023–2025: Nur Berichtspflicht",
-        body: "Die CBAM-Übergangsphase lief vom 1. Oktober 2023 bis zum 31. Dezember 2025. In dieser Phase bestanden ausschließlich Berichtspflichten - es fielen keine Zahlungen an. Importeure mussten quartalsweise einen CBAM-Übergangsbericht einreichen, der folgende Angaben enthält:\n\n1. Menge der importierten CBAM-Waren in Tonnen\n2. Eingebettete direkte und indirekte CO₂-Emissionen (in tCO₂e)\n3. Produktionsland und -anlage\n4. Im Ursprungsland bereits gezahlter CO₂-Preis (falls vorhanden)\n\nBerichte wurden über das EU-CBAM-Übergangsregister (CBAM Transitional Registry) eingereicht, das von der EU-Kommission betrieben wird. Verstöße gegen die Berichtspflicht während der Übergangsphase wurden mit Bußgeldern von 10–50 EUR je nicht gemeldeter Tonne CO₂e sanktioniert (Art. 26 Abs. 1 VO (EU) 2023/956).",
+        heading: "Übergangsphase 2023-2025: Nur Berichtspflicht",
+        body: "Die CBAM-Übergangsphase lief vom 1. Oktober 2023 bis zum 31. Dezember 2025. In dieser Phase bestanden ausschließlich Berichtspflichten - es fielen keine Zahlungen an. Importeure mussten quartalsweise einen CBAM-Übergangsbericht einreichen, der folgende Angaben enthält:\n\n1. Menge der importierten CBAM-Waren in Tonnen\n2. Eingebettete direkte und indirekte CO₂-Emissionen (in tCO₂e)\n3. Produktionsland und -anlage\n4. Im Ursprungsland bereits gezahlter CO₂-Preis (falls vorhanden)\n\nBerichte wurden über das EU-CBAM-Übergangsregister (CBAM Transitional Registry) eingereicht, das von der EU-Kommission betrieben wird. Verstöße gegen die Berichtspflicht während der Übergangsphase wurden mit Bußgeldern von 10-50 EUR je nicht gemeldeter Tonne CO₂e sanktioniert (Art. 26 Abs. 1 VO (EU) 2023/956).",
         sub: [
           {
             id: "cbam-lektionen",
@@ -217,8 +217,8 @@ export const LEXIKON: LexikonEntry[] = [
         sub: [
           {
             id: "cbam-zeitplan-detail",
-            heading: "Implementierungszeitplan 2026–2034",
-            body: "2026: Vollständige CBAM-Einführung. EU-ETS-Freiallokationen für CBAM-Sektoren beginnen zu sinken (-2,5 % p.a.).\n2027: Erste vollständige Jahresmeldung (für 2026) fällig (31. Mai 2027).\n2028–2030: Freiallokationen sinken weiter; CBAM-Zahllast steigt proportional.\n2030: Freiallokationen auf ca. 75 % des 2025-Niveaus reduziert.\n2030–2034: Beschleunigter Abbau der Freiallokationen (-10 % p.a.).\n2034: Vollständige Implementierung. Alle Freiallokationen für CBAM-Sektoren entfallen. 100 % CBAM-Zahllast für Importeure."
+            heading: "Implementierungszeitplan 2026-2034",
+            body: "2026: Vollständige CBAM-Einführung. EU-ETS-Freiallokationen für CBAM-Sektoren beginnen zu sinken (-2,5 % p.a.).\n2027: Erste vollständige Jahresmeldung (für 2026) fällig (31. Mai 2027).\n2028-2030: Freiallokationen sinken weiter; CBAM-Zahllast steigt proportional.\n2030: Freiallokationen auf ca. 75 % des 2025-Niveaus reduziert.\n2030-2034: Beschleunigter Abbau der Freiallokationen (-10 % p.a.).\n2034: Vollständige Implementierung. Alle Freiallokationen für CBAM-Sektoren entfallen. 100 % CBAM-Zahllast für Importeure."
           }
         ]
       },
@@ -259,16 +259,16 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "cbam-marktauswirkungen",
         heading: "Auswirkungen auf den EU-Rohstoffmarkt",
-        body: "CBAM ist eine der größten strukturellen Verschiebungen im europäischen Rohstoffhandel seit der ETS-Einführung 2005. Die Auswirkungen sind sektorspezifisch:\n\nBetonstahl: Türkische und osteuropäische (Nicht-EU) Betonstahl-Importe decken ca. 18 % des EU-Bedarfs. CBAM macht diese Importe um 100–130 €/t teurer. Dies stützt EU-Erzeugerpreise strukturell - insbesondere für EAF-Produzenten mit grünem Strommix (Skandinavien, Frankreich).\n\nFlachstahl (nicht auf EUCX): Hochofenstahl aus China (~2,1 tCO₂/t) wird mit ~137 €/t CBAM belastet. EU-Hochofenstahl erhält schrittweise weniger Freiallokationen - Kostensteigerung von 20–40 €/t bis 2030.\n\nHarnstoff und Stickstoffdünger: Importe aus Russland (ca. 35 % der EU-Importe vor 2022), Ägypten und Algerien werden massiv teurer. EU-Produzenten (SKW Piesteritz, Yara, BASF) profitieren.\n\nAluminium: Primäraluminium aus Russland, China und dem Mittleren Osten mit 8–16 tCO₂/t trägt CBAM von 520–1.040 €/t (bei EUA 65 €/t). De facto Abschottung des EU-Markts für konventionell produziertes Aluminium.",
+        body: "CBAM ist eine der größten strukturellen Verschiebungen im europäischen Rohstoffhandel seit der ETS-Einführung 2005. Die Auswirkungen sind sektorspezifisch:\n\nBetonstahl: Türkische und osteuropäische (Nicht-EU) Betonstahl-Importe decken ca. 18 % des EU-Bedarfs. CBAM macht diese Importe um 100-130 €/t teurer. Dies stützt EU-Erzeugerpreise strukturell - insbesondere für EAF-Produzenten mit grünem Strommix (Skandinavien, Frankreich).\n\nFlachstahl (nicht auf EUCX): Hochofenstahl aus China (~2,1 tCO₂/t) wird mit ~137 €/t CBAM belastet. EU-Hochofenstahl erhält schrittweise weniger Freiallokationen - Kostensteigerung von 20-40 €/t bis 2030.\n\nHarnstoff und Stickstoffdünger: Importe aus Russland (ca. 35 % der EU-Importe vor 2022), Ägypten und Algerien werden massiv teurer. EU-Produzenten (SKW Piesteritz, Yara, BASF) profitieren.\n\nAluminium: Primäraluminium aus Russland, China und dem Mittleren Osten mit 8-16 tCO₂/t trägt CBAM von 520-1.040 €/t (bei EUA 65 €/t). De facto Abschottung des EU-Markts für konventionell produziertes Aluminium.",
       },
     ],
     related: ["betonstahl", "otf-eucx", "abwicklungsgarantie"],
     faq: [
-      { q: "Ab wann ist CBAM kostenpflichtig?", a: "Ab 1. Januar 2026. Die Übergangsphase (Oktober 2023 – Dezember 2025) hatte nur Berichtspflichten ohne Zahlungslast." },
+      { q: "Ab wann ist CBAM kostenpflichtig?", a: "Ab 1. Januar 2026. Die Übergangsphase (Oktober 2023 - Dezember 2025) hatte nur Berichtspflichten ohne Zahlungslast." },
       { q: "Betrifft CBAM auch Stahlschrott?", a: "Nein. CBAM gilt für verarbeitete Erzeugnisse (Betonstahl, Bleche, Walzdraht), nicht für Schrott als Rohmaterial. Schrott fällt unter HS 7204 und ist explizit ausgenommen." },
       { q: "Wie kaufe ich CBAM-Zertifikate?", a: "Über das EU-CBAM-Register (cbam.ec.europa.eu). In Deutschland ist die Bundeszollverwaltung / BAFA zuständig für Registrierung und Abwicklung. Der Zertifikatspreis wird wöchentlich aus dem EUA-Durchschnitt berechnet." },
       { q: "Was ist der Unterschied zwischen CBAM und EU-ETS?", a: "EU-ETS betrifft EU-Produzenten direkt (Zertifikatspflicht für eigene Emissionen). CBAM betrifft Importeure und stellt sicher, dass Importe denselben CO₂-Preis zahlen wie EU-Erzeuger. Beide Systeme sind eng verknüpft - der CBAM-Preis basiert auf dem EUA-Preis." },
-      { q: "Gilt CBAM auch für Recycling-Stahl (EAF)?", a: "Ja, aber mit deutlich niedrigerem CO₂-Faktor. EAF-Stahl aus der Türkei emittiert ca. 1,8 tCO₂/t, Hochofenstahl ca. 2,1 tCO₂/t. Bei EAF-Stahl mit erneuerbarem Strom kann die CO₂-Intensität auf 0,4–0,6 tCO₂/t sinken - CBAM-Aufschlag dann nur 26–39 €/t." },
+      { q: "Gilt CBAM auch für Recycling-Stahl (EAF)?", a: "Ja, aber mit deutlich niedrigerem CO₂-Faktor. EAF-Stahl aus der Türkei emittiert ca. 1,8 tCO₂/t, Hochofenstahl ca. 2,1 tCO₂/t. Bei EAF-Stahl mit erneuerbarem Strom kann die CO₂-Intensität auf 0,4-0,6 tCO₂/t sinken - CBAM-Aufschlag dann nur 26-39 €/t." },
       { q: "Muss EUCX als Handelsplattform CBAM abführen?", a: "Nein. CBAM liegt beim Importeur (der Partei, die Waren aus Drittstaaten in die EU einführt). EUCX als Handelsplattform für bereits in der EU befindliche Waren ist kein Importeur und unterliegt keiner CBAM-Zahllast." },
     ],
   },
@@ -286,7 +286,7 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "was-ist-lme",
         heading: "Was ist die LME?",
-        body: "Die London Metal Exchange (LME) wurde 1877 gegründet und ist heute Teil der Hong Kong Exchanges and Clearing (HKEX). Sie betreibt Terminmärkte für Aluminium, Kupfer, Zink, Blei, Nickel, Zinn und weitere Metalle. Der tägliche LME Official Price entsteht durch das sogenannte Ring Trading – ein physisches Auktionsverfahren, das auch im digitalen Zeitalter beibehalten wurde.",
+        body: "Die London Metal Exchange (LME) wurde 1877 gegründet und ist heute Teil der Hong Kong Exchanges and Clearing (HKEX). Sie betreibt Terminmärkte für Aluminium, Kupfer, Zink, Blei, Nickel, Zinn und weitere Metalle. Der tägliche LME Official Price entsteht durch das sogenannte Ring Trading - ein physisches Auktionsverfahren, das auch im digitalen Zeitalter beibehalten wurde.",
       },
       {
         id: "official-price",
@@ -334,7 +334,7 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "klauseln-see",
         heading: "Klauseln für See/Binnenschiff",
-        body: "FAS (Free Alongside Ship): Ware neben Schiff am Verladehafen. FOB (Free on Board): Gefahrübergang mit Überschreiten der Schiffsreling – der Klassiker im Rohstoffhandel. CFR (Cost and Freight): Verkäufer zahlt Fracht, Gefahr geht mit FOB über. CIF (Cost, Insurance and Freight): Wie CFR, aber mit Mindestversicherung (ICC-C).",
+        body: "FAS (Free Alongside Ship): Ware neben Schiff am Verladehafen. FOB (Free on Board): Gefahrübergang mit Überschreiten der Schiffsreling - der Klassiker im Rohstoffhandel. CFR (Cost and Freight): Verkäufer zahlt Fracht, Gefahr geht mit FOB über. CIF (Cost, Insurance and Freight): Wie CFR, aber mit Mindestversicherung (ICC-C).",
       },
       {
         id: "eucx-praxis",
@@ -417,7 +417,7 @@ export const LEXIKON: LexikonEntry[] = [
           {
             id: "margin-initial",
             heading: "Initial Margin - Die Eintrittshuerde",
-            body: "Die Initial Margin ist die einmalige Grundsicherheit, die bei Kontoeröffnung hinterlegt wird. Sie richtet sich nach dem genehmigten Jahreshandelsvolumen:\n\nBis 2 Mio. EUR Jahresvolumen: 10.000 EUR Mindest-Margin (5,0 %)\n2–10 Mio. EUR: 50.000 EUR (2,5 %)\n10–50 Mio. EUR: 150.000 EUR (1,5 %)\nÜber 50 Mio. EUR: Individuell vereinbart (i.d.R. 1,0 %)\n\nDie Initial Margin liegt jederzeit auf einem segregierten Treuhandkonto bei der Deutschen Bank AG, getrennt vom EUCX-Betriebsvermögen. Sie ist damit im Insolvenzfall der EUCX GmbH vollstaendig geschützt.\n\nVerzinsung: EZB-Einlagezinssatz − 0,25 % p.a. (aktuell: ca. 3,65 % p.a.)."
+            body: "Die Initial Margin ist die einmalige Grundsicherheit, die bei Kontoeröffnung hinterlegt wird. Sie richtet sich nach dem genehmigten Jahreshandelsvolumen:\n\nBis 2 Mio. EUR Jahresvolumen: 10.000 EUR Mindest-Margin (5,0 %)\n2-10 Mio. EUR: 50.000 EUR (2,5 %)\n10-50 Mio. EUR: 150.000 EUR (1,5 %)\nÜber 50 Mio. EUR: Individuell vereinbart (i.d.R. 1,0 %)\n\nDie Initial Margin liegt jederzeit auf einem segregierten Treuhandkonto bei der Deutschen Bank AG, getrennt vom EUCX-Betriebsvermögen. Sie ist damit im Insolvenzfall der EUCX GmbH vollstaendig geschützt.\n\nVerzinsung: EZB-Einlagezinssatz − 0,25 % p.a. (aktuell: ca. 3,65 % p.a.)."
           },
           {
             id: "margin-variation",
@@ -434,12 +434,12 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "vergleich-otc",
         heading: "Abwicklungsgarantie vs. OTC-Handel: Was Händler wissen müssen",
-        body: "Im Over-the-Counter (OTC) Handel - also dem direkten, bilateralen Handel ausserhalb einer Boerse - gibt es keine Abwicklungsgarantie. Kaeufer und Verkäufer tragen das volle Gegenparteirisiko. Laut BIS-Statistik (Bank for International Settlements) scheitern ca. 5–8 % aller OTC-Rohstoffgeschäfte an Abwicklungsproblemen.\n\nDie Abwicklungsgarantie der EUCX eliminiert dieses Risiko vollstaendig. Fuer mittelstaendische Industrieunternehmen, die bisher OTC handelten, bedeutet der Wechsel zur EUCX:\n\n- Keine Due-Diligence-Kosten fuer jeden einzelnen Handelspartner\n- Keine bilateralen Rahmenvertraege (ISDA/Master Agreement) noetig\n- Planungssicherheit: Liefertermin und Preis sind bei Abschluss garantiert\n- Bilanziell: Gegenparteirisiko entfaellt aus dem Risikobericht\n- Regulatorisch: Reduzierter Dokumentationsaufwand nach EMIR Art. 11",
+        body: "Im Over-the-Counter (OTC) Handel - also dem direkten, bilateralen Handel ausserhalb einer Boerse - gibt es keine Abwicklungsgarantie. Kaeufer und Verkäufer tragen das volle Gegenparteirisiko. Laut BIS-Statistik (Bank for International Settlements) scheitern ca. 5-8 % aller OTC-Rohstoffgeschäfte an Abwicklungsproblemen.\n\nDie Abwicklungsgarantie der EUCX eliminiert dieses Risiko vollstaendig. Fuer mittelstaendische Industrieunternehmen, die bisher OTC handelten, bedeutet der Wechsel zur EUCX:\n\n- Keine Due-Diligence-Kosten fuer jeden einzelnen Handelspartner\n- Keine bilateralen Rahmenvertraege (ISDA/Master Agreement) noetig\n- Planungssicherheit: Liefertermin und Preis sind bei Abschluss garantiert\n- Bilanziell: Gegenparteirisiko entfaellt aus dem Risikobericht\n- Regulatorisch: Reduzierter Dokumentationsaufwand nach EMIR Art. 11",
       },
       {
         id: "expertentipp",
         heading: "Expertentipp: Margin-Optimierung für aktive Händler",
-        body: "Ein haeufiger Fehler neuer EUCX-Teilnehmer: Sie hinterlegen genau die Mindest-Margin und sind dann ueberrascht, wenn groessere Ordervolumina abgewiesen werden.\n\nProfi-Ansatz: Hinterlegen Sie 120–150 % der rein rechnerisch notwendigen Margin. Das gibt Ihnen Handlungsspielraum bei schnellen Marktbewegungen und verhindert Margin Calls in volatilen Phasen (z.B. waehrend CBAM-Ankuendigungen oder Zollerhoehungen).\n\nSteuertipp: Die Initial Margin ist kein Aufwand - sie bleibt Vermoegen Ihres Unternehmens. Die anfallenden Zinsertraege auf der Margin muessen als Kapitalertrag versteuert werden. Sprechen Sie mit Ihrem Steuerberater ueber die korrekte Bilanzierung nach HGB § 266 Abs. 2 B.II.4.",
+        body: "Ein haeufiger Fehler neuer EUCX-Teilnehmer: Sie hinterlegen genau die Mindest-Margin und sind dann ueberrascht, wenn groessere Ordervolumina abgewiesen werden.\n\nProfi-Ansatz: Hinterlegen Sie 120-150 % der rein rechnerisch notwendigen Margin. Das gibt Ihnen Handlungsspielraum bei schnellen Marktbewegungen und verhindert Margin Calls in volatilen Phasen (z.B. waehrend CBAM-Ankuendigungen oder Zollerhoehungen).\n\nSteuertipp: Die Initial Margin ist kein Aufwand - sie bleibt Vermoegen Ihres Unternehmens. Die anfallenden Zinsertraege auf der Margin muessen als Kapitalertrag versteuert werden. Sprechen Sie mit Ihrem Steuerberater ueber die korrekte Bilanzierung nach HGB § 266 Abs. 2 B.II.4.",
       },
     ],
     related: ["otf-eucx", "cbam", "mifid-ii-otf"],
@@ -472,7 +472,7 @@ export const LEXIKON: LexikonEntry[] = [
   },
   {
     slug: "cbam-detail",
-    term: "CBAM – Carbon Border Adjustment Mechanism (vertieft)",
+    term: "CBAM - Carbon Border Adjustment Mechanism (vertieft)",
     shortDef: "Der CO₂-Grenzausgleichsmechanismus (CBAM) der EU ab 2026 macht Kohlenstoffemissionen bei importierten Waren bepreisbar.",
     description: "CBAM vertieft: Betroffene Warengruppen, Berechnung, Zeitplan und Bedeutung für den EUCX-Handel.",
     category: "Regulierung",
@@ -484,12 +484,12 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "ueberblick",
         heading: "Was ist CBAM?",
-        body: "Der Carbon Border Adjustment Mechanism (CBAM) ist ein EU-Instrument, das ab dem 1. Januar 2026 (Übergangsphase seit Oktober 2023) CO₂-Preise auf importierte Waren erhebt, die in der EU keinem vergleichbaren CO₂-Preis unterliegen. Ziel: Verhinderung von 'Carbon Leakage' – also der Verlagerung emissionsintensiver Produktion in Länder mit geringeren Klimaschutzauflagen. Rechtsgrundlage: Verordnung (EU) 2023/956.",
+        body: "Der Carbon Border Adjustment Mechanism (CBAM) ist ein EU-Instrument, das ab dem 1. Januar 2026 (Übergangsphase seit Oktober 2023) CO₂-Preise auf importierte Waren erhebt, die in der EU keinem vergleichbaren CO₂-Preis unterliegen. Ziel: Verhinderung von 'Carbon Leakage' - also der Verlagerung emissionsintensiver Produktion in Länder mit geringeren Klimaschutzauflagen. Rechtsgrundlage: Verordnung (EU) 2023/956.",
       },
       {
         id: "betroffene-waren",
         heading: "Betroffene Warengruppen",
-        body: "Sektor 1 – Stahl und Eisen: CN-Codes 7206–7229, inkl. Betonstahl, Walzdraht, Stahlbrammen. Sektor 2 – Aluminium: Primär- und Sekundäraluminium, Aluminiumprodukte. Sektor 3 – Zement: Alle Portlandzementvarianten. Sektor 4 – Düngemittel: Stickstoffdünger, Ammoniumnitrat, Harnstoff. Sektor 5 – Strom: Importierter Strom aus Nicht-EU-Ländern. Sektor 6 – Wasserstoff: Grauer und blauer Wasserstoff. Erweiterung bis 2030: Kommission prüft Ausweitung auf weitere energieintensive Sektoren.",
+        body: "Sektor 1 - Stahl und Eisen: CN-Codes 7206-7229, inkl. Betonstahl, Walzdraht, Stahlbrammen. Sektor 2 - Aluminium: Primär- und Sekundäraluminium, Aluminiumprodukte. Sektor 3 - Zement: Alle Portlandzementvarianten. Sektor 4 - Düngemittel: Stickstoffdünger, Ammoniumnitrat, Harnstoff. Sektor 5 - Strom: Importierter Strom aus Nicht-EU-Ländern. Sektor 6 - Wasserstoff: Grauer und blauer Wasserstoff. Erweiterung bis 2030: Kommission prüft Ausweitung auf weitere energieintensive Sektoren.",
       },
       {
         id: "berechnung",
@@ -499,7 +499,7 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "zeitplan",
         heading: "Implementierungszeitplan",
-        body: "Oktober 2023 – Dezember 2025: Übergangsphase (nur Berichtspflicht, keine Zahlungen). Ab 1. Januar 2026: CBAM-Zertifikate werden kostenpflichtig. 2026–2034: Parallele Phase – EU-ETS-Freiallokationen werden schrittweise abgebaut. Ab 2034: Vollständige CBAM-Implementierung, Ende der Freiallokationen für betroffene Sektoren.",
+        body: "Oktober 2023 - Dezember 2025: Übergangsphase (nur Berichtspflicht, keine Zahlungen). Ab 1. Januar 2026: CBAM-Zertifikate werden kostenpflichtig. 2026-2034: Parallele Phase - EU-ETS-Freiallokationen werden schrittweise abgebaut. Ab 2034: Vollständige CBAM-Implementierung, Ende der Freiallokationen für betroffene Sektoren.",
       },
       {
         id: "eucx-relevanz",
@@ -513,8 +513,8 @@ export const LEXIKON: LexikonEntry[] = [
         faq: [
           { q: "Gilt CBAM auch für EU-interne Transporte?", a: "Nein. CBAM betrifft ausschließlich Waren, die aus Drittstaaten in die EU importiert werden. Intra-EU-Handel unterliegt dem EU-ETS, nicht CBAM." },
           { q: "Wie erhalte ich CBAM-Zertifikate?", a: "CBAM-Zertifikate werden über das EU-CBAM-Register (cbam.ec.europa.eu) erworben. Der Preis richtet sich nach dem wöchentlichen EUA-Durchschnittspreis." },
-          { q: "Was droht bei Verstößen gegen CBAM-Berichtspflichten?", a: "Während der Übergangsphase: Verwarnungen. Ab 2026: Sanktionen von 10–50 EUR je nicht gemeldeter tCO₂e (Verordnung (EU) 2023/956, Art. 26)." },
-          { q: "Betrifft CBAM auch Recycling-Stahl (EAF)?", a: "Ja, aber mit reduziertem CO₂-Faktor. Elektrostahlwerke (EAF) haben typischerweise 0,3–0,6 tCO₂/t gegenüber 1,6–2,2 tCO₂/t bei Hochofenroute." },
+          { q: "Was droht bei Verstößen gegen CBAM-Berichtspflichten?", a: "Während der Übergangsphase: Verwarnungen. Ab 2026: Sanktionen von 10-50 EUR je nicht gemeldeter tCO₂e (Verordnung (EU) 2023/956, Art. 26)." },
+          { q: "Betrifft CBAM auch Recycling-Stahl (EAF)?", a: "Ja, aber mit reduziertem CO₂-Faktor. Elektrostahlwerke (EAF) haben typischerweise 0,3-0,6 tCO₂/t gegenüber 1,6-2,2 tCO₂/t bei Hochofenroute." },
         ],
       },
     ],
@@ -522,7 +522,7 @@ export const LEXIKON: LexikonEntry[] = [
   },
   {
     slug: "mifid-ii-otf",
-    term: "MiFID II & OTF – Regulierung organisierter Handelssysteme",
+    term: "MiFID II & OTF - Regulierung organisierter Handelssysteme",
     shortDef: "MiFID II definiert OTF als dritte Kategorie organisierter Handelsplätze neben Regulated Markets und MTFs. EUCX operiert als BaFin-lizenzierter OTF.",
     description: "MiFID II, OTF-Definition, Pflichten des OTF-Betreibers und Unterschiede zu RM und MTF kompakt erklärt.",
     category: "Regulierung",
@@ -539,7 +539,7 @@ export const LEXIKON: LexikonEntry[] = [
       {
         id: "otf-definition",
         heading: "Was ist ein OTF?",
-        body: "Organised Trading Facility (OTF) ist eine durch MiFID II neu geschaffene, dritte Kategorie organisierter Handelsplätze (Art. 4 Abs. 1 Nr. 23 MiFID II). Kernmerkmal: Ermessensspielraum des Betreibers bei der Auftragsausführung (im Gegensatz zu Regulated Markets und MTFs). Zulässige Instrumente: Anleihen, strukturierte Finanzprodukte, Emissionszertifikate und Derivate – sowie physische Rohstoffe (Commodity OTF nach § 72 WpHG). EUCX operiert als Commodity OTF mit BaFin-Erlaubnis Nr. 10155.IV.7.0001/2025.",
+        body: "Organised Trading Facility (OTF) ist eine durch MiFID II neu geschaffene, dritte Kategorie organisierter Handelsplätze (Art. 4 Abs. 1 Nr. 23 MiFID II). Kernmerkmal: Ermessensspielraum des Betreibers bei der Auftragsausführung (im Gegensatz zu Regulated Markets und MTFs). Zulässige Instrumente: Anleihen, strukturierte Finanzprodukte, Emissionszertifikate und Derivate - sowie physische Rohstoffe (Commodity OTF nach § 72 WpHG). EUCX operiert als Commodity OTF mit BaFin-Erlaubnis Nr. 10155.IV.7.0001/2025.",
       },
       {
         id: "pflichten-betreiber",
@@ -1584,12 +1584,12 @@ export const AKADEMIE_ARTIKEL: AkademieArtikel[] = [
           {
             id: "zugang-kyc",
             heading: "KYC-Anforderungen im Detail",
-            body: "Für die Zulassung benötigt die EUCX:\n1. Handelsregisterauszug (nicht älter als 3 Monate)\n2. Ausweisdokument aller wirtschaftlich Berechtigten (>25 % Anteil)\n3. Nachweis der Geschäftstätigkeit im Rohstoffbereich\n4. Unterschriebene Handelsvereinbarung und AGB-Zustimmung\n5. Lastschriftmandat für Kaution und Gebühren\n\nDie Prüfung dauert in der Regel 2–5 Werktage."
+            body: "Für die Zulassung benötigt die EUCX:\n1. Handelsregisterauszug (nicht älter als 3 Monate)\n2. Ausweisdokument aller wirtschaftlich Berechtigten (>25 % Anteil)\n3. Nachweis der Geschäftstätigkeit im Rohstoffbereich\n4. Unterschriebene Handelsvereinbarung und AGB-Zustimmung\n5. Lastschriftmandat für Kaution und Gebühren\n\nDie Prüfung dauert in der Regel 2-5 Werktage."
           },
           {
             id: "zugang-kaution",
             heading: "Kaution und Marginsystem",
-            body: "Tier 1 (bis 500.000 €/Monat): 25.000 € Kaution\nTier 2 (500.000 – 2.000.000 €/Monat): 75.000 € Kaution\nTier 3 (> 2.000.000 €/Monat): individuelle Vereinbarung\n\nDie Kaution wird auf einem Treuhandkonto gehalten (Segregation nach MiFID II)."
+            body: "Tier 1 (bis 500.000 €/Monat): 25.000 € Kaution\nTier 2 (500.000 - 2.000.000 €/Monat): 75.000 € Kaution\nTier 3 (> 2.000.000 €/Monat): individuelle Vereinbarung\n\nDie Kaution wird auf einem Treuhandkonto gehalten (Segregation nach MiFID II)."
           }
         ]
       },
@@ -1606,7 +1606,7 @@ export const AKADEMIE_ARTIKEL: AkademieArtikel[] = [
           {
             id: "orderbuch-matching",
             heading: "Matching-Algorithmus und Price Discovery",
-            body: "Price-Time-Priority: Bester Preis zuerst, bei gleichem Preis älteste Order zuerst.\n\nBeispiel Betonstahl:\nSell: 700 €/t - 50 t; 702 €/t - 100 t\nBuy: 698 €/t - 75 t\n\nMarket Order 50 t: Ausführung zu 700 €/t (bestes Angebot). Spread von 698–700 €/t = 2 €/t."
+            body: "Price-Time-Priority: Bester Preis zuerst, bei gleichem Preis älteste Order zuerst.\n\nBeispiel Betonstahl:\nSell: 700 €/t - 50 t; 702 €/t - 100 t\nBuy: 698 €/t - 75 t\n\nMarket Order 50 t: Ausführung zu 700 €/t (bestes Angebot). Spread von 698-700 €/t = 2 €/t."
           }
         ]
       },
@@ -1640,13 +1640,13 @@ export const AKADEMIE_ARTIKEL: AkademieArtikel[] = [
           {
             id: "vertragsschluss-lieferung",
             heading: "Lieferabwicklung und Dokumentenfluss",
-            body: "T+0: Bestätigung per E-Mail, Lieferanweisung an Lager.\nT+1–T+3: Verkäufer stellt Lieferpapiere bereit (Prüfzeugnis 3.1, Lieferschein, Rechnung).\nT+2–T+5: Physische Übergabe, Wiegung, Qualitätsprüfung.\nT+3–T+7: Zahlung via SEPA. EUCX koordiniert.\n\nBei Mängeln: Einspruch innerhalb 5 Werktage. Schiedsverfahren nach DIS."
+            body: "T+0: Bestätigung per E-Mail, Lieferanweisung an Lager.\nT+1-T+3: Verkäufer stellt Lieferpapiere bereit (Prüfzeugnis 3.1, Lieferschein, Rechnung).\nT+2-T+5: Physische Übergabe, Wiegung, Qualitätsprüfung.\nT+3-T+7: Zahlung via SEPA. EUCX koordiniert.\n\nBei Mängeln: Einspruch innerhalb 5 Werktage. Schiedsverfahren nach DIS."
           }
         ]
       },
     ],
     faq: [
-      { q: "Wie lange dauert das Onboarding an der EUCX?", a: "2–5 Werktage nach Einreichung aller Dokumente." },
+      { q: "Wie lange dauert das Onboarding an der EUCX?", a: "2-5 Werktage nach Einreichung aller Dokumente." },
       { q: "Welche Kosten entstehen beim Handel?", a: "Keine Mitgliedsbeiträge. Transaktionsgebühr: 0,15 % des Kontraktwerts. Kaution je nach Volumen-Tier." },
       { q: "Ist ein Handel auch per API möglich?", a: "Ja. REST- und WebSocket-API für automatisierte Order-Platzierung." },
       { q: "Was ist ein Lot an der EUCX?", a: "1 Lot = 25 t für Stahlprodukte und Schrott. Düngemittel: 20 t. Holz: 50 m³." },
@@ -1655,34 +1655,34 @@ export const AKADEMIE_ARTIKEL: AkademieArtikel[] = [
   {
     slug: "erste-schritte-eucx",
     title: "Erste Schritte auf EUCX: Registrierung und erste Gebotsabgabe",
-    description: "Von der Registrierung bis zum ersten abgeschlossenen Handel – dieser Schritt-für-Schritt-Guide führt Sie durch den gesamten Onboarding-Prozess auf EUCX.",
+    description: "Von der Registrierung bis zum ersten abgeschlossenen Handel - dieser Schritt-für-Schritt-Guide führt Sie durch den gesamten Onboarding-Prozess auf EUCX.",
     readMin: 18,
     published: "2026-03-23",
     sections: [
       {
         id: "ueberblick",
         heading: "Überblick: Der EUCX-Onboarding-Prozess",
-        body: "Der Weg vom neuen Nutzer zum aktiven Marktteilnehmer auf EUCX umfasst 5 klar definierte Phasen: (1) Online-Registrierung und Dateneingabe, (2) KYC/AML-Identitätsprüfung, (3) Compliance-Freigabe durch das EUCX-Team, (4) Einzahlung der Initial Margin, (5) Erste Orderabgabe im Handelssystem. Die Durchlaufzeit beträgt typischerweise 3–7 Werktage.",
+        body: "Der Weg vom neuen Nutzer zum aktiven Marktteilnehmer auf EUCX umfasst 5 klar definierte Phasen: (1) Online-Registrierung und Dateneingabe, (2) KYC/AML-Identitätsprüfung, (3) Compliance-Freigabe durch das EUCX-Team, (4) Einzahlung der Initial Margin, (5) Erste Orderabgabe im Handelssystem. Die Durchlaufzeit beträgt typischerweise 3-7 Werktage.",
       },
       {
         id: "schritt-1-registrierung",
         heading: "Schritt 1: Online-Registrierung",
-        body: "Rufen Sie eucx.eu/register auf und wählen Sie Ihren Unternehmenstyp: Händler/Importeur, Produzent/Hersteller, Finanzinstitut oder Industrieabnehmer. Pflichtangaben: Firmenname, Handelsregisternummer, USt-ID, LEI-Nummer (Legal Entity Identifier – sofern vorhanden), Hauptansprechpartner mit Titel und direkter Durchwahl, Geschäftsadresse (muss mit Handelsregistereintrag übereinstimmen). Tipp: Bereiten Sie Ihren Handelsregisterauszug (nicht älter als 3 Monate) und eine aktuelle Gesellschafterliste vor.",
+        body: "Rufen Sie eucx.eu/register auf und wählen Sie Ihren Unternehmenstyp: Händler/Importeur, Produzent/Hersteller, Finanzinstitut oder Industrieabnehmer. Pflichtangaben: Firmenname, Handelsregisternummer, USt-ID, LEI-Nummer (Legal Entity Identifier - sofern vorhanden), Hauptansprechpartner mit Titel und direkter Durchwahl, Geschäftsadresse (muss mit Handelsregistereintrag übereinstimmen). Tipp: Bereiten Sie Ihren Handelsregisterauszug (nicht älter als 3 Monate) und eine aktuelle Gesellschafterliste vor.",
       },
       {
         id: "schritt-2-kyc",
         heading: "Schritt 2: KYC/AML-Prüfung",
-        body: "Nach der Registrierung erhalten Sie per E-Mail einen Link zur digitalen Dokumenteneinreichung (powered by IDnow). Erforderliche Dokumente für GmbH/AG: Handelsregisterauszug (< 3 Monate), Gesellschafterliste aller direkten Gesellschafter > 25 %, Transparenzregistereintrag, Ausweis aller wirtschaftlich Berechtigten (UBOs), Letzter Jahresabschluss oder Bankauskunft. Bearbeitungszeit: In der Regel 1–2 Werktage. Bei komplexen Eigentümerstrukturen oder Nicht-EU-Sitz bis zu 5 Werktage.",
+        body: "Nach der Registrierung erhalten Sie per E-Mail einen Link zur digitalen Dokumenteneinreichung (powered by IDnow). Erforderliche Dokumente für GmbH/AG: Handelsregisterauszug (< 3 Monate), Gesellschafterliste aller direkten Gesellschafter > 25 %, Transparenzregistereintrag, Ausweis aller wirtschaftlich Berechtigten (UBOs), Letzter Jahresabschluss oder Bankauskunft. Bearbeitungszeit: In der Regel 1-2 Werktage. Bei komplexen Eigentümerstrukturen oder Nicht-EU-Sitz bis zu 5 Werktage.",
       },
       {
         id: "schritt-3-compliance",
         heading: "Schritt 3: Compliance-Freigabe und MiFID-II-Einstufung",
-        body: "Das EUCX-Compliance-Team prüft Ihre Unterlagen auf Vollständigkeit und Plausibilität. Parallel erfolgt die MiFID-II-Kategorisierung: Geeignete Gegenpartei (Eligible Counterparty): Kreditinstitute, Wertpapierfirmen, Versicherungsunternehmen – höchste Handelslimits, geringste Schutzvorschriften. Professioneller Kunde (Professional Client): Großunternehmen mit min. 2 von 3 Kriterien (Bilanzsumme > 20 Mio. EUR, Nettoerlöse > 40 Mio. EUR, Eigenkapital > 2 Mio. EUR). Kleinere Unternehmen erhalten standardmäßig Professioneller Kunde-Status nach Eignungsprüfung.",
+        body: "Das EUCX-Compliance-Team prüft Ihre Unterlagen auf Vollständigkeit und Plausibilität. Parallel erfolgt die MiFID-II-Kategorisierung: Geeignete Gegenpartei (Eligible Counterparty): Kreditinstitute, Wertpapierfirmen, Versicherungsunternehmen - höchste Handelslimits, geringste Schutzvorschriften. Professioneller Kunde (Professional Client): Großunternehmen mit min. 2 von 3 Kriterien (Bilanzsumme > 20 Mio. EUR, Nettoerlöse > 40 Mio. EUR, Eigenkapital > 2 Mio. EUR). Kleinere Unternehmen erhalten standardmäßig Professioneller Kunde-Status nach Eignungsprüfung.",
       },
       {
         id: "schritt-4-margin",
         heading: "Schritt 4: Initial Margin einzahlen",
-        body: "Nach der Compliance-Freigabe erhalten Sie Zugang zum EUCX-Kundenportal. Überweisen Sie die Initial Margin auf das EUCX-Treuhandkonto (IBAN wird im Portal angezeigt). Mindestbetrag: 10.000 EUR. Standard für mittelgroße Händler: 50.000–250.000 EUR. Die Margin steht Ihnen jederzeit zur Verfügung, solange keine offenen Positionen bestehen. Die Margin wird zum EZB-Einlagezinssatz − 0,25 % p.a. verzinst.",
+        body: "Nach der Compliance-Freigabe erhalten Sie Zugang zum EUCX-Kundenportal. Überweisen Sie die Initial Margin auf das EUCX-Treuhandkonto (IBAN wird im Portal angezeigt). Mindestbetrag: 10.000 EUR. Standard für mittelgroße Händler: 50.000-250.000 EUR. Die Margin steht Ihnen jederzeit zur Verfügung, solange keine offenen Positionen bestehen. Die Margin wird zum EZB-Einlagezinssatz − 0,25 % p.a. verzinst.",
       },
       {
         id: "schritt-5-erste-order",
@@ -1692,7 +1692,7 @@ export const AKADEMIE_ARTIKEL: AkademieArtikel[] = [
       {
         id: "tipps-erste-wochen",
         heading: "Tipps für die ersten Wochen",
-        body: "Nutzen Sie den Testmodus: EUCX bietet eine Paper-Trading-Umgebung, in der Sie ohne echtes Kapital Orderabgabe und Matching üben können. Beobachten Sie zunächst den Markt: Verfolgen Sie 1–2 Wochen die Preisbewegungen im gewünschten Segment, bevor Sie eine große Order platzieren. Starten Sie mit Limit Orders: Im Gegensatz zu Market Orders können Sie Limit Orders jederzeit stornieren, solange kein Matching stattgefunden hat. Nutzen Sie den EUCX-Kundendienst: Ihr persönlicher Relationship Manager steht Ihnen in den ersten 3 Monaten täglich für Fragen zur Verfügung.",
+        body: "Nutzen Sie den Testmodus: EUCX bietet eine Paper-Trading-Umgebung, in der Sie ohne echtes Kapital Orderabgabe und Matching üben können. Beobachten Sie zunächst den Markt: Verfolgen Sie 1-2 Wochen die Preisbewegungen im gewünschten Segment, bevor Sie eine große Order platzieren. Starten Sie mit Limit Orders: Im Gegensatz zu Market Orders können Sie Limit Orders jederzeit stornieren, solange kein Matching stattgefunden hat. Nutzen Sie den EUCX-Kundendienst: Ihr persönlicher Relationship Manager steht Ihnen in den ersten 3 Monaten täglich für Fragen zur Verfügung.",
       },
     ],
   },

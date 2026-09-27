@@ -1,0 +1,20 @@
+User-agent: *
+
+# Öffentliche Seiten erlaubt
+Allow: /
+Allow: /agb
+Allow: /datenschutz
+Allow: /impressum
+Allow: /faq
+Allow: /wissen
+Allow: /insights
+Allow: /marktpreise
+Allow: /katalog
+
+# Authentifizierte Bereiche sperren
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /settings/
+
+# Sitemap
+Sitemap: https://eucx.eu/sitemap.xml

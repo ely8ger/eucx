@@ -7,6 +7,7 @@ import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { ChargeStatus } from "@prisma/client";
 import { z } from "zod";
+import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +37,7 @@ async function authenticate(req: NextRequest) {
 }
 
 // ── PATCH ──────────────────────────────────────────────────────────────────────
-export async function PATCH(
+async function _PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -73,7 +74,7 @@ export async function PATCH(
 }
 
 // ── DELETE ─────────────────────────────────────────────────────────────────────
-export async function DELETE(
+async function _DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -102,3 +103,6 @@ export async function DELETE(
   await db.sellerCharge.delete({ where: { id } });
   return new NextResponse(null, { status: 204 });
 }
+
+export const PATCH = apiRoute(_PATCH);
+export const DELETE = apiRoute(_DELETE);

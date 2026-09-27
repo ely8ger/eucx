@@ -90,7 +90,7 @@ export default function ImpressumPage() {
             <p style={S.p}>
               Die EUCX GmbH ist bei der Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin) als Betreiberin eines
               <strong> Organisierten Handelssystems (OTF)</strong> im Sinne des § 72 Wertpapierhandelsgesetz (WpHG) i.V.m.
-              Art. 18–20 der Richtlinie 2014/65/EU (MiFID II) zugelassen.
+              Art. 18-20 der Richtlinie 2014/65/EU (MiFID II) zugelassen.
             </p>
             <p style={S.p}>
               <strong>Erlaubnis-Nummer:</strong> 10155.IV.7.0001/2025<br/>
@@ -99,7 +99,7 @@ export default function ImpressumPage() {
             </p>
             <p style={S.p}>
               <strong>Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin)</strong><br/>
-              Marie-Curie-Str. 24–28 · 60439 Frankfurt am Main<br/>
+              Marie-Curie-Str. 24-28 · 60439 Frankfurt am Main<br/>
               Graurheindorfer Str. 108 · 53117 Bonn<br/>
               Telefon: +49 (0) 228 / 4108-0<br/>
               Internet: <a href="https://www.bafin.de" target="_blank" rel="noopener noreferrer" style={{ color: "#154194", textDecoration: "none" }}>www.bafin.de</a>
@@ -125,7 +125,7 @@ export default function ImpressumPage() {
             </p>
             <ul style={{ paddingLeft: 20, margin: "0 0 12px" }}>
               {[
-                "Wertpapierhandelsgesetz (WpHG), insbesondere §§ 63–92 und §§ 72–75",
+                "Wertpapierhandelsgesetz (WpHG), insbesondere §§ 63-92 und §§ 72-75",
                 "Wertpapierinstitutsgesetz (WpIG)",
                 "Richtlinie 2014/65/EU (MiFID II), Delegierte Verordnung (EU) 2017/565",
                 "Verordnung (EU) Nr. 600/2014 (MiFIR), insbesondere Art. 26 (Transaktionsmeldepflicht)",

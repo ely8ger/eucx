@@ -29,7 +29,7 @@ export async function publishLotConclusion(lotId: string): Promise<boolean> {
     url,
     body:    { lotId },
     retries: 5,
-    delay:   5, // 5 Sekunden — concludeLot-Transaktion sicher abgeschlossen
+    delay:   5, // 5 Sekunden - concludeLot-Transaktion sicher abgeschlossen
   });
 
   return true;

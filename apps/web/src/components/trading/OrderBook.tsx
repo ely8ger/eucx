@@ -59,7 +59,7 @@ export type OrderBookVariant = "light" | "dark";
 interface RowMeta {
   flashQty: boolean;  // Menge hat sich geändert
   flashNew: boolean;  // Order ist neu
-  depth:    number;   // 0–1, wie viel Volumen relativ zum Max
+  depth:    number;   // 0-1, wie viel Volumen relativ zum Max
 }
 
 interface AskRowProps {

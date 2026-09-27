@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { PDFDocument, rgb, StandardFonts, type PDFFont } from "pdf-lib";
+import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +43,7 @@ function wrapText(text: string, maxW: number, font: PDFFont, size: number): stri
   return out;
 }
 
-export async function GET(
+async function _GET(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> },
 ) {
@@ -410,3 +411,5 @@ export async function GET(
     },
   });
 }
+
+export const GET = apiRoute(_GET);

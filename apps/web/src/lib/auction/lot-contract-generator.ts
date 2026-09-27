@@ -56,7 +56,7 @@ export interface LotContractData {
   // Warenspezifikation (Pflichtangaben - vertragswesentlich §§ 433, 434 BGB)
   hsCode?:         string;   // Zolltarifnummer, z.B. "7214 20 00"
   qualityGrade?:   string;   // Güte / Qualitätsnorm, z.B. "B500B · EN 10080"
-  deliveryPeriod?: string;   // Lieferzeitraum, z.B. "4–6 Wochen ab Zuschlag"
+  deliveryPeriod?: string;   // Lieferzeitraum, z.B. "4-6 Wochen ab Zuschlag"
   paymentTerms?:   string;   // Zahlungsbedingungen, z.B. "30 Tage netto"
   vatTreatment?:   string;   // USt.-Behandlung, z.B. "§13b UStG Reverse Charge"
   // CBAM-Daten (Carbon Border Adjustment Mechanism - EU-Verordnung 2023/956)

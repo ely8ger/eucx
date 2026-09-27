@@ -1,11 +1,11 @@
 /**
- * getClientIp — vertrauenswürdige Client-IP-Extraktion
+ * getClientIp - vertrauenswürdige Client-IP-Extraktion
  *
  * Priorität (absteigend vertrauenswürdig):
- *   1. x-vercel-forwarded-for   — von Vercel Edge gesetzt, nicht vom Client fälschbar
- *   2. cf-connecting-ip         — von Cloudflare gesetzt, nicht fälschbar
- *   3. x-real-ip                — von nginx/haproxy gesetzt
- *   4. Letzter Wert in X-Forwarded-For — unser Edge-Proxy hat ihn zuletzt angehängt;
+ *   1. x-vercel-forwarded-for   - von Vercel Edge gesetzt, nicht vom Client fälschbar
+ *   2. cf-connecting-ip         - von Cloudflare gesetzt, nicht fälschbar
+ *   3. x-real-ip                - von nginx/haproxy gesetzt
+ *   4. Letzter Wert in X-Forwarded-For - unser Edge-Proxy hat ihn zuletzt angehängt;
  *      der erste Wert ist CLIENT-KONTROLLIERT und darf NICHT verwendet werden.
  *
  * FALSCH (aktuell verbreiteter Fehler): x-forwarded-for.split(",")[0]

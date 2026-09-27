@@ -3,13 +3,14 @@
  *
  * Käufer öffnet das Auktionsfenster (COLLECTION → PROPOSAL).
  * auctionEnd wird server-seitig auf das Ende der nächsten Handelssitzung gesetzt:
- *   Mo–Fr 14:00–16:00 Europe/Berlin
+ *   Mo-Fr 14:00-16:00 Europe/Berlin
  *
  * Auth: Bearer JWT (muss Lot-Besitzer sein)
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
+import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
@@ -82,7 +83,7 @@ function isSessionActive(now: Date): boolean {
   return mins >= SLOT_START_HOUR * 60 && mins < SLOT_END_HOUR * 60;
 }
 
-export async function POST(
+async function _POST(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> }
 ) {
@@ -130,3 +131,5 @@ export async function POST(
 
   return NextResponse.json({ ...updated, sessionActive: sessionNow });
 }
+
+export const POST = apiRoute(_POST);

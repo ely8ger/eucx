@@ -5,7 +5,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { Download, FileText } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Normative Dokumente – EUCX Regelwerk",
+  title: "Normative Dokumente - EUCX Regelwerk",
   description:
     "Alle 15 normativen Dokumente der EUCX als PDF: Handelsordnung, Sektionsreglements, Vertragsvorlagen, Clearing-Regeln und mehr.",
   robots: { index: true, follow: true },

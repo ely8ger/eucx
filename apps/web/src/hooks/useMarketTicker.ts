@@ -5,7 +5,7 @@
  *
  * Strategie:
  *   1. WebSocket (bevorzugt): Abonniert "ticker:{symbol}" Events über den
- *      SocketProvider. Latenz ~5–20ms nach Server-Event.
+ *      SocketProvider. Latenz ~5-20ms nach Server-Event.
  *
  *   2. REST-Fallback: Wenn Socket nicht verbunden, pollt alle 30s den
  *      öffentlichen Ticker-Endpoint (Cache-Control: s-maxage=30).

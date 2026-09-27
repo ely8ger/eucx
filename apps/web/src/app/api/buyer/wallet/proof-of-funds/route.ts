@@ -6,9 +6,9 @@
  * Der Admin erhöht das Trading-Limit manuell nach Prüfung.
  *
  * Body: multipart/form-data mit Feldern:
- *   file    — PDF, JPG, PNG (max. 10 MB)
- *   amount  — Gewünschtes Trading-Limit in EUR (als string)
- *   docType — "Bankgarantie" | "Kontoauszug" | "Kapitalnachweis" | "Sonstiges"
+ *   file    - PDF, JPG, PNG (max. 10 MB)
+ *   amount  - Gewünschtes Trading-Limit in EUR (als string)
+ *   docType - "Bankgarantie" | "Kontoauszug" | "Kapitalnachweis" | "Sonstiges"
  *
  * Auth: Bearer JWT
  */
@@ -16,12 +16,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken }         from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
 import { db }                        from "@/lib/db/client";
+import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
-export async function POST(req: NextRequest) {
+async function _POST(req: NextRequest) {
   const auth = req.headers.get("authorization");
   if (!auth?.startsWith("Bearer ")) {
     return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
@@ -83,6 +84,8 @@ export async function POST(req: NextRequest) {
     ok:        true,
     requestId,
     status:    "PENDING_ADMIN_APPROVAL",
-    message:   `Ihr Dokument wurde eingereicht (Referenz: ${requestId}). Das EUCX-Compliance-Team prüft Ihre Unterlagen und gibt Ihr Trading-Limit frei — in der Regel innerhalb von 1–2 Werktagen.`,
+    message:   `Ihr Dokument wurde eingereicht (Referenz: ${requestId}). Das EUCX-Compliance-Team prüft Ihre Unterlagen und gibt Ihr Trading-Limit frei - in der Regel innerhalb von 1-2 Werktagen.`,
   });
 }
+
+export const POST = apiRoute(_POST);

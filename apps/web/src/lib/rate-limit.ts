@@ -1,10 +1,10 @@
 /**
- * Rate Limiter — Upstash Redis (Sliding Window) mit In-Memory-Fallback
+ * Rate Limiter - Upstash Redis (Sliding Window) mit In-Memory-Fallback
  *
  * Priorität:
- *   1. Upstash Redis   — wenn UPSTASH_REDIS_REST_URL + TOKEN gesetzt sind (Production)
- *   2. In-Memory       — wenn ENABLE_MEMORY_RATE_LIMIT=true (Dev/Test ohne Redis)
- *   3. Deaktiviert     — wenn beides fehlt (z.B. lokale Entwicklung ohne Konfiguration)
+ *   1. Upstash Redis   - wenn UPSTASH_REDIS_REST_URL + TOKEN gesetzt sind (Production)
+ *   2. In-Memory       - wenn ENABLE_MEMORY_RATE_LIMIT=true (Dev/Test ohne Redis)
+ *   3. Deaktiviert     - wenn beides fehlt (z.B. lokale Entwicklung ohne Konfiguration)
  *
  * .env.local für lokalen Betrieb mit aktivem Schutz:
  *   ENABLE_MEMORY_RATE_LIMIT=true
@@ -130,7 +130,7 @@ export async function checkRateLimit(
 
   // 3. Deaktiviert
   if (!_warnedOnce) {
-    console.warn("[RateLimit] Weder Upstash noch ENABLE_MEMORY_RATE_LIMIT gesetzt — Rate Limiting deaktiviert.");
+    console.warn("[RateLimit] Weder Upstash noch ENABLE_MEMORY_RATE_LIMIT gesetzt - Rate Limiting deaktiviert.");
     _warnedOnce = true;
   }
   return { allowed: true, remaining: 999, reset: 0 };

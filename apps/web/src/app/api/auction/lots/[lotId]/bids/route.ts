@@ -63,7 +63,7 @@ async function _handlePost(
   const rl  = await checkRateLimit(ip, "bid");
   if (!rl.allowed) {
     return NextResponse.json(
-      { error: "Zu viele Gebote — bitte warten Sie einen Moment." },
+      { error: "Zu viele Gebote - bitte warten Sie einen Moment." },
       { status: 429, headers: { ...rateLimitHeaders(rl), "Retry-After": "60" } }
     );
   }
@@ -195,7 +195,7 @@ async function _handlePost(
     // Neon Serverless: zu viele gleichzeitige Transaktionen → 503 (keine Race Condition)
     if (msg.includes("Unable to start a transaction") || msg.includes("Transaction API error")) {
       return NextResponse.json(
-        { error: "Das System ist momentan überlastet — bitte in wenigen Sekunden erneut versuchen." },
+        { error: "Das System ist momentan überlastet - bitte in wenigen Sekunden erneut versuchen." },
         { status: 503, headers: { "Retry-After": "2" } }
       );
     }

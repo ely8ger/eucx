@@ -137,7 +137,7 @@ export default function DatenschutzPage() {
             {[
               "Transaktionsmeldepflichten gemäß Art. 26 MiFIR an die BaFin und ESMA",
               "Aufzeichnung und Aufbewahrung von Aufträgen und Transaktionen (§ 83 WpHG, Art. 25 MiFID II)",
-              "Identifizierung und Verifizierung von Geschäftskunden (§§ 10–17 GwG - KYC/AML)",
+              "Identifizierung und Verifizierung von Geschäftskunden (§§ 10-17 GwG - KYC/AML)",
               "Geldwäscheverdachtsmeldungen an die Financial Intelligence Unit (FIU) gemäß § 43 GwG",
               "Abgleich mit EU-Sanktionslisten (Art. 11 VO (EU) 269/2014 etc.)",
               "Buchführungs- und Aufbewahrungspflichten (§§ 238 ff. HGB, §§ 140 ff. AO)",

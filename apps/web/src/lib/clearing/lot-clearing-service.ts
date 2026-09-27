@@ -1,18 +1,18 @@
 /**
- * EUCX Lot-Clearing-Service — 2-Phasen-Escrow für Lot-Auktionen
+ * EUCX Lot-Clearing-Service - 2-Phasen-Escrow für Lot-Auktionen
  *
  * Nutzt dieselbe Double-Entry-Infrastruktur wie clearing-service.ts,
  * aber ist an LotContract (Reverse-Auction-System) gebunden, nicht Deal.
  *
  * ─── Buchungsplan ────────────────────────────────────────────────────────────
  *
- * PHASE 1 — lockEscrowForLot() — aufgerufen von post-trade.ts bei CONCLUSION
+ * PHASE 1 - lockEscrowForLot() - aufgerufen von post-trade.ts bei CONCLUSION
  *
  *   Schritt 1a: Käufer-Wallet → Escrow (Bruttobetrag wird gesperrt)
  *     DEBIT  buyer_wallet   (Abgang; reservedBalance ↑)
  *     CREDIT ESCROW         (Eingang Treuhandkonto)
  *
- * PHASE 2 — settleEscrowForLot() — aufgerufen von delivery/route.ts bei COMPLETED
+ * PHASE 2 - settleEscrowForLot() - aufgerufen von delivery/route.ts bei COMPLETED
  *
  *   Schritt 2a: EUCX-Plattformgebühr
  *     DEBIT  ESCROW         (Fee-Abzug)

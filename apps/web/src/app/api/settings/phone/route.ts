@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { z } from "zod";
+import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ async function authenticate(req: NextRequest) {
   catch { return null; }
 }
 
-export async function GET(req: NextRequest) {
+async function _GET(req: NextRequest) {
   const token = await authenticate(req);
   if (!token) return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
 
@@ -40,7 +41,7 @@ const updateSchema = z.object({
   phone: z.string().min(6).max(30),
 });
 
-export async function PUT(req: NextRequest) {
+async function _PUT(req: NextRequest) {
   const token = await authenticate(req);
   if (!token) return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
 
@@ -71,3 +72,6 @@ export async function PUT(req: NextRequest) {
 
   return NextResponse.json({ success: true, phone: parsed.data.phone, phoneVerified: true });
 }
+
+export const GET = apiRoute(_GET);
+export const PUT = apiRoute(_PUT);

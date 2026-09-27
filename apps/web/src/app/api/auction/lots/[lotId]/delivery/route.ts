@@ -17,6 +17,7 @@ import { settleEscrowForLot }           from "@/lib/clearing/lot-clearing-servic
 import { audit }                        from "@/lib/audit/logger";
 import { z } from "zod";
 import crypto from "crypto";
+import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,7 @@ const patchSchema = z.object({
   status: z.enum(["MATCHED", "AWAITING_PAYMENT", "READY_FOR_PICKUP", "IN_TRANSIT", "DELIVERED", "COMPLETED"]),
 });
 
-export async function PATCH(
+async function _PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> }
 ) {
@@ -160,3 +161,5 @@ export async function PATCH(
 
   return NextResponse.json(updated);
 }
+
+export const PATCH = apiRoute(_PATCH);

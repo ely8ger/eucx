@@ -8,13 +8,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { db } from "@/lib/db/client";
 import { z } from "zod";
+import { apiRoute } from "@/lib/api/route-handler";
 
 const schema = z.object({
   eoriNumber:        z.string().regex(/^[A-Z]{2}[A-Z0-9]{1,15}$/, "Ungültiges EORI-Format (z.B. DE123456789012345)").nullable().optional(),
   cbamAccountNumber: z.string().min(1).nullable().optional(),
 });
 
-export async function PATCH(req: NextRequest) {
+async function _PATCH(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
     return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
@@ -48,3 +49,5 @@ export async function PATCH(req: NextRequest) {
 
   return NextResponse.json({ ok: true });
 }
+
+export const PATCH = apiRoute(_PATCH);

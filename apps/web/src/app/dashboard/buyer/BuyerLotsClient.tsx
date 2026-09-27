@@ -197,15 +197,15 @@ const INCOTERMS_LIST = [
 // factor: kg CO₂-Äq. pro Tonne (EU Global Default Value für die Übergangsphase)
 // Quellen: Anhang VIII VO (EU) 2023/1773 + Delg. VO (EU) 2024/1316
 const CBAM_GROUPS = [
-  // Eisen & Stahl (Kapitel 72–73)
-  { id: "STEEL_PRIMARY",       label: "Rohstahl / Eisenprimärprodukte",       kn: "KN 7206–7212", factor: 2030 },
-  { id: "STEEL_PROCESSED",     label: "Weiterverarbeitete Stahlerzeugnisse",  kn: "KN 7213–7326", factor: 1930 },
+  // Eisen & Stahl (Kapitel 72-73)
+  { id: "STEEL_PRIMARY",       label: "Rohstahl / Eisenprimärprodukte",       kn: "KN 7206-7212", factor: 2030 },
+  { id: "STEEL_PROCESSED",     label: "Weiterverarbeitete Stahlerzeugnisse",  kn: "KN 7213-7326", factor: 1930 },
   // Aluminium (Kapitel 76)
   { id: "ALUMINIUM_UNWROUGHT", label: "Roh-Aluminium, primär (Unwrought)",   kn: "KN 7601",      factor: 6720 },
-  { id: "ALUMINIUM_PROCESSED", label: "Aluminium-Erzeugnisse (Wrought)",      kn: "KN 7603–7616", factor: 2860 },
+  { id: "ALUMINIUM_PROCESSED", label: "Aluminium-Erzeugnisse (Wrought)",      kn: "KN 7603-7616", factor: 2860 },
   // Zement (Kapitel 25)
   { id: "CEMENT_CLINKER",      label: "Zementklinker",                        kn: "KN 2523 10",   factor: 874  },
-  { id: "CEMENT_HYDRAULIC",    label: "Hydraulischer Zement",                 kn: "KN 2523 21–90",factor: 766  },
+  { id: "CEMENT_HYDRAULIC",    label: "Hydraulischer Zement",                 kn: "KN 2523 21-90",factor: 766  },
   // Düngemittel (Kapitel 28 & 31)
   { id: "FERTILIZER_AMMONIA",  label: "Ammoniak (NH₃)",                       kn: "KN 2814",      factor: 1694 },
   { id: "FERTILIZER_UREA",     label: "Harnstoff (Urea)",                     kn: "KN 3102 10",   factor: 2082 },
@@ -492,7 +492,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
     setSubmitting(true);
     try {
-      // Token vor dem Submit refreshen — Formular kann > 15 min dauern
+      // Token vor dem Submit refreshen - Formular kann > 15 min dauern
       let activeToken = token;
       try {
         const ref = await fetch("/api/auth/refresh", { method: "POST" });
@@ -539,7 +539,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       const d = await r.json().catch(() => ({})) as { error?: string; detail?: string; message?: string; code?: string; details?: Record<string, string[]> };
       if (!r.ok) {
         if (r.status === 401) {
-          setFormError("Sitzung abgelaufen — bitte Seite neu laden und erneut versuchen.");
+          setFormError("Sitzung abgelaufen - bitte Seite neu laden und erneut versuchen.");
         } else if (d.details) {
           const first = Object.values(d.details).flat()[0];
           setFormError(first ? `Validierungsfehler: ${first}` : (d.error ?? "Validierungsfehler."));
@@ -646,7 +646,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     for (let i = 1; i <= 7; i++) {
       const d = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
       const wd = d.getDay();
-      if (wd >= 1 && wd <= 5) return `${fmt(d)} · 13:00–15:00 MEZ`;
+      if (wd >= 1 && wd <= 5) return `${fmt(d)} · 13:00-15:00 MEZ`;
     }
     return "nächste Handelssitzung";
   }
@@ -1440,7 +1440,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     value={selectedPreset}
                     onChange={(e) => { setSelectedPreset(e.target.value); if (e.target.value) applyPreset(e.target.value); }}
                   >
-                    <option value="">— Vorlage wählen (optional) —</option>
+                    <option value="">- Vorlage wählen (optional) -</option>
                     {SIDEBAR.map((sektion) => {
                       const sektionProdukte = sektion.kategorien.flatMap((kat) => CATALOG_BY_KAT.get(kat.id) ?? []);
                       if (sektionProdukte.length === 0) return null;
@@ -1520,7 +1520,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     <label className="bl-label">Beschreibung *</label>
                     <textarea
                       className="bl-textarea"
-                      placeholder="Technische Anforderungen: Oberfläche, Toleranzen, Lieferform (Stab/Ring/Bund/Coil), Stabläge. – Zeugnis: EN 10204 3.1 oder 3.2? – Lieferort: vollständige Adresse. – Verpackung & Kennzeichnung. – Sonstige Bedingungen (Split-Lieferung, Inspektion)."
+                      placeholder="Technische Anforderungen: Oberfläche, Toleranzen, Lieferform (Stab/Ring/Bund/Coil), Stabläge. - Zeugnis: EN 10204 3.1 oder 3.2? - Lieferort: vollständige Adresse. - Verpackung & Kennzeichnung. - Sonstige Bedingungen (Split-Lieferung, Inspektion)."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       maxLength={2000}
@@ -2067,23 +2067,23 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                 <div className="bl-sum-row">
                   <span className="bl-sum-label">Produkt</span>
-                  <span className="bl-sum-value" title={commodity}>{commodity || "–"}</span>
+                  <span className="bl-sum-value" title={commodity}>{commodity || "-"}</span>
                 </div>
                 <div className="bl-sum-row">
                   <span className="bl-sum-label">Menge</span>
-                  <span className="bl-sum-value">{quantity ? `${quantity} ${unit}` : "–"}</span>
+                  <span className="bl-sum-value">{quantity ? `${quantity} ${unit}` : "-"}</span>
                 </div>
                 <div className="bl-sum-row">
                   <span className="bl-sum-label">Max. Preis</span>
-                  <span className="bl-sum-value">{startPrice ? `${parseFloat(startPrice).toLocaleString("de-DE")} €/${unit}` : "–"}</span>
+                  <span className="bl-sum-value">{startPrice ? `${parseFloat(startPrice).toLocaleString("de-DE")} €/${unit}` : "-"}</span>
                 </div>
                 <div className="bl-sum-row">
                   <span className="bl-sum-label">Lieferort</span>
-                  <span className="bl-sum-value" title={deliveryLocation || ""}>{deliveryLocation || "–"}</span>
+                  <span className="bl-sum-value" title={deliveryLocation || ""}>{deliveryLocation || "-"}</span>
                 </div>
                 <div className="bl-sum-row">
                   <span className="bl-sum-label">Incoterm</span>
-                  <span className="bl-sum-value">{incoterms || "–"}</span>
+                  <span className="bl-sum-value">{incoterms || "-"}</span>
                 </div>
                 {greenSteel && (
                   <div style={{ marginBottom: 10, padding: "5px 10px", background: "#f0fdf4", border: "1px solid #bbf7d0", display: "flex", alignItems: "center", gap: 8 }}>
@@ -2091,11 +2091,11 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   </div>
                 )}
 
-                {/* Max. Volumen — prominent */}
+                {/* Max. Volumen - prominent */}
                 <div className="bl-sum-vol">
                   <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", letterSpacing: ".06em", textTransform: "uppercase" as const, marginBottom: 6 }}>Max. Volumen</div>
                   <div style={{ fontSize: 22, fontWeight: 700, color: maxVol ? "#154194" : "#d1d5db", fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>
-                    {maxVol ? fmtEurInt(maxVol) : "–"}
+                    {maxVol ? fmtEurInt(maxVol) : "-"}
                   </div>
                 </div>
 
@@ -2122,7 +2122,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 </button>
 
                 <div style={{ fontSize: 11, color: "#6b7280", lineHeight: 1.6 }}>
-                  <strong>Entwurf:</strong> Nur für Sie sichtbar — kein Verkäufer sieht das Lot.<br/>
+                  <strong>Entwurf:</strong> Nur für Sie sichtbar - kein Verkäufer sieht das Lot.<br/>
                   <strong>Veröffentlichen:</strong> Verkäufer können sich sofort registrieren.
                 </div>
               </div>{/* end bl-form-summary */}
@@ -2343,8 +2343,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
               {/* Volumen-Zeile */}
               <div className="bl-pub-vol">
                 <span className="bl-pub-vol-label">Geschätztes Auftragsvolumen</span>
-                <span className="bl-pub-vol-value">{vol !== null ? fmtEurLarge(vol) : "–"}</span>
-                <span className="bl-pub-vol-note">{qty.toLocaleString("de-DE")} {unitLabel} × {price !== null ? price.toLocaleString("de-DE", { minimumFractionDigits: 2 }) : "–"} €/{unitLabel} (Maximalpreis)</span>
+                <span className="bl-pub-vol-value">{vol !== null ? fmtEurLarge(vol) : "-"}</span>
+                <span className="bl-pub-vol-note">{qty.toLocaleString("de-DE")} {unitLabel} × {price !== null ? price.toLocaleString("de-DE", { minimumFractionDigits: 2 }) : "-"} €/{unitLabel} (Maximalpreis)</span>
               </div>
 
               {/* Scroll-Body */}
@@ -2360,7 +2360,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       {lot.startPrice && row("Maximalpreis (Limit)", `${parseFloat(lot.startPrice).toLocaleString("de-DE", { minimumFractionDigits: 2 })} €/${unitLabel}`)}
                       {row("Güte / Qualitätsnorm", lot.qualityGrade)}
                       {row("HS-Code (Zolltarif)", lot.hsCode, true)}
-                      {lot.greenSteel && row("Green Steel", "Ja — zertifizierter Stahl mit reduziertem CO₂-Fußabdruck")}
+                      {lot.greenSteel && row("Green Steel", "Ja - zertifizierter Stahl mit reduziertem CO₂-Fußabdruck")}
                       {row("CBAM-Kategorie", lot.cbamCategory)}
                       {lot.co2PerTonne && row("CO₂-Emissionsfaktor", `${parseFloat(lot.co2PerTonne).toLocaleString("de-DE")} kg CO₂/t`)}
                       {row("Herkunftsland", lot.countryOfOrigin)}

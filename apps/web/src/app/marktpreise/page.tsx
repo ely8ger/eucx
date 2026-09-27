@@ -63,11 +63,11 @@ const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
-    { "@type": "Question", name: "Was kostet Betonstahl aktuell in Deutschland?", acceptedAnswer: { "@type": "Answer", text: "Betonstahl der Güte B500B (Ø 10–16 mm) notiert aktuell bei 698,00 €/t (frei Lager Deutschland, netto). Die EUCX veröffentlicht täglich um 08:00 Uhr aktualisierte Sitzungspreise." } },
+    { "@type": "Question", name: "Was kostet Betonstahl aktuell in Deutschland?", acceptedAnswer: { "@type": "Answer", text: "Betonstahl der Güte B500B (Ø 10-16 mm) notiert aktuell bei 698,00 €/t (frei Lager Deutschland, netto). Die EUCX veröffentlicht täglich um 08:00 Uhr aktualisierte Sitzungspreise." } },
     { "@type": "Question", name: "Wie entwickeln sich die Stahlpreise 2026?", acceptedAnswer: { "@type": "Answer", text: "Stahlpreise stehen 2026 unter strukturellem Druck durch Importe und schwache Baukonjunktur. CO₂-Grenzausgleich (CBAM) und EU-Antidumping-Maßnahmen wirken stützend. Analysten erwarten Seitwärtsbewegung im Q2 2026." } },
     { "@type": "Question", name: "Welche Faktoren beeinflussen den Schrottpreis?", acceptedAnswer: { "@type": "Answer", text: "Schrottpreise hängen direkt von der Stahlproduktion, Elektrizitätspreisen, Schrottexporten (v.a. Türkei) und saisonalen Sammelmengen ab." } },
     { "@type": "Question", name: "Warum ist Harnstoff so teuer geworden?", acceptedAnswer: { "@type": "Answer", text: "Harnstoff-Preise stiegen seit 2021 stark, weil Erdgas den größten Produktionskostenanteil ausmacht. Nach der Energiekrise 2022 blieb Gas in Europa dauerhaft teurer als in Konkurrenzregionen." } },
-    { "@type": "Question", name: "Kann ich an der EUCX als kleines Unternehmen handeln?", acceptedAnswer: { "@type": "Answer", text: "Ja. Die EUCX ist für alle geprüften gewerblichen Teilnehmer (B2B) zugänglich. Nach kostenfreier Registrierung und Unternehmensverifikation ist der Handel in täglichen Sitzungen (Mo–Fr, 14–16 Uhr) möglich." } },
+    { "@type": "Question", name: "Kann ich an der EUCX als kleines Unternehmen handeln?", acceptedAnswer: { "@type": "Answer", text: "Ja. Die EUCX ist für alle geprüften gewerblichen Teilnehmer (B2B) zugänglich. Nach kostenfreier Registrierung und Unternehmensverifikation ist der Handel in täglichen Sitzungen (Mo-Fr, 14-16 Uhr) möglich." } },
   ],
 };
 
@@ -167,7 +167,7 @@ export default function MarktpreisePage() {
                   { label: "Fallend",    value: `${fallingCount} ↓`,          color: "#f87171" },
                   { label: "Stand",      value: today,                        color: "#7aa4d4" },
                   { label: "Letztes Update", value: "08:00 Uhr",             color: "#7aa4d4" },
-                  { label: "Sitzungen",  value: "tägl. 14–16 Uhr",          color: "#7aa4d4" },
+                  { label: "Sitzungen",  value: "tägl. 14-16 Uhr",          color: "#7aa4d4" },
                 ].map(k => (
                   <div key={k.label} style={{ backgroundColor: "#162b46", padding: "16px 20px" }}>
                     <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#4a6fa1", margin: "0 0 6px" }}>{k.label}</p>
@@ -341,7 +341,7 @@ export default function MarktpreisePage() {
                 {[
                   { label: "Regulierung",   value: "BaFin · MiFID II OTF" },
                   { label: "Standort",      value: "Frankfurt am Main" },
-                  { label: "Handel",        value: "Mo–Fr · 10:00–13:00" },
+                  { label: "Handel",        value: "Mo-Fr · 10:00-13:00" },
                   { label: "Kategorien",    value: "Metalle, Schrott, Dünger, Holz" },
                   { label: "Zugang",        value: "kostenlose Registrierung" },
                   { label: "Teilnehmer",    value: "geprüfte Unternehmen (B2B)" },
@@ -394,7 +394,7 @@ export default function MarktpreisePage() {
                 },
                 {
                   title: "Saisonalität",
-                  body: "Holzpreise steigen traditionell im Frühjahr mit dem Baubeginn. Düngemittelnachfrage konzentriert sich auf Feb–April (Frühjahrsbestellung) und Sep–Okt (Herbstbestellung). Stahlpreise schwächeln oft im Sommer, wenn Bauaktivität und Industrieproduktion zurückgehen.",
+                  body: "Holzpreise steigen traditionell im Frühjahr mit dem Baubeginn. Düngemittelnachfrage konzentriert sich auf Feb-April (Frühjahrsbestellung) und Sep-Okt (Herbstbestellung). Stahlpreise schwächeln oft im Sommer, wenn Bauaktivität und Industrieproduktion zurückgehen.",
                   icon: "📅",
                 },
                 {
@@ -430,7 +430,7 @@ export default function MarktpreisePage() {
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "3fr 1fr", gap: 40, alignItems: "start" }}>
                   <div style={{ fontSize: 13, color: "#505050", lineHeight: 1.8, display: "flex", flexDirection: "column", gap: 12 }}>
-                    <p><strong>Betonstahl (Bewehrungsstahl)</strong> ist das weltweit meistgehandelte Stahlprodukt. Er wird für Stahlbeton in Hochbauten, Brücken und Infrastrukturprojekten eingesetzt. Der EUCX-Preis bezieht sich auf die Güte B500B (Streckgrenze 500 N/mm²), Stabdurchmesser 10–16 mm, frei Lager Deutschland.</p>
+                    <p><strong>Betonstahl (Bewehrungsstahl)</strong> ist das weltweit meistgehandelte Stahlprodukt. Er wird für Stahlbeton in Hochbauten, Brücken und Infrastrukturprojekten eingesetzt. Der EUCX-Preis bezieht sich auf die Güte B500B (Streckgrenze 500 N/mm²), Stabdurchmesser 10-16 mm, frei Lager Deutschland.</p>
                     <p><strong>Walzdraht</strong> (SAE 1006, Ø 5,5 mm) ist Ausgangsmaterial für Schrauben, Nägel, Federn und Gittermatten. Er wird in Coils geliefert und ist ein wichtiger Indikator für die Nachfrage der metallverarbeitenden Industrie.</p>
                     <p><strong>HEA/HEB-Träger</strong> (Breitflanschträger) sind Strukturprofile für den Stahlbau. Ihre Preisentwicklung korreliert eng mit Hochbauprojekten und ist ein guter Frühindikator für die Baukonjunktur.</p>
                     <p>Wichtige Einflussfaktoren auf Stahlpreise 2026: europäische Antidumping-Maßnahmen gegen chinesische Importe, CO₂-Grenzausgleichsmechanismus (CBAM), Schrottpreise als Vorprodukt der Elektrostahlroute sowie die Gaspreise in Europa.</p>
@@ -492,7 +492,7 @@ export default function MarktpreisePage() {
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "3fr 1fr", gap: 40, alignItems: "start" }}>
                   <div style={{ fontSize: 13, color: "#505050", lineHeight: 1.8, display: "flex", flexDirection: "column", gap: 12 }}>
-                    <p>Stickstoffdünger sind der bedeutendste Kostenfaktor in der modernen Landwirtschaft. Sie werden aus Ammoniak (NH₃) synthetisiert, dessen Produktion über das Haber-Bosch-Verfahren rund 1–2 % des weltweiten Erdgasverbrauchs ausmacht.</p>
+                    <p>Stickstoffdünger sind der bedeutendste Kostenfaktor in der modernen Landwirtschaft. Sie werden aus Ammoniak (NH₃) synthetisiert, dessen Produktion über das Haber-Bosch-Verfahren rund 1-2 % des weltweiten Erdgasverbrauchs ausmacht.</p>
                     <p><strong>Harnstoff</strong> (CO(NH₂)₂, 46 % N) ist der am häufigsten eingesetzte feste Stickstoffdünger weltweit. Er ist besonders effizient, erfordert aber exaktes Ausbringen (Harnstoffinhibitoren bei hohen Temperaturen). Hauptproduzenten: Russland, Ägypten, Katar, China.</p>
                     <p><strong>NPK-Komplexdünger</strong> (15-15-15) enthalten Stickstoff, Phosphor und Kalium in einem Granulat. Sie vereinfachen die Düngung bei Kulturen mit ausgewogenem Nährstoffbedarf (Getreide, Mais, Zuckerrüben).</p>
                     <p>Die EU-Düngemittelversorgung ist stark von Importen abhängig. Lieferverzögerungen oder Exportrestriktionen aus Russland (größter Exporteur für Stickstoff- und Kalidünger) können den europäischen Markt innerhalb weniger Wochen stark beeinflussen.</p>
@@ -522,7 +522,7 @@ export default function MarktpreisePage() {
                   <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0d1b2a", margin: 0 }}>Holz & Forst</h3>
                 </div>
                 <div style={{ fontSize: 13, color: "#505050", lineHeight: 1.8, display: "flex", flexDirection: "column", gap: 12 }}>
-                  <p>Der europäische Holzmarkt hat seit der Borkenkäfer-Krise (2018–2021) und dem COVID-Bauboom strukturelle Veränderungen erfahren. Überangebote durch Schadholz haben die Preise für Rundholz belastet, während Schnittholzpreise eine hohe Volatilität zeigen.</p>
+                  <p>Der europäische Holzmarkt hat seit der Borkenkäfer-Krise (2018-2021) und dem COVID-Bauboom strukturelle Veränderungen erfahren. Überangebote durch Schadholz haben die Preise für Rundholz belastet, während Schnittholzpreise eine hohe Volatilität zeigen.</p>
                   <p><strong>Fichte Rundholz</strong> ist das mengenmäßig wichtigste Sortiment in Deutschland, Österreich und Tschechien. Qualitätsstufen (A/B/C-Holz) bestimmen die Verwendung (Sägewerk, Furnier, Industrieholz). Die Preise werden regional zwischen Waldeigentümern und Sägewerken frei verhandelt - die EUCX gibt gewichtete Durchschnitte für die DACH-Region an.</p>
                   <p><strong>Kiefer KVH (Konstruktionsvollholz)</strong> ist ein industriell gefertigtes Schnittholz mit definiertem Restfeuchtegehalt (≤ 20 %). Es wird im Holzrahmenbau, für Dachstuhlkonstruktionen und im Zimmerei-Bereich eingesetzt.</p>
                   <p>Aktuell: Die Belebung im Wohnungsbau steht aus - Zinsniveau und Baukostenentwicklung bremsen neue Projekte. Erst wenn die Baugenehmigungen wieder steigen, ist mit einer Preisstabilisierung bei Schnittholz zu rechnen.</p>
@@ -537,7 +537,7 @@ export default function MarktpreisePage() {
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
               <div style={{ width: 3, height: 16, backgroundColor: BLUE }} />
               <h2 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#888", margin: 0 }}>
-                Preisentwicklung - Ausgewählte Rohstoffe 2025–2026
+                Preisentwicklung - Ausgewählte Rohstoffe 2025-2026
               </h2>
             </div>
             <div style={{ backgroundColor: "#fff", border: "1px solid #e8e8e8", overflowX: "auto" }}>
@@ -602,7 +602,7 @@ export default function MarktpreisePage() {
                     { produkt: "Fichtenschnittholz", spez: "S10, 100×200 mm, KD", herkunft: "Österreich/Bayern", preis: "320 €/m³", wow: "+1,4 %", mom: "+0,8 %", updown: "up" },
                     { produkt: "Kiefernschnittholz", spez: "S10, 100×200 mm, KD", herkunft: "Skandinavien", preis: "298 €/m³", wow: "+0,9 %", mom: "−1,2 %", updown: "up" },
                     { produkt: "Buchenfurnierholz", spez: "A/B, 25 mm, KD", herkunft: "Deutschland", preis: "485 €/m³", wow: "−0,4 %", mom: "+2,1 %", updown: "down" },
-                    { produkt: "Fichtenstammholz", spez: "B, ø 25–35 cm", herkunft: "Tschechien/Polen", preis: "98 €/fm", wow: "−1,8 %", mom: "−4,3 %", updown: "down" },
+                    { produkt: "Fichtenstammholz", spez: "B, ø 25-35 cm", herkunft: "Tschechien/Polen", preis: "98 €/fm", wow: "−1,8 %", mom: "−4,3 %", updown: "down" },
                     { produkt: "OSB/3 Platten", spez: "18 mm, 2500×1250", herkunft: "EU-Produktion", preis: "18,40 €/m²", wow: "+0,0 %", mom: "+1,1 %", updown: "neutral" },
                     { produkt: "Holzpellets (Sack)", spez: "ENplus A1, 15 kg", herkunft: "Österreich", preis: "7,20 €/Sack", wow: "−2,1 %", mom: "−5,8 %", updown: "down" },
                   ].map((row, i) => (
@@ -678,7 +678,7 @@ export default function MarktpreisePage() {
               {[
                 {
                   q: "Was kostet Betonstahl aktuell in Deutschland?",
-                  a: "Betonstahl der Güte B500B (Ø 10–16 mm) notiert aktuell bei 698,00 €/t (frei Lager Deutschland, netto). Im Jahresvergleich liegt der Preis damit etwa 6–7 % unter dem Niveau von Herbst 2025. Die EUCX veröffentlicht täglich um 08:00 Uhr aktualisierte Sitzungspreise.",
+                  a: "Betonstahl der Güte B500B (Ø 10-16 mm) notiert aktuell bei 698,00 €/t (frei Lager Deutschland, netto). Im Jahresvergleich liegt der Preis damit etwa 6-7 % unter dem Niveau von Herbst 2025. Die EUCX veröffentlicht täglich um 08:00 Uhr aktualisierte Sitzungspreise.",
                 },
                 {
                   q: "Wie entwickeln sich die Stahlpreise 2026?",
@@ -702,7 +702,7 @@ export default function MarktpreisePage() {
                 },
                 {
                   q: "Kann ich an der EUCX als kleines Unternehmen handeln?",
-                  a: "Ja. Die EUCX ist für gewerbliche Teilnehmer (B2B) aller Größenklassen zugänglich. Nach einer kostenfreien Registrierung und Unternehmensverifikation können Sie direkt an täglichen Handelssitzungen (Mo–Fr, 14–16 Uhr) teilnehmen. Mindestlosgröße, Gebührenstruktur und Zahlungsbedingungen entnehmen Sie den AGB und dem Handelsreglement.",
+                  a: "Ja. Die EUCX ist für gewerbliche Teilnehmer (B2B) aller Größenklassen zugänglich. Nach einer kostenfreien Registrierung und Unternehmensverifikation können Sie direkt an täglichen Handelssitzungen (Mo-Fr, 14-16 Uhr) teilnehmen. Mindestlosgröße, Gebührenstruktur und Zahlungsbedingungen entnehmen Sie den AGB und dem Handelsreglement.",
                 },
                 {
                   q: "Wie werden EUCX-Preise berechnet?",
@@ -744,7 +744,7 @@ export default function MarktpreisePage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 2, backgroundColor: "#e0e4ec" }}>
               {[
                 { term: "Betonstahl / Bewehrungsstahl", def: "Stahlstäbe oder -matten (Güte B500B) zum Bewehren von Beton. Maßgebliche Norm: EN 10080. Preis in €/t frei Lager." },
-                { term: "Walzdraht", def: "In Coils gewalzter Stahldraht (Ø 5,5–16 mm). Ausgangsmaterial für Drähte, Schrauben, Nägel. Hauptgüte: SAE 1006 (kohlenstoffarm)." },
+                { term: "Walzdraht", def: "In Coils gewalzter Stahldraht (Ø 5,5-16 mm). Ausgangsmaterial für Drähte, Schrauben, Nägel. Hauptgüte: SAE 1006 (kohlenstoffarm)." },
                 { term: "HEA / HEB (Breitflanschträger)", def: "Warmgewalzte H-Profile für den Stahlbau. HEA hat schmalere Flansche als HEB. Basis-Werkstoff meist S235JR oder S355J2." },
                 { term: "Shredder-Schrott (ISRI 210)", def: "Shreddermaterial aus zerkleinerten PKW-Karosserien. Homogene Zusammensetzung, ideal für Elektrostahlwerke. Chlor- und Kupfergehalt entscheidend für Qualität." },
                 { term: "Schwerschrott 1A (ISRI 200)", def: "Schwere Stahlteile mit Wandstärke ≥ 6 mm. Häufig aus dem Maschinenbau. Enthält oft einen höheren Anteil legierter Bestandteile." },
@@ -771,14 +771,14 @@ export default function MarktpreisePage() {
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: "#0d1b2a", margin: "0 0 14px" }}>Stahlpreise Deutschland 2026</h3>
                 <div style={{ fontSize: 13, color: "#505050", lineHeight: 1.85, display: "flex", flexDirection: "column", gap: 10 }}>
                   <p>Die deutschen Stahlpreise werden durch das Zusammenspiel von Produktionskosten (Energie, Schrott, CO₂-Zertifikate) und der Nachfrage aus Bau, Maschinenbau und Automobilindustrie bestimmt. Deutschland ist Europas größter Stahlproduzent und -verbraucher.</p>
-                  <p>Für 2026 erwarten Branchenexperten eine allmähliche Stabilisierung nach dem Preisrückgang von 2023–2025. Entscheidend werden der Baustart im zweiten Quartal und die Entwicklung der Autoverkäufe in der EU sein. Der CBAM-Grenzausgleich dürfte Importe aus China und Indien verteuern und heimische Produzenten stärken.</p>
+                  <p>Für 2026 erwarten Branchenexperten eine allmähliche Stabilisierung nach dem Preisrückgang von 2023-2025. Entscheidend werden der Baustart im zweiten Quartal und die Entwicklung der Autoverkäufe in der EU sein. Der CBAM-Grenzausgleich dürfte Importe aus China und Indien verteuern und heimische Produzenten stärken.</p>
                 </div>
               </div>
               <div style={{ backgroundColor: "#fff", padding: "28px 32px" }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: "#0d1b2a", margin: "0 0 14px" }}>Schrottpreise aktuell</h3>
                 <div style={{ fontSize: 13, color: "#505050", lineHeight: 1.85, display: "flex", flexDirection: "column", gap: 10 }}>
                   <p>Schrottpreise in Deutschland werden monatlich von den Verbänden (bvse, BDSV) als Orientierungspreise veröffentlicht. An der EUCX erfolgt die Preisbildung täglich durch das Orderbuchmatching zwischen zertifizierten Händlern und Abnehmern.</p>
-                  <p>Der Schrottmarkt reagiert schnell auf externe Schocks: Exportrestriktionen der Türkei, Produktionsausfälle bei deutschen Elektrostahlwerken oder abrupte Veränderungen bei den Schiffsfrachtkosten können den Preis innerhalb einer Woche um 5–10 % bewegen.</p>
+                  <p>Der Schrottmarkt reagiert schnell auf externe Schocks: Exportrestriktionen der Türkei, Produktionsausfälle bei deutschen Elektrostahlwerken oder abrupte Veränderungen bei den Schiffsfrachtkosten können den Preis innerhalb einer Woche um 5-10 % bewegen.</p>
                 </div>
               </div>
               <div style={{ backgroundColor: "#fff", padding: "28px 32px" }}>

@@ -27,7 +27,7 @@ export interface SidebarSektion {
   kategorien: { id: string; label: string; key: string }[];
 }
 
-// ─── Handelbare Produkte — einheitliche Quelle für Buyer & Seller ─────────────
+// ─── Handelbare Produkte - einheitliche Quelle für Buyer & Seller ─────────────
 // Jedes Element entspricht einem standardisierten Börsenprodukt.
 // Buyer-Presets und Seller-Dropdown nutzen dieselbe Liste.
 
@@ -51,14 +51,14 @@ export interface TradeableProduct {
 }
 
 export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
-  // ── Stahl — Langprodukte ─────────────────────────────────────────────────────
+  // ── Stahl - Langprodukte ─────────────────────────────────────────────────────
   {
     id: "rebar-bst500", katId: "betonstahl",
     name: "Betonstahl BST 500 / B500B (Rebar)",
     werkstoff: "BST 500 / B500B", norm: "EN 10080 · DIN 488",
     hsCode: "7214 20 00", cbam: "STEEL_PROCESSED", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",
-    desc: "Gerippter Betonstahl BST 500 / B500B, Ø 6–40 mm. Lieferung in Stäben 6 m oder 12 m. 3.1-Werkzeugnis nach EN 10204 erforderlich. Anwendung: Stahlbetonkonstruktionen, Hoch- und Tiefbau.",
+    desc: "Gerippter Betonstahl BST 500 / B500B, Ø 6-40 mm. Lieferung in Stäben 6 m oder 12 m. 3.1-Werkzeugnis nach EN 10204 erforderlich. Anwendung: Stahlbetonkonstruktionen, Hoch- und Tiefbau.",
   },
   {
     id: "walzdraht-sae1008", katId: "walzdraht",
@@ -66,16 +66,16 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "SAE 1008 / DD11", norm: "EN 10016-2",
     hsCode: "7213 91 10", cbam: "STEEL_PROCESSED", inco: "EXW",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",
-    desc: "Walzdraht unlegiert, niedriggekohlter Stahl SAE 1008 / DD11. Coil, Ø 5,5–16 mm. Schmelzanalyse 3.1 nach EN 10204 erforderlich. Anwendung: Zieherei, Betonstahlproduktion, Netzherstellung.",
+    desc: "Walzdraht unlegiert, niedriggekohlter Stahl SAE 1008 / DD11. Coil, Ø 5,5-16 mm. Schmelzanalyse 3.1 nach EN 10204 erforderlich. Anwendung: Zieherei, Betonstahlproduktion, Netzherstellung.",
   },
-  // ── Stahl — Flachprodukte ────────────────────────────────────────────────────
+  // ── Stahl - Flachprodukte ────────────────────────────────────────────────────
   {
     id: "blech-s235", katId: "blech-warmgewalzt",
     name: "Warmgewalztes Blech S235JR",
     werkstoff: "S235JR", norm: "EN 10025-2 · EN 10051",
     hsCode: "7208 51 20", cbam: "STEEL_PRIMARY", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",
-    desc: "Warmgewalzte Bleche / Coils S235JR. Breite 600–2000 mm, Dicke 2–25 mm. 3.1-Zeugnis nach EN 10204 beizufügen. Anwendung: Konstruktionsstahl, Maschinenbau.",
+    desc: "Warmgewalzte Bleche / Coils S235JR. Breite 600-2000 mm, Dicke 2-25 mm. 3.1-Zeugnis nach EN 10204 beizufügen. Anwendung: Konstruktionsstahl, Maschinenbau.",
   },
   {
     id: "blech-s355", katId: "blech-warmgewalzt",
@@ -83,7 +83,7 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "S355JR / S355J2", norm: "EN 10025-2",
     hsCode: "7208 51 91", cbam: "STEEL_PRIMARY", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",
-    desc: "Warmgewalzte Feinkornbaustahl-Bleche S355JR / J2. Dicke 3–80 mm, Breite bis 3000 mm. 3.1-Werkzeugnis nach EN 10204. Anwendung: Brückenbau, Schweißkonstruktionen, Druckbehälter.",
+    desc: "Warmgewalzte Feinkornbaustahl-Bleche S355JR / J2. Dicke 3-80 mm, Breite bis 3000 mm. 3.1-Werkzeugnis nach EN 10204. Anwendung: Brückenbau, Schweißkonstruktionen, Druckbehälter.",
   },
   {
     id: "blech-kalt-dc01", katId: "blech-kaltgewalzt",
@@ -91,7 +91,7 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "DC01 / DC04", norm: "EN 10130",
     hsCode: "7209 15 00", cbam: "STEEL_PRIMARY", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",
-    desc: "Kaltgewalzte Bleche / Coils DC01–DC04. Breite 600–1850 mm, Dicke 0,5–3 mm. Oberfläche A (geölt) oder B (blank). 3.1-Zeugnis nach EN 10204. Anwendung: Automobilindustrie, Haushaltsgeräte.",
+    desc: "Kaltgewalzte Bleche / Coils DC01-DC04. Breite 600-1850 mm, Dicke 0,5-3 mm. Oberfläche A (geölt) oder B (blank). 3.1-Zeugnis nach EN 10204. Anwendung: Automobilindustrie, Haushaltsgeräte.",
   },
   {
     id: "blech-verzinkt-dx51d", katId: "blech-verzinkt",
@@ -99,16 +99,16 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "DX51D+Z / DX53D", norm: "EN 10346",
     hsCode: "7210 49 00", cbam: "STEEL_PRIMARY", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",
-    desc: "Feuerverzinkte Bleche / Coils DX51D+Z oder DX53D. Zinkauflage Z100–Z275 g/m². Breite 600–1500 mm, Dicke 0,4–3 mm. 3.1-Zeugnis EN 10204. Anwendung: Bau, Lüftung, Trapezblechproduktion.",
+    desc: "Feuerverzinkte Bleche / Coils DX51D+Z oder DX53D. Zinkauflage Z100-Z275 g/m². Breite 600-1500 mm, Dicke 0,4-3 mm. 3.1-Zeugnis EN 10204. Anwendung: Bau, Lüftung, Trapezblechproduktion.",
   },
-  // ── Stahl — Träger & Profile ─────────────────────────────────────────────────
+  // ── Stahl - Träger & Profile ─────────────────────────────────────────────────
   {
     id: "hea-heb-traeger", katId: "traeger",
     name: "Breitflanschträger HEA / HEB S235JR",
     werkstoff: "S235JR / S355JR", norm: "EN 10365 · EN 10025-2",
     hsCode: "7216 33 10", cbam: "STEEL_PROCESSED", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",
-    desc: "Breitflanschträger HEA/HEB nach EN 10365, S235JR oder S355JR. Größen HEA 100–900, HEB 100–1000. 3.1-Werkzeugnis nach EN 10204. Anwendung: Stahlbau, Hallenkonstruktionen, Brückenbau.",
+    desc: "Breitflanschträger HEA/HEB nach EN 10365, S235JR oder S355JR. Größen HEA 100-900, HEB 100-1000. 3.1-Werkzeugnis nach EN 10204. Anwendung: Stahlbau, Hallenkonstruktionen, Brückenbau.",
   },
   {
     id: "ipe-traeger", katId: "traeger",
@@ -116,24 +116,24 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "S235JR / S355JR", norm: "EN 10365 · EN 10025-2",
     hsCode: "7216 31 10", cbam: "STEEL_PROCESSED", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",
-    desc: "I-Träger schmaler Flansch (IPE) nach EN 10365. Größen IPE 80–600, S235JR oder S355JR. 3.1-Zeugnis nach EN 10204. Anwendung: Hochbau, Kranbahnen, Industrie- und Lagerhallen.",
+    desc: "I-Träger schmaler Flansch (IPE) nach EN 10365. Größen IPE 80-600, S235JR oder S355JR. 3.1-Zeugnis nach EN 10204. Anwendung: Hochbau, Kranbahnen, Industrie- und Lagerhallen.",
   },
   {
     id: "hohlprofile-s235jrh", katId: "hohlprofile",
-    name: "Hohlprofile S235JRH — SHS / RHS / CHS",
+    name: "Hohlprofile S235JRH - SHS / RHS / CHS",
     werkstoff: "S235JRH / S355J2H", norm: "EN 10219 · EN 10210",
     hsCode: "7306 61 10", cbam: "STEEL_PROCESSED", inco: "EXW",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",
-    desc: "Quadrat- (SHS), Rechteck- (RHS) und Rundhohlprofile (CHS), kalt- oder warmgefertigt. Wandstärke 2–16 mm. Normen: EN 10219, EN 10210. Anwendung: Stahlbau, Konstruktionsprofile, Maschinenbau.",
+    desc: "Quadrat- (SHS), Rechteck- (RHS) und Rundhohlprofile (CHS), kalt- oder warmgefertigt. Wandstärke 2-16 mm. Normen: EN 10219, EN 10210. Anwendung: Stahlbau, Konstruktionsprofile, Maschinenbau.",
   },
-  // ── Stahl — Rohre ────────────────────────────────────────────────────────────
+  // ── Stahl - Rohre ────────────────────────────────────────────────────────────
   {
     id: "nahtlosrohr-p235gh", katId: "nahtlosrohr",
     name: "Nahtlosrohr P235GH / P265GH (Druckbehälter)",
     werkstoff: "P235GH / P265GH", norm: "EN 10216-2",
     hsCode: "7304 31 80", cbam: "STEEL_PROCESSED", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",
-    desc: "Nahtlos gezogene Stahlrohre für Druckbehälter, P235GH / P265GH. Außendurchmesser 21,3–610 mm, Wandstärke 2–50 mm. Normen: EN 10216-2. 3.1-Prüfzeugnis nach EN 10204. Anwendung: Kraftwerke, Chemie, Energietechnik.",
+    desc: "Nahtlos gezogene Stahlrohre für Druckbehälter, P235GH / P265GH. Außendurchmesser 21,3-610 mm, Wandstärke 2-50 mm. Normen: EN 10216-2. 3.1-Prüfzeugnis nach EN 10204. Anwendung: Kraftwerke, Chemie, Energietechnik.",
   },
   {
     id: "nahtlosrohr-s355", katId: "nahtlosrohr",
@@ -141,13 +141,13 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "S355J2H / St52", norm: "EN 10210-1",
     hsCode: "7304 39 51", cbam: "STEEL_PROCESSED", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",
-    desc: "Nahtlose Konstruktionsrohre S355J2H warm gefertigt. Außendurchmesser 33,7–610 mm. Normen: EN 10210-1. 3.1-Zeugnis nach EN 10204. Anwendung: Hochbau, Brückenbau, Maschinenbau.",
+    desc: "Nahtlose Konstruktionsrohre S355J2H warm gefertigt. Außendurchmesser 33,7-610 mm. Normen: EN 10210-1. 3.1-Zeugnis nach EN 10204. Anwendung: Hochbau, Brückenbau, Maschinenbau.",
   },
   // ── Schrott ──────────────────────────────────────────────────────────────────
   {
     id: "schrott-hms12", katId: "schrott",
     name: "Stahlschrott HMS 1/2 (Heavy Melting Scrap)",
-    werkstoff: "HMS 1/2", norm: "ISRI 200–212",
+    werkstoff: "HMS 1/2", norm: "ISRI 200-212",
     hsCode: "7204 10 00", cbam: null, inco: "FOB",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)",
     desc: "Schwerer Stahlschrott HMS 1/2 nach ISRI-Spezifikation 200 / 210. Max. Abmessung 1500×500 mm. Feuchtigkeitsgehalt max. 1 %. Analyse: C ≤ 0,4 %, S ≤ 0,05 %. Sichtkontrolle bei Übernahme. Keine radioaktiven oder gefährlichen Materialien.",
@@ -167,7 +167,7 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Cu-CATH-1 · min. 99,99 % Cu", norm: "EN 1978 Grade A",
     hsCode: "7403 11 00", cbam: null, inco: "CIF",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
-    desc: "Elektrolyt-Kupferkathoden EN 1978 Grade A, Reinheit min. 99,99 % Cu. Standardkathode ca. 110–130 kg/Stück, palettiert. LME-konforme Qualität. Analysezertifikat und Ursprungsnachweis erforderlich.",
+    desc: "Elektrolyt-Kupferkathoden EN 1978 Grade A, Reinheit min. 99,99 % Cu. Standardkathode ca. 110-130 kg/Stück, palettiert. LME-konforme Qualität. Analysezertifikat und Ursprungsnachweis erforderlich.",
   },
   {
     id: "aluminium-p1020", katId: "aluminium",
@@ -177,7 +177,7 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
     desc: "Primär-Aluminiumbarren EN AW-1050A (Al 99,5 %), T-Barren oder Masseln, LME-Spezifikation P1020. Analysezertifikat und Ursprungsnachweis erforderlich. CBAM-deklarationspflichtig ab 2026.",
   },
-  // ── Dünger — Stickstoff ──────────────────────────────────────────────────────
+  // ── Dünger - Stickstoff ──────────────────────────────────────────────────────
   {
     id: "harnstoff-46", katId: "harnstoff",
     name: "Harnstoff 46 % N (Urea Prilled / Granular)",
@@ -194,16 +194,16 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
     desc: "Ammoniumnitrat-Dünger 34,4 % N, granuliert. Detonationssicherheitsprüfung nach Anhang III der Verordnung (EG) 2003/2003 erforderlich. Lieferung in Big Bag oder Schüttgut. ADR-Kennzeichnung. EU-VO 2019/1009 konform.",
   },
-  // ── Dünger — Phosphor ────────────────────────────────────────────────────────
+  // ── Dünger - Phosphor ────────────────────────────────────────────────────────
   {
     id: "dap-18-46", katId: "dap",
     name: "DAP 18-46 (Diammoniumphosphat)",
     werkstoff: "(NH₄)₂HPO₄ · 18 % N · 46 % P₂O₅", norm: "EN 13639 · EU-VO 2019/1009",
     hsCode: "3105 30 00", cbam: null, inco: "CIF",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
-    desc: "Diammoniumphosphat DAP 18-46. N-Gehalt 18 %, P₂O₅ 46 %. Granulat, Körnung 2–5 mm. Schüttdichte ca. 0,9 t/m³. Lieferung in Big Bag 1.000 kg oder Schüttgut. EU-VO 2019/1009 konform, Herkunftsnachweis.",
+    desc: "Diammoniumphosphat DAP 18-46. N-Gehalt 18 %, P₂O₅ 46 %. Granulat, Körnung 2-5 mm. Schüttdichte ca. 0,9 t/m³. Lieferung in Big Bag 1.000 kg oder Schüttgut. EU-VO 2019/1009 konform, Herkunftsnachweis.",
   },
-  // ── Dünger — Kalium ──────────────────────────────────────────────────────────
+  // ── Dünger - Kalium ──────────────────────────────────────────────────────────
   {
     id: "mop-60", katId: "mop",
     name: "MOP / Kaliumchlorid 60 % K₂O (Muriate of Potash)",
@@ -214,20 +214,20 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
   },
   {
     id: "kaliumnitrat-nop", katId: "mop",
-    name: "Kaliumnitrat 13-0-46 (NOP — Nitrate of Potash)",
+    name: "Kaliumnitrat 13-0-46 (NOP - Nitrate of Potash)",
     werkstoff: "KNO₃ · 13 % N · 46 % K₂O", norm: "EN 13647 · EU-VO 2019/1009",
     hsCode: "3104 20 90", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
     desc: "Kaliumnitrat (NOP) 13-0-46. Chloridfreier Dünger für empfindliche Kulturen. Löslichkeit: 316 g/l bei 20 °C (geeignet für Fertigationsanlagen). Lieferung in 25 kg-Sack oder Big Bag. EU-VO 2019/1009 konform.",
   },
-  // ── Dünger — NPK ────────────────────────────────────────────────────────────
+  // ── Dünger - NPK ────────────────────────────────────────────────────────────
   {
     id: "npk-15-15-15", katId: "npk",
     name: "NPK 15-15-15 Komplexdünger",
     werkstoff: "N-P₂O₅-K₂O 15-15-15", norm: "EN 14677 · EU-VO 2019/1009",
     hsCode: "3105 20 10", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
-    desc: "NPK-Komplexdünger 15-15-15. Granulat, Körnung 2–5 mm. Gleichmäßige Nährstoffverteilung im Granulat. Schüttdichte ca. 1,0 t/m³. Lieferung in Big Bag 500/1000 kg oder Schüttgut. EU-VO 2019/1009 konform.",
+    desc: "NPK-Komplexdünger 15-15-15. Granulat, Körnung 2-5 mm. Gleichmäßige Nährstoffverteilung im Granulat. Schüttdichte ca. 1,0 t/m³. Lieferung in Big Bag 500/1000 kg oder Schüttgut. EU-VO 2019/1009 konform.",
   },
   {
     id: "npk-20-10-10", katId: "npk",
@@ -235,7 +235,7 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "N-P₂O₅-K₂O 20-10-10", norm: "EN 14677 · EU-VO 2019/1009",
     hsCode: "3105 20 10", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
-    desc: "NPK-Komplexdünger 20-10-10. Stickstoffbetont für Getreide und Grünland. Granulat, Körnung 2–5 mm. Lieferung in Big Bag 1.000 kg oder Schüttgut. EU-VO 2019/1009 konform.",
+    desc: "NPK-Komplexdünger 20-10-10. Stickstoffbetont für Getreide und Grünland. Granulat, Körnung 2-5 mm. Lieferung in Big Bag 1.000 kg oder Schüttgut. EU-VO 2019/1009 konform.",
   },
   {
     id: "npk-8-20-30", katId: "npk",
@@ -251,14 +251,14 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
 
 export const SIDEBAR: SidebarSektion[] = [
   {
-    label: "Stahl — Langprodukte", key: "sidebar_stahl_lang",
+    label: "Stahl - Langprodukte", key: "sidebar_stahl_lang",
     kategorien: [
       { id: "betonstahl",       label: "Betonstahl",            key: "kat_betonstahl"       },
       { id: "walzdraht",        label: "Walzdraht",             key: "kat_walzdraht"        },
     ],
   },
   {
-    label: "Stahl — Flachprodukte", key: "sidebar_stahl_flach",
+    label: "Stahl - Flachprodukte", key: "sidebar_stahl_flach",
     kategorien: [
       { id: "blech-warmgewalzt", label: "Blech warmgewalzt",   key: "kat_blech_warmgewalzt" },
       { id: "blech-kaltgewalzt", label: "Blech kaltgewalzt",   key: "kat_blech_kaltgewalzt" },
@@ -266,14 +266,14 @@ export const SIDEBAR: SidebarSektion[] = [
     ],
   },
   {
-    label: "Stahl — Träger & Profile", key: "sidebar_stahl_traeger",
+    label: "Stahl - Träger & Profile", key: "sidebar_stahl_traeger",
     kategorien: [
       { id: "traeger",      label: "Träger (HEA/HEB/IPE)", key: "kat_traeger"      },
       { id: "hohlprofile",  label: "Hohlprofile",          key: "kat_hohlprofile"  },
     ],
   },
   {
-    label: "Stahl — Rohre", key: "sidebar_stahl_rohre",
+    label: "Stahl - Rohre", key: "sidebar_stahl_rohre",
     kategorien: [
       { id: "nahtlosrohr", label: "Nahtlosrohr", key: "kat_nahtlosrohr" },
     ],
@@ -480,7 +480,7 @@ export const KATALOG: Record<string, KatalogKategorie> = {
   "betonstahl":      { id: "betonstahl",      label: "Betonstahl",            dimLabel: "Ø mm",    dimUnit: "",      description: "Gerippter Bewehrungsstahl BSt 500S und B500B nach EN 10080 / DIN 488. Für Stahlbetonkonstruktionen und Hochbau.", produkte: BETONSTAHL },
   "walzdraht":       { id: "walzdraht",       label: "Walzdraht",             dimLabel: "Ø mm",    dimUnit: "",      description: "Walzdraht SAE 1008 / DD11 in Coil. Ausgangsmaterial für Zieherei, Netzherstellung und Betonstahlproduktion.", produkte: WALZDRAHT },
   "blech-warmgewalzt": { id: "blech-warmgewalzt", label: "Blech warmgewalzt", dimLabel: "Dicke mm", dimUnit: "",     description: "Warmgewalzte Bleche und Coils S235JR / S355JR nach EN 10025-2. Für Konstruktionsstahl, Maschinenbau, Schweißkonstruktionen.", produkte: BLECH_WK },
-  "blech-kaltgewalzt": { id: "blech-kaltgewalzt", label: "Blech kaltgewalzt", dimLabel: "Dicke mm", dimUnit: "",    description: "Kaltgewalzte Bleche und Coils DC01–DC04 nach EN 10130. Für Automobilindustrie, Haushaltsgeräte und Verpackung.", produkte: BLECH_KK },
+  "blech-kaltgewalzt": { id: "blech-kaltgewalzt", label: "Blech kaltgewalzt", dimLabel: "Dicke mm", dimUnit: "",    description: "Kaltgewalzte Bleche und Coils DC01-DC04 nach EN 10130. Für Automobilindustrie, Haushaltsgeräte und Verpackung.", produkte: BLECH_KK },
   "blech-verzinkt":  { id: "blech-verzinkt",  label: "Blech verzinkt",        dimLabel: "Dicke mm", dimUnit: "",     description: "Feuerverzinkte Bleche DX51D+Z / DX53D nach EN 10346. Für Bau, Lüftungstechnik und Trapezblechproduktion.", produkte: BLECH_VZ },
   "traeger":         { id: "traeger",         label: "Träger HEA/HEB/IPE",    dimLabel: "Höhe mm", dimUnit: "",      description: "Breitflansch- und I-Träger HEA, HEB, IPE in S235JR / S355JR nach EN 10365. Für Stahlbau und Hallenkonstruktionen.", produkte: TRAEGER },
   "hohlprofile":     { id: "hohlprofile",     label: "Hohlprofile",           dimLabel: "Höhe mm", dimUnit: "",      description: "Quadrat- (SHS), Rechteck- (RHS) und Rundhohlprofile (CHS) in S235JRH / S355J2H nach EN 10219 / EN 10210.", produkte: HOHLPROFILE },
@@ -501,21 +501,21 @@ export function getKategorie(id: string): KatalogKategorie | null {
 }
 
 export function formatPreis(kg: number): string {
-  return kg === 0 ? "—" : new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(kg);
+  return kg === 0 ? "-" : new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(kg);
 }
 
 export function formatTonne(kg: number): string {
-  if (kg === 0) return "—";
+  if (kg === 0) return "-";
   return new Intl.NumberFormat("de-DE", { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(kg * 1000);
 }
 
 export function formatDim(d: number, unit: string): string {
-  if (d === 0) return "—";
+  if (d === 0) return "-";
   return unit ? `${unit}${d}` : `${d}`;
 }
 
 export function formatLaenge(l: number): string {
-  if (l === 0)        return "—";
+  if (l === 0)        return "-";
   if (l === Infinity) return "Coil / variabel";
   return `${(l / 1000).toLocaleString("de-DE")} m`;
 }

@@ -73,7 +73,7 @@ export function CookieBanner() {
             Neben technisch notwendigen Cookies verwenden wir und unsere hier aufgelisteten Empfänger
             auch Einwilligungs-bedürftige Cookies und ähnliche Technologien. Indem Sie auf die
             Schaltfläche „Alle optionalen Cookies zulassen" klicken, stimmen Sie dem Setzen der
-            optionalen Cookies selbst sowie der weiteren Verarbeitung – inklusive Übermittlung –
+            optionalen Cookies selbst sowie der weiteren Verarbeitung - inklusive Übermittlung -
             Ihrer personenbezogenen Daten zu Zwecken der Verbesserung Ihres Komforts und der
             Berücksichtigung von Präferenzen durch Personalisierung, Analyse des Nutzerverhaltens
             sowie der Durchführung und Überprüfung von Werbemaßnahmen zu. Alternativ können Sie auch

@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     try {
       const token = await verifyAccessToken(auth.slice(7));
       userId = token.userId;
-    } catch { /* kein gültiges Token — userId bleibt undefined */ }
+    } catch { /* kein gültiges Token - userId bleibt undefined */ }
   }
 
   const ip = req.headers.get("x-forwarded-for")?.split(",").at(0)?.trim()

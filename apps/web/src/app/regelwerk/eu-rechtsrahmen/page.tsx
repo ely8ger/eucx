@@ -5,7 +5,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { Scale, ExternalLink } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "EU-Gesetzgebung & Rechtsgrundlagen – EUCX Regelwerk",
+  title: "EU-Gesetzgebung & Rechtsgrundlagen - EUCX Regelwerk",
   description:
     "Vollständige Übersicht der für die EUCX maßgeblichen EU-Gesetze und Verordnungen: Handelsrecht, GwG, CBAM, DSGVO, Sanktionsrecht und Schiedsrecht.",
   robots: { index: true, follow: true },
@@ -38,13 +38,13 @@ const KATEGORIEN: Kategorie[] = [
       {
         nr: "1.1", titel: "Bürgerliches Gesetzbuch (BGB)",
         datum: "i.d.F. vom 2. Januar 2002 (BGBl. I S. 42)",
-        hinweis: "§§ 433 ff. – Kaufrecht; Grundlage aller EUCX-Handelskontrakte",
+        hinweis: "§§ 433 ff. - Kaufrecht; Grundlage aller EUCX-Handelskontrakte",
         href: "https://www.gesetze-im-internet.de/bgb/",
       },
       {
         nr: "1.2", titel: "Handelsgesetzbuch (HGB)",
         datum: "i.d.F. vom 10. Mai 1897 (RGBl. S. 219)",
-        hinweis: "§§ 343 ff. – Handelskauf; § 377 – Rügepflicht bei Lieferung",
+        hinweis: "§§ 343 ff. - Handelskauf; § 377 - Rügepflicht bei Lieferung",
         href: "https://www.gesetze-im-internet.de/hgb/",
       },
       {
@@ -54,19 +54,19 @@ const KATEGORIEN: Kategorie[] = [
         href: "https://www.gesetze-im-internet.de/gwb/",
       },
       {
-        nr: "1.4", titel: "Zivilprozessordnung (ZPO) – Schiedsrecht §§ 1025–1066",
+        nr: "1.4", titel: "Zivilprozessordnung (ZPO) - Schiedsrecht §§ 1025-1066",
         datum: "i.d.F. vom 12. September 1950 (BGBl. S. 533)",
         hinweis: "Deutsches Schiedsverfahrensrecht; Grundlage der EUCX-Schiedskommission",
         href: "https://www.gesetze-im-internet.de/zpo/__1025.html",
       },
       {
-        nr: "1.5", titel: "Verordnung (EU) Nr. 593/2008 – Rom I",
+        nr: "1.5", titel: "Verordnung (EU) Nr. 593/2008 - Rom I",
         datum: "17. Juni 2008 (ABl. L 177/6)",
         hinweis: "Anwendbares Recht auf vertragliche Schuldverhältnisse im Binnenmarkt",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32008R0593",
       },
       {
-        nr: "1.6", titel: "Verordnung (EU) Nr. 1215/2012 – Brüssel Ia",
+        nr: "1.6", titel: "Verordnung (EU) Nr. 1215/2012 - Brüssel Ia",
         datum: "12. Dezember 2012 (ABl. L 351/1)",
         hinweis: "Gerichtliche Zuständigkeit und Anerkennung von Entscheidungen in Zivilsachen",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32012R1215",
@@ -95,19 +95,19 @@ const KATEGORIEN: Kategorie[] = [
         href: "https://www.gesetze-im-internet.de/gwg_2017/",
       },
       {
-        nr: "2.2", titel: "Richtlinie (EU) 2015/849 – 4. Geldwäscherichtlinie (AMLD4)",
+        nr: "2.2", titel: "Richtlinie (EU) 2015/849 - 4. Geldwäscherichtlinie (AMLD4)",
         datum: "20. Mai 2015 (ABl. L 141/73)",
         hinweis: "Risikobasierter Ansatz, PEP-Screening, Transparenzregister",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32015L0849",
       },
       {
-        nr: "2.3", titel: "Richtlinie (EU) 2018/843 – 5. Geldwäscherichtlinie (AMLD5)",
+        nr: "2.3", titel: "Richtlinie (EU) 2018/843 - 5. Geldwäscherichtlinie (AMLD5)",
         datum: "30. Mai 2018 (ABl. L 156/43)",
         hinweis: "Erweiterung auf Krypto, verstärkte EDD für Hochrisikodrittländer",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32018L0843",
       },
       {
-        nr: "2.4", titel: "Richtlinie (EU) 2024/1640 – 6. Geldwäscherichtlinie (AMLD6)",
+        nr: "2.4", titel: "Richtlinie (EU) 2024/1640 - 6. Geldwäscherichtlinie (AMLD6)",
         datum: "19. Juni 2024 (ABl. L 2024/1640)",
         hinweis: "Erweiterter Verpflichtetenkreis, zentralisierte AML-Aufsicht durch AMLA ab 2027",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32024L1640",
@@ -119,7 +119,7 @@ const KATEGORIEN: Kategorie[] = [
         href: "https://www.fatf-gafi.org/en/topics/fatf-recommendations.html",
       },
       {
-        nr: "2.6", titel: "Verordnung (EU) 2023/1113 – Geldtransfer-Verordnung (Travel Rule)",
+        nr: "2.6", titel: "Verordnung (EU) 2023/1113 - Geldtransfer-Verordnung (Travel Rule)",
         datum: "31. Mai 2023 (ABl. L 150/1)",
         hinweis: "Angaben zum Auftraggeber bei Geldtransfers; gilt für Zahlungsdienstleister der EUCX-Partner",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32023R1113",
@@ -131,25 +131,25 @@ const KATEGORIEN: Kategorie[] = [
     titel: "EU-Sanktionsrecht & Exportkontrolle",
     akte: [
       {
-        nr: "3.1", titel: "Verordnung (EU) Nr. 269/2014 – Restriktive Maßnahmen Ukraine/Russland",
+        nr: "3.1", titel: "Verordnung (EU) Nr. 269/2014 - Restriktive Maßnahmen Ukraine/Russland",
         datum: "17. März 2014 (ABl. L 78/6)",
         hinweis: "Sanktionslisten; EUCX prüft alle Mitglieder und Transaktionen gegen diese Liste",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32014R0269",
       },
       {
-        nr: "3.2", titel: "Verordnung (EU) 2022/576 – Erweitertes Sanktionspaket Russland",
+        nr: "3.2", titel: "Verordnung (EU) 2022/576 - Erweitertes Sanktionspaket Russland",
         datum: "8. April 2022 (ABl. L 111/1)",
         hinweis: "Erweitertes Güterembargo, Verbote für Stahl und Rohstoffe aus Russland",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32022R0576",
       },
       {
-        nr: "3.3", titel: "Verordnung (EU) Nr. 765/2006 – Restriktive Maßnahmen Belarus",
+        nr: "3.3", titel: "Verordnung (EU) Nr. 765/2006 - Restriktive Maßnahmen Belarus",
         datum: "18. Mai 2006 (ABl. L 134/1)",
         hinweis: "Einfuhr- und Ausfuhrverbote für bestimmte Waren und Personen",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32006R0765",
       },
       {
-        nr: "3.4", titel: "Verordnung (EU) 2021/821 – Dual-Use-Güter-Verordnung",
+        nr: "3.4", titel: "Verordnung (EU) 2021/821 - Dual-Use-Güter-Verordnung",
         datum: "20. Mai 2021 (ABl. L 206/1)",
         hinweis: "Güter mit doppeltem Verwendungszweck; gilt für bestimmte Chemie- und Technologiegüter auf EUCX",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32021R0821",
@@ -173,19 +173,19 @@ const KATEGORIEN: Kategorie[] = [
     titel: "Warenhandel, Zoll & CBAM",
     akte: [
       {
-        nr: "4.1", titel: "Verordnung (EU) 2023/956 – Carbon Border Adjustment Mechanism (CBAM)",
+        nr: "4.1", titel: "Verordnung (EU) 2023/956 - Carbon Border Adjustment Mechanism (CBAM)",
         datum: "10. Mai 2023 (ABl. L 130/52)",
         hinweis: "CO₂-Grenzausgleich für Stahl, Aluminium, Zement, Dünger, Elektrizität aus Drittländern",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32023R0956",
       },
       {
-        nr: "4.2", titel: "Verordnung (EU) Nr. 952/2013 – Unionszollkodex (UZK)",
+        nr: "4.2", titel: "Verordnung (EU) Nr. 952/2013 - Unionszollkodex (UZK)",
         datum: "9. Oktober 2013 (ABl. L 269/1)",
         hinweis: "Zollverfahren beim Import und Export von EUCX-gehandelten Waren aus/in Drittländer",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32013R0952",
       },
       {
-        nr: "4.3", titel: "Durchführungsverordnung (EU) 2015/2447 – UZK-Durchführungsbestimmungen",
+        nr: "4.3", titel: "Durchführungsverordnung (EU) 2015/2447 - UZK-Durchführungsbestimmungen",
         datum: "24. November 2015 (ABl. L 343/558)",
         hinweis: "Technische Anforderungen, Zollanmeldungen, präferenzielle Ursprungsregeln",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32015R2447",
@@ -197,13 +197,13 @@ const KATEGORIEN: Kategorie[] = [
         href: "https://taxation-customs.ec.europa.eu/customs-4/calculation-customs-duties/customs-tariff/combined-nomenclature_de",
       },
       {
-        nr: "4.5", titel: "Verordnung (EU) Nr. 1025/2012 – Europäische Normung",
+        nr: "4.5", titel: "Verordnung (EU) Nr. 1025/2012 - Europäische Normung",
         datum: "25. Oktober 2012 (ABl. L 316/12)",
         hinweis: "Grundlage für Qualitätsnormen (EN 10204, EN 10025 etc.) bei Stahlprodukten auf EUCX",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32012R1025",
       },
       {
-        nr: "4.6", titel: "Richtlinie 2003/87/EG – EU-Emissionshandelssystem (EU-ETS)",
+        nr: "4.6", titel: "Richtlinie 2003/87/EG - EU-Emissionshandelssystem (EU-ETS)",
         datum: "13. Oktober 2003 (ABl. L 275/32), zuletzt geändert 2023",
         hinweis: "Emissionszertifikate für CBAM-relevante Industrien; relevant für CO₂-Preisberechnung",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32003L0087",
@@ -215,7 +215,7 @@ const KATEGORIEN: Kategorie[] = [
     titel: "Datenschutz & IT-Sicherheit",
     akte: [
       {
-        nr: "5.1", titel: "Verordnung (EU) 2016/679 – Datenschutz-Grundverordnung (DSGVO)",
+        nr: "5.1", titel: "Verordnung (EU) 2016/679 - Datenschutz-Grundverordnung (DSGVO)",
         datum: "27. April 2016 (ABl. L 119/1)",
         hinweis: "Verarbeitung personenbezogener Daten (KYC-Dokumente, UBO-Daten, Nutzerprofile)",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32016R0679",
@@ -227,13 +227,13 @@ const KATEGORIEN: Kategorie[] = [
         href: "https://www.gesetze-im-internet.de/bdsg_2018/",
       },
       {
-        nr: "5.3", titel: "Richtlinie (EU) 2022/2555 – NIS2-Richtlinie",
+        nr: "5.3", titel: "Richtlinie (EU) 2022/2555 - NIS2-Richtlinie",
         datum: "14. Dezember 2022 (ABl. L 333/80)",
         hinweis: "Netz- und Informationssicherheit für kritische Infrastrukturen; Orientierungsstandard für EUCX-IT",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32022L2555",
       },
       {
-        nr: "5.4", titel: "Verordnung (EU) 2022/2554 – DORA",
+        nr: "5.4", titel: "Verordnung (EU) 2022/2554 - DORA",
         datum: "14. Dezember 2022 (ABl. L 333/1)",
         hinweis: "Digital Operational Resilience Act; für EUCX freiwilliger Orientierungsstandard",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32022R2554",
@@ -251,7 +251,7 @@ const KATEGORIEN: Kategorie[] = [
     titel: "Schiedsrecht & Streitbeilegung",
     akte: [
       {
-        nr: "6.1", titel: "ZPO §§ 1025–1066 – Deutsches Schiedsverfahrensrecht",
+        nr: "6.1", titel: "ZPO §§ 1025-1066 - Deutsches Schiedsverfahrensrecht",
         datum: "i.d.F. Schiedsverfahrens-Neuregelungsgesetz 1998 (BGBl. I S. 3830)",
         hinweis: "Grundlage aller Schiedsverfahren vor der EUCX-Schiedskommission; Frankfurt am Main als Schiedsort",
         href: "https://www.gesetze-im-internet.de/zpo/__1025.html",
@@ -269,7 +269,7 @@ const KATEGORIEN: Kategorie[] = [
         href: "https://uncitral.un.org/en/texts/arbitration/modellaw/commercial_arbitration",
       },
       {
-        nr: "6.4", titel: "Richtlinie 2008/52/EG – EU-Mediationsrichtlinie",
+        nr: "6.4", titel: "Richtlinie 2008/52/EG - EU-Mediationsrichtlinie",
         datum: "21. Mai 2008 (ABl. L 136/3)",
         hinweis: "Grenzüberschreitende Mediation als erste Stufe der EUCX-Streitbeilegung (DOK-12)",
         href: "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A32008L0052",

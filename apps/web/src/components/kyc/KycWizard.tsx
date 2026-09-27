@@ -1,16 +1,5 @@
 "use client";
 
-/**
- * KycWizard - KYC Multi-Step Onboarding
- *
- * 3 Schritte mit framer-motion Slide-Übergängen:
- *   1. Unternehmensinfo bestätigen (aus Auth-Token)
- *   2. Dokumente hochladen (react-dropzone, max 5 MB, PDF/Bilder)
- *   3. Zusammenfassung + Absenden
- *
- * Custom Stepper (Tailwind) ohne externe Bibliothek.
- */
-
 import { useState, useCallback }      from "react";
 import { useRouter }                  from "next/navigation";
 import { motion, AnimatePresence }    from "framer-motion";
@@ -22,17 +11,30 @@ import { cn }                         from "@/lib/utils";
 
 // ─── Konstanten ───────────────────────────────────────────────────────────────
 
-const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_MB = 15;
 const ACCEPTED_TYPES   = { "application/pdf": [".pdf"], "image/jpeg": [".jpg", ".jpeg"], "image/png": [".png"] };
 const STEPS            = ["Unternehmensdaten", "Dokumente hochladen", "Bestätigung & Absenden"];
+
+const DOC_TYPES: { value: string; label: string; required?: boolean }[] = [
+  { value: "TRADE_REGISTER",   label: "Handelsregisterauszug",        required: true },
+  { value: "VAT_CONFIRMATION", label: "USt-Identifikationsnummer",    required: true },
+  { value: "ID_DOCUMENT",      label: "Ausweis / Pass Geschäftsführer", required: true },
+  { value: "BANK_CONFIRMATION",label: "Bankbestätigung (IBAN)",        required: true },
+  { value: "UBO_DOCUMENT",     label: "UBO-Dokument (wirtsch. Berechtigte)" },
+  { value: "POWER_OF_ATTORNEY",label: "Handlungsvollmacht" },
+  { value: "OTHER",            label: "Sonstiges" },
+];
+
+const REQUIRED_TYPES = DOC_TYPES.filter((d) => d.required).map((d) => d.value);
 
 // ─── Typen ────────────────────────────────────────────────────────────────────
 
 interface UploadedFile {
-  file:     File;
-  preview:  string;
-  sizeStr:  string;
-  error?:   string;
+  file:    File;
+  preview: string;
+  sizeStr: string;
+  error?:  string;
+  docType: string;
 }
 
 // ─── Schritt-Indikator ────────────────────────────────────────────────────────
@@ -41,19 +43,17 @@ function StepIndicator({ current, total }: { current: number; total: number }) {
   return (
     <div className="flex items-center gap-0 mb-8">
       {STEPS.map((label, i) => {
-        const done    = i < current;
-        const active  = i === current;
-        const isLast  = i === total - 1;
-
+        const done   = i < current;
+        const active = i === current;
+        const isLast = i === total - 1;
         return (
           <div key={i} className="flex items-center flex-1 last:flex-none">
-            {/* Kreis */}
             <div className="flex flex-col items-center gap-1 shrink-0">
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all",
-                done   ? "bg-cb-petrol border-cb-petrol text-white" :
-                active ? "bg-cb-yellow border-cb-yellow text-cb-gray-900" :
-                         "bg-white border-cb-gray-300 text-cb-gray-400",
+                done   ? "bg-cb-petrol border-cb-petrol text-white"
+                : active ? "bg-cb-yellow border-cb-yellow text-cb-gray-900"
+                : "bg-white border-cb-gray-300 text-cb-gray-400",
               )}>
                 {done ? "✓" : i + 1}
               </div>
@@ -64,8 +64,6 @@ function StepIndicator({ current, total }: { current: number; total: number }) {
                 {label}
               </p>
             </div>
-
-            {/* Verbindungslinie */}
             {!isLast && (
               <div className={cn(
                 "flex-1 h-0.5 mx-2 mt-[-1.25rem] sm:mt-[-1.25rem] transition-all",
@@ -79,29 +77,56 @@ function StepIndicator({ current, total }: { current: number; total: number }) {
   );
 }
 
-// ─── Dropzone-Komponente ──────────────────────────────────────────────────────
+// ─── Slide-Animation ──────────────────────────────────────────────────────────
 
-function DocumentDropzone({ files, setFiles }: {
-  files:    UploadedFile[];
-  setFiles: React.Dispatch<React.SetStateAction<UploadedFile[]>>;
-}) {
+const slideVariants = {
+  enter:  (dir: number) => ({ x: dir > 0 ? 40 : -40, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit:   (dir: number) => ({ x: dir > 0 ? -40 : 40, opacity: 0 }),
+};
+
+// ─── Haupt-Wizard ─────────────────────────────────────────────────────────────
+
+export function KycWizard() {
+  const router      = useRouter();
+  const user        = useAuthStore((s) => s.user);
+  const [step,    setStep   ] = useState(0);
+  const [dir,     setDir    ] = useState(1);
+  const [files,   setFiles  ] = useState<UploadedFile[]>([]);
+  const [notes,   setNotes  ] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [done,    setDone   ] = useState(false);
+  const [error,   setError  ] = useState("");
+
+  const navigate = (next: number) => {
+    if (next > step) {
+      const tkn = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
+      void fetch("/api/track/event", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json", ...(tkn ? { Authorization: `Bearer ${tkn}` } : {}) },
+        body:    JSON.stringify({ action: "KYC_STEP_COMPLETED", meta: { step, stepName: ["company_info", "documents", "review"][step] } }),
+      });
+    }
+    setDir(next > step ? 1 : -1);
+    setStep(next);
+  };
+
   const onDrop = useCallback((accepted: File[]) => {
-    const enriched: UploadedFile[] = accepted.map((file) => {
-      const sizeStr = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
-      const preview = file.type.startsWith("image/") ? URL.createObjectURL(file) : "";
-      const error   = file.size > MAX_FILE_SIZE_MB * 1024 * 1024
-        ? `Datei überschreitet ${MAX_FILE_SIZE_MB} MB`
-        : undefined;
-      return { file, preview, sizeStr, error };
-    });
+    const enriched: UploadedFile[] = accepted.map((file) => ({
+      file,
+      preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : "",
+      sizeStr: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+      error:   file.size > MAX_FILE_SIZE_MB * 1024 * 1024 ? `Datei überschreitet ${MAX_FILE_SIZE_MB} MB` : undefined,
+      docType: "OTHER",
+    }));
     setFiles((prev) => [...prev, ...enriched].slice(0, 10));
-  }, [setFiles]);
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,
-    accept:      ACCEPTED_TYPES,
-    maxSize:     MAX_FILE_SIZE_MB * 1024 * 1024,
-    maxFiles:    10 - files.length,
+    accept:   ACCEPTED_TYPES,
+    maxSize:  MAX_FILE_SIZE_MB * 1024 * 1024,
+    maxFiles: 10 - files.length,
   });
 
   const removeFile = (idx: number) => {
@@ -113,8 +138,55 @@ function DocumentDropzone({ files, setFiles }: {
     });
   };
 
-  return (
+  const setDocType = (idx: number, docType: string) => {
+    setFiles((prev) => prev.map((f, i) => i === idx ? { ...f, docType } : f));
+  };
+
+  const validFiles    = files.filter((f) => !f.error);
+  const coveredTypes  = new Set(validFiles.map((f) => f.docType));
+  const missingTypes  = REQUIRED_TYPES.filter((t) => !coveredTypes.has(t));
+
+  // ── Step 0: Unternehmensinfo ───────────────────────────────────────────────
+  const Step0 = () => (
     <div className="space-y-4">
+      <p className="text-sm text-cb-gray-500">
+        Bitte bestätigen Sie Ihre Unternehmensdaten. Diese werden für die KYC-Prüfung verwendet.
+      </p>
+      <div className="grid grid-cols-2 gap-4">
+        <Input label="Organisation" value={user?.orgName ?? ""} disabled />
+        <Input label="Nutzerrolle"  value={user?.role ?? ""}    disabled />
+        <Input label="E-Mail"       value={user?.email ?? ""}   disabled className="col-span-2" />
+      </div>
+      <div className="bg-cb-yellow/10 border border-cb-yellow/30 rounded p-3 text-sm text-cb-gray-700">
+        Sollten diese Daten nicht korrekt sein, kontaktieren Sie bitte{" "}
+        <a href="mailto:support@eucx.eu" className="text-cb-petrol underline">support@eucx.eu</a>.
+      </div>
+    </div>
+  );
+
+  // ── Step 1: Dokumente ──────────────────────────────────────────────────────
+  const Step1 = () => (
+    <div className="space-y-4">
+      {/* Pflichtdokumente-Checkliste */}
+      <div className="bg-cb-gray-50 border border-cb-gray-200 rounded p-3">
+        <p className="text-xs font-semibold text-cb-gray-700 uppercase tracking-wide mb-2">Pflichtdokumente</p>
+        <div className="space-y-1">
+          {DOC_TYPES.filter((d) => d.required).map((d) => {
+            const ok = coveredTypes.has(d.value);
+            return (
+              <div key={d.value} className="flex items-center gap-2 text-sm">
+                <span className={ok ? "text-cb-success" : "text-cb-gray-300"}>
+                  {ok ? "✓" : "○"}
+                </span>
+                <span className={ok ? "text-cb-gray-700" : "text-cb-gray-400"}>
+                  {d.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Drop-Zone */}
       <div
         {...getRootProps()}
@@ -154,7 +226,7 @@ function DocumentDropzone({ files, setFiles }: {
         </div>
       )}
 
-      {/* Hochgeladene Dateien */}
+      {/* Hochgeladene Dateien mit Typ-Selector */}
       {files.length > 0 && (
         <div className="space-y-2">
           {files.map((f, i) => (
@@ -162,31 +234,44 @@ function DocumentDropzone({ files, setFiles }: {
               key={i}
               className={cn(
                 "flex items-center gap-3 p-3 rounded border",
-                f.error ? "border-red-300 bg-red-50" : "border-cb-gray-200 bg-cb-gray-50",
+                f.error ? "border-red-300 bg-red-50" : "border-cb-gray-200 bg-white",
               )}
             >
               {/* Vorschau */}
               {f.preview ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={f.preview} alt={f.file.name} className="w-10 h-10 object-cover rounded" />
+                <img src={f.preview} alt={f.file.name} className="w-10 h-10 object-cover rounded shrink-0" />
               ) : (
-                <div className="w-10 h-10 bg-cb-petrol/10 rounded flex items-center justify-center text-lg">
+                <div className="w-10 h-10 bg-cb-petrol/10 rounded flex items-center justify-center text-lg shrink-0">
                   📄
                 </div>
               )}
 
-              {/* Info */}
-              <div className="flex-1 min-w-0">
+              {/* Info + Typ */}
+              <div className="flex-1 min-w-0 space-y-1">
                 <p className="text-sm font-medium text-cb-gray-700 truncate">{f.file.name}</p>
                 <p className="text-xs text-cb-gray-400">{f.sizeStr}</p>
                 {f.error && <p className="text-xs text-red-600">{f.error}</p>}
+
+                {/* Dokumenttyp-Auswahl */}
+                {!f.error && (
+                  <select
+                    value={f.docType}
+                    onChange={(e) => setDocType(i, e.target.value)}
+                    className="w-full text-xs border border-cb-gray-300 rounded px-2 py-1 text-cb-gray-700 bg-white focus:outline-none focus:border-cb-petrol"
+                  >
+                    {DOC_TYPES.map((d) => (
+                      <option key={d.value} value={d.value}>{d.label}</option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               {/* Entfernen */}
               <button
                 type="button"
                 onClick={() => removeFile(i)}
-                className="text-cb-gray-400 hover:text-red-500 transition-colors text-lg leading-none"
+                className="text-cb-gray-400 hover:text-red-500 transition-colors text-lg leading-none shrink-0"
               >
                 ✕
               </button>
@@ -194,75 +279,13 @@ function DocumentDropzone({ files, setFiles }: {
           ))}
         </div>
       )}
-    </div>
-  );
-}
 
-// ─── Slide-Animation ──────────────────────────────────────────────────────────
-
-const slideVariants = {
-  enter:  (dir: number) => ({ x: dir > 0 ? 40 : -40, opacity: 0 }),
-  center: { x: 0, opacity: 1 },
-  exit:   (dir: number) => ({ x: dir > 0 ? -40 : 40, opacity: 0 }),
-};
-
-// ─── Haupt-Wizard ─────────────────────────────────────────────────────────────
-
-export function KycWizard() {
-  const router      = useRouter();
-  const user        = useAuthStore((s) => s.user);
-  const [step,    setStep   ] = useState(0);
-  const [dir,     setDir    ] = useState(1);
-  const [files,   setFiles  ] = useState<UploadedFile[]>([]);
-  const [notes,   setNotes  ] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [done,    setDone   ] = useState(false);
-  const [error,   setError  ] = useState("");
-
-  const navigate = (next: number) => {
-    // Step-Completion tracken (Vorwärts-Navigation = Schritt abgeschlossen)
-    if (next > step) {
-      const tkn = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
-      void fetch("/api/track/event", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json", ...(tkn ? { Authorization: `Bearer ${tkn}` } : {}) },
-        body:    JSON.stringify({ action: "KYC_STEP_COMPLETED", meta: { step, stepName: ["company_info", "documents", "review"][step] } }),
-      });
-    }
-    setDir(next > step ? 1 : -1);
-    setStep(next);
-  };
-
-  // ── Step 0: Unternehmensinfo ───────────────────────────────────────────────
-  const Step0 = () => (
-    <div className="space-y-4">
-      <p className="text-sm text-cb-gray-500">
-        Bitte bestätigen Sie Ihre Unternehmensdaten. Diese werden für die KYC-Prüfung verwendet.
-      </p>
-      <div className="grid grid-cols-2 gap-4">
-        <Input label="Organisation" value={user?.orgName ?? ""} disabled />
-        <Input label="Nutzerrolle" value={user?.role ?? ""} disabled />
-        <Input label="E-Mail" value={user?.email ?? ""} disabled className="col-span-2" />
-      </div>
-      <div className="bg-cb-yellow/10 border border-cb-yellow/30 rounded p-3 text-sm text-cb-gray-700">
-        Sollten diese Daten nicht korrekt sein, kontaktieren Sie bitte{" "}
-        <a href="mailto:support@eucx.eu" className="text-cb-petrol underline">support@eucx.eu</a>.
-      </div>
-    </div>
-  );
-
-  // ── Step 1: Dokumente ──────────────────────────────────────────────────────
-  const Step1 = () => (
-    <div className="space-y-4">
-      <p className="text-sm text-cb-gray-500">
-        Laden Sie folgende Dokumente hoch:
-      </p>
-      <ul className="list-disc list-inside text-sm text-cb-gray-600 space-y-1 mb-4">
-        <li>Gewerbeanmeldung oder Handelsregisterauszug</li>
-        <li>Umsatzsteuer-Identifikationsnummer (USt-IdNr.)</li>
-        <li>Personalausweis / Reisepass des Geschäftsführers</li>
-      </ul>
-      <DocumentDropzone files={files} setFiles={setFiles} />
+      {/* Hinweis fehlende Pflichtdokumente */}
+      {validFiles.length > 0 && missingTypes.length > 0 && (
+        <div className="bg-cb-yellow/10 border border-cb-yellow/30 rounded p-3 text-xs text-cb-gray-700">
+          Noch nicht abgedeckt: {missingTypes.map((t) => DOC_TYPES.find((d) => d.value === t)?.label).join(", ")}
+        </div>
+      )}
     </div>
   );
 
@@ -272,8 +295,6 @@ export function KycWizard() {
       <p className="text-sm text-cb-gray-500">
         Überprüfen Sie Ihren Antrag bevor Sie ihn absenden.
       </p>
-
-      {/* Zusammenfassung */}
       <div className="bg-cb-gray-50 rounded border border-cb-gray-200 p-4 space-y-2 text-sm">
         <div className="flex justify-between">
           <span className="text-cb-gray-500">Organisation</span>
@@ -281,20 +302,23 @@ export function KycWizard() {
         </div>
         <div className="flex justify-between">
           <span className="text-cb-gray-500">Dokumente</span>
-          <span className="font-medium">{files.filter((f) => !f.error).length} Datei(en)</span>
+          <span className="font-medium">{validFiles.length} Datei(en)</span>
         </div>
       </div>
 
-      {/* Dokument-Liste */}
-      {files.filter((f) => !f.error).map((f, i) => (
-        <div key={i} className="flex items-center gap-2 text-sm">
-          <span className="text-cb-success">✓</span>
-          <span className="text-cb-gray-700 truncate">{f.file.name}</span>
-          <span className="text-cb-gray-400 shrink-0">{f.sizeStr}</span>
-        </div>
-      ))}
+      {validFiles.map((f, i) => {
+        const typeLabel = DOC_TYPES.find((d) => d.value === f.docType)?.label ?? f.docType;
+        return (
+          <div key={i} className="flex items-center gap-2 text-sm">
+            <span className="text-cb-success">✓</span>
+            <span className="text-cb-gray-700 truncate">{f.file.name}</span>
+            <span className="text-xs text-cb-gray-400 shrink-0 border border-cb-gray-200 px-1.5 py-0.5 rounded">
+              {typeLabel}
+            </span>
+          </div>
+        );
+      })}
 
-      {/* Anmerkungen */}
       <div>
         <label className="block text-sm font-semibold text-cb-gray-700 mb-1.5">
           Anmerkungen (optional)
@@ -308,10 +332,9 @@ export function KycWizard() {
         />
       </div>
 
-      {/* Einverständnis */}
       <div className="bg-cb-petrol/5 border border-cb-petrol/20 rounded p-3 text-xs text-cb-gray-600">
         Mit dem Absenden bestätigen Sie, dass alle angegebenen Informationen korrekt und vollständig sind.
-        Die Prüfung dauert in der Regel 1–3 Werktage.
+        Die Prüfung dauert in der Regel 1-3 Werktage.
       </div>
 
       {error && (
@@ -327,24 +350,39 @@ export function KycWizard() {
     setError("");
     setLoading(true);
     try {
-      const token = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
-      const res   = await fetch("/api/kyc/submit", {
-        method:  "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body:    JSON.stringify({
-          documents: files.filter((f) => !f.error).map((f) => ({
-            name:   f.file.name,
-            type:   f.file.type,
-            sizeMb: f.file.size / 1024 / 1024,
-          })),
-          notes: notes || undefined,
+      const tkn = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
+
+      // 1. Alle Dateien zu Blob hochladen
+      const uploaded = await Promise.all(
+        validFiles.map(async (f) => {
+          const fd = new FormData();
+          fd.append("file",    f.file);
+          fd.append("docType", f.docType);
+          const r = await fetch("/api/kyc/upload", {
+            method:  "POST",
+            headers: { Authorization: `Bearer ${tkn}` },
+            body:    fd,
+          });
+          if (!r.ok) {
+            const e = await r.json().catch(() => ({})) as { error?: string };
+            throw new Error(e.error ?? `Upload fehlgeschlagen: ${f.file.name}`);
+          }
+          const data = await r.json() as { url: string; name: string; sizeMb: number };
+          return { name: f.file.name, url: data.url, type: f.docType, sizeMb: f.file.size / 1024 / 1024 };
         }),
+      );
+
+      // 2. KYC-Antrag einreichen
+      const res  = await fetch("/api/kyc/submit", {
+        method:  "POST",
+        headers: { Authorization: `Bearer ${tkn}`, "Content-Type": "application/json" },
+        body:    JSON.stringify({ documents: uploaded, notes: notes || undefined }),
       });
       const data = await res.json() as { ok?: boolean; error?: string };
       if (!res.ok) { setError(data.error ?? "Fehler beim Absenden"); return; }
       setDone(true);
-    } catch {
-      setError("Verbindungsfehler.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Verbindungsfehler.");
     } finally {
       setLoading(false);
     }
@@ -369,16 +407,12 @@ export function KycWizard() {
   }
 
   const steps = [<Step0 key={0} />, <Step1 key={1} />, <Step2 key={2} />];
-
-  const canProceed0 = true;
-  const canProceed1 = files.filter((f) => !f.error).length > 0;
-  const canProceed  = step === 0 ? canProceed0 : canProceed1;
+  const canProceed = step === 0 ? true : validFiles.length > 0;
 
   return (
     <div>
       <StepIndicator current={step} total={STEPS.length} />
 
-      {/* Animierter Schritt-Inhalt */}
       <div className="min-h-[280px] relative overflow-hidden">
         <AnimatePresence initial={false} custom={dir} mode="wait">
           <motion.div
@@ -390,33 +424,19 @@ export function KycWizard() {
             exit="exit"
             transition={{ duration: 0.22, ease: "easeInOut" }}
           >
-            <h3 className="text-base font-semibold text-cb-petrol mb-4">
-              {STEPS[step]}
-            </h3>
+            <h3 className="text-base font-semibold text-cb-petrol mb-4">{STEPS[step]}</h3>
             {steps[step]}
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Navigation */}
       <div className="flex items-center justify-between mt-6 pt-4 border-t border-cb-gray-200">
-        <Button
-          variant="ghost"
-          size="md"
-          onClick={() => navigate(step - 1)}
-          disabled={step === 0 || loading}
-        >
+        <Button variant="ghost" size="md" onClick={() => navigate(step - 1)} disabled={step === 0 || loading}>
           ← Zurück
         </Button>
-
         <div className="flex gap-2">
           {step < STEPS.length - 1 ? (
-            <Button
-              variant="primary"
-              size="md"
-              onClick={() => navigate(step + 1)}
-              disabled={!canProceed}
-            >
+            <Button variant="primary" size="md" onClick={() => navigate(step + 1)} disabled={!canProceed}>
               Weiter →
             </Button>
           ) : (
@@ -424,10 +444,10 @@ export function KycWizard() {
               variant="primary"
               size="md"
               loading={loading}
-              disabled={files.filter((f) => !f.error).length === 0}
+              disabled={validFiles.length === 0}
               onClick={() => { void handleSubmit(); }}
             >
-              Antrag absenden
+              {loading ? "Wird hochgeladen…" : "Antrag absenden"}
             </Button>
           )}
         </div>

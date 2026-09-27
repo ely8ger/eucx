@@ -11,12 +11,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { DeliveryStatus } from "@prisma/client";
+import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
 const MAX_FILE_BYTES = 5 * 1024 * 1024; // 5 MB
 
-export async function POST(
+async function _POST(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> }
 ) {
@@ -106,3 +107,5 @@ export async function POST(
     statusAdvancedTo: autoAdvanced ? DeliveryStatus.IN_TRANSIT : null,
   }, { status: 201 });
 }
+
+export const POST = apiRoute(_POST);

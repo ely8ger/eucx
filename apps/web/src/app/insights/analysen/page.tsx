@@ -3,7 +3,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata = {
-  title: "Marktanalysen – Wöchentliche Rohstoffpreisberichte | EUCX",
+  title: "Marktanalysen - Wöchentliche Rohstoffpreisberichte | EUCX",
   description:
     "Aktuelle Preisentwicklungen für Betonstahl, Walzdraht, Kupfer, Aluminium und Energie. Wöchentliche Marktkommentare für institutionelle Händler auf EUCX.",
   alternates: { canonical: "https://eucx.eu/insights/analysen" },
@@ -20,13 +20,13 @@ const webPageSchema = {
       "@type": "WebPage",
       "@id": "https://eucx.eu/insights/analysen",
       url: "https://eucx.eu/insights/analysen",
-      name: "Marktanalysen – Wöchentliche Rohstoffpreisberichte | EUCX",
+      name: "Marktanalysen - Wöchentliche Rohstoffpreisberichte | EUCX",
       description:
         "Aktuelle Preisentwicklungen für Betonstahl, Walzdraht, Kupfer, Aluminium, Weizen und Energie. Wöchentliche Marktkommentare für institutionelle Händler auf EUCX.",
       inLanguage: "de-DE",
       publisher: {
         "@type": "Organization",
-        name: "EUCX – European Union Commodity Exchange",
+        name: "EUCX - European Union Commodity Exchange",
         url: "https://eucx.eu",
       },
       dateModified: "2026-03-21",
@@ -435,15 +435,15 @@ export default function AnalysenPage() {
             Anfang Q3 2026. Importeure von Betonstahl aus Drittstaaten müssen dann CBAM-Zertifikate
             vorweisen, deren Preis an den EU-ETS-Kurs (aktuell 65,40 €/tCO₂) gekoppelt ist. Bei einem
             CO₂-Intensitätswert von rund 1,6 tCO₂/t für türkischen EAF-Stahl ergibt sich ein
-            theoretischer CBAM-Aufschlag von ca. 100–105 €/t - ein erheblicher Wettbewerbsvorteil für
+            theoretischer CBAM-Aufschlag von ca. 100-105 €/t - ein erheblicher Wettbewerbsvorteil für
             EU-integrierte Hochofenproduzenten. Die Markterwartung dieser Verschiebung ist bereits
             partiell in den Futures eingepreist.
           </p>
 
           <p style={{ fontSize: 14, lineHeight: 1.85, color: "#333", margin: "0 0 24px" }}>
             <strong>Energiekosten bleiben entscheidender Faktor:</strong> EAF-Stahlwerke benötigen
-            je nach Effizienz 380–480 kWh Strom pro Tonne Rohstahl. Bei einem EEX-Base-Preis von
-            89,50 €/MWh entspricht das Energiekosten von 34–43 €/t allein für Strom - ein wesentlicher
+            je nach Effizienz 380-480 kWh Strom pro Tonne Rohstahl. Bei einem EEX-Base-Preis von
+            89,50 €/MWh entspricht das Energiekosten von 34-43 €/t allein für Strom - ein wesentlicher
             Kostentreiber, der die Produktionsmengenentscheidungen prägt. Werke mit langfristigen
             PPA-Verträgen (Power Purchase Agreements) sind hier klar im Vorteil.
           </p>
@@ -513,7 +513,7 @@ export default function AnalysenPage() {
             Elektrofahrzeug (BEV) benötigt im Durchschnitt 83 kg Kupfer - gegenüber nur 23 kg bei
             einem konventionellen Verbrenner. Mit europaweit über 2,8 Mio. verkauften BEV in 2025 und
             weiter steigender Tendenz wächst der automobile Kupferbedarf erheblich. Hinzu kommt der
-            Stromnetzausbau: Der europäische Netzentwicklungsplan 2026–2035 sieht Investitionen von
+            Stromnetzausbau: Der europäische Netzentwicklungsplan 2026-2035 sieht Investitionen von
             über 380 Mrd. EUR vor - ein wesentlicher Teil davon in kupferintensive Kabelsysteme und
             Transformatoren. Windkraftanlagen (Offshore wie Onshore) benötigen je MW installierter
             Leistung rund 3,6 t Kupfer.
@@ -531,9 +531,9 @@ export default function AnalysenPage() {
 
           <p style={{ fontSize: 14, lineHeight: 1.85, color: "#333", margin: "0 0 0" }}>
             <strong>Ausblick:</strong> Der Konsens unter EUCX-Analysten liegt für KW 13 bei einer
-            Konsolidierung im Bereich 9.750–9.950 $/t. Ein Unterschreiten der 9.600 $/t-Marke gilt
+            Konsolidierung im Bereich 9.750-9.950 $/t. Ein Unterschreiten der 9.600 $/t-Marke gilt
             als unwahrscheinlich, solange die LME-Lagerbestände auf diesem Niveau bleiben. Mittelfristig
-            (Q3/Q4 2026) werden Analysten im Schnitt einen Kurs von 10.200–10.500 $/t erwarten.
+            (Q3/Q4 2026) werden Analysten im Schnitt einen Kurs von 10.200-10.500 $/t erwarten.
           </p>
         </div>
 

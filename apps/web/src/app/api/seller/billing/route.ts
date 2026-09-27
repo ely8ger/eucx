@@ -15,10 +15,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
 import { verifyAccessToken }         from "@/lib/auth/jwt";
+import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+async function _GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   const rawToken   = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
   if (!rawToken) return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
@@ -138,3 +139,5 @@ export async function GET(req: NextRequest) {
     },
   });
 }
+
+export const GET = apiRoute(_GET);

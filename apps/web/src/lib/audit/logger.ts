@@ -1,5 +1,5 @@
 /**
- * Audit Logger — immutable event sourcing.
+ * Audit Logger - immutable event sourcing.
  * Regel: NIEMALS löschen/updaten. Nur INSERT.
  */
 import { db }        from "@/lib/db/client";
@@ -65,7 +65,7 @@ interface AuditParams {
 
 /**
  * Write an immutable audit log entry.
- * Never throws — audit must not break the main flow.
+ * Never throws - audit must not break the main flow.
  */
 export async function audit(params: AuditParams): Promise<void> {
   try {

@@ -409,7 +409,7 @@ export function SellerInventoryClient() {
                       required
                       style={{ cursor: "pointer" }}
                     >
-                      <option value="">— Produkt wählen —</option>
+                      <option value="">- Produkt wählen -</option>
                       {SIDEBAR.map((sektion) => {
                         const produkte = sektion.kategorien.flatMap((kat) => CATALOG_BY_KAT_SELLER.get(kat.id) ?? []);
                         if (produkte.length === 0) return null;

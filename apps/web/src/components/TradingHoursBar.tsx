@@ -72,7 +72,7 @@ export default function TradingHoursBar() {
 
           {/* Handelszeit */}
           <span style={{ fontSize: 11, color: "#6b7280", fontFamily: MONO }}>
-            {t("hours_mo_fr")} &nbsp;{openStr}–{closeStr} {tzLabel}
+            {t("hours_mo_fr")} &nbsp;{openStr}-{closeStr} {tzLabel}
           </span>
 
           {/* Countdown */}

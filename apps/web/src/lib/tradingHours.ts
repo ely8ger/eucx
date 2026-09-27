@@ -1,5 +1,5 @@
 /**
- * EUCX Handelszeiten: Montag–Freitag 10:00–13:00 MEZ/MESZ (Europe/Berlin)
+ * EUCX Handelszeiten: Montag-Freitag 10:00-13:00 MEZ/MESZ (Europe/Berlin)
  */
 
 export interface TradingStatus {

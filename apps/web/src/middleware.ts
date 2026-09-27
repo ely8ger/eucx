@@ -23,12 +23,14 @@ const PUBLIC_PREFIXES = [
   "/api/lookup-hrb",
   "/api/enrich-company",
   "/api/og",
-  // Interne Server-zu-Server-Endpunkte — haben eigene Auth (CRON_SECRET / QStash-Signatur)
+  // Interne Server-zu-Server-Endpunkte - haben eigene Auth (CRON_SECRET / QStash-Signatur)
   "/api/auction/cron",
   "/api/workers/",
-  // Test-Utilities — nur in Dev, Route selbst prüft NODE_ENV
+  // Test-Utilities - nur in Dev, Route selbst prüft NODE_ENV
   ...(process.env.NODE_ENV !== "production" ? ["/api/test/"] : []),
-  // Produktkatalog — öffentliche Referenzdaten, kein sensitiver Inhalt
+  // Server-Gesundheitscheck - kein sensitiver Inhalt, für Smoke-Tests
+  "/api/health",
+  // Produktkatalog - öffentliche Referenzdaten, kein sensitiver Inhalt
   "/api/catalog",
   // Öffentliche Inhaltsseiten
   "/agb",
@@ -118,7 +120,7 @@ export async function middleware(req: NextRequest) {
         }
       }
 
-      // Allgemeines API-Rate-Limit (authentifiziert — großzügiger)
+      // Allgemeines API-Rate-Limit (authentifiziert - großzügiger)
       const apiRl = await checkRateLimit(`user:${payload.userId}`, "api");
       if (!apiRl.allowed) {
         logSecurityEvent({

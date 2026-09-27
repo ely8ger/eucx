@@ -592,7 +592,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
           <div className="sl-preview-overlay" onClick={() => setPreviewLot(null)}>
             <div className="sl-preview" onClick={(e) => e.stopPropagation()}>
 
-              {/* Header — weiß, typografisch */}
+              {/* Header - weiß, typografisch */}
               <div className="sl-preview-head">
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="sl-preview-eyebrow">Ausschreibung · Vertragsbedingungen</div>
@@ -609,7 +609,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                 <button className="sl-preview-close" onClick={() => setPreviewLot(null)}>✕</button>
               </div>
 
-              {/* Preis-Zeile — schmal */}
+              {/* Preis-Zeile - schmal */}
               {(lot.startPrice || lot.currentBest) && (
                 <div className="sl-preview-price-row">
                   {lot.startPrice && (
@@ -643,7 +643,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
                       {lot.startPrice && row("Maximalpreis (Limit)", `${parseFloat(lot.startPrice).toLocaleString("de-DE", { minimumFractionDigits: 2 })} €/${lot.unit === "TON" ? "t" : lot.unit === "KG" ? "kg" : lot.unit}`)}
                       {row("Güte / Qualitätsnorm", lot.qualityGrade)}
                       {row("HS-Code (Zolltarif)", lot.hsCode, true)}
-                      {lot.greenSteel && row("Green Steel", "Ja — zertifizierter Stahl mit reduziertem CO₂-Fußabdruck")}
+                      {lot.greenSteel && row("Green Steel", "Ja - zertifizierter Stahl mit reduziertem CO₂-Fußabdruck")}
                       {row("CBAM-Kategorie", lot.cbamCategory)}
                       {lot.co2PerTonne && row("CO₂-Emissionsfaktor", `${parseFloat(lot.co2PerTonne).toLocaleString("de-DE")} kg CO₂/t`)}
                       {row("Herkunftsland", lot.countryOfOrigin)}

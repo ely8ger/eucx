@@ -22,7 +22,7 @@ import { z } from "zod";
 // ─── Metalle (Kupfer, Aluminium, Stahl, Rebar, etc.) ─────────────────────────
 
 export const metalAttributesSchema = z.object({
-  // Reinheitsgrad: 0–100%, maximal 3 Nachkommastellen (z.B. 99.995 für Kathoden)
+  // Reinheitsgrad: 0-100%, maximal 3 Nachkommastellen (z.B. 99.995 für Kathoden)
   purityPct: z
     .number()
     .min(50, "Reinheitsgrad muss ≥ 50% sein")

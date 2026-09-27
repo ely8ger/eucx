@@ -5,7 +5,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { ClipboardList, Download, FileText } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Formulare & Anträge – EUCX Regelwerk",
+  title: "Formulare & Anträge - EUCX Regelwerk",
   description:
     "Alle Formulare und Anträge der EUCX: Mitgliedsantrag, KYC-Selbstauskunft, Händlerzertifizierung, Schiedsklage und weitere Dokumente.",
   robots: { index: true, follow: true },

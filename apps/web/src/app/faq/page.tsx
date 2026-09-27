@@ -9,7 +9,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "FAQ – Häufig gestellte Fragen",
+  title: "FAQ - Häufig gestellte Fragen",
   description:
     "Antworten auf alle Fragen zur EUCX: Registrierung, KYC, Rohstoffhandel, Orderbuch, Regulierung, Incoterms und ESG. Über 60 Fragen und Antworten.",
   keywords: [
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/faq` },
   openGraph: {
-    title: "FAQ – Alle Antworten zur EUCX-Handelsplattform",
+    title: "FAQ - Alle Antworten zur EUCX-Handelsplattform",
     description: "Über 60 Fragen und Antworten zu Registrierung, Handel, Regulierung, Rohstoffen und mehr.",
     url: `${BASE_URL}/faq`,
   },
@@ -37,7 +37,7 @@ const CATEGORIES: Category[] = [
     Icon: Landmark,
     items: [
       {
-        q: "Was ist die EUCX – European Union Commodity Exchange?",
+        q: "Was ist die EUCX - European Union Commodity Exchange?",
         a: "Die EUCX ist eine digitale B2B-Warenbörse für institutionellen Rohstoffhandel innerhalb der Europäischen Union. Sie ermöglicht Unternehmen den direkten, transparenten Kauf und Verkauf von Rohstoffen wie Metallen, Betonstahl, Holz, Agrarprodukten, Chemiegütern und Energie über ein elektronisches Orderbuch mit sofortiger Abwicklung.",
       },
       {
@@ -50,7 +50,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Welche Rohstoffe werden auf der EUCX gehandelt?",
-        a: "Derzeit sind vier Handelssektionen aktiv: (1) Metalle & Stahl – Betonstahl (Rebar), Walzdraht, Träger, Bleche, Aluminium, Kupfer; (2) Holz & Baustoffe – Schnittholz, Konstruktionsvollholz, Bauholz; (3) Agrarprodukte – Weizen, Mais, Raps, Zuckerrüben; (4) Industrie & Energie – Chemievorprodukte, Energieträger. Das Sortiment wird kontinuierlich erweitert.",
+        a: "Derzeit sind vier Handelssektionen aktiv: (1) Metalle & Stahl - Betonstahl (Rebar), Walzdraht, Träger, Bleche, Aluminium, Kupfer; (2) Holz & Baustoffe - Schnittholz, Konstruktionsvollholz, Bauholz; (3) Agrarprodukte - Weizen, Mais, Raps, Zuckerrüben; (4) Industrie & Energie - Chemievorprodukte, Energieträger. Das Sortiment wird kontinuierlich erweitert.",
       },
       {
         q: "Was unterscheidet die EUCX von einer klassischen Rohstoffbörse?",
@@ -58,7 +58,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Hat die EUCX einen physischen Handelsplatz?",
-        a: "Nein. Die EUCX ist eine rein digitale Plattform (Electronic Organized Trading System). Sitz der Gesellschaft ist Frankfurt am Main. Der gesamte Handelsbetrieb erfolgt über das Online-Portal – zugänglich via Webbrowser oder API-Anbindung.",
+        a: "Nein. Die EUCX ist eine rein digitale Plattform (Electronic Organized Trading System). Sitz der Gesellschaft ist Frankfurt am Main. Der gesamte Handelsbetrieb erfolgt über das Online-Portal - zugänglich via Webbrowser oder API-Anbindung.",
       },
       {
         q: "Zu welchen Zeiten kann auf der EUCX gehandelt werden?",
@@ -84,7 +84,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Wie lange dauert der Zulassungsprozess?",
-        a: "Die Standard-KYC-Prüfung dauert 3–7 Werktage nach Einreichung aller vollständigen Unterlagen. Für Unternehmen aus Hochrisikostaaten oder mit komplexen Eigentümerstrukturen kann eine Enhanced Due Diligence (EDD) erforderlich sein, die bis zu 4 Wochen in Anspruch nehmen kann. Sie werden per E-Mail über den Status Ihres Antrags informiert.",
+        a: "Die Standard-KYC-Prüfung dauert 3-7 Werktage nach Einreichung aller vollständigen Unterlagen. Für Unternehmen aus Hochrisikostaaten oder mit komplexen Eigentümerstrukturen kann eine Enhanced Due Diligence (EDD) erforderlich sein, die bis zu 4 Wochen in Anspruch nehmen kann. Sie werden per E-Mail über den Status Ihres Antrags informiert.",
       },
       {
         q: "Muss mein Unternehmen einen Mindestjahresumsatz nachweisen?",
@@ -126,7 +126,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Wie lange ist eine Order gültig?",
-        a: "Orders können mit verschiedenen Gültigkeiten eingestellt werden: GTC (Good till Cancelled) – bis zur manuellen Stornierung, gültig maximal 90 Handelstage; DAY – nur für die aktuelle Handelssitzung; GTD (Good till Date) – bis zu einem frei wählbaren Datum; IOC (Immediate or Cancel) – sofortige Teilausführung, Rest wird storniert; FOK (Fill or Kill) – vollständige Ausführung oder sofortige Stornierung.",
+        a: "Orders können mit verschiedenen Gültigkeiten eingestellt werden: GTC (Good till Cancelled) - bis zur manuellen Stornierung, gültig maximal 90 Handelstage; DAY - nur für die aktuelle Handelssitzung; GTD (Good till Date) - bis zu einem frei wählbaren Datum; IOC (Immediate or Cancel) - sofortige Teilausführung, Rest wird storniert; FOK (Fill or Kill) - vollständige Ausführung oder sofortige Stornierung.",
       },
       {
         q: "Wann wird ein Handel verbindlich?",
@@ -134,7 +134,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Kann ich eine Order stornieren?",
-        a: "Nicht ausgeführte Orders können jederzeit während der Handelszeit storniert werden. Bereits gematchte Trades können nach dem Matching grundsätzlich nicht mehr einseitig storniert werden. Ausnahmen gelten nur bei technischen Handelsfehlern (Erroneous Trades) – hierfür existiert ein gesondertes Beschwerdeverfahren gemäß EUCX Market Rules §14.",
+        a: "Nicht ausgeführte Orders können jederzeit während der Handelszeit storniert werden. Bereits gematchte Trades können nach dem Matching grundsätzlich nicht mehr einseitig storniert werden. Ausnahmen gelten nur bei technischen Handelsfehlern (Erroneous Trades) - hierfür existiert ein gesondertes Beschwerdeverfahren gemäß EUCX Market Rules §14.",
       },
       {
         q: "Wie funktioniert die Zahlungsabwicklung?",
@@ -183,7 +183,7 @@ const CATEGORIES: Category[] = [
         a: "In der Agrarsektion werden gelistet: Weichweizen (Mahlqualität A/B/C nach EU-Interventionsstandard), Mais (Trocken, Standard-Qualität nach EU-VO), Raps (Qualität nach UFOP-Norm), Zuckerrüben (nur im Rahmen von EU-Quotenmengen). Alle Agrarprodukte werden als physische Warenmengen gehandelt, keine Futures.",
       },
       {
-        q: "Wie werden Preise auf der EUCX angezeigt – inkl. oder exkl. MwSt.?",
+        q: "Wie werden Preise auf der EUCX angezeigt - inkl. oder exkl. MwSt.?",
         a: "Alle Preise auf der EUCX werden netto, d.h. ohne Mehrwertsteuer, angegeben. Da es sich um B2B-Transaktionen zwischen USt-registrierten Unternehmen handelt, gilt das Reverse-Charge-Verfahren für grenzüberschreitende EU-Lieferungen. Die Mehrwertsteuerbehandlung richtet sich nach den jeweiligen nationalen und EU-Regeln.",
       },
     ],
@@ -232,11 +232,11 @@ const CATEGORIES: Category[] = [
     items: [
       {
         q: "Wie hoch sind die Transaktionsgebühren auf der EUCX?",
-        a: "Die EUCX erhebt eine Transaktionsgebühr von 0,08–0,15% des Kontraktwerts je abgeschlossenem Trade (Maker-Taker-Modell: Maker 0,05%, Taker 0,12%). Bei einem Handelsvolumen von 100.000 EUR beträgt die Gesamtgebühr damit maximal 150 EUR. Höhere Volumina qualifizieren für Mengenrabatte. Für Market Maker gelten Sonderkonditionen.",
+        a: "Die EUCX erhebt eine Transaktionsgebühr von 0,08-0,15% des Kontraktwerts je abgeschlossenem Trade (Maker-Taker-Modell: Maker 0,05%, Taker 0,12%). Bei einem Handelsvolumen von 100.000 EUR beträgt die Gesamtgebühr damit maximal 150 EUR. Höhere Volumina qualifizieren für Mengenrabatte. Für Market Maker gelten Sonderkonditionen.",
       },
       {
         q: "Was ist eine Margin und wozu dient sie?",
-        a: "Die Margin (Sicherheitsleistung) ist ein Betrag, den Marktteilnehmer als Kaution hinterlegen, um ihre Handelsverpflichtungen abzusichern. Sie schützt die Gegenpartei und die EUCX vor Ausfallrisiken. Die Initial Margin beträgt je nach Produkt und Volatilität 3–10% des Kontraktwerts. Bei Marktschwankungen kann eine Variation Margin (Nachschusspflicht) entstehen.",
+        a: "Die Margin (Sicherheitsleistung) ist ein Betrag, den Marktteilnehmer als Kaution hinterlegen, um ihre Handelsverpflichtungen abzusichern. Sie schützt die Gegenpartei und die EUCX vor Ausfallrisiken. Die Initial Margin beträgt je nach Produkt und Volatilität 3-10% des Kontraktwerts. Bei Marktschwankungen kann eine Variation Margin (Nachschusspflicht) entstehen.",
       },
       {
         q: "In welcher Form kann Margin hinterlegt werden?",
@@ -262,7 +262,7 @@ const CATEGORIES: Category[] = [
     items: [
       {
         q: "Welche Incoterms werden auf der EUCX verwendet?",
-        a: "Auf der EUCX kommen ausschließlich Incoterms® 2020 der ICC (International Chamber of Commerce) zur Anwendung. Standardmäßig werden folgende Klauseln verwendet: EXW (Ab Werk) – Käufer übernimmt alle Kosten und Risiken ab Verkäuferwerk; FCA (Frei Frachtführer) – Verkäufer liefert an benannten Ort; DAP (Geliefert benannter Ort) – Verkäufer trägt alle Kosten bis zum Bestimmungsort; DDP (Geliefert verzollt) – Vollständiger Lieferservice inkl. Zoll.",
+        a: "Auf der EUCX kommen ausschließlich Incoterms® 2020 der ICC (International Chamber of Commerce) zur Anwendung. Standardmäßig werden folgende Klauseln verwendet: EXW (Ab Werk) - Käufer übernimmt alle Kosten und Risiken ab Verkäuferwerk; FCA (Frei Frachtführer) - Verkäufer liefert an benannten Ort; DAP (Geliefert benannter Ort) - Verkäufer trägt alle Kosten bis zum Bestimmungsort; DDP (Geliefert verzollt) - Vollständiger Lieferservice inkl. Zoll.",
       },
       {
         q: "Wer ist für die Logistik und den Transport verantwortlich?",
@@ -310,7 +310,7 @@ const CATEGORIES: Category[] = [
     items: [
       {
         q: "Welche technischen Anforderungen gibt es für die Nutzung der EUCX?",
-        a: "Die EUCX-Webplattform läuft in jedem modernen Browser (Chrome, Firefox, Safari, Edge – jeweils aktuelle Version). Es ist keine Software-Installation erforderlich. Für die API-Anbindung wird ein Server mit REST-/WebSocket-Unterstützung benötigt. Empfohlene Internetverbindung: ≥10 Mbit/s, latenzoptimiert. Mobile Nutzung über Tablet ist möglich, für aktiven Handel wird ein Desktop empfohlen.",
+        a: "Die EUCX-Webplattform läuft in jedem modernen Browser (Chrome, Firefox, Safari, Edge - jeweils aktuelle Version). Es ist keine Software-Installation erforderlich. Für die API-Anbindung wird ein Server mit REST-/WebSocket-Unterstützung benötigt. Empfohlene Internetverbindung: ≥10 Mbit/s, latenzoptimiert. Mobile Nutzung über Tablet ist möglich, für aktiven Handel wird ein Desktop empfohlen.",
       },
       {
         q: "Wie sicher ist die EUCX-Plattform?",
@@ -318,7 +318,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Wie erfolgt die Zwei-Faktor-Authentifizierung?",
-        a: "Nach Eingabe von E-Mail und Passwort wird ein 6-stelliger Einmalcode (TOTP) über eine Authenticator-App (Google Authenticator, Authy, Microsoft Authenticator) abgefragt. Alternativ kann ein SMS-Code an die hinterlegte Mobilnummer gesendet werden. Die 2FA kann nicht deaktiviert werden – sie ist für alle Konten verpflichtend.",
+        a: "Nach Eingabe von E-Mail und Passwort wird ein 6-stelliger Einmalcode (TOTP) über eine Authenticator-App (Google Authenticator, Authy, Microsoft Authenticator) abgefragt. Alternativ kann ein SMS-Code an die hinterlegte Mobilnummer gesendet werden. Die 2FA kann nicht deaktiviert werden - sie ist für alle Konten verpflichtend.",
       },
       {
         q: "Gibt es ein Demo-Konto zum Ausprobieren?",

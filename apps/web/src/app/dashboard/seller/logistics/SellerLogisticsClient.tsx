@@ -500,7 +500,7 @@ export function SellerLogisticsClient() {
                   {sel.deliveryStatus === "DISPUTED" && (
                     <div className="log-dispute-success" style={{ marginTop: 14 }}>
                       <span className="log-disputed-badge">STREITFALL</span>
-                      <div style={{ marginTop: 4 }}>Streitfall aktiv — wird von EUCX-Compliance geprüft. Sie erhalten eine E-Mail sobald eine Entscheidung vorliegt.</div>
+                      <div style={{ marginTop: 4 }}>Streitfall aktiv - wird von EUCX-Compliance geprüft. Sie erhalten eine E-Mail sobald eine Entscheidung vorliegt.</div>
                     </div>
                   )}
 
