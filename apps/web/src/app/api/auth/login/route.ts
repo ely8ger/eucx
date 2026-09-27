@@ -93,7 +93,14 @@ export async function POST(req: NextRequest) {
         });
 
         if (lockResult.count > 0) {
-          // Dieser Request hat den Lock gesetzt → Reset-Token + Mail
+          // Dieser Request hat den Lock gesetzt → Sicherheitswarnung + Reset-Token + Mail
+          sendAuctionMail({
+            to:       user.email,
+            subject:  "EUCX - Sicherheitshinweis: Konto vorübergehend gesperrt",
+            template: "account_locked",
+            data:     { email: user.email },
+          }).catch((err: unknown) => console.error("[login lock] account_locked Mailer-Fehler:", err));
+
           const rawToken  = randomBytes(32).toString("hex");
           const tokenHash = createHash("sha256").update(rawToken).digest("hex");
           await db.passwordResetToken.create({
