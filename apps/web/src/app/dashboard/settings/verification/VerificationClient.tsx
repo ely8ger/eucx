@@ -20,7 +20,7 @@ type DocType =
   | "OTHER";
 
 type VerificationStatus = "GUEST" | "PENDING_VERIFICATION" | "VERIFIED" | "REJECTED" | "SUSPENDED";
-type CheckStatus       = "missing" | "pending" | "approved" | "rejected";
+type CheckStatus       = "missing" | "pending" | "approved" | "rejected" | "revision";
 
 const DOC_TYPE_LABELS: Record<DocType, string> = {
   TRADE_REGISTER:    "Handelsregisterauszug",
@@ -57,6 +57,7 @@ const CHECK_STATUS_LABEL: Record<CheckStatus, string> = {
   approved: "Genehmigt",
   pending:  "In Prüfung",
   rejected: "Abgelehnt",
+  revision: "Überarbeitung erforderlich",
   missing:  "Ausstehend",
 };
 
@@ -234,16 +235,18 @@ export function VerificationClient() {
     if (matches.length === 0) return "missing";
     if (matches.some((d) => d.status === "APPROVED")) return "approved";
     if (matches.some((d) => d.status === "REJECTED")) return "rejected";
+    if (matches.some((d) => d.status === "NEEDS_REVISION")) return "revision";
     return "pending";
   }
 
-  const rejectedDocs = existingDocs.filter((d) => d.status === "REJECTED");
+  const rejectedDocs = existingDocs.filter((d) => d.status === "REJECTED" || d.status === "NEEDS_REVISION");
   const hasRejected  = rejectedDocs.length > 0 && kycStatus !== "VERIFIED";
 
   const DOC_STATUS_STYLE: Record<string, { color: string; label: string }> = {
-    PENDING:  { color: "#92400e", label: "In Prüfung" },
-    APPROVED: { color: "#14532d", label: "Genehmigt"  },
-    REJECTED: { color: "#7f1d1d", label: "Abgelehnt"  },
+    PENDING:        { color: "#92400e", label: "In Prüfung"               },
+    APPROVED:       { color: "#14532d", label: "Genehmigt"                },
+    REJECTED:       { color: "#7f1d1d", label: "Abgelehnt"                },
+    NEEDS_REVISION: { color: "#7c3d0e", label: "Überarbeitung erforderlich" },
   };
 
   const unlockItems = userRole === "SELLER"
@@ -261,7 +264,7 @@ export function VerificationClient() {
   const canUpload = kycStatus !== "VERIFIED";
 
   function renderGroup(title: string, types: DocType[], bottomNote?: string) {
-    const dotContent: Record<CheckStatus, string> = { approved: "✓", rejected: "✗", pending: "⋯", missing: "" };
+    const dotContent: Record<CheckStatus, string> = { approved: "✓", rejected: "✗", revision: "!", pending: "⋯", missing: "" };
     const approvedCount = types.filter((t) => docStatusForType(t) === "approved").length;
     return (
       <div className="ver-cl">
@@ -271,9 +274,9 @@ export function VerificationClient() {
         </div>
         {types.map((type) => {
           const st     = docStatusForType(type);
-          const rejDoc = existingDocs.find((d) => d.type === type && d.status === "REJECTED");
+          const rejDoc = existingDocs.find((d) => d.type === type && (d.status === "REJECTED" || d.status === "NEEDS_REVISION"));
           const queued = perDocFiles[type] ?? [];
-          const canAdd = (st === "missing" || st === "rejected") && canUpload;
+          const canAdd = (st === "missing" || st === "rejected" || st === "revision") && canUpload;
           return (
             <div key={type} className="ver-doc-block">
               {canAdd && (
@@ -415,20 +418,22 @@ export function VerificationClient() {
         .ver-doc-block:last-child { border-bottom:none; }
         .ver-cl-row  { display:flex; align-items:flex-start; gap:14px; padding:13px 20px; }
         .ver-cl-dot  { width:24px; height:24px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; margin-top:1px; }
-        .ver-cl-dot.approved { background:#dcfce7; color:#16a34a; }
-        .ver-cl-dot.pending  { background:#fef9c3; color:#92400e; }
-        .ver-cl-dot.rejected { background:#fee2e2; color:#dc2626; }
-        .ver-cl-dot.missing  { background:#f3f4f6; color:#9ca3af; }
+        .ver-cl-dot.approved  { background:#dcfce7; color:#16a34a; }
+        .ver-cl-dot.pending   { background:#fef9c3; color:#92400e; }
+        .ver-cl-dot.rejected  { background:#fee2e2; color:#dc2626; }
+        .ver-cl-dot.revision  { background:#ffedd5; color:#c2410c; }
+        .ver-cl-dot.missing   { background:#f3f4f6; color:#9ca3af; }
         .ver-cl-info  { flex:1; min-width:0; }
         .ver-cl-label { font-size:13.5px; font-weight:600; color:#111827; }
         .ver-cl-help  { font-size:12px; color:#6b7280; margin-top:2px; line-height:1.4; }
         .ver-cl-note  { font-size:12px; color:#dc2626; margin-top:4px; }
         .ver-cl-right { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0; }
         .ver-cl-status { font-size:11.5px; font-weight:700; white-space:nowrap; }
-        .ver-cl-status.approved { color:#16a34a; }
-        .ver-cl-status.pending  { color:#d97706; }
-        .ver-cl-status.rejected { color:#dc2626; }
-        .ver-cl-status.missing  { color:#9ca3af; }
+        .ver-cl-status.approved  { color:#16a34a; }
+        .ver-cl-status.pending   { color:#d97706; }
+        .ver-cl-status.rejected  { color:#dc2626; }
+        .ver-cl-status.revision  { color:#c2410c; }
+        .ver-cl-status.missing   { color:#9ca3af; }
         .ver-cl-seller-note { padding:11px 20px; background:#f8fafc; border-top:1px solid #f3f4f6; font-size:12px; color:#64748b; line-height:1.5; }
 
         /* Inline-Dropzone unter jedem Dokument */
@@ -643,7 +648,7 @@ export function VerificationClient() {
                       <span style={{ fontSize: 12, fontWeight: 700, color: st.color, padding: "3px 10px", background: `${st.color}18`, whiteSpace: "nowrap" }}>
                         {st.label}
                       </span>
-                      {doc.status === "REJECTED" && canUpload && (
+                      {(doc.status === "REJECTED" || doc.status === "NEEDS_REVISION") && canUpload && (
                         <button
                           className="ver-upbtn"
                           onClick={() => fileInputRefs.current[doc.type as DocType]?.click()}
