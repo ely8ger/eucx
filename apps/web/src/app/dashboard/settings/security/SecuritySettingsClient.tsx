@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { EucxHeader }          from "@/components/layout/EucxHeader";
 import { QRCodeSVG }           from "qrcode.react";
+import { SettingsLayout }      from "../_SettingsLayout";
 
 const F      = "'IBM Plex Sans', Arial, sans-serif";
 const BLUE   = "#154194";
@@ -493,12 +493,9 @@ export function SecuritySettingsClient() {
   };
 
   return (
-    <>
-      <EucxHeader />
-
-      {/* ── Seiteninhalt ──────────────────────────────────────────────────── */}
-      <div style={{ minHeight: "calc(100vh - 56px)", background: BG }}>
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "32px 24px 80px", fontFamily: F }}>
+    <SettingsLayout>
+      <div style={{ background: BG, minHeight: "100%" }}>
+      <div style={{ maxWidth: 700, padding: "32px 32px 80px", fontFamily: F }}>
 
         {/* Titel */}
         <div style={{ marginBottom: 24, borderLeft: `4px solid ${BLUE}`, paddingLeft: 16 }}>
@@ -554,8 +551,8 @@ export function SecuritySettingsClient() {
                   <span style={{ fontSize: 13, color: ok ? TEXT : MUTED, fontWeight: ok ? 600 : 400 }}>{label}</span>
                   {!ok && href && (
                     <a href={href} style={{ fontSize: 11, color: "#d97706", marginLeft: "auto", fontWeight: 600, textDecoration: "none" }}
-                      onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
-                      onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
+                      onMouseEnter={e => (e.currentTarget.style.color = "#b45309")}
+                      onMouseLeave={e => (e.currentTarget.style.color = "#d97706")}>
                       Jetzt einrichten →
                     </a>
                   )}
@@ -603,14 +600,14 @@ export function SecuritySettingsClient() {
                     <div style={{ display: "flex", gap: 10 }}>
                       <a href={ios}     target="_blank" rel="noreferrer"
                         style={{ fontSize: 11, color: BLUE, textDecoration: "none" }}
-                        onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
-                        onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
+                        onMouseEnter={e => { e.currentTarget.style.color = "#0e2d6b"; e.currentTarget.style.fontWeight = "700"; }}
+                        onMouseLeave={e => { e.currentTarget.style.color = BLUE;      e.currentTarget.style.fontWeight = "400"; }}>
                         App Store →
                       </a>
                       <a href={android} target="_blank" rel="noreferrer"
                         style={{ fontSize: 11, color: BLUE, textDecoration: "none" }}
-                        onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
-                        onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}>
+                        onMouseEnter={e => { e.currentTarget.style.color = "#0e2d6b"; e.currentTarget.style.fontWeight = "700"; }}
+                        onMouseLeave={e => { e.currentTarget.style.color = BLUE;      e.currentTarget.style.fontWeight = "400"; }}>
                         Google Play →
                       </a>
                     </div>
@@ -879,8 +876,8 @@ export function SecuritySettingsClient() {
             ].map(({ label, href }) => (
               <a key={label} href={href}
                 style={{ fontSize: 11, color: MUTED, textDecoration: "none", fontFamily: F }}
-                onMouseEnter={e => (e.currentTarget.style.color = BLUE)}
-                onMouseLeave={e => (e.currentTarget.style.color = MUTED)}>
+                onMouseEnter={e => { e.currentTarget.style.color = BLUE; e.currentTarget.style.fontWeight = "600"; }}
+                onMouseLeave={e => { e.currentTarget.style.color = MUTED; e.currentTarget.style.fontWeight = "400"; }}>
                 {label}
               </a>
             ))}
@@ -891,6 +888,6 @@ export function SecuritySettingsClient() {
         </footer>
       </div>
       </div>
-    </>
+    </SettingsLayout>
   );
 }

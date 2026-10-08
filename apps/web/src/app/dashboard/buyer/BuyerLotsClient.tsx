@@ -500,7 +500,6 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
           const rd = await ref.json() as { accessToken?: string };
           if (rd.accessToken) {
             activeToken = rd.accessToken;
-            localStorage.setItem("accessToken", activeToken);
             setToken(activeToken);
           }
         }
@@ -1013,9 +1012,14 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 onClick={() => {
                   const lotsWithCo2 = lots.filter((l) => l.co2PerTonne);
                   if (lotsWithCo2.length === 0) return;
-                  // CBAM-Export für erstes Lot mit CBAM-Daten (Demo-Aufruf)
-                  const token = localStorage.getItem("accessToken") ?? "";
-                  window.open(`/api/auction/lots/${lotsWithCo2[0]!.id}/cbam-export?token=${encodeURIComponent(token)}`);
+                  // B2 — Kein Token in der URL; Cookie wird automatisch mitgesendet
+                  const a = document.createElement("a");
+                  a.href = `/api/auction/lots/${lotsWithCo2[0]!.id}/cbam-export`;
+                  a.target = "_blank";
+                  a.rel = "noopener noreferrer";
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
                 }}
               >
                 CBAM-Zollbericht exportieren →

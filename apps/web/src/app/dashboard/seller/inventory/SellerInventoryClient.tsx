@@ -119,7 +119,6 @@ export function SellerInventoryClient() {
       const r = await fetch("/api/auth/refresh", { method: "POST", credentials: "include" });
       if (!r.ok) return null;
       const data = await r.json() as { accessToken: string };
-      localStorage.setItem("accessToken", data.accessToken);
       setToken(data.accessToken);
       return data.accessToken;
     } catch {

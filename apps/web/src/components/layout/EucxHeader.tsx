@@ -241,11 +241,11 @@ function NavLink({ item, active, accentColor }: { item: NavItem; active: boolean
         padding: "0 14px", height: 56,
         display: "inline-flex", alignItems: "center",
         fontSize: 13, fontFamily: F,
-        fontWeight: active ? 600 : 400,
+        fontWeight: (active || hovered) ? 600 : 400,
         color: active ? DARK : (hovered ? accentColor : MUTED),
         textDecoration: "none",
-        borderBottom: `3px solid ${(active || hovered) ? accentColor : "transparent"}`,
-        transition: "color .15s, border-color .15s",
+        borderBottom: `3px solid ${active ? accentColor : "transparent"}`,
+        transition: "color .15s, font-weight .1s",
         whiteSpace: "nowrap",
       }}
       onMouseEnter={() => setHovered(true)}
@@ -318,7 +318,8 @@ function BreadcrumbBar({ pathname, role }: { pathname: string; role?: string }) 
 
 // ─── User Avatar ──────────────────────────────────────────────────────────────
 function UserAvatar({ me }: { me: MeUser | null }) {
-  const [open, setOpen] = useState(false);
+  const [open,    setOpen]    = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   const initial  = me?.email?.slice(0, 1).toUpperCase() ?? "?";
   const orgName  = me?.organization?.name ?? me?.email ?? "Benutzer";
@@ -347,8 +348,8 @@ function UserAvatar({ me }: { me: MeUser | null }) {
           background: "none", border: "none", cursor: "pointer", padding: "4px 6px",
           fontFamily: F, transition: "background .15s", userSelect: "none",
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = "#f5f7fb")}
-        onMouseLeave={e => (e.currentTarget.style.background = "none")}
+        onMouseEnter={e => { e.currentTarget.style.background = "#f5f7fb"; setHovered(true); }}
+        onMouseLeave={e => { e.currentTarget.style.background = "none"; setHovered(false); }}
       >
         <div style={{
           width: 32, height: 32,
@@ -359,7 +360,7 @@ function UserAvatar({ me }: { me: MeUser | null }) {
         }}>
           {initial}
         </div>
-        <span style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a", whiteSpace: "nowrap" }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: hovered ? BLUE : "#1a1a1a", whiteSpace: "nowrap", transition: "color .15s" }}>
           {roleMeta.label}
         </span>
       </button>
@@ -602,7 +603,9 @@ export function EucxHeader() {
                 style={{
                   width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
                   color: shieldHovered ? BLUE : "#9ca3af",
-                  transition: "color .15s", textDecoration: "none",
+                  background: shieldHovered ? "#f0f4ff" : "transparent",
+                  borderRadius: 4,
+                  transition: "color .15s, background .15s", textDecoration: "none",
                 }}
                 onMouseEnter={() => setShieldHovered(true)}
                 onMouseLeave={() => setShieldHovered(false)}

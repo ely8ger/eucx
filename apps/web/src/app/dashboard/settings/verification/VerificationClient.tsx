@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { KycStatusBadge } from "@/components/KycStatusBadge";
-import { EucxHeader } from "@/components/layout/EucxHeader";
+import { SettingsLayout } from "../_SettingsLayout";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -183,7 +183,6 @@ export function VerificationClient() {
       if (!res.ok) return null;
       const data = await res.json() as { accessToken?: string };
       if (data.accessToken) {
-        localStorage.setItem("accessToken", data.accessToken);
         setToken(data.accessToken);
         return data.accessToken;
       }
@@ -491,9 +490,8 @@ export function VerificationClient() {
         }
       `}</style>
 
-      <div className="ver">
-        <EucxHeader />
-
+      <SettingsLayout>
+      <div className="ver" style={{ minHeight: "100%" }}>
         <div className="ver-main">
           <h1 className="ver-title">Identitätsprüfung</h1>
           <p className="ver-sub">
@@ -664,6 +662,7 @@ export function VerificationClient() {
           )}
         </div>
       </div>
+      </SettingsLayout>
     </>
   );
 }

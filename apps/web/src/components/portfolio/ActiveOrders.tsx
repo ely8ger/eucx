@@ -7,7 +7,6 @@ import { Card, CardTitle }            from "@/components/ui/card";
 import { Button }                     from "@/components/ui/button";
 import { EmptyState }                 from "@/components/portfolio/EmptyState";
 import { useActiveOrdersQuery, useCancelOrder } from "@/hooks/usePortfolio";
-import { DEMO_ORDERS } from "@/components/portfolio/demoData";
 import { useToast }                   from "@/components/ui/toast";
 import { useI18n }                    from "@/lib/i18n/context";
 import { fmtEUR }                     from "@/lib/fmt";
@@ -101,7 +100,7 @@ export function ActiveOrders() {
   const { t }                                   = useI18n();
   const toast                                   = useToast();
   const { data: rawOrders, isLoading, isFetching } = useActiveOrdersQuery();
-  const orders = rawOrders ?? DEMO_ORDERS;
+  const orders = rawOrders ?? [];
   const cancelMutation                          = useCancelOrder();
   const [confirmId, setConfirmId]               = useState<string | null>(null);
 

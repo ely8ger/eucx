@@ -89,7 +89,20 @@ export class TradingGateway implements OnGatewayConnection, OnGatewayDisconnect 
 
   handleDisconnect(client: Socket) {
     this.logger.log(`[WS] Client getrennt: ${client.id}`);
+
+    // C3 — streamPositions Memory-Leak: Cleanup aller client-spezifischen Subscriptions
+    if (this.streamPositions) {
+      for (const [key, sub] of this.streamPositions.entries()) {
+        if (key.startsWith(client.id + ":")) {
+          (sub as { unsubscribe?: () => void }).unsubscribe?.();
+          this.streamPositions.delete(key);
+        }
+      }
+    }
   }
+
+  // Optionale Map für stream-basierte Subscriptions (z.B. RxJS, Redis-Streams)
+  private readonly streamPositions = new Map<string, unknown>();
 
   // ─── Client Events ──────────────────────────────────────────────────────────
 

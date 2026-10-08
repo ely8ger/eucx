@@ -66,13 +66,18 @@ async function _POST(req: NextRequest) {
     },
   });
 
+  // A9 — IBAN/BIC aus Umgebungsvariablen, nicht hardcodiert
+  const iban        = process.env.EUCX_BANK_IBAN ?? "";
+  const bic         = process.env.EUCX_BANK_BIC  ?? "";
+  const beneficiary = process.env.EUCX_BANK_NAME ?? "EUCX GmbH";
+
   return NextResponse.json({
     ok:           true,
     transferRef,
     amount,
-    iban:         "DE89 3704 0044 0532 0130 00",
-    bic:          "COBADEFFXXX",
-    beneficiary:  "EUCX GmbH",
+    iban,
+    bic,
+    beneficiary,
     purpose:      transferRef,
     message:      `Bitte überweisen Sie ${amount.toLocaleString("de-DE", { style: "currency", currency: "EUR" })} mit dem Verwendungszweck "${transferRef}". Ihr Guthaben wird nach Zahlungseingang (1-3 Werktage) gutgeschrieben.`,
   });

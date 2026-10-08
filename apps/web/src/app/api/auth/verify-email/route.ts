@@ -66,13 +66,28 @@ export async function POST(req: NextRequest) {
 /**
  * PATCH /api/auth/verify-email/change-email
  * E-Mail-Adresse vor der Bestätigung korrigieren.
- * Body: { userId: string, newEmail: string }
+ * Body: { userId: string, newEmail: string, code: string }
+ * `code` muss mit dem zuletzt zugesandten Verifikationscode übereinstimmen —
+ * verhindert IDOR: nur wer den Code per E-Mail empfangen hat, kann die Adresse ändern.
  */
 export async function PATCH(req: NextRequest) {
   try {
-    const body = await req.json() as { userId?: string; newEmail?: string };
-    if (!body.userId || !body.newEmail) {
-      return NextResponse.json({ code: "VALIDATION_ERROR", message: "userId und newEmail sind erforderlich." }, { status: 400 });
+    const body = await req.json() as { userId?: string; newEmail?: string; code?: string };
+    if (!body.userId || !body.newEmail || !body.code) {
+      return NextResponse.json({ code: "VALIDATION_ERROR", message: "userId, newEmail und code sind erforderlich." }, { status: 400 });
+    }
+
+    // A1 — IDOR-Schutz: code beweist Zugriff auf ursprüngliche Mailbox
+    const activeVerification = await db.emailVerification.findFirst({
+      where: {
+        userId:    body.userId,
+        code:      body.code,
+        usedAt:    null,
+        expiresAt: { gt: new Date() },
+      },
+    });
+    if (!activeVerification) {
+      return NextResponse.json({ code: "INVALID_CODE", message: "Code ungültig oder abgelaufen." }, { status: 403 });
     }
 
     const newEmail = body.newEmail.toLowerCase().trim();

@@ -46,6 +46,7 @@ async function _GET(req: NextRequest) {
       available:        "0",
       currency:         "EUR",
       updatedAt:        null,
+      topUps:           [],
     });
   }
 

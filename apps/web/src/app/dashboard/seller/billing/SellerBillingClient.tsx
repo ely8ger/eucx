@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+// Token-Auth über HttpOnly-Cookie — kein Authorization-Header nötig
 import { EucxHeader } from "@/components/layout/EucxHeader";
 
 const A  = "#d97706";
@@ -42,28 +43,21 @@ function getActiveTierIdx(volume: number): number {
 
 export function SellerBillingClient() {
   const router = useRouter();
-  const [token,     setToken]     = useState("");
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading,   setLoading]   = useState(true);
 
-  useEffect(() => {
-    const tkn = localStorage.getItem("accessToken") ?? "";
-    setToken(tkn);
-    if (!tkn) router.replace("/login");
-  }, [router]);
-
   const load = useCallback(async () => {
-    if (!token) return;
     setLoading(true);
     try {
-      const r = await fetch("/api/seller/stats", { headers: { Authorization: `Bearer ${token}` } });
+      const r = await fetch("/api/seller/stats");
+      if (r.status === 401) { router.replace("/login"); return; }
       if (r.ok) {
         const d = await r.json();
         setContracts(d.recentContracts ?? []);
       }
     } catch { /* ignore */ }
     finally { setLoading(false); }
-  }, [token]);
+  }, [router]);
 
   useEffect(() => { void load(); }, [load]);
 
@@ -71,7 +65,6 @@ export function SellerBillingClient() {
   const totalFees = contracts.reduce((s, c) => s + Number(c.feeAmount), 0);
   const totalNet  = totalRev - totalFees;
 
-  // Demo-Ledger-Einträge (zeigt das Double-Entry-Prinzip)
   const ledger = contracts.flatMap((c) => [
     {
       date:  c.createdAt,
@@ -87,24 +80,10 @@ export function SellerBillingClient() {
       credit: Number(c.feeAmount),
       type:  "fee",
     },
-  ]).concat(
-    // Demo-Einträge wenn keine echten Kontrakte
-    contracts.length === 0 ? (() => {
-      const demoRev  = 3_040_000;
-      const demoRate = getFeeRate(demoRev);
-      const demoFee  = Math.round(demoRev * demoRate * 100) / 100;
-      const demoPct  = (demoRate * 100).toFixed(2).replace(".", ",");
-      return [
-        { date: "2026-06-28T09:00:00Z", desc: "Umsatz - Betonstahl 320t (EUCX-LOT-2026-000001)", debit: demoRev, credit: 0, type: "revenue" },
-        { date: "2026-06-28T09:00:00Z", desc: `EUCX-Plattformgebühr (${demoPct} %) - EUCX-LOT-2026-000001`, debit: 0, credit: demoFee, type: "fee" },
-      ];
-    })() : []
-  ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  ]).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  const demoTotalRev  = ledger.filter((e) => e.type === "revenue").reduce((s, e) => s + e.debit, 0);
-  const demoTotalFees = ledger.filter((e) => e.type === "fee").reduce((s, e) => s + e.credit, 0);
-  const displayRev    = demoTotalRev || totalRev;
-  const displayFees   = demoTotalFees || totalFees;
+  const displayRev    = totalRev;
+  const displayFees   = totalFees;
   const activeTierIdx = getActiveTierIdx(displayRev);
 
   return (
@@ -301,9 +280,7 @@ export function SellerBillingClient() {
                 <button
                   className="bil-cbam-btn"
                   onClick={async () => {
-                    const r = await fetch("/api/seller/cbam-export?year=2026", {
-                      headers: { Authorization: `Bearer ${token}` },
-                    });
+                    const r = await fetch("/api/seller/cbam-export?year=2026");
                     if (!r.ok) return;
                     const blob = await r.blob();
                     const url  = URL.createObjectURL(blob);
@@ -319,9 +296,7 @@ export function SellerBillingClient() {
                 <button
                   style={{ padding: "10px 18px", background: "#fff", color: "#374151", border: "1px solid #d1d5db", fontSize: 13, cursor: "pointer" }}
                   onClick={async () => {
-                    const r = await fetch("/api/seller/cbam-export", {
-                      headers: { Authorization: `Bearer ${token}` },
-                    });
+                    const r = await fetch("/api/seller/cbam-export");
                     if (!r.ok) return;
                     const blob = await r.blob();
                     const url  = URL.createObjectURL(blob);

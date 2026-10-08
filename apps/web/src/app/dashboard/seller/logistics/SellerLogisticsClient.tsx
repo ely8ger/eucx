@@ -490,7 +490,15 @@ export function SellerLogisticsClient() {
                   {(sel.deliveryStatus === "DELIVERED" || sel.deliveryStatus === "COMPLETED") && (
                     <button
                       className="log-btn log-btn-outline"
-                      onClick={() => window.open(`/api/auction/lots/${sel.lotId}/cbam-export?token=${token}`, "_blank")}
+                      onClick={() => {
+                        const a = document.createElement("a");
+                        a.href = `/api/auction/lots/${sel.lotId}/cbam-export`;
+                        a.target = "_blank";
+                        a.rel = "noopener noreferrer";
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                      }}
                     >
                       CBAM-Zollquittung exportieren →
                     </button>

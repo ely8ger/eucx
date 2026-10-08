@@ -72,7 +72,6 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         clearAuthCookies();
         if (typeof window !== "undefined") {
-          localStorage.removeItem("accessToken");
           window.location.href = "/login";
         }
         set({ user: null, tokenExpiresAt: null, totpRequired: false, pendingEmail: "" });
@@ -148,11 +147,10 @@ export async function refreshAccessToken(): Promise<void> {
     user?:       AuthUser;
   };
 
-  // Neues Token ins Cookie + localStorage schreiben
+  // B1 — Token nur in Cookie, nicht in localStorage (XSS-Schutz)
   document.cookie = `access_token=${data.accessToken}; path=/; max-age=900; samesite=lax${
     typeof window !== "undefined" && window.location.protocol === "https:" ? "; secure" : ""
   }`;
-  localStorage.setItem("accessToken", data.accessToken);
 
   if (data.user) {
     useAuthStore.getState().setAuth(data.user, data.expiresAt);

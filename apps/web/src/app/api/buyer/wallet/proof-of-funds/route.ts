@@ -1,14 +1,15 @@
 /**
  * POST /api/buyer/wallet/proof-of-funds
  *
- * Käufer lädt ein Sicherheitsleistungs-Dokument hoch (Bankgarantie / Kontoauszug /
- * Kapitalnachweis). Der Upload setzt den Status auf PENDING_ADMIN_APPROVAL im AuditLog.
- * Der Admin erhöht das Trading-Limit manuell nach Prüfung.
+ * Nimmt einen bereits zu Vercel Blob hochgeladenen Finanznachweis entgegen
+ * und speichert den Antrag im AuditLog. Der Admin sieht ihn in me8.eucx.eu
+ * unter KYC → Wallet-Freigaben.
  *
- * Body: multipart/form-data mit Feldern:
- *   file    - PDF, JPG, PNG (max. 10 MB)
- *   amount  - Gewünschtes Trading-Limit in EUR (als string)
- *   docType - "Bankgarantie" | "Kontoauszug" | "Kapitalnachweis" | "Sonstiges"
+ * Body: JSON
+ *   blobUrl  - Vercel-Blob-URL der hochgeladenen Datei
+ *   blobName - Originaldateiname
+ *   amount   - Gewünschtes Trading-Limit in EUR (number)
+ *   docType  - "Bankgarantie" | "Kontoauszug" | "Kapitalnachweis" | "Sonstiges"
  *
  * Auth: Bearer JWT
  */
@@ -16,11 +17,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken }         from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
 import { db }                        from "@/lib/db/client";
-import { apiRoute } from "@/lib/api/route-handler";
+import { apiRoute }                  from "@/lib/api/route-handler";
+import { z }                         from "zod";
 
 export const dynamic = "force-dynamic";
 
-const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+const bodySchema = z.object({
+  blobUrl:  z.string().url(),
+  blobName: z.string().min(1).max(255),
+  amount:   z.number().positive().min(10_000),
+  docType:  z.string().min(1).max(50),
+});
 
 async function _POST(req: NextRequest) {
   const auth = req.headers.get("authorization");
@@ -32,32 +39,18 @@ async function _POST(req: NextRequest) {
   try { token = await verifyAccessToken(auth.slice(7)); }
   catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
 
-  let formData: FormData;
-  try { formData = await req.formData(); }
-  catch { return NextResponse.json({ error: "Ungültige Anfrage: multipart/form-data erwartet." }, { status: 400 }); }
-
-  const file    = formData.get("file") as File | null;
-  const amount  = formData.get("amount") as string | null;
-  const docType = formData.get("docType") as string | null;
-
-  if (!file) {
-    return NextResponse.json({ error: "Kein Dokument hochgeladen." }, { status: 422 });
-  }
-  if (!["application/pdf", "image/jpeg", "image/png"].includes(file.type)) {
-    return NextResponse.json({ error: "Nur PDF, JPG und PNG erlaubt." }, { status: 422 });
-  }
-  if (file.size > MAX_SIZE) {
-    return NextResponse.json({ error: "Maximale Dateigröße: 10 MB." }, { status: 422 });
+  let body: z.infer<typeof bodySchema>;
+  try {
+    const raw = await req.json();
+    body = bodySchema.parse(raw);
+  } catch {
+    return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
   }
 
-  const amountNum = amount ? parseFloat(amount) : null;
-  if (!amountNum || isNaN(amountNum) || amountNum <= 0) {
-    return NextResponse.json({ error: "Bitte geben Sie ein gewünschtes Trading-Limit an." }, { status: 422 });
-  }
-
+  // Wallet + orgId über den eingeloggten Nutzer ermitteln
   const wallet = await db.wallet.findFirst({
     where:  { organization: { users: { some: { id: token.userId } } } },
-    select: { id: true },
+    select: { id: true, organizationId: true },
   });
 
   const requestId = `POF-${token.userId.slice(-6).toUpperCase()}-${Date.now()}`;
@@ -70,11 +63,12 @@ async function _POST(req: NextRequest) {
     meta: {
       type:             "PROOF_OF_FUNDS_SUBMITTED",
       requestId,
-      docType:          docType ?? "Sonstiges",
-      fileName:         file.name,
-      fileSize:         file.size,
-      fileMime:         file.type,
-      requestedLimit:   amountNum,
+      orgId:            wallet?.organizationId ?? null,
+      walletId:         wallet?.id ?? null,
+      docType:          body.docType,
+      blobUrl:          body.blobUrl,
+      blobName:         body.blobName,
+      requestedLimit:   body.amount,
       status:           "PENDING_ADMIN_APPROVAL",
       submittedAt:      new Date().toISOString(),
     },
@@ -84,7 +78,7 @@ async function _POST(req: NextRequest) {
     ok:        true,
     requestId,
     status:    "PENDING_ADMIN_APPROVAL",
-    message:   `Ihr Dokument wurde eingereicht (Referenz: ${requestId}). Das EUCX-Compliance-Team prüft Ihre Unterlagen und gibt Ihr Trading-Limit frei - in der Regel innerhalb von 1-2 Werktagen.`,
+    message:   `Ihr Dokument wurde eingereicht (Referenz: ${requestId}). Das EUCX-Compliance-Team prüft Ihre Unterlagen und gibt Ihr Trading-Limit frei — in der Regel innerhalb von 1–2 Werktagen.`,
   });
 }
 

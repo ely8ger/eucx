@@ -65,12 +65,16 @@ async function _PUT(req: NextRequest) {
     data:  { phone: parsed.data.phone },
   });
 
+  // A3 — Kein automatisches phoneVerified: true ohne echte SMS-Verifikation
   await db.user.update({
     where: { id: token.userId },
-    data:  { phoneVerified: true },
+    data:  { phoneVerified: false },
   });
 
-  return NextResponse.json({ success: true, phone: parsed.data.phone, phoneVerified: true });
+  return NextResponse.json(
+    { success: true, phone: parsed.data.phone, phoneVerified: false, pending: "SMS-Verifizierung ausstehend" },
+    { status: 202 },
+  );
 }
 
 export const GET = apiRoute(_GET);

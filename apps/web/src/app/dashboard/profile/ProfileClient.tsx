@@ -225,8 +225,8 @@ export function ProfileClient() {
                   display: "inline-flex", alignItems: "center", transition: "color .15s",
                   whiteSpace: "nowrap",
                 }}
-                onMouseEnter={e => (e.currentTarget.style.color = BLUE)}
-                onMouseLeave={e => (e.currentTarget.style.color = MUTED)}
+                onMouseEnter={e => { e.currentTarget.style.color = BLUE; e.currentTarget.style.fontWeight = "600"; }}
+                onMouseLeave={e => { e.currentTarget.style.color = MUTED; e.currentTarget.style.fontWeight = "400"; }}
               >
                 {l.label} →
               </a>

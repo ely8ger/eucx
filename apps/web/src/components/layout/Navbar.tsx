@@ -112,8 +112,8 @@ export function Navbar() {
                     borderBottom: active ? "2px solid #154194" : "2px solid transparent",
                     textDecoration: "none",
                   }}
-                  onMouseEnter={e => { if (!active) e.currentTarget.style.color = "#154194"; }}
-                  onMouseLeave={e => { if (!active) e.currentTarget.style.color = "#333333"; }}
+                  onMouseEnter={e => { if (!active) { e.currentTarget.style.color = "#154194"; e.currentTarget.style.fontWeight = "600"; } }}
+                  onMouseLeave={e => { if (!active) { e.currentTarget.style.color = "#333333"; e.currentTarget.style.fontWeight = "400"; } }}
                 >
                   <Icon size={13} />
                   <span className="hidden md:inline">{label}</span>

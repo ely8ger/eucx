@@ -11,7 +11,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { placeBid, type BidCbamData } from "@/lib/auction/price-engine";
-// import { checkBidEligibility } from "@/lib/auction/kyc-guard"; // [TESTMODE-01]
+import { checkBidEligibility } from "@/lib/auction/kyc-guard";
 import { notifyOutbid, notifyLeading } from "@/lib/notifications/notification-service";
 import { db } from "@/lib/db/client";
 import { z } from "zod";
@@ -93,12 +93,16 @@ async function _handlePost(
     return NextResponse.json({ error: "Nur Verkäufer können Gebote abgeben" }, { status: 403 });
   }
 
-  // ── [TESTMODE-01] KYC + Deposit-Check - DEAKTIVIERT ─────────────
-  // Grund: Test-Seller nicht verifiziert. Wieder aktivieren wenn Admin-KYC-Flow bereit.
-  // Original: checkBidEligibility(token.userId, lotId)
-  // ──────────────────────────────────────────────────────────────────
+  // ── KYC + Deposit-Check ───────────────────────────────────────────
+  const eligibility = await checkBidEligibility(token.userId, lotId);
+  if (!eligibility.ok) {
+    return NextResponse.json(
+      { error: eligibility.error, kycRequired: eligibility.kycRequired, depositRequired: eligibility.depositRequired },
+      { status: eligibility.code }
+    );
+  }
 
-  // ── Lot laden (für CBAM + Deal-Limit Checks) ─────────────────────
+  // ── Lot laden (für CBAM + Plattform-Hartlimit) ───────────────────
   const lot = await db.lot.findUnique({
     where:  { id: lotId },
     select: {
@@ -137,42 +141,13 @@ async function _handlePost(
   // Original: if (lot.co2PerTonne !== null) { const validCharge = ... }
   // ──────────────────────────────────────────────────────────────────
 
-  // ── Deal-Limit nach KYC-Tier ──────────────────────────────────────
-  // Transaktionsgröße = Angebotspreis × Lot-Menge
-  // Standard (VERIFIED):    max. 5.000.000 € pro Transaktion
-  // Wallet-gestützt:        max. Wallet-Balance × 20
-  const dealValue   = new Decimal(parsed.data.price).times(lot.quantity.toString());
-  const HARD_LIMIT  = new Decimal("5000000"); // 5 Mio. € absolutes Limit
+  // ── Plattform-Hartlimit (deal-size cap, unabhängig von Wallet) ────
+  const dealValue  = new Decimal(parsed.data.price).times(lot.quantity.toString());
+  const HARD_LIMIT = new Decimal("5000000");
 
-  const userWallet = await db.wallet.findFirst({
-    where: { organization: { users: { some: { id: token.userId } } } },
-    select: { balance: true, reservedBalance: true },
-  });
-  // Verfügbares Guthaben = balance − reservedBalance (nicht gesperrte Beträge)
-  const walletBalance  = new Decimal(userWallet?.balance?.toString() ?? "0");
-  const walletReserved = new Decimal(userWallet?.reservedBalance?.toString() ?? "0");
-  const availableBalance = walletBalance.minus(walletReserved);
-  // Leverage 20×: Seller kann Deals bis 20× sein verfügbares Guthaben abschließen.
-  // Kein Guthaben → Fallback auf 100.000 € (Pilot-Limit bis Wallet-Top-Up aktiv).
-  const PILOT_LIMIT    = new Decimal("100000");
-  const walletMaxDeal  = availableBalance.gt(0) ? availableBalance.times(20) : PILOT_LIMIT;
-  const effectiveLimit = Decimal.min(HARD_LIMIT, walletMaxDeal);
-
-  if (dealValue.gt(effectiveLimit)) {
-    void audit({
-      userId:     token.userId,
-      action:     "BID_BLOCKED_DEAL_LIMIT",
-      entityType: "Bid",
-      entityId:   lotId,
-      meta:       { dealValue: dealValue.toFixed(0), limit: effectiveLimit.toFixed(0), lotId },
-    });
+  if (dealValue.gt(HARD_LIMIT)) {
     return NextResponse.json(
-      {
-        error:       `Deal-Volumen (${dealValue.toFixed(0)} €) übersteigt Ihr Transaktionslimit (${effectiveLimit.toFixed(0)} €). Bitte erhöhen Sie Ihr Wallet-Depot oder bieten Sie einen niedrigeren Preis.`,
-        code:        403,
-        dealLimit:   effectiveLimit.toFixed(0),
-        dealValue:   dealValue.toFixed(0),
-      },
+      { error: "Deal-Volumen übersteigt das Plattformlimit von 5.000.000 €. Bitte wenden Sie sich an den EUCX-Compliance-Support." },
       { status: 403 }
     );
   }

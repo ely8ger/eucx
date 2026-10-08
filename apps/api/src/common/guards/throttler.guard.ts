@@ -37,14 +37,15 @@ export class EucxThrottlerGuard extends ThrottlerGuard {
   /**
    * Limit dynamisch: authenticated users erhalten 10x mehr Kapazität.
    */
+  // C1 — Passport-JWT setzt sub, nicht id → beide prüfen
   protected async getLimit(
     context: ExecutionContext,
     throttler: { limit: number; ttl: number; name?: string },
   ): Promise<number> {
     const req  = context.switchToHttp().getRequest<Request>();
-    const user = req.user as { id?: string } | undefined;
+    const user = req.user as { id?: string; sub?: string } | undefined;
 
-    if (user?.id) return throttler.limit * 10;
+    if (user?.id ?? user?.sub) return throttler.limit * 10;
     return throttler.limit;
   }
 }

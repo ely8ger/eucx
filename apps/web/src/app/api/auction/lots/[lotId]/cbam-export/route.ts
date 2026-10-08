@@ -82,7 +82,12 @@ async function _GET(
     },
   });
   if (!lot) return NextResponse.json({ error: "Lot nicht gefunden" }, { status: 404 });
-  if (token.role === "BUYER" && lot.buyerId !== token.userId)
+
+  // A5 — Ownership-Check: Käufer, Verkäufer (Sieger-Bieter) oder Admin
+  const isAdmin = ["ADMIN", "SUPER_ADMIN", "COMPLIANCE_OFFICER"].includes(token.role);
+  const isBuyer  = lot.buyerId === token.userId;
+  const isSeller = lot.winnerId === token.userId;
+  if (!isAdmin && !isBuyer && !isSeller)
     return NextResponse.json({ error: "Kein Zugriff" }, { status: 403 });
 
   const winnerBid = lot.winnerId ? await db.bid.findFirst({

@@ -51,9 +51,17 @@ async function _GET(
         { status: 409 }
       );
     }
-    const code = crypto.randomInt(100000, 999999).toString();
-    await db.lotContract.update({ where: { id: contract.id }, data: { pickupCode: code } });
-    return NextResponse.json({ pickupCode: code, lotId });
+    // A7 — Race Condition: atomare Generierung mit WHERE pickupCode IS NULL
+    const code    = crypto.randomInt(100000, 999999).toString();
+    const updated = await db.lotContract.updateMany({
+      where: { id: contract.id, pickupCode: null },
+      data:  { pickupCode: code },
+    });
+    // Wenn 0 Rows: anderer Request war schneller → frisch lesen
+    const finalCode = updated.count > 0
+      ? code
+      : (await db.lotContract.findUnique({ where: { id: contract.id }, select: { pickupCode: true } }))!.pickupCode!;
+    return NextResponse.json({ pickupCode: finalCode, lotId });
   }
 
   return NextResponse.json({ pickupCode: contract.pickupCode, lotId });

@@ -182,7 +182,6 @@ export default function LoginPage() {
         document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=900; samesite=lax${
           typeof window !== "undefined" && window.location.protocol === "https:" ? "; secure" : ""}`;
         if (typeof window !== "undefined") {
-          localStorage.setItem("accessToken", data.data.accessToken);
           localStorage.setItem("eucx_prev_login", new Date().toISOString());
         }
         if (data.data.user) setAuth(data.data.user, expiresAt);

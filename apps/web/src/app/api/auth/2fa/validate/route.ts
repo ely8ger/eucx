@@ -13,6 +13,7 @@ import { verifySync }                from "otplib";
 import { createHash }                from "crypto";
 import { db }                        from "@/lib/db/client";
 import { signAccessToken, signRefreshToken } from "@/lib/auth/jwt";
+import { checkRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 import { z }                         from "zod";
 
 export const dynamic = "force-dynamic";
@@ -46,6 +47,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Konto nicht aktiv" }, { status: 403 });
   }
 
+  // A2 — Brute-Force-Schutz: 5 Versuche/Minute pro User
+  const rl = await checkRateLimit(`2fa:${user.id}`, "auth");
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Zu viele Versuche. Bitte versuchen Sie es in einer Minute erneut." },
+      { status: 429, headers: rateLimitHeaders(rl) },
+    );
+  }
+
   const isValid = verifySync({ secret: user.totpSecret, token: parsed.data.code, epochTolerance: 30 }).valid;
   if (!isValid) {
     return NextResponse.json({ error: "Code ungültig. Bitte Authenticator-App prüfen." }, { status: 400 });
@@ -66,7 +76,7 @@ export async function POST(req: NextRequest) {
     data: {
       userId:    user.id,
       tokenHash,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
     },
   });
 

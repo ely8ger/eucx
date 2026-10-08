@@ -128,6 +128,20 @@ async function _PATCH(
     },
   });
 
+  // A6 — Settlement Idempotenz: Transition atomar machen
+  if (newStatus === DeliveryStatus.COMPLETED) {
+    const atomicUpdate = await db.lotContract.updateMany({
+      where: { id: contract.id, deliveryStatus: DeliveryStatus.DELIVERED },
+      data:  { deliveryStatus: DeliveryStatus.COMPLETED },
+    });
+    if (atomicUpdate.count === 0) {
+      return NextResponse.json(
+        { error: "Statusübergang nicht mehr möglich — bereits abgeschlossen oder verändert." },
+        { status: 409 },
+      );
+    }
+  }
+
   // Phase 2 Settlement: COMPLETED → Escrow auflösen und Verkäufer auszahlen
   if (newStatus === DeliveryStatus.COMPLETED) {
     settleEscrowForLot(contract.id)

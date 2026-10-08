@@ -35,6 +35,13 @@ const DOC_TYPES = [
   { value: "Sonstiges",       label: "Sonstiges Dokument", hint: "Andere Belege nach Absprache mit EUCX-Compliance" },
 ];
 
+const KYC_DOC_TYPE: Record<string, string> = {
+  "Bankgarantie":    "BANK_CONFIRMATION",
+  "Kontoauszug":     "BANK_CONFIRMATION",
+  "Kapitalnachweis": "SOLVENCY_PROOF",
+  "Sonstiges":       "OTHER",
+};
+
 const fmtEur = (v: string | number) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
 
@@ -47,13 +54,14 @@ export function WalletClient() {
   const [wallet,  setWallet]  = useState<WalletData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const [pofOpen,   setPofOpen]   = useState(false);
-  const [docType,   setDocType]   = useState("Bankgarantie");
-  const [limit,     setLimit]     = useState("");
-  const [file,      setFile]      = useState<File | null>(null);
-  const [submitting,setSubmitting] = useState(false);
-  const [result,    setResult]    = useState<PofResult | null>(null);
-  const [error,     setError]     = useState("");
+  const [pofOpen,      setPofOpen]      = useState(false);
+  const [docType,      setDocType]      = useState("Bankgarantie");
+  const [limit,        setLimit]        = useState("");
+  const [limitDisplay, setLimitDisplay] = useState("");
+  const [file,         setFile]         = useState<File | null>(null);
+  const [submitting,   setSubmitting]   = useState(false);
+  const [result,       setResult]       = useState<PofResult | null>(null);
+  const [error,        setError]        = useState("");
 
   useEffect(() => {
     const tkn = localStorage.getItem("accessToken") ?? "";
@@ -76,7 +84,7 @@ export function WalletClient() {
   useEffect(() => { void load(); }, [load]);
 
   async function submitPof() {
-    const amt = parseFloat(limit.replace(",", "."));
+    const amt = parseFloat(limit);
     if (isNaN(amt) || amt < 10_000) {
       setError("Mindest-Trading-Limit: 10.000 €");
       return;
@@ -88,24 +96,41 @@ export function WalletClient() {
     setSubmitting(true);
     setError("");
     try {
+      // Schritt 1: Datei zu Vercel Blob hochladen
       const fd = new FormData();
       fd.append("file",    file);
-      fd.append("amount",  String(amt));
-      fd.append("docType", docType);
-
-      const r = await fetch("/api/buyer/wallet/proof-of-funds", {
+      fd.append("docType", KYC_DOC_TYPE[docType] ?? "OTHER");
+      const r1 = await fetch("/api/kyc/upload", {
         method:  "POST",
         headers: { Authorization: `Bearer ${token}` },
         body:    fd,
       });
-      if (r.ok) {
-        const data = await r.json() as PofResult;
+      if (!r1.ok) {
+        const d = await r1.json() as { error?: string; message?: string; code?: string };
+        if (d.code === "INVALID_TOKEN" || d.code === "UNAUTHORIZED") {
+          setError("Ihre Sitzung ist abgelaufen. Bitte melden Sie sich neu an.");
+        } else {
+          setError(d.error ?? d.message ?? "Datei-Upload fehlgeschlagen.");
+        }
+        return;
+      }
+      const { url: blobUrl, name: blobName } = await r1.json() as { url: string; name: string };
+
+      // Schritt 2: POF-Antrag mit Blob-URL einreichen
+      const r2 = await fetch("/api/buyer/wallet/proof-of-funds", {
+        method:  "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body:    JSON.stringify({ blobUrl, blobName, amount: amt, docType }),
+      });
+      if (r2.ok) {
+        const data = await r2.json() as PofResult;
         setResult(data);
         setPofOpen(false);
         setFile(null);
         setLimit("");
+        setLimitDisplay("");
       } else {
-        const d = await r.json() as { error?: string };
+        const d = await r2.json() as { error?: string };
         setError(d.error ?? "Fehler beim Einreichen.");
       }
     } catch {
@@ -115,7 +140,7 @@ export function WalletClient() {
     }
   }
 
-  const maxDeal = wallet ? (Number(wallet.available) * 20).toFixed(0) : "0";
+  const maxDeal = wallet ? Number(wallet.available).toFixed(0) : "0";
 
   return (
     <>
@@ -150,7 +175,7 @@ export function WalletClient() {
         /* Prozess-Schritte */
         .wlt-steps { display:flex; gap:0; margin-bottom:20px; }
         .wlt-step  { flex:1; padding:10px 14px; font-size:11.5px; text-align:center; background:#f3f4f6; border:1px solid #e5e7eb; position:relative; }
-        .wlt-step:not(:last-child)::after { content:"→"; position:absolute; right:-10px; top:50%; transform:translateY(-50%); font-size:12px; color:#9ca3af; z-index:1; }
+        .wlt-step:not(:last-child)::after { content:""; }
         .wlt-step-num  { font-size:18px; font-weight:800; color:${B}; line-height:1; }
         .wlt-step-text { font-size:10.5px; color:#6b7280; margin-top:3px; }
         @media(max-width:600px){ .wlt-steps { flex-direction:column; gap:6px; } .wlt-step::after { display:none; } }
@@ -174,7 +199,7 @@ export function WalletClient() {
         .wlt-doctype-card-label { font-size:12.5px; font-weight:700; color:#374151; margin-bottom:2px; }
         .wlt-doctype-card-hint  { font-size:10.5px; color:#9ca3af; }
         .wlt-doctype-card.sel .wlt-doctype-card-label { color:${B}; }
-        .wlt-file-zone { border:2px dashed #d1d5db; padding:20px; text-align:center; cursor:pointer; margin-bottom:14px; }
+        .wlt-file-zone { display:block; width:100%; box-sizing:border-box; border:2px dashed #d1d5db; padding:20px; text-align:center; cursor:pointer; margin-bottom:14px; }
         .wlt-file-zone:hover { border-color:${B}; background:#f8faff; }
         .wlt-file-zone.has-file { border-color:#16a34a; background:#f0fdf4; }
         .wlt-file-name  { font-size:12.5px; font-weight:600; color:#16a34a; margin-top:6px; }
@@ -215,7 +240,7 @@ export function WalletClient() {
         <div className="wlt-page">
           <div className="wlt-title">Wallet & Trading-Limit</div>
           <div className="wlt-sub">
-            Ihr freigegebenes Guthaben bestimmt Ihr maximales Transaktionsvolumen auf EUCX (20× Leverage).
+            Ihr freigegebenes Guthaben bestimmt Ihr maximales Transaktionsvolumen auf EUCX.
           </div>
 
           {/* Rechtlicher Hinweis */}
@@ -250,11 +275,10 @@ export function WalletClient() {
 
               {/* Leverage */}
               <div className="wlt-leverage">
-                <div style={{ fontSize: 20, flexShrink: 0 }}>⚡</div>
                 <div className="wlt-leverage-text">
                   Mit Ihrem verfügbaren Limit können Sie Transaktionen bis{" "}
                   <span className="wlt-leverage-val">{fmtEur(maxDeal)}</span>{" "}
-                  absichern (20× Leverage-Faktor). Höheres Limit → größere Lots.
+                  absichern.
                 </div>
               </div>
 
@@ -311,17 +335,52 @@ export function WalletClient() {
                     <div className="wlt-form-hint">Mindestens 10.000 € · wir geben das nachgewiesene Volumen frei</div>
                     <input
                       className="wlt-form-input"
-                      type="number"
-                      min="10000"
-                      step="1000"
-                      placeholder="z.B. 500000"
-                      value={limit}
-                      onChange={(e) => setLimit(e.target.value)}
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="z. B. 500.000,00"
+                      value={limitDisplay}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, "");
+                        if (!digits) {
+                          setLimitDisplay("");
+                          setLimit("");
+                          return;
+                        }
+                        const num = parseInt(digits, 10);
+                        const fmt = new Intl.NumberFormat("de-DE", {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
+                        }).format(num);
+                        setLimitDisplay(fmt);
+                        setLimit(String(num));
+                      }}
+                      onBlur={() => {
+                        const num = parseFloat(limit);
+                        if (!isNaN(num) && num > 0) {
+                          setLimitDisplay(
+                            new Intl.NumberFormat("de-DE", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }).format(num)
+                          );
+                        }
+                      }}
+                      onFocus={() => {
+                        const num = parseFloat(limit);
+                        if (!isNaN(num) && num > 0) {
+                          setLimitDisplay(
+                            new Intl.NumberFormat("de-DE", {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                            }).format(num)
+                          );
+                        }
+                      }}
                     />
 
                     {/* Datei-Upload */}
                     <label className="wlt-form-label">Dokument hochladen *</label>
-                    <div className="wlt-form-hint">PDF, JPG oder PNG · max. 10 MB · Bankstempel/Signatur sichtbar</div>
+                    <div className="wlt-form-hint">PDF, JPG oder PNG, max. 5 MB, Bankstempel/Signatur sichtbar</div>
                     <label className={`wlt-file-zone${file ? " has-file" : ""}`}>
                       <input
                         type="file"
@@ -350,13 +409,13 @@ export function WalletClient() {
                     <div className="wlt-form-actions">
                       <button
                         className="wlt-btn wlt-btn-outline"
-                        onClick={() => { setPofOpen(false); setFile(null); setLimit(""); setError(""); }}
+                        onClick={() => { setPofOpen(false); setFile(null); setLimit(""); setLimitDisplay(""); setError(""); }}
                       >
                         Abbrechen
                       </button>
                       <button
                         className="wlt-btn wlt-btn-primary"
-                        disabled={submitting || !file || !limit}
+                        disabled={submitting || !file || !limitDisplay}
                         onClick={() => void submitPof()}
                       >
                         {submitting ? "Wird eingereicht…" : "Zur Prüfung einreichen →"}

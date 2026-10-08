@@ -134,10 +134,11 @@ export function NotificationBell({ token }: Props) {
           alignItems:   "center",
           color:        "#374151",
           lineHeight:   1,
-          transition:   "color .15s",
+          borderRadius: 4,
+          transition:   "color .15s, background .15s",
         }}
-        onMouseEnter={e => (e.currentTarget.style.color = "#154194")}
-        onMouseLeave={e => (e.currentTarget.style.color = "#374151")}
+        onMouseEnter={e => { e.currentTarget.style.color = "#154194"; e.currentTarget.style.background = "#f0f4ff"; }}
+        onMouseLeave={e => { e.currentTarget.style.color = "#374151"; e.currentTarget.style.background = "transparent"; }}
         aria-label="Benachrichtigungen"
         title="Benachrichtigungen"
       >

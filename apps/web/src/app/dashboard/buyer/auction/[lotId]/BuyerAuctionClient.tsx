@@ -295,8 +295,8 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
           fontFamily: "'IBM Plex Sans', Arial, sans-serif",
         }}>
           <a href="/dashboard/buyer" style={{ fontSize: 12, color: "rgba(255,255,255,.6)", textDecoration: "none" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
-            onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,.6)")}>
+            onMouseEnter={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.fontWeight = "600"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,255,255,.6)"; e.currentTarget.style.fontWeight = "400"; }}>
             ← Zurück zu den Ausschreibungen
           </a>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>

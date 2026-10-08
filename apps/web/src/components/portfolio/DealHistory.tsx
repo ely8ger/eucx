@@ -6,7 +6,6 @@ import { Card, CardTitle }   from "@/components/ui/card";
 import { Button }            from "@/components/ui/button";
 import { EmptyState }        from "@/components/portfolio/EmptyState";
 import { useUserDealsQuery } from "@/hooks/usePortfolio";
-import { DEMO_DEALS } from "@/components/portfolio/demoData";
 import { useI18n }           from "@/lib/i18n/context";
 import { fmtEUR }            from "@/lib/fmt";
 import type { PortfolioOrder } from "@/hooks/usePortfolio";
@@ -63,7 +62,7 @@ export function DealHistory() {
   const bcp = LOCALE_BCP[locale] ?? "de-DE";
 
   const { data: rawDeals, isLoading, isFetching } = useUserDealsQuery();
-  const deals = rawDeals ?? DEMO_DEALS;
+  const deals = rawDeals ?? [];
 
   const totalVolume = deals.reduce((sum, d) => sum.plus(d.totalValue), new Decimal(0));
 

@@ -21,11 +21,13 @@ import { sendAuctionMail } from "@/lib/notifications/mailer";
 
 // ─── Kontrakt-Nummer Generator ────────────────────────────────────────────────
 
-async function generateContractNumber(): Promise<string> {
-  const count = await db.lotContract.count();
-  const seq   = String(count + 1).padStart(6, "0");
+import crypto from "crypto";
+
+// A8 — Keine Race Condition: UUID-basiert statt count()+1
+function generateContractNumber(): string {
   const year  = new Date().getFullYear();
-  return `EUCX-LOT-${year}-${seq}`;
+  const uid8  = crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase();
+  return `EUCX-LOT-${year}-${uid8}`;
 }
 
 
@@ -205,9 +207,38 @@ export async function processLotConclusion(lotId: string): Promise<void> {
   // wird bei Fehler vom nächsten Retry-Job nachgeholt (idempotent durch idempotencyKey).
   const createdContract = await db.lotContract.findUnique({ where: { lotId }, select: { id: true } });
   if (createdContract) {
-    lockEscrowForLot(createdContract.id).catch((err) =>
-      console.error(`[PostTrade] Escrow-Lock fehlgeschlagen für ${createdContract.id}:`, err)
-    );
+    lockEscrowForLot(createdContract.id).catch(async (err) => {
+      console.error(`[PostTrade] Escrow-Lock fehlgeschlagen für ${createdContract.id}:`, err);
+
+      // AuditLog — in me8.eucx.eu Admin-Portal einsehbar (action ist freier String)
+      await db.auditLog.create({
+        data: {
+          action:     "ESCROW_LOCK_FAILED",
+          entityType: "LotContract",
+          entityId:   createdContract.id,
+          meta: {
+            lotId,
+            contractId: createdContract.id,
+            error:      String(err).slice(0, 500),
+            failedAt:   new Date().toISOString(),
+          },
+        },
+      }).catch(console.error);
+
+      // Admin-E-Mail (fire-and-forget)
+      const adminEmail = process.env.EUCX_COMPLIANCE_EMAIL ?? "admin@eucx.eu";
+      sendAuctionMail({
+        to:       adminEmail,
+        subject:  `[EUCX ALERT] Escrow-Lock fehlgeschlagen — Vertrag ${createdContract.id}`,
+        template: "escrow_lock_failed",
+        data: {
+          contractId: createdContract.id,
+          lotId,
+          error:      String(err).slice(0, 200),
+          failedAt:   new Date().toISOString(),
+        },
+      }).catch(console.error);
+    });
   }
 
   // E-Mails via Resend (fire-and-forget - Haupt-Flow nicht blockieren)

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { EucxHeader } from "@/components/layout/EucxHeader";
+import { SettingsLayout } from "../_SettingsLayout";
 
 interface Prefs {
   emailOnOutbid:       boolean;
@@ -145,8 +145,8 @@ export function NotificationsSettingsClient() {
         .nn-hint-text { font-size:12px; color:#6b7280; line-height:1.7; }
       `}</style>
 
-      <div className="nn-root">
-        <EucxHeader />
+      <SettingsLayout>
+      <div className="nn-root" style={{ minHeight: "100%" }}>
         <div className="nn-page">
 
           <h1 className="nn-title">Benachrichtigungen</h1>
@@ -286,6 +286,7 @@ export function NotificationsSettingsClient() {
           )}
         </div>
       </div>
+      </SettingsLayout>
     </>
   );
 }

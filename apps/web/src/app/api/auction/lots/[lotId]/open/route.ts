@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { apiRoute } from "@/lib/api/route-handler";
+import Decimal from "decimal.js";
 
 export const dynamic = "force-dynamic";
 
@@ -101,7 +102,14 @@ async function _POST(
   // ── Lot laden ─────────────────────────────────────────────────────
   const lot = await db.lot.findUnique({
     where:  { id: lotId },
-    select: { id: true, buyerId: true, phase: true },
+    select: {
+      id:         true,
+      buyerId:    true,
+      phase:      true,
+      quantity:   true,
+      startPrice: true,
+      buyer:      { select: { organizationId: true } },
+    },
   });
   if (!lot) return NextResponse.json({ error: "Lot nicht gefunden" }, { status: 404 });
   if (lot.buyerId !== token.userId) return NextResponse.json({ error: "Nicht Ihr Lot" }, { status: 403 });
@@ -115,6 +123,61 @@ async function _POST(
       { error: "Keine Verkäufer registriert. Die Auktion kann erst gestartet werden, wenn sich mindestens ein Verkäufer registriert hat." },
       { status: 422 },
     );
+  }
+
+  // ── Trading-Limit-Check (Käufer-Wallet) ──────────────────────────
+  const wallet = lot.buyer?.organizationId
+    ? await db.wallet.findFirst({
+        where:  { organizationId: lot.buyer.organizationId },
+        select: { balance: true, reservedBalance: true },
+      })
+    : null;
+
+  if (!wallet) {
+    return NextResponse.json(
+      {
+        error: "Ihr Trading-Limit ist noch nicht freigegeben. Laden Sie unter Wallet einen Finanznachweis hoch.",
+        code:  "NO_WALLET",
+      },
+      { status: 402 }
+    );
+  }
+
+  if (lot.startPrice) {
+    const estimatedValue = new Decimal(lot.quantity.toString()).times(lot.startPrice.toString());
+    const available      = new Decimal(wallet.balance.toString())
+                             .minus(new Decimal(wallet.reservedBalance.toString()));
+
+    // Laufende Exposition aus parallel offenen Lots desselben Käufers einrechnen
+    const openLots = await db.lot.findMany({
+      where: {
+        buyerId:    lot.buyerId,
+        phase:      { in: ["PROPOSAL", "REDUCTION"] },
+        startPrice: { not: null },
+        id:         { not: lotId },
+      },
+      select: { quantity: true, startPrice: true },
+    });
+
+    const pendingExposure = openLots.reduce(
+      (sum, l) => sum.plus(new Decimal(l.quantity.toString()).times(l.startPrice!.toString())),
+      new Decimal(0)
+    );
+
+    const trueAvailable = available.minus(pendingExposure);
+
+    if (estimatedValue.gt(trueAvailable)) {
+      return NextResponse.json(
+        {
+          error:           `Ihr verfügbares Trading-Limit reicht nicht aus. Verfügbar: ${trueAvailable.toFixed(2)} € (inkl. laufender Lots). Geschätztes Auftragsvolumen: ${estimatedValue.toFixed(2)} €.`,
+          code:            "LIMIT_EXCEEDED",
+          available:       trueAvailable.toFixed(2),
+          estimatedValue:  estimatedValue.toFixed(2),
+          pendingExposure: pendingExposure.toFixed(2),
+        },
+        { status: 402 }
+      );
+    }
   }
 
   // ── Slot-Ende berechnen ───────────────────────────────────────────

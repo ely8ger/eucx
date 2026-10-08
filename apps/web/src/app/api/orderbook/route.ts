@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db/client";
+import { db }                        from "@/lib/db/client";
+import { verifyAccessToken }         from "@/lib/auth/jwt";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  // A4 — Auth: Orderbuch nur für angemeldete Nutzer (Middleware ist primärer Schutz, Defense-in-depth)
+  const auth = req.headers.get("authorization");
+  if (!auth?.startsWith("Bearer ")) return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
+  try { await verifyAccessToken(auth.slice(7)); }
+  catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
+
   const sessionId = req.nextUrl.searchParams.get("sessionId");
   if (!sessionId) return NextResponse.json({ error: "sessionId erforderlich" }, { status: 400 });
 

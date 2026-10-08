@@ -7,13 +7,22 @@
  * Target-Latenz: < 50ms nach DB-Abfrage.
  */
 import { NextRequest } from "next/server";
-import { db } from "@/lib/db/client";
+import { db }          from "@/lib/db/client";
+import { verifyAccessToken } from "@/lib/auth/jwt";
 
 export const dynamic = "force-dynamic";
 // Edge Runtime für minimale Latenz
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
+  // A4 — Auth: Bearer-Header oder ?token= für SSE-Clients
+  const authHeader = req.headers.get("authorization");
+  const qToken     = req.nextUrl.searchParams.get("token");
+  const rawToken   = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : qToken;
+  if (!rawToken) return new Response("Nicht autorisiert", { status: 401 });
+  try { await verifyAccessToken(rawToken); }
+  catch { return new Response("Token ungültig", { status: 401 }); }
+
   const sessionId = req.nextUrl.searchParams.get("sessionId");
 
   const encoder = new TextEncoder();

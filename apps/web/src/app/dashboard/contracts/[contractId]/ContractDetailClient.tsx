@@ -598,7 +598,16 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
                         <button
                           className="cd-btn"
                           style={{ background: "#fff", color: "#374151", border: "1px solid #d1d5db", marginTop: 8 }}
-                          onClick={() => window.open(`/api/auction/lots/${contract.lotId}/cbam-export?token=${token}`, "_blank")}
+                          onClick={() => {
+                            // B2 — Kein Token in der URL; Cookie wird automatisch mitgesendet
+                            const a = document.createElement("a");
+                            a.href = `/api/auction/lots/${contract.lotId}/cbam-export`;
+                            a.target = "_blank";
+                            a.rel = "noopener noreferrer";
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                          }}
                         >
                           CBAM-Zollquittung exportieren →
                         </button>
