@@ -4,8 +4,7 @@ import Link        from "next/link";
 import { usePathname } from "next/navigation";
 import { EucxHeader }  from "@/components/layout/EucxHeader";
 
-const F    = "'IBM Plex Sans', Arial, sans-serif";
-const BLUE = "#154194";
+const F = "'IBM Plex Sans', Arial, sans-serif";
 
 const NAV = [
   {
@@ -51,89 +50,8 @@ export function SettingsLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <EucxHeader />
-      <div style={{ display: "flex", minHeight: "calc(100vh - 56px)", background: "#f7f9fc", fontFamily: F }}>
-
-        {/* Sidebar */}
-        <nav style={{
-          width: 232, flexShrink: 0,
-          background: "#fff",
-          borderRight: "1px solid #d4d8e0",
-          display: "flex", flexDirection: "column",
-          position: "sticky",
-          top: 0,
-          height: "100vh",
-          overflowY: "auto",
-          alignSelf: "flex-start",
-        }}>
-          {/* Zurück */}
-          <Link
-            href="/dashboard/profile"
-            style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "16px 20px",
-              fontSize: 11.5, fontWeight: 500,
-              color: "#7a8aa0",
-              textDecoration: "none",
-              borderBottom: "1px solid #e8eaf0",
-              letterSpacing: "0.01em",
-              transition: "color 0.1s",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = BLUE)}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#7a8aa0")}
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            Zurück zum Profil
-          </Link>
-
-          {/* Label */}
-          <div style={{
-            padding: "14px 20px 6px",
-            fontSize: 9, fontWeight: 700, letterSpacing: ".12em",
-            textTransform: "uppercase", color: "#9ca3af",
-          }}>
-            Einstellungen
-          </div>
-
-          {/* Nav-Items */}
-          {NAV.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                style={{
-                  display: "flex", alignItems: "flex-start", gap: 10,
-                  padding: "10px 20px",
-                  textDecoration: "none",
-                  borderLeft: `3px solid ${isActive ? BLUE : "transparent"}`,
-                  background: isActive ? "#eff4ff" : "transparent",
-                  transition: "background 0.1s, border-color 0.1s",
-                }}
-                onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.background = "#f5f7fb"; } }}
-                onMouseLeave={(e) => { if (!isActive) { e.currentTarget.style.background = "transparent"; } }}
-              >
-                <span style={{ color: isActive ? BLUE : "#7a8aa0", marginTop: 2, flexShrink: 0 }}>
-                  {item.icon}
-                </span>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: isActive ? 600 : 400, color: isActive ? BLUE : "#0d1b2a", lineHeight: 1.3 }}>
-                    {item.label}
-                  </div>
-                  <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{item.sub}</div>
-                </div>
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Content */}
-        <main style={{ flex: 1, minWidth: 0 }}>
-          {children}
-          <BottomNav pathname={pathname} />
-        </main>
-      </div>
+      {children}
+      <BottomNav pathname={pathname} />
     </>
   );
 }
