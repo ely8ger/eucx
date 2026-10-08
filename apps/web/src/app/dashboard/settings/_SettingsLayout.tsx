@@ -62,47 +62,49 @@ const BORDER    = "#d4d8e0";
 const TEXT      = "#0d1b2a";
 
 function BottomNav({ pathname }: { pathname: string }) {
-  const others = NAV.filter((item) => item.href !== pathname && !pathname.startsWith(item.href + "/"));
-  if (others.length === 0) return null;
-
   return (
-    <div style={{
-      maxWidth: 700, margin: "0 auto",
-      padding: "0 32px 48px",
-      fontFamily: F,
-    }}>
+    <div style={{ maxWidth: 700, margin: "0 auto", padding: "0 32px 48px", fontFamily: F }}>
       <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 28, marginTop: 8 }}>
         <p style={{
-          margin: "0 0 12px", fontSize: 11, fontWeight: 700,
-          color: MUTED, textTransform: "uppercase" as const, letterSpacing: ".08em",
+          margin: "0 0 12px", fontSize: 12, fontWeight: 700,
+          color: MUTED, textTransform: "uppercase" as const, letterSpacing: ".06em",
         }}>
           Weitere Einstellungen
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: `repeat(${others.length}, 1fr)`, gap: 10 }}>
-          {others.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              style={{
-                display: "block", padding: "16px 18px",
-                background: "#fff", border: `1px solid ${BORDER}`,
-                textDecoration: "none",
-                transition: "border-color .15s, box-shadow .15s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = BLUE_TEXT;
-                e.currentTarget.style.boxShadow   = "0 2px 8px rgba(21,65,148,.1)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = BORDER;
-                e.currentTarget.style.boxShadow   = "none";
-              }}
-            >
-              <div style={{ color: BLUE_TEXT, marginBottom: 8 }}>{item.icon}</div>
-              <p style={{ margin: "0 0 3px", fontSize: 13, fontWeight: 700, color: TEXT, fontFamily: F }}>{item.label}</p>
-              <p style={{ margin: 0, fontSize: 11.5, color: MUTED, fontFamily: F }}>{item.sub}</p>
-            </Link>
-          ))}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+          {NAV.map((item) => {
+            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                style={{
+                  display: "block", padding: "16px 18px",
+                  background: "#fff",
+                  border: `1px solid ${isActive ? BLUE_TEXT : BORDER}`,
+                  boxShadow: isActive ? "0 2px 8px rgba(21,65,148,.1)" : "none",
+                  textDecoration: "none",
+                  transition: "border-color .15s, box-shadow .15s",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.borderColor = BLUE_TEXT;
+                    e.currentTarget.style.boxShadow   = "0 2px 8px rgba(21,65,148,.1)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.borderColor = BORDER;
+                    e.currentTarget.style.boxShadow   = "none";
+                  }
+                }}
+              >
+                <div style={{ color: BLUE_TEXT, marginBottom: 8 }}>{item.icon}</div>
+                <p style={{ margin: "0 0 3px", fontSize: 13, fontWeight: 700, color: TEXT, fontFamily: F }}>{item.label}</p>
+                <p style={{ margin: 0, fontSize: 11.5, color: MUTED, fontFamily: F }}>{item.sub}</p>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>
