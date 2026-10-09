@@ -128,9 +128,15 @@ export async function checkRateLimit(
     return checkInMemory(ip, bucket);
   }
 
-  // 3. Deaktiviert
+  // 3. Deaktiviert — fail-closed für auth-Bucket in Production
+  if (bucket === "auth" && process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[RateLimit] Auth-Rate-Limiting nicht konfiguriert. " +
+      "UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN oder ENABLE_MEMORY_RATE_LIMIT=true setzen.",
+    );
+  }
   if (!_warnedOnce) {
-    console.warn("[RateLimit] Weder Upstash noch ENABLE_MEMORY_RATE_LIMIT gesetzt - Rate Limiting deaktiviert.");
+    console.warn("[RateLimit] Weder Upstash noch ENABLE_MEMORY_RATE_LIMIT gesetzt — Rate Limiting deaktiviert.");
     _warnedOnce = true;
   }
   return { allowed: true, remaining: 999, reset: 0 };
