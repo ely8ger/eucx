@@ -6,6 +6,7 @@
  * Ausschreibung erstellen, eigene Lots verwalten, Auktion starten.
  */
 
+import { useAuthStore, refreshAccessToken } from "@/store/authStore";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
@@ -259,7 +260,6 @@ const fmtDate = (iso: string) =>
 
 export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "all" | "collection" | "active" | "conclusion" }) {
   const router = useRouter();
-  const [token,        setToken]        = useState("");
   const [kyc,          setKyc]          = useState<KycInfo | null>(null);
   const [lots,         setLots]         = useState<LotRow[]>([]);
   const [loading,      setLoading]      = useState(true);
@@ -319,12 +319,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [sizeQuery,         setSizeQuery]         = useState("");
   const [catalogStats,      setCatalogStats]      = useState<{ products: number; sizes: number } | null>(null);
 
+  const token = useAuthStore(s => s.accessToken) ?? "";
+
   // ── Token + Auth-Redirect ──────────────────────────────────────────
-  useEffect(() => {
-    const tkn = localStorage.getItem("accessToken") ?? "";
-    setToken(tkn);
-    if (!tkn) router.replace("/login");
-  }, [router]);
 
   // ── KYC ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -495,14 +492,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       // Token vor dem Submit refreshen - Formular kann > 15 min dauern
       let activeToken = token;
       try {
-        const ref = await fetch("/api/auth/refresh", { method: "POST" });
-        if (ref.ok) {
-          const rd = await ref.json() as { accessToken?: string };
-          if (rd.accessToken) {
-            activeToken = rd.accessToken;
-            setToken(activeToken);
-          }
-        }
+        await refreshAccessToken();
+        activeToken = useAuthStore.getState().accessToken ?? token;
       } catch { /* kein Refresh möglich, weiter mit aktuellem Token */ }
 
       const body: Record<string, unknown> = { commodity: commodity.trim(), quantity: qty, unit };

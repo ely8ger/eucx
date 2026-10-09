@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
@@ -56,17 +57,12 @@ const commodityLabel = (c: string) => COMMODITY_LABELS[c] ?? c.replace(/_/g, " "
 
 export function PortfolioClient() {
   const router = useRouter();
-  const [token,    setToken]    = useState("");
+  const token  = useAuthStore(s => s.accessToken) ?? "";
   const [data,     setData]     = useState<Enriched[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [exporting,setExporting]= useState(false);
   const [filter,   setFilter]   = useState<"all" | string>("all");
 
-  useEffect(() => {
-    const tkn = localStorage.getItem("accessToken") ?? "";
-    setToken(tkn);
-    if (!tkn) router.replace("/login");
-  }, [router]);
 
   const load = useCallback(async () => {
     if (!token) return;

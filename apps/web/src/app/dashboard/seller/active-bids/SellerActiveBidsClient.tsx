@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
@@ -101,16 +102,12 @@ function RankBadge({ row }: { row: BidRow }) {
 
 export function SellerActiveBidsClient() {
   const router = useRouter();
-  const [token, setToken]   = useState("");
   const [bids,  setBids]    = useState<BidRow[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const token = useAuthStore(s => s.accessToken) ?? "";
   const [filter,  setFilter]  = useState<"active" | "all">("active");
 
-  useEffect(() => {
-    const tkn = localStorage.getItem("accessToken") ?? "";
-    setToken(tkn);
-    if (!tkn) router.replace("/login");
-  }, [router]);
 
   const load = useCallback(async () => {
     if (!token) return;

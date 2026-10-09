@@ -6,12 +6,12 @@
  * Enthält User-Profil, Token-Metadaten und Auth-Aktionen.
  * Persistiert im sessionStorage (Tab-sicher, kein XSS-Risiko durch localStorage).
  *
- * Token selbst bleibt im Cookie (HttpOnly für refresh, js-lesbar für access).
- * Store speichert nur die dekodierten User-Metadaten.
+ * accessToken: nur in-memory (nicht persistiert) — HttpOnly Cookie liegt auf dem Server.
+ * refreshToken: HttpOnly Cookie, nie JS-zugänglich.
  *
  * Token-Expiry-Wächter:
  *   scheduleAutoLogout() setzt einen setTimeout für tokenExpiresAt - 30s.
- *   Bei Ablauf wird logout() aufgerufen → Cookie gelöscht → Redirect /login.
+ *   Bei Ablauf wird refreshAccessToken() versucht, danach ggf. logout().
  */
 
 import { create } from "zustand";
@@ -30,24 +30,17 @@ export interface AuthUser {
 
 interface AuthState {
   user:             AuthUser | null;
+  accessToken:      string | null;   // in-memory only — NICHT persistiert
   tokenExpiresAt:   number | null;   // Unix-ms
-  totpRequired:     boolean;         // Server verlangt 2FA-Code bei diesem Login
-  pendingEmail:     string;          // Für 2FA-Step: E-Mail des halbfertigen Logins
+  totpRequired:     boolean;
+  pendingEmail:     string;
   isHydrated:       boolean;
 
-  // Aktionen
-  setAuth:          (user: AuthUser, expiresAt: number) => void;
+  setAuth:          (user: AuthUser, expiresAt: number, token: string) => void;
   setTotpRequired:  (email: string) => void;
   logout:           () => void;
   isAuthenticated:  () => boolean;
   isTokenExpired:   () => boolean;
-}
-
-// ─── Cookie-Hilfsfunktionen ───────────────────────────────────────────────────
-
-function clearAuthCookies(): void {
-  if (typeof document === "undefined") return;
-  document.cookie = "access_token=; path=/; max-age=0";
 }
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -56,13 +49,14 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       user:           null,
+      accessToken:    null,
       tokenExpiresAt: null,
       totpRequired:   false,
       pendingEmail:   "",
       isHydrated:     false,
 
-      setAuth: (user, expiresAt) => {
-        set({ user, tokenExpiresAt: expiresAt, totpRequired: false, pendingEmail: "" });
+      setAuth: (user, expiresAt, token) => {
+        set({ user, tokenExpiresAt: expiresAt, accessToken: token, totpRequired: false, pendingEmail: "" });
       },
 
       setTotpRequired: (email) => {
@@ -70,16 +64,15 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
-        clearAuthCookies();
         if (typeof window !== "undefined") {
           window.location.href = "/login";
         }
-        set({ user: null, tokenExpiresAt: null, totpRequired: false, pendingEmail: "" });
+        set({ user: null, tokenExpiresAt: null, accessToken: null, totpRequired: false, pendingEmail: "" });
       },
 
       isAuthenticated: () => {
         const state = get();
-        if (!state.user) return false;
+        if (!state.user || !state.accessToken) return false;
         if (state.isTokenExpired()) return false;
         return true;
       },
@@ -95,6 +88,12 @@ export const useAuthStore = create<AuthState>()(
       storage: createJSONStorage(() =>
         typeof window !== "undefined" ? sessionStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }
       ),
+      // accessToken bewusst nicht persistieren — lebt nur in-memory
+      partialize: (state) => ({
+        user:           state.user,
+        tokenExpiresAt: state.tokenExpiresAt,
+        isHydrated:     state.isHydrated,
+      }),
       onRehydrateStorage: () => (state) => {
         if (state) state.isHydrated = true;
       },
@@ -132,6 +131,7 @@ export function scheduleAutoLogout(expiresAtMs: number): void {
 /**
  * Erneuert den Access Token via /api/auth/refresh.
  * Refresh-Token liegt im HttpOnly Cookie - wird automatisch mitgesendet.
+ * Neuer Access Token wird in-memory gespeichert (nicht in localStorage/Cookie).
  */
 export async function refreshAccessToken(): Promise<void> {
   const res = await fetch("/api/auth/refresh", { method: "POST", credentials: "include" });
@@ -147,13 +147,10 @@ export async function refreshAccessToken(): Promise<void> {
     user?:       AuthUser;
   };
 
-  // B1 — Token nur in Cookie, nicht in localStorage (XSS-Schutz)
-  document.cookie = `access_token=${data.accessToken}; path=/; max-age=900; samesite=lax${
-    typeof window !== "undefined" && window.location.protocol === "https:" ? "; secure" : ""
-  }`;
-
-  if (data.user) {
-    useAuthStore.getState().setAuth(data.user, data.expiresAt);
+  const store = useAuthStore.getState();
+  const user  = data.user ?? store.user;
+  if (user) {
+    store.setAuth(user, data.expiresAt, data.accessToken);
   }
 
   scheduleAutoLogout(data.expiresAt);

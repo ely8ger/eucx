@@ -7,6 +7,7 @@
  * verlinkt auf Auktionsseite in PROPOSAL/REDUCTION.
  */
 
+import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
@@ -103,7 +104,6 @@ function formatCountdown(endIso: string | null): { text: string; color: string }
 export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "all" | "mine" | "active" }) {
   const router = useRouter();
   useCountdown(); // Sekunden-Tick für Live-Countdown
-  const [token,        setToken]        = useState("");
   const [hydrated,     setHydrated]     = useState(false);
   const [lots,         setLots]         = useState<LotRow[]>([]);
   const [loading,      setLoading]      = useState(true);
@@ -112,13 +112,9 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
   const [filter,       setFilter]       = useState<"all" | "mine" | "active">(initialFilter);
   const [previewLot,   setPreviewLot]   = useState<LotRow | null>(null);
 
-  // ── Token + Auth-Redirect ──────────────────────────────────────────
-  useEffect(() => {
-    const tkn = localStorage.getItem("accessToken") ?? "";
-    setToken(tkn);
-    setHydrated(true);
-    if (!tkn) router.replace("/login");
-  }, [router]);
+  const token = useAuthStore(s => s.accessToken) ?? "";
+
+  useEffect(() => { setHydrated(true); }, []);
 
   // ── KYC-Status ────────────────────────────────────────────────────
   useEffect(() => {

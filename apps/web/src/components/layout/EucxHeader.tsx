@@ -6,6 +6,7 @@ import { Shield, LogOut }      from "lucide-react";
 import { EucxLogo }            from "@/components/logo/EucxLogo";
 import { LanguageSwitcher }    from "@/components/LanguageSwitcher";
 import { NotificationBell }    from "@/components/NotificationBell";
+import { useAuthStore }        from "@/store/authStore";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const BLUE        = "#154194";
@@ -182,19 +183,9 @@ function resolveContext(path: string): "buyer" | "seller" | "settings" | null {
   return null;
 }
 
-// ─── Token helper ─────────────────────────────────────────────────────────────
-function getToken(): string {
-  if (typeof window === "undefined") return "";
-  return (
-    document.cookie.match(/access_token=([^;]+)/)?.[1] ??
-    localStorage.getItem("accessToken") ?? ""
-  );
-}
-
 async function handleLogout() {
   try { await fetch("/api/auth/logout", { method: "POST" }); } catch { /* ignore */ }
-  localStorage.removeItem("accessToken");
-  window.location.href = "/login";
+  useAuthStore.getState().logout();
 }
 
 const ROLE_META: Record<string, { label: string; color: string; bg: string }> = {
@@ -488,16 +479,14 @@ function UserAvatar({ me }: { me: MeUser | null }) {
 // ─── Main Export ──────────────────────────────────────────────────────────────
 export function EucxHeader() {
   const pathname = usePathname();
-  const [token,         setToken]         = useState("");
+  const token = useAuthStore(s => s.accessToken) ?? "";
   const [me,            setMe]            = useState<MeUser | null>(null);
   const [logoutHovered, setLogoutHovered] = useState(false);
   const [shieldHovered, setShieldHovered] = useState(false);
 
   useEffect(() => {
-    const tkn = getToken();
-    setToken(tkn);
-    if (!tkn) return;
-    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${tkn}` } })
+    if (!token) return;
+    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json() as Promise<MeUser>)
       .then((d) => setMe(d))
       .catch(() => {});

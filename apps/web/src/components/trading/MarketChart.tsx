@@ -56,6 +56,7 @@ import {
 } from "lightweight-charts";
 import { useOhlcQuery, INTERVAL_SECONDS, type OhlcInterval, type OhlcCandle } from "@/hooks/useOhlcQuery";
 import { useMarketTicker }                                                      from "@/hooks/useMarketTicker";
+import { useAuthStore }                                                         from "@/store/authStore";
 
 // ─── Design-Tokens ────────────────────────────────────────────────────────────
 
@@ -279,10 +280,7 @@ const MarketChart: FC<MarketChartProps> = ({ productId, symbol, className = "" }
 
   // ── Export-Handler ────────────────────────────────────────────────────────
   const handleExport = useCallback((format: "csv" | "xlsx") => {
-    const token =
-      typeof window !== "undefined"
-        ? (localStorage.getItem("eucx_access_token") ?? localStorage.getItem("access_token"))
-        : null;
+    const token = typeof window !== "undefined" ? useAuthStore.getState().accessToken : null;
     if (!token) return;
 
     const url = `/api/market/export?format=${format}&productId=${productId}`;

@@ -39,6 +39,7 @@ import {
   type ReactNode,
 } from "react";
 import { io, type Socket } from "socket.io-client";
+import { useAuthStore }    from "@/store/authStore";
 
 // ─── Typen ────────────────────────────────────────────────────────────────────
 
@@ -67,11 +68,8 @@ const BACKOFF_DELAYS_MS = [1_000, 2_000, 4_000, 8_000, 16_000] as const;
 const MAX_ATTEMPTS      = BACKOFF_DELAYS_MS.length;
 
 function getToken(): string | null {
-  if (typeof document === "undefined") return null;
-  return (
-    document.cookie.match(/access_token=([^;]+)/)?.[1] ??
-    (typeof localStorage !== "undefined" ? localStorage.getItem("access_token") : null)
-  );
+  if (typeof window === "undefined") return null;
+  return useAuthStore.getState().accessToken;
 }
 
 // ─── Provider ─────────────────────────────────────────────────────────────────

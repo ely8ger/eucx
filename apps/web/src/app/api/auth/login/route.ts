@@ -200,13 +200,24 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json({
       data: {
         accessToken,
+        expiresAt: Date.now() + 15 * 60 * 1000,
         user: {
           id:           user.id,
           email:        user.email,
           role:         user.role,
+          orgId:        user.organizationId,
+          orgName:      user.organization.name,
           organization: { id: user.organization.id, name: user.organization.name },
         },
       },
+    });
+
+    response.cookies.set("access_token", accessToken, {
+      httpOnly: true,
+      secure:   process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge:   900,
+      path:     "/",
     });
 
     response.cookies.set("refresh_token", refreshToken, {

@@ -182,12 +182,7 @@ export default function LoginPage() {
       if (data.totpRequired) { setStep("totp"); return; }
       if (data.data?.accessToken) {
         const expiresAt = data.data.expiresAt ?? Date.now() + 15 * 60 * 1000;
-        document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=900; samesite=lax${
-          typeof window !== "undefined" && window.location.protocol === "https:" ? "; secure" : ""}`;
-        if (typeof window !== "undefined") {
-          localStorage.setItem("eucx_prev_login", new Date().toISOString());
-        }
-        if (data.data.user) setAuth(data.data.user, expiresAt);
+        if (data.data.user) setAuth(data.data.user, expiresAt, data.data.accessToken);
         scheduleAutoLogout(expiresAt);
         router.push(nextPath);
       }
@@ -212,11 +207,8 @@ export default function LoginPage() {
       if (!res.ok) { setErrors({ code: data.error ?? t("login_err_invalid") }); setCode(""); return; }
       if (data.data?.accessToken) {
         const expiresAt = data.data.expiresAt ?? Date.now() + 15 * 60 * 1000;
-        document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=900; samesite=lax${
-          typeof window !== "undefined" && window.location.protocol === "https:" ? "; secure" : ""}`;
-        if (data.data.user) setAuth(data.data.user, expiresAt);
+        if (data.data.user) setAuth(data.data.user, expiresAt, data.data.accessToken);
         scheduleAutoLogout(expiresAt);
-        if (typeof window !== "undefined") localStorage.setItem("eucx_prev_login", new Date().toISOString());
         router.push(nextPath);
       }
     } catch { setErrors({ code: t("login_err_conn") }); }

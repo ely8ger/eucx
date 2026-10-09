@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
@@ -119,7 +120,6 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
   const router   = useRouter();
   const fileRef  = useRef<HTMLInputElement>(null);
 
-  const [token,     setToken]     = useState("");
   const [contract,  setContract]  = useState<ContractDetail | null>(null);
   const [loading,   setLoading]   = useState(true);
   const [error,     setError]     = useState<string | null>(null);
@@ -127,17 +127,13 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
   const [confirming,     setConfirming]     = useState(false);
   const [uploading,      setUploading]      = useState(false);
   const [sendingPayment, setSendingPayment] = useState(false);
+
+  const token = useAuthStore(s => s.accessToken) ?? "";
   const [actionErr,      setActionErr]      = useState("");
   const [disputeOpen,    setDisputeOpen]    = useState(false);
   const [disputeReason,  setDisputeReason]  = useState("");
   const [disputing,      setDisputing]      = useState(false);
   const [disputeDone,    setDisputeDone]    = useState(false);
-
-  useEffect(() => {
-    const tkn = localStorage.getItem("accessToken") ?? "";
-    if (!tkn) { router.replace("/login"); return; }
-    setToken(tkn);
-  }, [router]);
 
   const load = useCallback(async () => {
     if (!token) return;

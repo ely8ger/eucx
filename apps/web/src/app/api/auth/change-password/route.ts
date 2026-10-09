@@ -5,6 +5,7 @@ import { verifyAccessToken }         from "@/lib/auth/jwt";
 import { verifyPassword, hashPassword } from "@/lib/auth/password";
 import { isPwnedPassword }           from "@/lib/auth/pwned-password";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
+import { blacklistJti }              from "@/lib/auth/token-blacklist";
 
 export const dynamic = "force-dynamic";
 
@@ -51,10 +52,18 @@ export async function POST(req: NextRequest) {
   }
 
   const newHash = await hashPassword(parsed.data.newPassword);
-  await db.user.update({
-    where: { id: payload.userId },
-    data:  { passwordHash: newHash, failedLoginCount: 0, lockedUntil: null },
-  });
+
+  // Alle anderen Sessions invalidieren + aktuellen Access Token blacklisten
+  await Promise.all([
+    db.user.update({
+      where: { id: payload.userId },
+      data:  { passwordHash: newHash, failedLoginCount: 0, lockedUntil: null },
+    }),
+    db.refreshToken.deleteMany({ where: { userId: payload.userId } }),
+    payload.jti && payload.exp
+      ? blacklistJti(payload.jti, payload.exp * 1000)
+      : Promise.resolve(),
+  ]);
 
   // Sicherheitsbenachrichtigung an User
   sendAuctionMail({
@@ -67,5 +76,9 @@ export async function POST(req: NextRequest) {
     },
   }).catch((err: unknown) => console.error("[change-password] Mailer-Fehler:", err));
 
-  return NextResponse.json({ ok: true });
+  const res = NextResponse.json({ ok: true });
+  // HttpOnly-Cookies serverseitig löschen — Client muss sich neu einloggen
+  res.cookies.set("access_token",  "", { httpOnly: true, path: "/",                  maxAge: 0 });
+  res.cookies.set("refresh_token", "", { httpOnly: true, path: "/api/auth/refresh",  maxAge: 0 });
+  return res;
 }

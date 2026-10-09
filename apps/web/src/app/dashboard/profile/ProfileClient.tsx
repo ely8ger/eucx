@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { EucxHeader }          from "@/components/layout/EucxHeader";
 import { KycStatusBadge }      from "@/components/KycStatusBadge";
+import { useAuthStore }        from "@/store/authStore";
 
 const F      = "'IBM Plex Sans', Arial, sans-serif";
 const BLUE   = "#154194";
@@ -13,11 +14,6 @@ const BORDER = "#d4d8e0";
 const BG     = "#f7f9fc";
 const GREEN  = "#16a34a";
 const RED    = "#dc2626";
-
-function getToken(): string {
-  if (typeof window === "undefined") return "";
-  return document.cookie.match(/access_token=([^;]+)/)?.[1] ?? localStorage.getItem("accessToken") ?? "";
-}
 
 const COUNTRY_NAMES: Record<string, string> = {
   DE: "Deutschland", AT: "Österreich", CH: "Schweiz", PL: "Polen",
@@ -90,6 +86,7 @@ function RoField({ label, value, note }: { label: string; value?: string | null;
 // ── Hauptkomponente ────────────────────────────────────────────────────────────
 
 export function ProfileClient() {
+  const token = useAuthStore(s => s.accessToken) ?? "";
   const [me,              setMe]              = useState<MeData | null>(null);
   const [tab,             setTab]             = useState<Tab>("unternehmen");
   const [eoriInput,       setEoriInput]       = useState("");
@@ -99,9 +96,8 @@ export function ProfileClient() {
   const [zollError,       setZollError]       = useState("");
 
   useEffect(() => {
-    const tkn = getToken();
-    if (!tkn) return;
-    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${tkn}` } })
+    if (!token) return;
+    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json() as Promise<MeData>)
       .then((d) => {
         setMe(d);
@@ -117,8 +113,8 @@ export function ProfileClient() {
     iso ? new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }) : null;
 
   const saveZoll = async () => {
-    const tkn = getToken();
-    if (!tkn || zollSaving) return;
+    if (!token || zollSaving) return;
+    const tkn = token;
     setZollSaving(true); setZollError(""); setZollSaved(false);
     try {
       const r = await fetch("/api/profile/cbam", {

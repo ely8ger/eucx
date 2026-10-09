@@ -2,20 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { refreshAccessToken, scheduleAutoLogout } from "@/store/authStore";
+import { useAuthStore, refreshAccessToken, scheduleAutoLogout } from "@/store/authStore";
 
 /**
  * AuthGuard - Token-Validierung + stiller Refresh beim Seitenaufruf.
  *
- * Problem: Nach Browser-Schließung ist sessionStorage leer, aber das (möglicherweise
- * abgelaufene) Access Token liegt noch im localStorage. Der Refresh Token im
- * HttpOnly Cookie ist bis zu 7 Tage gültig - wird aber ohne diesen Guard nie genutzt.
- *
  * Ablauf:
- *  1. Kein Token → /login
- *  2. Token gültig → Timer starten → Kinder rendern
- *  3. Token abgelaufen + Refresh Token vorhanden → /api/auth/refresh → neues Token → Timer → Kinder
- *  4. Token abgelaufen + Refresh schlägt fehl → /login
+ *  1. accessToken in-memory + nicht abgelaufen → Timer starten → Kinder rendern
+ *  2. Kein accessToken (Reload/neuer Tab) → /api/auth/refresh via HttpOnly Cookie → ok
+ *  3. Refresh schlägt fehl → /login
  */
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -23,33 +18,16 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function init() {
-      const tkn = localStorage.getItem("accessToken") ?? "";
+      const store = useAuthStore.getState();
 
-      if (!tkn) {
-        setStatus("denied");
-        router.replace("/login");
-        return;
-      }
-
-      // JWT exp-Claim auslesen (ohne Bibliothek)
-      let expMs = 0;
-      try {
-        const payload = JSON.parse(atob(tkn.split(".")[1] ?? "e30="));
-        expMs = (payload.exp ?? 0) * 1000;
-      } catch {
-        setStatus("denied");
-        router.replace("/login");
-        return;
-      }
-
-      if (Date.now() < expMs) {
-        // Token noch gültig → Timer starten
-        scheduleAutoLogout(expMs);
+      // Token im Speicher und noch gültig → direkt ok
+      if (store.accessToken && !store.isTokenExpired()) {
+        scheduleAutoLogout(store.tokenExpiresAt!);
         setStatus("ok");
         return;
       }
 
-      // Token abgelaufen → stillen Refresh versuchen
+      // Kein Token oder abgelaufen → stiller Refresh (HttpOnly refresh_token Cookie)
       try {
         await refreshAccessToken();
         setStatus("ok");

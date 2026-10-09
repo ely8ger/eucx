@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore, refreshAccessToken } from "@/store/authStore";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { KycStatusBadge } from "@/components/KycStatusBadge";
@@ -94,12 +95,13 @@ interface ExistingDoc {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function VerificationClient() {
-  const [token,               setToken]               = useState("");
   const [userEmail,           setUserEmail]           = useState("");
   const [userRole,            setUserRole]            = useState<"BUYER" | "SELLER">("BUYER");
   const [isGeschaeftsfuehrer, setIsGeschaeftsfuehrer] = useState<boolean | null>(null);
   const [kycStatus,    setKycStatus]    = useState<VerificationStatus>("GUEST");
   const [existingDocs, setExistingDocs] = useState<ExistingDoc[]>([]);
+
+  const token = useAuthStore(s => s.accessToken) ?? "";
   const [perDocFiles,  setPerDocFiles]  = useState<Partial<Record<DocType, File[]>>>({});
   const [activeDrag,   setActiveDrag]   = useState<DocType | null>(null);
   const [notes,        setNotes]        = useState("");
@@ -109,10 +111,8 @@ export function VerificationClient() {
   const fileInputRefs = useRef<Partial<Record<DocType, HTMLInputElement>>>({});
 
   useEffect(() => {
-    const tkn = localStorage.getItem("accessToken") ?? "";
-    setToken(tkn);
-    if (tkn) void loadStatus(tkn);
-  }, []);
+    if (token) void loadStatus(token);
+  }, [token]);
 
   async function loadStatus(tkn: string) {
     try {
@@ -177,19 +177,6 @@ export function VerificationClient() {
     return results;
   }
 
-  async function getFreshToken(): Promise<string | null> {
-    try {
-      const res = await fetch("/api/auth/refresh", { method: "POST", credentials: "include" });
-      if (!res.ok) return null;
-      const data = await res.json() as { accessToken?: string };
-      if (data.accessToken) {
-        setToken(data.accessToken);
-        return data.accessToken;
-      }
-    } catch { /* ignore */ }
-    return null;
-  }
-
   async function handleSubmit() {
     const queued = Object.entries(perDocFiles) as [DocType, File[]][];
     if (!token || queued.length === 0) return;
@@ -197,7 +184,8 @@ export function VerificationClient() {
     setUploadStatus("");
     try {
       // 1. Token erneuern
-      const freshToken = await getFreshToken() ?? token;
+      await refreshAccessToken().catch(() => {});
+      const freshToken = useAuthStore.getState().accessToken ?? token;
 
       // 2. Dateien hochladen → echte Blob-URLs
       const documents = await uploadFiles(freshToken, queued);

@@ -10,6 +10,7 @@ import {
 import { EucxLogo } from "@/components/logo/EucxLogo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n/context";
+import { useAuthStore } from "@/store/authStore";
 
 const ROLE_LABEL: Record<string, string> = {
   BUYER:              "Käufer",
@@ -29,9 +30,7 @@ export function Navbar() {
 
   useEffect(() => {
     try {
-      const token =
-        document.cookie.match(/access_token=([^;]+)/)?.[1] ??
-        localStorage.getItem("accessToken") ?? "";
+      const token = useAuthStore.getState().accessToken ?? "";
       if (!token) return;
       const payload = JSON.parse(atob(token.split(".")[1] ?? ""));
       const email: string = payload.email ?? "";

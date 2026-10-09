@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
@@ -63,7 +64,6 @@ const fmtDate = (iso: string) =>
 
 export function SellerLogisticsClient() {
   const router   = useRouter();
-  const [token,     setToken]     = useState("");
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading,   setLoading]   = useState(true);
   const [selected,      setSelected]      = useState<string | null>(null);
@@ -72,15 +72,12 @@ export function SellerLogisticsClient() {
   const [error,         setError]         = useState("");
   const [disputeOpen,   setDisputeOpen]   = useState(false);
   const [disputeReason, setDisputeReason] = useState("");
+
+  const token = useAuthStore(s => s.accessToken) ?? "";
   const [disputing,     setDisputing]     = useState(false);
   const [disputeDone,   setDisputeDone]   = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const tkn = localStorage.getItem("accessToken") ?? "";
-    setToken(tkn);
-    if (!tkn) router.replace("/login");
-  }, [router]);
 
   const load = useCallback(async () => {
     if (!token) return;

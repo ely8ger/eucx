@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore, refreshAccessToken } from "@/store/authStore";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
@@ -83,7 +84,6 @@ interface UserStatus {
 
 export function SellerInventoryClient() {
   const router = useRouter();
-  const [token,          setToken]          = useState("");
   const [userStatus,     setUserStatus]     = useState<UserStatus | null>(null);
   const [showPreflight,  setShowPreflight]  = useState(false);
   const [charges,        setCharges]        = useState<Charge[]>([]);
@@ -99,28 +99,25 @@ export function SellerInventoryClient() {
   const [fCo2,        setFCo2]        = useState("");
   const [fLand,       setFLand]       = useState("DE - Deutschland");
   const [fRegistryId, setFRegistryId] = useState("");
+
+  const token = useAuthStore(s => s.accessToken) ?? "";
   const [fIncoterms,  setFIncoterms]  = useState("DAP");
   const [fSchmelzNr,  setFSchmelzNr]  = useState("");
 
   useEffect(() => {
-    const tkn = localStorage.getItem("accessToken") ?? "";
-    setToken(tkn);
-    if (!tkn) { router.replace("/login"); return; }
-    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${tkn}` } })
+    if (!token) return;
+    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.ok ? r.json() : null)
       .then((d) => {
         if (d) setUserStatus({ totpEnabled: d.totpEnabled ?? false, verificationStatus: d.verificationStatus ?? "GUEST", phoneVerified: d.phoneVerified ?? false });
       })
       .catch(() => null);
-  }, [router]);
+  }, [token]);
 
   const tryRefresh = useCallback(async (): Promise<string | null> => {
     try {
-      const r = await fetch("/api/auth/refresh", { method: "POST", credentials: "include" });
-      if (!r.ok) return null;
-      const data = await r.json() as { accessToken: string };
-      setToken(data.accessToken);
-      return data.accessToken;
+      await refreshAccessToken();
+      return useAuthStore.getState().accessToken;
     } catch {
       return null;
     }

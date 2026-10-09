@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { QRCodeSVG }           from "qrcode.react";
 import { SettingsLayout }      from "../_SettingsLayout";
+import { useAuthStore }        from "@/store/authStore";
 
 const F      = "'IBM Plex Sans', Arial, sans-serif";
 const BLUE   = "#154194";
@@ -13,14 +14,6 @@ const TEXT   = "#0d1b2a";
 const MUTED  = "#7a8aa0";
 const BORDER = "#d4d8e0";
 const BG     = "#f7f9fc";
-
-function getToken(): string {
-  if (typeof window === "undefined") return "";
-  return (
-    document.cookie.match(/access_token=([^;]+)/)?.[1] ??
-    localStorage.getItem("accessToken") ?? ""
-  );
-}
 
 interface MeData {
   email:              string;
@@ -289,7 +282,7 @@ function TotpSetup({ token, onActivated }: { token: string; onActivated: (genera
 // ─── Hauptkomponente ───────────────────────────────────────────────────────────
 
 export function SecuritySettingsClient() {
-  const [token,          setToken]          = useState("");
+  const token = useAuthStore(s => s.accessToken) ?? "";
   const [me,             setMe]             = useState<MeData | null>(null);
   const [totpEnabled,    setTotpEnabled]    = useState(false);
   const [showSetup,      setShowSetup]      = useState(false);
@@ -320,17 +313,15 @@ export function SecuritySettingsClient() {
   const [secLogLoading, setSecLogLoading] = useState(false);
 
   useEffect(() => {
-    const tkn = getToken();
-    setToken(tkn);
-    if (!tkn) return;
-    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${tkn}` } })
+    if (!token) return;
+    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json() as Promise<MeData & { totpEnabled?: boolean }>)
       .then((d) => { setMe(d); setTotpEnabled(d.totpEnabled ?? false); })
       .catch(() => {});
 
     // Load sessions
     setSessionsLoading(true);
-    fetch("/api/auth/sessions", { headers: { Authorization: `Bearer ${tkn}` } })
+    fetch("/api/auth/sessions", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json() as Promise<{ sessions?: Session[] }>)
       .then((d) => setSessions(d.sessions ?? []))
       .catch(() => {})
@@ -338,7 +329,7 @@ export function SecuritySettingsClient() {
 
     // Load security log
     setSecLogLoading(true);
-    fetch("/api/security/log", { headers: { Authorization: `Bearer ${tkn}` } })
+    fetch("/api/security/log", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json() as Promise<{ logs?: SecurityLogEntry[] }>)
       .then((d) => setSecLog(d.logs ?? []))
       .catch(() => {})

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
@@ -104,22 +105,18 @@ const PHASE_LABEL: Record<string, string> = {
 export function SellerControlCenter() {
   const router = useRouter();
 
-  const [token,       setToken]       = useState("");
   const [stats,       setStats]       = useState<SellerStats | null>(null);
   const [lots,        setLots]        = useState<LotRow[]>([]);
   const [ticker,      setTicker]      = useState<TickerEvent[]>([]);
   const [loadingKpi,  setLoadingKpi]  = useState(true);
   const [loadingLots, setLoadingLots] = useState(true);
   const [registering, setRegistering] = useState<string | null>(null);
+
+  const token = useAuthStore(s => s.accessToken) ?? "";
   const [lotFilter,   setLotFilter]   = useState<"all" | "mine">("all");
   const tickerRef                     = useRef<HTMLDivElement>(null);
 
   // ── Init ───────────────────────────────────────────────────────────
-  useEffect(() => {
-    const tkn = localStorage.getItem("accessToken") ?? "";
-    setToken(tkn);
-    if (!tkn) router.replace("/login");
-  }, [router]);
 
   // ── KPIs laden ────────────────────────────────────────────────────
   const loadStats = useCallback(async () => {

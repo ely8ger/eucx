@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { SettingsLayout } from "../_SettingsLayout";
@@ -59,12 +60,12 @@ const IN_APP_TYPES = [
 ];
 
 export function NotificationsSettingsClient() {
-  const [token,   setToken]   = useState("");
   const [prefs,   setPrefs]   = useState<Prefs | null>(null);
   const [saving,  setSaving]  = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { setToken(localStorage.getItem("accessToken") ?? ""); }, []);
+  const token = useAuthStore(s => s.accessToken) ?? "";
+
 
   useEffect(() => {
     if (!token) return;

@@ -1,22 +1,22 @@
 "use client";
 
+import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
 
 export function PhoneSettingsClient() {
   const router = useRouter();
-  const [token, setToken]           = useState("");
   const [phone, setPhone]           = useState("");
   const [phoneVerified, setPhoneVerified] = useState(false);
+
+  const token = useAuthStore(s => s.accessToken) ?? "";
   const [saving, setSaving]         = useState(false);
   const [msg, setMsg]               = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
   useEffect(() => {
-    const tkn = localStorage.getItem("accessToken") ?? "";
-    setToken(tkn);
-    if (tkn) load(tkn);
-  }, []);
+    if (token) void load(token);
+  }, [token]);
 
   const load = async (tkn: string) => {
     try {

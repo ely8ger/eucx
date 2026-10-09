@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
@@ -66,11 +67,10 @@ const fmtDate = (iso: string) =>
 
 export function ContractsClient() {
   const router = useRouter();
-  const [token,       setToken]       = useState("");
+  const token  = useAuthStore(s => s.accessToken) ?? "";
   const [contracts,   setContracts]   = useState<ContractRow[]>([]);
   const [loading,     setLoading]     = useState(true);
   const [error,       setError]       = useState<string | null>(null);
-  useEffect(() => { setToken(localStorage.getItem("accessToken") ?? ""); }, []);
 
   useEffect(() => {
     if (!token) return;

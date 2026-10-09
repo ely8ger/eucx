@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuctionStream } from "@/lib/auction/use-auction-stream";
 import type { AuctionNotification } from "@/lib/auction/use-auction-stream";
@@ -84,7 +85,6 @@ function useCountdown(endIso: string | null) {
 export function SellerAuctionClient({ lot }: { lot: Lot }) {
   const CBAM_STORAGE_KEY = `cbam_data_seller`;
 
-  const [token,       setToken]       = useState("");
   const [priceInput,  setPriceInput]  = useState("");
   const [myBids,      setMyBids]      = useState<MyBid[]>([]);
   const [allBids,     setAllBids]     = useState<AllBid[]>([]);
@@ -105,9 +105,10 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   const prevBest    = useRef<string | null>(lot.currentBest);
   const prevLeading = useRef<boolean | null>(null);
 
+  const token = useAuthStore(s => s.accessToken) ?? "";
+
   // ── Init ──────────────────────────────────────────────────────────
   useEffect(() => {
-    setToken(localStorage.getItem("accessToken") ?? "");
     const saved = localStorage.getItem(CBAM_STORAGE_KEY);
     if (saved) { try { setCbamData(JSON.parse(saved) as CbamData); } catch { /* ignore */ } }
   }, [CBAM_STORAGE_KEY]);

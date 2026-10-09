@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
@@ -50,7 +51,6 @@ const fmtDate = (iso: string) =>
 
 export function WalletClient() {
   const router = useRouter();
-  const [token,   setToken]   = useState("");
   const [wallet,  setWallet]  = useState<WalletData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -58,16 +58,13 @@ export function WalletClient() {
   const [docType,      setDocType]      = useState("Bankgarantie");
   const [limit,        setLimit]        = useState("");
   const [limitDisplay, setLimitDisplay] = useState("");
+
+  const token = useAuthStore(s => s.accessToken) ?? "";
   const [file,         setFile]         = useState<File | null>(null);
   const [submitting,   setSubmitting]   = useState(false);
   const [result,       setResult]       = useState<PofResult | null>(null);
   const [error,        setError]        = useState("");
 
-  useEffect(() => {
-    const tkn = localStorage.getItem("accessToken") ?? "";
-    setToken(tkn);
-    if (!tkn) router.replace("/login");
-  }, [router]);
 
   const load = useCallback(async () => {
     if (!token) return;

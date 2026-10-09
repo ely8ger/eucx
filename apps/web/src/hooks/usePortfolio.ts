@@ -25,7 +25,8 @@ import {
   type UseQueryResult,
   type UseMutationResult,
 } from "@tanstack/react-query";
-import Decimal from "decimal.js";
+import Decimal        from "decimal.js";
+import { useAuthStore } from "@/store/authStore";
 
 // ─── Typen ────────────────────────────────────────────────────────────────────
 
@@ -64,16 +65,8 @@ export interface OrdersResponse {
 
 // ─── Auth-Token ───────────────────────────────────────────────────────────────
 
-function getToken(): string | null {
-  if (typeof document === "undefined") return null;
-  return (
-    document.cookie.match(/access_token=([^;]+)/)?.[1] ??
-    localStorage.getItem("access_token")
-  );
-}
-
 function authHeaders(): HeadersInit {
-  const token = getToken();
+  const token = useAuthStore.getState().accessToken;
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 

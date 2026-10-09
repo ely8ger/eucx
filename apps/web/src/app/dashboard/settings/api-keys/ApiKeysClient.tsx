@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
@@ -43,7 +44,6 @@ const fmtDateTime = (iso: string | null) =>
 
 export function ApiKeysClient() {
   const router = useRouter();
-  const [token,      setToken]      = useState("");
   const [keys,       setKeys]       = useState<ApiKey[]>([]);
   const [loading,    setLoading]    = useState(true);
   const [showCreate, setShowCreate] = useState(false);
@@ -56,16 +56,13 @@ export function ApiKeysClient() {
   const [name,       setName]       = useState("");
   const [scopes,     setScopes]     = useState<string[]>(["market:read"]);
   const [expiryDate, setExpiryDate] = useState("");
+
+  const token = useAuthStore(s => s.accessToken) ?? "";
   const [ipInput,    setIpInput]    = useState("");
   const [ipList,     setIpList]     = useState<string[]>([]);
   const [creating,   setCreating]   = useState(false);
   const [formError,  setFormError]  = useState<string | null>(null);
 
-  useEffect(() => {
-    const tkn = localStorage.getItem("accessToken") ?? "";
-    setToken(tkn);
-    if (!tkn) router.replace("/login");
-  }, [router]);
 
   const load = useCallback(async () => {
     if (!token) return;

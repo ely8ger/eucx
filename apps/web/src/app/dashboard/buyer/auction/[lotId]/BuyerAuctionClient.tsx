@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuctionStream } from "@/lib/auction/use-auction-stream";
 import type { AuctionNotification } from "@/lib/auction/use-auction-stream";
@@ -71,7 +72,6 @@ const PHASE_COLOR: Record<string, string> = {
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export function BuyerAuctionClient({ lot, initialBids }: Props) {
-  const [token,      setToken]      = useState("");
   const [bids,       setBids]       = useState<Bid[]>(initialBids);
   const [kyc,        setKyc]        = useState<KycInfo | null>(null);
   const [flashBest,  setFlashBest]  = useState(false);
@@ -79,7 +79,8 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
   const prevBest = useRef<string | null>(lot.currentBest);
 
   // ── Init ──────────────────────────────────────────────────────────
-  useEffect(() => { setToken(localStorage.getItem("accessToken") ?? ""); }, []);
+
+  const token = useAuthStore(s => s.accessToken) ?? "";
 
   // ── KYC ──────────────────────────────────────────────────────────
   useEffect(() => {

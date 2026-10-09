@@ -79,6 +79,14 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  res.cookies.set("access_token", newAccess, {
+    httpOnly: true,
+    secure:   process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge:   900,
+    path:     "/",
+  });
+
   res.cookies.set("refresh_token", newRefresh, {
     httpOnly: true,
     secure:   process.env.NODE_ENV === "production",

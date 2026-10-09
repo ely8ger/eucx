@@ -21,6 +21,7 @@ import { orderSchema, LARGE_ORDER_EUR }               from "@/lib/validation/ord
 import { useToast }                                   from "@/components/ui/toast";
 import { makeOptimisticEntry }                        from "@/hooks/useTrading";
 import type { TradingAction }                         from "@/hooks/useTrading";
+import { useAuthStore }                               from "@/store/authStore";
 
 // ─── Typen ────────────────────────────────────────────────────────────────────
 
@@ -120,9 +121,7 @@ export function useOrderForm({ sessionId, productId, dispatch }: UseOrderFormOpt
       return false;
     }
 
-    const token =
-      document.cookie.match(/access_token=([^;]+)/)?.[1] ??
-      localStorage.getItem("access_token");
+    const token = useAuthStore.getState().accessToken;
 
     if (!token) {
       toast.error("Nicht authentifiziert", "Bitte melden Sie sich erneut an.");
