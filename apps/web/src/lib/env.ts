@@ -63,9 +63,11 @@ const productionOnlyChecks = (env: z.infer<typeof serverEnvSchema>) => {
   if (env.NODE_ENV !== "production") return;
 
   const required: (keyof typeof env)[] = [
-    "RESEND_API_KEY",        // mailer.ts wirft ohne Key
-    "CRON_SECRET",           // cron-handler prüft Signatur, kein Fallback
-    "BLOB_READ_WRITE_TOKEN", // put() in upload/route.ts wirft ohne Token
+    "RESEND_API_KEY",           // mailer.ts wirft ohne Key
+    "CRON_SECRET",              // cron-handler prüft Signatur, kein Fallback
+    "BLOB_READ_WRITE_TOKEN",    // put() in upload/route.ts wirft ohne Token
+    "UPSTASH_REDIS_REST_URL",   // Rate Limiting + JTI-Blacklist instanzübergreifend
+    "UPSTASH_REDIS_REST_TOKEN", // ohne Redis: Auth-Brute-Force + Session-Revokation defekt
   ];
 
   const missing = required.filter((k) => !env[k]);
