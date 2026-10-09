@@ -24,6 +24,8 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       // ── Security & Hardening für alle Routen ──────────────────────────────
+      // CSP wird per Request in middleware.ts mit Nonce gesetzt (kein 'unsafe-eval',
+      // kein 'unsafe-inline' in script-src). Nur statische Security-Header hier.
       {
         source: "/(.*)",
         headers: [
@@ -35,20 +37,6 @@ const nextConfig: NextConfig = {
           {
             key:   "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",  // 2 Jahre HSTS
-          },
-          {
-            key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",  // Next.js + recharts
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https:",
-              `connect-src 'self' ${process.env.NEXT_PUBLIC_API_URL ?? ""} ${process.env.NEXT_PUBLIC_WS_URL ?? ""} wss:`,
-              "font-src 'self' data:",
-              "frame-ancestors 'none'",
-              "base-uri 'self'",
-              "form-action 'self'",
-            ].join("; "),
           },
         ],
       },

@@ -48,6 +48,8 @@ const PUBLIC_PREFIXES = [
   "/api/market",
   // Öffentliches Regelwerk
   "/regelwerk",
+  // Cookie-Richtlinie
+  "/cookie-richtlinie",
 ];
 
 const ADMIN_ROLES = ["ADMIN", "COMPLIANCE", "SUPER_ADMIN"] as const;
@@ -60,9 +62,47 @@ function getBucket(pathname: string): LimitBucket {
   return "api";
 }
 
+// ─── CSP mit Nonce ────────────────────────────────────────────────────────────
+// Nonce: einmaliger Base64-Wert pro Request.
+// script-src ohne 'unsafe-inline' und ohne 'unsafe-eval' —
+// Next.js hängt den Nonce automatisch an seine eigenen <script>-Tags,
+// wenn <html nonce={nonce}> im Root-Layout gesetzt ist.
+
+function buildCsp(nonce: string): string {
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}'`,
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "img-src 'self' data: blob: https:",
+    "connect-src 'self' wss://eucx.eu",
+    "font-src 'self' data: https://fonts.gstatic.com",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "object-src 'none'",
+    "worker-src 'none'",
+    "upgrade-insecure-requests",
+  ].join("; ");
+}
+
+// Nonce als Request-Header weitergeben (Server Components lesen ihn via headers())
+function nextWithNonce(req: NextRequest, nonce: string): NextResponse {
+  const reqHeaders = new Headers(req.headers);
+  reqHeaders.set("x-nonce", nonce);
+  return NextResponse.next({ request: { headers: reqHeaders } });
+}
+
 // ─── Middleware ───────────────────────────────────────────────────────────────
+// Äußere Funktion: generiert Nonce, delegiert an _route(), hängt CSP an jede Response.
 
 export async function middleware(req: NextRequest) {
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const res   = await _route(req, nonce);
+  res.headers.set("Content-Security-Policy", buildCsp(nonce));
+  return res;
+}
+
+async function _route(req: NextRequest, nonce: string): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
   const ip           = getClientIp(req);
 
@@ -89,7 +129,7 @@ export async function middleware(req: NextRequest) {
 
   // ── Öffentliche Routen durchlassen ────────────────────────────────────────
   if (PUBLIC_EXACT.has(pathname) || PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
-    return NextResponse.next();
+    return nextWithNonce(req, nonce);
   }
 
   // ── API: JWT-Verifikation ─────────────────────────────────────────────────
@@ -138,7 +178,7 @@ export async function middleware(req: NextRequest) {
         );
       }
 
-      return NextResponse.next();
+      return nextWithNonce(req, nonce);
     } catch {
       logSecurityEvent({ event: "AUTH_INVALID_TOKEN", ip, path: pathname, detail: "JWT-Verifikation fehlgeschlagen" });
       return NextResponse.json({ code: "INVALID_TOKEN", message: "Ungültiger Token" }, { status: 401 });
@@ -150,7 +190,7 @@ export async function middleware(req: NextRequest) {
   const refreshToken = req.cookies.get(COOKIE_REFRESH_TOKEN)?.value;
 
   if (!token) {
-    if (refreshToken) return NextResponse.next();
+    if (refreshToken) return nextWithNonce(req, nonce);
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
@@ -194,9 +234,9 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/dashboard/buyer", req.url));
     }
 
-    return NextResponse.next();
+    return nextWithNonce(req, nonce);
   } catch {
-    if (refreshToken) return NextResponse.next();
+    if (refreshToken) return nextWithNonce(req, nonce);
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("next", pathname);
     const res = NextResponse.redirect(loginUrl);

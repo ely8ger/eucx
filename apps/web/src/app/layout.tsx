@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import "@/styles/globals.css";
 import "flag-icons/css/flag-icons.min.css";
 import { BASE_URL } from "@/lib/seo/metadata";
@@ -61,12 +62,18 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Nonce aus Middleware lesen — wird von Next.js automatisch an alle eigenen
+  // <script>-Tags angehängt (hydration, __NEXT_DATA__), wodurch 'unsafe-inline'
+  // in script-src entfällt. Middleware setzt ihn als x-nonce Request-Header.
+  const nonce = (await headers()).get("x-nonce") ?? "";
+
   return (
-    <html lang="de" suppressHydrationWarning>
+    <html lang="de" suppressHydrationWarning nonce={nonce}>
       <head>
         {/* Preconnect zu externen Ressourcen für < 200ms TTFB */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL ?? ""} />
       </head>
       <body><I18nProvider>{children}</I18nProvider><CookieBanner /><Toaster richColors position="top-right" /></body>
