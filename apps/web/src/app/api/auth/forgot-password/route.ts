@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       data: { message: "Falls ein Konto mit dieser E-Mail existiert, erhalten Sie in Kürze eine E-Mail mit einem Reset-Link." },
     });
 
-    const user = await db.user.findUnique({ where: { email } });
+    const user = await db.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } } });
     if (!user) return genericResponse;
 
     // Rate-Limit: max 1 Reset-Token pro 5 Minuten

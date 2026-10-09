@@ -26,8 +26,8 @@ export async function POST(req: NextRequest) {
 
     const { email, password } = parsed.data;
 
-    const user = await db.user.findUnique({
-      where:   { email },
+    const user = await db.user.findFirst({
+      where:   { email: { equals: email, mode: "insensitive" } },
       include: { organization: true },
     });
 

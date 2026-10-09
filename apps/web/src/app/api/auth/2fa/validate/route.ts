@@ -34,10 +34,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Code ungültig" }, { status: 422 });
   }
 
-  const user = await db.user.findUnique({
-    where:   { email: parsed.data.email },
+  const user = await db.user.findFirst({
+    where:   { email: { equals: parsed.data.email, mode: "insensitive" } },
     include: { organization: { select: { id: true, name: true } } },
-    // select is not used - include returns all user fields
   });
 
   if (!user || !user.totpSecret || !user.totpEnabled) {

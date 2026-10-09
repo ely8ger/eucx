@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Duplikat-Prüfung - gleiche Antwort wie bei neuer Registrierung (kein User-Enumeration-Leak)
-    const existing = await db.user.findUnique({ where: { email } });
+    const existing = await db.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } } });
     if (existing) {
       // Bestehenden Account-Inhaber diskret benachrichtigen
       await sendAuctionMail({
