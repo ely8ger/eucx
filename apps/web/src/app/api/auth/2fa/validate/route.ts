@@ -19,7 +19,7 @@ import { z }                         from "zod";
 export const dynamic = "force-dynamic";
 
 const bodySchema = z.object({
-  email: z.string().email(),
+  email: z.string().email().transform(v => v.toLowerCase().trim()),
   code:  z.string().length(6, "Code muss 6-stellig sein"),
 });
 

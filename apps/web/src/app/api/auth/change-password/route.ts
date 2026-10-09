@@ -10,7 +10,11 @@ export const dynamic = "force-dynamic";
 
 const schema = z.object({
   currentPassword: z.string().min(1),
-  newPassword:     z.string().min(8, "Mindestens 8 Zeichen erforderlich"),
+  newPassword:     z.string()
+    .min(10, "Mindestens 10 Zeichen erforderlich")
+    .regex(/[A-Z]/, "Mindestens ein Großbuchstabe erforderlich")
+    .regex(/[0-9]/, "Mindestens eine Zahl erforderlich")
+    .regex(/[^A-Za-z0-9]/, "Mindestens ein Sonderzeichen erforderlich"),
 });
 
 export async function POST(req: NextRequest) {
@@ -47,7 +51,10 @@ export async function POST(req: NextRequest) {
   }
 
   const newHash = await hashPassword(parsed.data.newPassword);
-  await db.user.update({ where: { id: payload.userId }, data: { passwordHash: newHash } });
+  await db.user.update({
+    where: { id: payload.userId },
+    data:  { passwordHash: newHash, failedLoginCount: 0, lockedUntil: null },
+  });
 
   // Sicherheitsbenachrichtigung an User
   sendAuctionMail({

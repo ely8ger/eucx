@@ -3,13 +3,13 @@ import { z } from "zod";
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
 export const loginSchema = z.object({
-  email:    z.string().email("Ungültige E-Mail-Adresse"),
+  email:    z.string().email("Ungültige E-Mail-Adresse").transform(v => v.toLowerCase().trim()),
   password: z.string().min(8, "Passwort muss mindestens 8 Zeichen haben"),
   totpCode: z.string().length(6).optional(),
 });
 
 export const registerSchema = z.object({
-  email:            z.string().email("Ungültige E-Mail-Adresse"),
+  email:            z.string().email("Ungültige E-Mail-Adresse").transform(v => v.toLowerCase().trim()),
   password:         z.string()
     .min(10, "Mindestens 10 Zeichen")
     .regex(/[A-Z]/, "Mindestens ein Großbuchstabe")

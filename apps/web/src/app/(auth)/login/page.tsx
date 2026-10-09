@@ -168,6 +168,9 @@ export default function LoginPage() {
           setErrors({ password: remaining > 0
             ? t("login_attempts").replace("{n}", String(remaining))
             : t("login_locked_desc") });
+        } else if (res.status === 423) {
+          setAttempts(5); // roten Lock-Banner auslösen, Submit deaktivieren
+          setErrors({ password: data.message ?? t("login_locked_desc") });
         } else if (res.status === 403 && (data as { code?: string }).code === "ACCOUNT_INACTIVE") {
           setPendingAccount(true);
         } else {
