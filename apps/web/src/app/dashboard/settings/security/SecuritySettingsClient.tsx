@@ -495,7 +495,7 @@ export function SecuritySettingsClient() {
   return (
     <SettingsLayout>
       <div style={{ background: BG, minHeight: "100%" }}>
-      <div style={{ maxWidth: 700, padding: "32px 32px 80px", fontFamily: F }}>
+      <div style={{ maxWidth: 700, margin: "0 auto", padding: "32px 32px 80px", fontFamily: F }}>
 
         {/* Titel */}
         <div style={{ marginBottom: 24, borderLeft: `4px solid ${BLUE}`, paddingLeft: 16 }}>
