@@ -10,7 +10,6 @@ import { NextRequest } from "next/server";
 import { db }          from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 
-
 export const dynamic = "force-dynamic";
 // Edge Runtime für minimale Latenz
 export const runtime = "nodejs";

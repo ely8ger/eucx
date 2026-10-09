@@ -33,7 +33,8 @@
  *   Schlägt irgendein Schritt fehl → vollständiger Rollback.
  */
 
-import Decimal from "decimal.js";
+import Decimal    from "decimal.js";
+import { randomUUID } from "crypto";
 import { db } from "@/lib/db/client";
 import { calculateFees, validateLedgerBalance } from "./fee-calculator";
 import type { FeeCalculationResult } from "./fee-calculator";
@@ -100,7 +101,6 @@ export async function runSettlement(dealId: string): Promise<SettlementResult> {
 
   // ── Rechnungsnummer generieren (A8 — UUID-basiert, keine Race Condition) ───
   const year = new Date().getFullYear();
-  const { randomUUID } = await import("crypto");
   const uid  = () => randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase();
   const buyerInvoiceNumber  = `EUCX-INV-${year}-${uid()}`;
   const sellerCreditNumber  = `EUCX-GUT-${year}-${uid()}`;
