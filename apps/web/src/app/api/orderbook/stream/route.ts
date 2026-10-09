@@ -10,15 +10,16 @@ import { NextRequest } from "next/server";
 import { db }          from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 
+
 export const dynamic = "force-dynamic";
 // Edge Runtime für minimale Latenz
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
-  // A4 — Auth: Bearer-Header oder ?token= für SSE-Clients
-  const authHeader = req.headers.get("authorization");
-  const qToken     = req.nextUrl.searchParams.get("token");
-  const rawToken   = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : qToken;
+  // A4 — Auth: Cookie first, Bearer-Header als Fallback (kein ?token= in URL)
+  const cookieToken = req.cookies.get("access_token")?.value;
+  const authHeader  = req.headers.get("authorization");
+  const rawToken    = cookieToken ?? (authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null);
   if (!rawToken) return new Response("Nicht autorisiert", { status: 401 });
   try { await verifyAccessToken(rawToken); }
   catch { return new Response("Token ungültig", { status: 401 }); }

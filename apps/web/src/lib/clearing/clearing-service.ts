@@ -98,12 +98,12 @@ export async function runSettlement(dealId: string): Promise<SettlementResult> {
     getOrCreateWallet(deal.sellerOrgId, deal.currency),
   ]);
 
-  // ── Rechnungsnummer generieren ─────────────────────────────────────────────
+  // ── Rechnungsnummer generieren (A8 — UUID-basiert, keine Race Condition) ───
   const year = new Date().getFullYear();
-  const invoiceCount = await db.invoice.count();
-  const seq = String(invoiceCount + 1).padStart(6, "0");
-  const buyerInvoiceNumber  = `EUCX-INV-${year}-${seq}`;
-  const sellerCreditNumber  = `EUCX-GUT-${year}-${seq}`;
+  const { randomUUID } = await import("crypto");
+  const uid  = () => randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase();
+  const buyerInvoiceNumber  = `EUCX-INV-${year}-${uid()}`;
+  const sellerCreditNumber  = `EUCX-GUT-${year}-${uid()}`;
 
   // ── Atomare Transaktion ────────────────────────────────────────────────────
   const result = await db.$transaction(async (tx) => {
