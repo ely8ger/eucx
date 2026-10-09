@@ -655,7 +655,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const isVerified    = kyc?.verificationStatus === "VERIFIED";
   const isTotpEnabled = kyc?.totpEnabled  ?? false;
   const isPhoneVerif  = kyc?.phoneVerified ?? false;
-  const preflightOk   = isVerified && isTotpEnabled && isPhoneVerif;
+  // phoneVerified ist kein blockierendes Gate (kein SMS-Provider integriert) —
+  // wird informativ angezeigt aber blockiert nicht den Zugang zur Ausschreibung.
+  const preflightOk   = isVerified && isTotpEnabled;
 
   // Lot-Statistiken
   const stats = {
@@ -1081,19 +1083,19 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     <a href="/dashboard/settings/security" className="bl-pf-link">Einrichten →</a>
                   )}
                 </div>
-                {/* Telefon */}
-                <div className={`bl-pf-row ${isPhoneVerif ? "ok" : "nok"}`}>
-                  <div className={`bl-pf-icon ${isPhoneVerif ? "ok" : "nok"}`}>
-                    {isPhoneVerif ? "✓" : "✕"}
+                {/* Telefon — informativ, kein blockierendes Gate */}
+                <div className={`bl-pf-row ${isPhoneVerif ? "ok" : "pending"}`}>
+                  <div className={`bl-pf-icon ${isPhoneVerif ? "ok" : "pending"}`} style={{ opacity: 0.6 }}>
+                    {isPhoneVerif ? "✓" : "○"}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div className="bl-pf-label">Firmen-Telefonnummer</div>
+                    <div className="bl-pf-label">Firmen-Telefonnummer <span style={{ fontWeight: 400, fontSize: "11px", color: "#6b7280" }}>(optional)</span></div>
                     <div className="bl-pf-desc">
-                      {isPhoneVerif ? "Telefonnummer verifiziert." : "Telefonnummer noch nicht bestätigt. Im Profil verifizieren."}
+                      {isPhoneVerif ? "Telefonnummer verifiziert." : "Telefonnummer noch nicht hinterlegt — wird für Rückfragen empfohlen."}
                     </div>
                   </div>
                   {!isPhoneVerif && (
-                    <a href="/dashboard/settings/phone" className="bl-pf-link">Verifizieren →</a>
+                    <a href="/dashboard/settings/phone" className="bl-pf-link">Ergänzen →</a>
                   )}
                 </div>
               </div>
@@ -1102,7 +1104,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   className="bl-btn-publish"
                   disabled={!preflightOk}
                   onClick={() => { setShowPreflight(false); setShowForm(true); }}
-                  title={!preflightOk ? "Alle drei Punkte müssen grün sein" : undefined}
+                  title={!preflightOk ? "KYC-Verifizierung und 2FA müssen aktiv sein" : undefined}
                 >
                   {preflightOk ? "Weiter zur Ausschreibung →" : "Punkte ausstehend"}
                 </button>

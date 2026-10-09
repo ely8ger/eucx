@@ -7,6 +7,8 @@ import { db } from "@/lib/db/client";
 import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { PDFDocument, rgb, StandardFonts, type PDFFont } from "pdf-lib";
 import { apiRoute } from "@/lib/api/route-handler";
+import { logSecurityEvent } from "@/lib/audit/log-event";
+import { getClientIp } from "@/lib/net/get-client-ip";
 
 export const dynamic = "force-dynamic";
 
@@ -80,11 +82,19 @@ async function _GET(
   if (!lot) return NextResponse.json({ error: "Lot nicht gefunden" }, { status: 404 });
 
   // A5 — Ownership-Check: Käufer, Verkäufer (Sieger-Bieter) oder Admin
-  const isAdmin = ["ADMIN", "SUPER_ADMIN", "COMPLIANCE_OFFICER"].includes(token.role);
-  const isBuyer  = lot.buyerId === token.userId;
+  const isAdmin  = ["ADMIN", "SUPER_ADMIN", "COMPLIANCE_OFFICER"].includes(token.role);
+  const isBuyer  = lot.buyerId  === token.userId;
   const isSeller = lot.winnerId === token.userId;
-  if (!isAdmin && !isBuyer && !isSeller)
+  if (!isAdmin && !isBuyer && !isSeller) {
+    logSecurityEvent({
+      event:  "AUTH_FORBIDDEN",
+      ip:     getClientIp(req),
+      userId: token.userId,
+      path:   req.nextUrl.pathname,
+      detail: `CBAM-Zugriffsversuch auf Lot ${lotId} (buyerId=${lot.buyerId}, winnerId=${lot.winnerId})`,
+    });
     return NextResponse.json({ error: "Kein Zugriff" }, { status: 403 });
+  }
 
   const winnerBid = lot.winnerId ? await db.bid.findFirst({
     where:  { lotId, isWinner: true },

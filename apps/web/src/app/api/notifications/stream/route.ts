@@ -3,7 +3,9 @@
  *
  * Private Server-Sent Events - User-spezifische Echtzeit-Events.
  *
- * Erfordert Bearer-Auth (Fallback: ?token=... für SSE-Clients die keine Header senden).
+ * Auth: HttpOnly Cookie (same-origin SSE sendet Cookies automatisch).
+ *   Bearer-Header als Fallback für programmatischen Zugriff.
+ *   Kein ?token= Query-Parameter — Tokens in URLs landen in Server-Logs.
  *
  * Events:
  *   event: order_filled          - Auftrag vollständig ausgeführt
@@ -18,9 +20,10 @@
  *
  * Fallback (ohne Redis): leerer Stream mit Heartbeats (kein Fehler, aber keine Events).
  */
-import { NextRequest }      from "next/server";
-import { verifyAccessToken } from "@/lib/auth/jwt";
-import { readEvents }        from "@/lib/realtime/event-bus";
+import { NextRequest }          from "next/server";
+import { verifyAccessToken }     from "@/lib/auth/jwt";
+import { readEvents }            from "@/lib/realtime/event-bus";
+import { COOKIE_ACCESS_TOKEN }   from "@/lib/auth/cookie-names";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -38,11 +41,12 @@ const EVENT_NAME_MAP: Record<string, string> = {
 };
 
 export async function GET(req: NextRequest) {
-  // Auth: Bearer Header bevorzugt, ?token= als Fallback
-  const authHeader = req.headers.get("authorization");
-  const urlToken   = req.nextUrl.searchParams.get("token");
-
-  const rawToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : urlToken;
+  // Auth: Cookie first (same-origin Browser sendet HttpOnly Cookies automatisch bei SSE),
+  // Bearer-Header als Fallback für programmatischen Zugriff.
+  // Kein ?token= URL-Parameter — Token in URLs landen in Server-Logs.
+  const cookieToken = req.cookies.get(COOKIE_ACCESS_TOKEN)?.value;
+  const authHeader  = req.headers.get("authorization");
+  const rawToken    = cookieToken ?? (authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null);
   if (!rawToken) {
     return new Response("Nicht autorisiert", { status: 401 });
   }

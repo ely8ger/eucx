@@ -111,26 +111,23 @@ async function _PATCH(
     extraData.deliveredAt = new Date();
   }
 
-  // A6 — COMPLETED atomar: erst prüfen ob Status noch DELIVERED, dann setzen.
-  // Verhindert Race Condition bei gleichzeitigen Requests.
-  if (newStatus === DeliveryStatus.COMPLETED) {
-    const atomicResult = await db.lotContract.updateMany({
-      where: { id: contract.id, deliveryStatus: DeliveryStatus.DELIVERED },
-      data:  { deliveryStatus: DeliveryStatus.COMPLETED },
-    });
-    if (atomicResult.count === 0) {
-      return NextResponse.json(
-        { error: "Statusübergang nicht mehr möglich — bereits abgeschlossen oder verändert." },
-        { status: 409 },
-      );
-    }
+  // Alle Übergänge atomar: WHERE currentStatus verhindert Race Condition bei parallelen Requests.
+  // COMPLETED: WHERE DELIVERED — Settlement darf nicht doppelt ausgelöst werden.
+  // Alle anderen: WHERE contract.deliveryStatus — verhindert doppeltes Setzen desselben Zustands.
+  const SELECT = { id: true, lotId: true, deliveryStatus: true, pickupCode: true, deliveredAt: true, cmrUploadedAt: true } as const;
+
+  const atomicResult = await db.lotContract.updateMany({
+    where: { id: contract.id, deliveryStatus: contract.deliveryStatus },
+    data:  { deliveryStatus: newStatus, ...extraData },
+  });
+  if (atomicResult.count === 0) {
+    return NextResponse.json(
+      { error: "Status wurde zwischenzeitlich geändert — bitte Seite neu laden." },
+      { status: 409 },
+    );
   }
 
-  // Record nach Update: COMPLETED liest (atomic hat bereits geschrieben), alle anderen schreiben.
-  const SELECT = { id: true, lotId: true, deliveryStatus: true, pickupCode: true, deliveredAt: true, cmrUploadedAt: true } as const;
-  const updated = newStatus === DeliveryStatus.COMPLETED
-    ? await db.lotContract.findUniqueOrThrow({ where: { id: contract.id }, select: SELECT })
-    : await db.lotContract.update({ where: { id: contract.id }, data: { deliveryStatus: newStatus, ...extraData }, select: SELECT });
+  const updated = await db.lotContract.findUniqueOrThrow({ where: { id: contract.id }, select: SELECT });
 
   // Phase 2 Settlement: COMPLETED → Escrow auflösen und Verkäufer auszahlen
   if (newStatus === DeliveryStatus.COMPLETED) {

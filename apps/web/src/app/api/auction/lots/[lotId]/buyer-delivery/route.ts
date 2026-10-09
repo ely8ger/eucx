@@ -43,12 +43,20 @@ export async function POST(
     );
   }
 
-  const updated = await db.lotContract.update({
-    where: { id: contract.id },
-    data: {
-      deliveryStatus: "DELIVERED",
-      deliveredAt:    new Date(),
-    },
+  // Atomar: WHERE deliveryStatus = IN_TRANSIT verhindert Race Condition bei parallelen Requests
+  const atomicResult = await db.lotContract.updateMany({
+    where: { id: contract.id, deliveryStatus: "IN_TRANSIT" },
+    data:  { deliveryStatus: "DELIVERED", deliveredAt: new Date() },
+  });
+  if (atomicResult.count === 0) {
+    return NextResponse.json(
+      { error: "Status wurde zwischenzeitlich geändert — bitte Seite neu laden." },
+      { status: 409 },
+    );
+  }
+
+  const updated = await db.lotContract.findUniqueOrThrow({
+    where:  { id: contract.id },
     select: { deliveryStatus: true, deliveredAt: true },
   });
 
