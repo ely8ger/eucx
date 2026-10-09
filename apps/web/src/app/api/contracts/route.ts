@@ -15,7 +15,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { verifyAccessToken } from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { generateContract } from "@/lib/contracts/generator";
 import { audit } from "@/lib/audit/logger";
 import { hash as bcryptHash } from "bcryptjs";
@@ -27,16 +27,9 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   // ── Auth ──────────────────────────────────────────────────────────────────
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
-  let tokenPayload: { userId: string };
-  try {
-    tokenPayload = await verifyAccessToken(authHeader.slice(7));
-  } catch {
-    return NextResponse.json({ error: "Token ungültig" }, { status: 401 });
-  }
+  let tokenPayload;
+  try { tokenPayload = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   // ── Payload ───────────────────────────────────────────────────────────────
   const body = await req.json().catch(() => null) as { dealId?: string } | null;
@@ -168,15 +161,9 @@ export async function POST(req: NextRequest) {
 // ─── GET: Contract-Status abfragen ───────────────────────────────────────────
 
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
-  try {
-    await verifyAccessToken(authHeader.slice(7));
-  } catch {
-    return NextResponse.json({ error: "Token ungültig" }, { status: 401 });
-  }
+  let token;
+  try { token = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   const dealId = req.nextUrl.searchParams.get("dealId");
   if (!dealId) {

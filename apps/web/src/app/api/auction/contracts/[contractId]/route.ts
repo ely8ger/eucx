@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { verifyAccessToken } from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 
 export const dynamic = "force-dynamic";
 
@@ -14,9 +14,9 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ contractId: string }> },
 ) {
-  let token: { userId: string };
+  let token;
   try {
-    token = await verifyAccessToken(req.headers.get("authorization")?.slice(7) ?? "");
+    token = await requireAuth(req);
   } catch {
     return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
   }

@@ -23,8 +23,7 @@ import {
   useMutation,
   useQueryClient,
   type UseQueryResult,
-  type UseMutationResult,
-} from "@tanstack/react-query";
+  type UseMutationResult } from "@tanstack/react-query";
 import Decimal        from "decimal.js";
 import { useAuthStore } from "@/store/authStore";
 
@@ -67,7 +66,7 @@ export interface OrdersResponse {
 
 function authHeaders(): HeadersInit {
   const token = useAuthStore.getState().accessToken;
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  return token ? { } : {};
 }
 
 // ─── Query-Keys ───────────────────────────────────────────────────────────────
@@ -75,8 +74,7 @@ function authHeaders(): HeadersInit {
 export const PORTFOLIO_KEYS = {
   all:     ()               => ["portfolio"] as const,
   balance: ()               => ["portfolio", "balance"] as const,
-  orders:  (status: string) => ["portfolio", "orders", status] as const,
-};
+  orders:  (status: string) => ["portfolio", "orders", status] as const };
 
 // ─── Computed Felder berechnen ────────────────────────────────────────────────
 
@@ -99,8 +97,7 @@ function enrichOrder(o: OrdersResponse["orders"][number]): PortfolioOrder {
 async function fetchBalance(): Promise<BalanceResponse> {
   const res = await fetch("/api/portfolio/balance", {
     headers: authHeaders(),
-    cache:   "no-store",
-  });
+    cache:   "no-store" });
   if (!res.ok) throw new Error(`Balance-Fetch fehlgeschlagen: HTTP ${res.status}`);
   return res.json() as Promise<BalanceResponse>;
 }
@@ -111,8 +108,7 @@ async function fetchOrders(statuses: OrderStatus[]): Promise<PortfolioOrder[]> {
 
   const res = await fetch(`/api/orders?${params.toString()}`, {
     headers: authHeaders(),
-    cache:   "no-store",
-  });
+    cache:   "no-store" });
   if (!res.ok) throw new Error(`Orders-Fetch fehlgeschlagen: HTTP ${res.status}`);
 
   const data = (await res.json()) as OrdersResponse;
@@ -123,8 +119,7 @@ async function cancelOrder(orderId: string): Promise<void> {
   const res = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, {
     method:  "PATCH",
     headers: { "Content-Type": "application/json", ...authHeaders() },
-    body:    JSON.stringify({ status: "CANCELLED" }),
-  });
+    body:    JSON.stringify({ status: "CANCELLED" }) });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`Stornierung fehlgeschlagen: HTTP ${res.status}${text ? ` - ${text}` : ""}`);
@@ -151,8 +146,7 @@ export function useActiveOrdersQuery(): UseQueryResult<PortfolioOrder[], Error> 
     staleTime:       10_000,   // 10s - offene Orders können sich schnell ändern
     gcTime:          60_000,
     refetchInterval: 30_000,   // Background-Refresh alle 30s
-    retry:           2,
-  });
+    retry:           2 });
 }
 
 export function useUserDealsQuery(): UseQueryResult<PortfolioOrder[], Error> {
@@ -161,8 +155,7 @@ export function useUserDealsQuery(): UseQueryResult<PortfolioOrder[], Error> {
     queryFn:   () => fetchOrders(["FILLED"]),
     staleTime: 60_000,   // Abgeschlossene Deals ändern sich nicht
     gcTime:    300_000,
-    retry:     2,
-  });
+    retry:     2 });
 }
 
 // ─── Mutation: Auftrag stornieren ─────────────────────────────────────────────
@@ -199,6 +192,5 @@ export function useCancelOrder(): UseMutationResult<void, Error, string> {
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("active") });
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.balance() });
-    },
-  });
+    } });
 }

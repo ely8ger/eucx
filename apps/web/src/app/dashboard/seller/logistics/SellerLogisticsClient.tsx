@@ -42,8 +42,7 @@ const STEPS: { key: DeliveryStatus; label: string; hint: string }[] = [
 
 const STATUS_IDX: Record<DeliveryStatus, number> = {
   MATCHED: 0, AWAITING_PAYMENT: 1, READY_FOR_PICKUP: 2, IN_TRANSIT: 3, DELIVERED: 4, COMPLETED: 5,
-  DISPUTED: 4, DEFAULTED: 4,
-};
+  DISPUTED: 4, DEFAULTED: 4 };
 
 const NEXT_STATUS: Record<DeliveryStatus, DeliveryStatus | null> = {
   MATCHED:           "AWAITING_PAYMENT",
@@ -53,8 +52,7 @@ const NEXT_STATUS: Record<DeliveryStatus, DeliveryStatus | null> = {
   DELIVERED:        "COMPLETED",
   COMPLETED:        null,
   DISPUTED:         null,
-  DEFAULTED:        null,
-};
+  DEFAULTED:        null };
 
 const fmtEur = (v: string) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(v));
@@ -84,8 +82,7 @@ export function SellerLogisticsClient() {
     setLoading(true);
     try {
       const r = await fetch("/api/seller/deliveries", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (r.ok) {
         const data = await r.json() as Delivery[];
         setDeliveries(data);
@@ -112,12 +109,8 @@ export function SellerLogisticsClient() {
     try {
       const r = await fetch(`/api/auction/lots/${delivery.lotId}/delivery`, {
         method:  "PATCH",
-        headers: {
-          Authorization:  `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: next }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }) });
       if (r.ok) {
         await load();
       } else {
@@ -138,9 +131,8 @@ export function SellerLogisticsClient() {
     try {
       const r = await fetch(`/api/auction/lots/${lotId}/dispute`, {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body:    JSON.stringify({ reason: disputeReason.trim() }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ reason: disputeReason.trim() }) });
       if (r.ok) {
         setDisputeDone(true);
         setDisputeOpen(false);
@@ -167,9 +159,8 @@ export function SellerLogisticsClient() {
       formData.append("file", file);
       const r = await fetch(`/api/auction/lots/${lotId}/cmr-upload`, {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body:    formData,
-      });
+        headers: { },
+        body:    formData });
       if (r.ok) {
         if (fileRef.current) fileRef.current.value = "";
         await load();
@@ -426,8 +417,7 @@ export function SellerLogisticsClient() {
                       background: sel.paymentSentAt ? "#f0fdf4" : "#fffbeb",
                       border: `1px solid ${sel.paymentSentAt ? "#bbf7d0" : "#fde68a"}`,
                       fontSize: 12,
-                      color: sel.paymentSentAt ? "#14532d" : "#92400e",
-                    }}>
+                      color: sel.paymentSentAt ? "#14532d" : "#92400e" }}>
                       {sel.paymentSentAt
                         ? `Käufer hat Zahlung gemeldet: ${fmtDate(sel.paymentSentAt)}`
                         : "Warten auf Zahlungsmeldung des Käufers…"}
@@ -476,8 +466,7 @@ export function SellerLogisticsClient() {
                         <span className="log-meta-label">{l}</span>
                         <span className="log-meta-val" style={{
                           fontFamily: l === "Kontrakt" || l === "Incoterms" ? "'IBM Plex Mono',monospace" : "inherit",
-                          fontSize:   l === "Kontrakt" ? 11 : 13,
-                        }}>
+                          fontSize:   l === "Kontrakt" ? 11 : 13 }}>
                           {v}
                         </span>
                       </div>

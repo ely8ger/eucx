@@ -31,8 +31,7 @@ const SECRET = "eucx-production-secret-49aaa0dfacdbc41f9ef4e2de7ae0b185cd52aa00f
 const USERS = {
   buyer:  { id: "seed-user-buyer",    orgId: "seed-org-eucx-test", role: "BUYER",      email: "buyer@eucx-test.de",   pw: "Test1234!" },
   seller: { id: "seed-user-seller-1", orgId: "seed-org-eucx-test", role: "SELLER",     email: "seller1@eucx-test.de", pw: "Test1234!" },
-  admin:  { id: "769091c9-46e8-4f44-9c9e-3ccb505a8d8b", orgId: "seed-org-eucx-test", role: "SUPER_ADMIN", email: "admin@eucx-test.internal", pw: "" },
-};
+  admin:  { id: "769091c9-46e8-4f44-9c9e-3ccb505a8d8b", orgId: "seed-org-eucx-test", role: "SUPER_ADMIN", email: "admin@eucx-test.internal", pw: "" } };
 
 // ─── Hilfsfunktionen ──────────────────────────────────────────────────────────
 
@@ -56,10 +55,7 @@ async function api(
   const opts: Parameters<typeof request.fetch>[1] = {
     method,
     headers: {
-      Authorization:  `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  };
+      Authorization: `Bearer ${token}`, "Content-Type": "application/json" } };
   if (body) opts.data = JSON.stringify(body);
   return request.fetch(`${BASE}${path}`, opts);
 }
@@ -111,8 +107,7 @@ const IP_GP = "198.51.100.30";
 test("Schritt 2a: Käufer kann sich über POST /api/auth/login authentifizieren", async ({ request }) => {
   const res = await request.post(`${BASE}/api/auth/login`, {
     data: { email: USERS.buyer.email, password: USERS.buyer.pw },
-    headers: { "Content-Type": "application/json", "X-Forwarded-For": IP_GP },
-  });
+    headers: { "Content-Type": "application/json", "X-Forwarded-For": IP_GP } });
 
   if (res.status() === 401) {
     test.skip(); // Seed-User nicht in DB - Setup-Fehler, nicht Code-Fehler
@@ -128,8 +123,7 @@ test("Schritt 2a: Käufer kann sich über POST /api/auth/login authentifizieren"
 
 test("Schritt 2b: Käufer-Dashboard lädt nach Token-Setzung", async ({ page }) => {
   await page.goto(`${BASE}/dashboard/buyer`, {
-    waitUntil: "domcontentloaded",
-  });
+    waitUntil: "domcontentloaded" });
 
   await page.evaluate((token) => {
     localStorage.setItem("accessToken", token);
@@ -150,8 +144,7 @@ test("Schritt 2b: Käufer-Dashboard lädt nach Token-Setzung", async ({ page }) 
 
 test("Schritt 2c: Verkäufer-Dashboard lädt", async ({ page }) => {
   await page.goto(`${BASE}/dashboard/seller/auctions`, {
-    waitUntil: "domcontentloaded",
-  });
+    waitUntil: "domcontentloaded" });
   await page.evaluate((token) => {
     localStorage.setItem("accessToken", token);
   }, sellerToken);
@@ -177,8 +170,7 @@ test("Schritt 3: Käufer erstellt Lot via POST /api/auction/lots", async ({ requ
     hsCode:          "7214200010",
     qualityGrade:    "B500B / DIN 488",
     description:     "E2E-Test Lot - automatisch erstellt",
-    greenSteel:      false,
-  });
+    greenSteel:      false });
 
   if (res.status() === 403) {
     console.log("[SKIP] Lot-Erstellung: 403 Forbidden - Käufer-Account nicht verifiziert in DB?");
@@ -257,8 +249,7 @@ test("Schritt 5: Verkäufer gibt Gebot ab via POST /api/auction/lots/[id]/bids",
   if (!createdLotId) { test.skip(); return; }
 
   const res = await api(request, "POST", `/api/auction/lots/${createdLotId}/bids`, sellerToken, {
-    price: 430,
-  });
+    price: 430 });
 
   // 403 = Phase noch COLLECTION oder Deal-Limit; 201 = Gebot erfolgreich
   if (res.status() === 403) {
@@ -428,8 +419,7 @@ test("Schritt 11: Delivery-API gibt sprechenden Fehler bei ungültigem Status-Sp
   // Lot ohne Kontrakt: erwartet 404 mit menschlicher Fehlermeldung
   const fakeId = "00000000-0000-0000-0000-000000000001";
   const res = await api(request, "PATCH", `/api/auction/lots/${fakeId}/delivery`, sellerToken, {
-    status: "COMPLETED",
-  });
+    status: "COMPLETED" });
 
   expect(
     [404, 403, 422],
@@ -453,8 +443,7 @@ test("Schritt 11: Delivery-API gibt sprechenden Fehler bei ungültigem Status-Sp
 test("Schritt 12: Bids-API gibt verständlichen Fehler bei ungültigem Lot", async ({ request }) => {
   const fakeId = "00000000-0000-0000-0000-000000000002";
   const res = await api(request, "POST", `/api/auction/lots/${fakeId}/bids`, sellerToken, {
-    price: 999,
-  });
+    price: 999 });
 
   expect([404, 400, 403, 422]).toContain(res.status());
   const body = await res.json() as Record<string, unknown>;

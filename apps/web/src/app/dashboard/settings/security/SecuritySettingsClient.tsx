@@ -53,8 +53,7 @@ function SectionCard({ title, subtitle, children, collapsible = false, defaultOp
           padding: "16px 24px",
           display: "flex", alignItems: "center", justifyContent: "space-between",
           cursor: collapsible ? "pointer" : "default",
-          userSelect: "none",
-        }}
+          userSelect: "none" }}
         onClick={() => collapsible && setOpen((v) => !v)}
       >
         <div>
@@ -67,8 +66,7 @@ function SectionCard({ title, subtitle, children, collapsible = false, defaultOp
             style={{
               flexShrink: 0, marginLeft: 12, color: MUTED,
               transform: open ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 200ms",
-            }}
+              transition: "transform 200ms" }}
           >
             <path d="M3 6l5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
@@ -90,8 +88,7 @@ function StatusPill({ active, labelOn, labelOff }: { active: boolean; labelOn: s
       padding: "4px 12px", fontSize: 12, fontWeight: 600, fontFamily: F,
       background: active ? "#f0fdf4" : "#fef2f2",
       border: `1px solid ${active ? "#bbf7d0" : "#fecaca"}`,
-      color: active ? GREEN : RED,
-    }}>
+      color: active ? GREEN : RED }}>
       <span style={{ width: 7, height: 7, borderRadius: "50%", background: active ? GREEN : RED, display: "inline-block" }} />
       {active ? labelOn : labelOff}
     </span>
@@ -119,25 +116,21 @@ function Btn({ label, onClick, variant = "primary", disabled }: {
     cursor: disabled ? "not-allowed" : "pointer",
     fontSize: 13, fontWeight: 600, fontFamily: F,
     opacity: disabled ? 0.5 : 1,
-    transition: "background 150ms, color 150ms, border-color 150ms, transform 150ms, box-shadow 150ms",
-  };
+    transition: "background 150ms, color 150ms, border-color 150ms, transform 150ms, box-shadow 150ms" };
   const styles: Record<string, React.CSSProperties> = {
     primary: { background: BLUE,  color: "#fff", border: "none" },
     outline: { background: "#fff", color: TEXT,  border: `1px solid ${BORDER}` },
-    danger:  { background: "#fff", color: RED,   border: `1px solid #fecaca` },
-  };
+    danger:  { background: "#fff", color: RED,   border: `1px solid #fecaca` } };
   const hover: Record<string, Partial<React.CSSProperties>> = {
     primary: { background: BLUE2, transform: "translateY(-2px)", boxShadow: "0 4px 12px rgba(21,65,148,.25)" },
     outline: { background: BG,    transform: "translateY(-2px)", boxShadow: "0 2px 8px rgba(0,0,0,.08)" },
-    danger:  { background: "#fef2f2", borderColor: RED, transform: "translateY(-2px)", boxShadow: "0 2px 8px rgba(220,38,38,.15)" },
-  };
+    danger:  { background: "#fef2f2", borderColor: RED, transform: "translateY(-2px)", boxShadow: "0 2px 8px rgba(220,38,38,.15)" } };
 
   const [hovered, setHovered] = useState(false);
   const style = {
     ...base,
     ...styles[variant],
-    ...(hovered && !disabled ? hover[variant] : {}),
-  };
+    ...(hovered && !disabled ? hover[variant] : {}) };
 
   return (
     <button
@@ -165,8 +158,7 @@ function TotpSetup({ token, onActivated }: { token: string; onActivated: (genera
   useEffect(() => {
     fetch("/api/auth/2fa/setup", {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-    })
+      headers: { } })
       .then((r) => r.json() as Promise<{ otpAuthUrl?: string; secret?: string; error?: string }>)
       .then((d) => {
         if (d.error) { setError(d.error); return; }
@@ -183,9 +175,8 @@ function TotpSetup({ token, onActivated }: { token: string; onActivated: (genera
     try {
       const res  = await fetch("/api/auth/2fa/verify", {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body:    JSON.stringify({ code }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ code }) });
       const data = await res.json() as { ok?: boolean; error?: string };
       if (!res.ok) { setError(data.error ?? "Code ungültig."); return; }
 
@@ -194,8 +185,7 @@ function TotpSetup({ token, onActivated }: { token: string; onActivated: (genera
       try {
         const bcRes  = await fetch("/api/auth/backup-codes", {
           method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-        });
+          headers: { } });
         const bcData = await bcRes.json() as { codes?: string[] };
         generatedCodes = bcData.codes ?? [];
       } catch { /* ignore */ }
@@ -243,8 +233,7 @@ function TotpSetup({ token, onActivated }: { token: string; onActivated: (genera
               <code style={{
                 display: "block", background: "#fff", border: `1px solid ${BORDER}`,
                 padding: "8px 12px", fontSize: 13, fontWeight: 600, letterSpacing: "0.12em",
-                wordBreak: "break-all", color: BLUE, fontFamily: "monospace",
-              }}>
+                wordBreak: "break-all", color: BLUE, fontFamily: "monospace" }}>
                 {secret}
               </code>
             </div>
@@ -263,8 +252,7 @@ function TotpSetup({ token, onActivated }: { token: string; onActivated: (genera
                 width: "100%", maxWidth: 200, height: 44, borderRadius: 0, boxSizing: "border-box",
                 border: `1px solid ${error ? RED : BORDER}`,
                 textAlign: "center", fontSize: 22, fontWeight: 700, letterSpacing: "0.3em",
-                fontFamily: "monospace", outline: "none",
-              }}
+                fontFamily: "monospace", outline: "none" }}
             />
           </div>
           {error && <p style={{ margin: "0 0 8px", fontSize: 12, color: RED }}>{error}</p>}
@@ -314,14 +302,14 @@ export function SecuritySettingsClient() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/auth/me", { headers: { } })
       .then((r) => r.json() as Promise<MeData & { totpEnabled?: boolean }>)
       .then((d) => { setMe(d); setTotpEnabled(d.totpEnabled ?? false); })
       .catch(() => {});
 
     // Load sessions
     setSessionsLoading(true);
-    fetch("/api/auth/sessions", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/auth/sessions", { headers: { } })
       .then((r) => r.json() as Promise<{ sessions?: Session[] }>)
       .then((d) => setSessions(d.sessions ?? []))
       .catch(() => {})
@@ -329,7 +317,7 @@ export function SecuritySettingsClient() {
 
     // Load security log
     setSecLogLoading(true);
-    fetch("/api/security/log", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/security/log", { headers: { } })
       .then((r) => r.json() as Promise<{ logs?: SecurityLogEntry[] }>)
       .then((d) => setSecLog(d.logs ?? []))
       .catch(() => {})
@@ -339,7 +327,7 @@ export function SecuritySettingsClient() {
   // Load backup code count when totpEnabled changes
   useEffect(() => {
     if (!token || !totpEnabled) return;
-    fetch("/api/auth/backup-codes", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/auth/backup-codes", { headers: { } })
       .then((r) => r.json() as Promise<{ remaining?: number }>)
       .then((d) => setBackupCount(d.remaining ?? 0))
       .catch(() => {});
@@ -351,9 +339,8 @@ export function SecuritySettingsClient() {
     try {
       const res  = await fetch("/api/auth/2fa/disable", {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body:    JSON.stringify({ code: disableCode }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ code: disableCode }) });
       const data = await res.json() as { ok?: boolean; error?: string };
       if (!res.ok) { setDisableError(data.error ?? "Code ungültig."); return; }
       setTotpEnabled(false);
@@ -376,9 +363,8 @@ export function SecuritySettingsClient() {
     try {
       const res  = await fetch("/api/auth/change-password", {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body:    JSON.stringify({ currentPassword: pw.current, newPassword: pw.next }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ currentPassword: pw.current, newPassword: pw.next }) });
       const data = await res.json() as { ok?: boolean; error?: string };
       if (!res.ok) { setPwMsg(data.error ?? "Fehler beim Ändern."); return; }
       setPwMsg("✓ Passwort erfolgreich geändert.");
@@ -398,8 +384,7 @@ export function SecuritySettingsClient() {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: me.email }),
-      });
+        body: JSON.stringify({ email: me.email }) });
       if (res.ok) {
         setResetMsg(`✓ Reset-E-Mail wurde an ${me.email} gesendet.`);
       } else {
@@ -415,8 +400,7 @@ export function SecuritySettingsClient() {
     try {
       const res  = await fetch("/api/auth/backup-codes", {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       const data = await res.json() as { codes?: string[] };
       if (data.codes) {
         setBackupCodes(data.codes);
@@ -438,8 +422,7 @@ export function SecuritySettingsClient() {
     try {
       const res = await fetch("/api/auth/sessions", {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (res.ok) {
         setRevokeMsg("✓ Alle anderen Sitzungen wurden beendet.");
         setSessions([]);
@@ -456,8 +439,7 @@ export function SecuritySettingsClient() {
   function formatDate(iso: string) {
     return new Date(iso).toLocaleString("de-DE", {
       day: "2-digit", month: "2-digit", year: "numeric",
-      hour: "2-digit", minute: "2-digit",
-    });
+      hour: "2-digit", minute: "2-digit" });
   }
 
   function parseUA(ua: string): string {
@@ -480,8 +462,7 @@ export function SecuritySettingsClient() {
     BACKUP_CODES_GENERATED:  "Backup-Codes generiert",
     SESSION_REVOKED:         "Sitzung beendet",
     ADMIN_ACTION:            "Admin-Aktion",
-    ACCOUNT_LOCKED:          "Konto gesperrt",
-  };
+    ACCOUNT_LOCKED:          "Konto gesperrt" };
 
   return (
     <SettingsLayout>
@@ -515,8 +496,7 @@ export function SecuritySettingsClient() {
                   <div key={i} style={{
                     width: 12, height: 12, borderRadius: "50%",
                     background: ok ? "#22c55e" : "rgba(255,255,255,.25)",
-                    border: ok ? "none" : "1px solid rgba(255,255,255,.4)",
-                  }} />
+                    border: ok ? "none" : "1px solid rgba(255,255,255,.4)" }} />
                 ))}
               </div>
             </div>
@@ -531,8 +511,7 @@ export function SecuritySettingsClient() {
                   <div style={{
                     width: 18, height: 18, borderRadius: "50%", flexShrink: 0,
                     background: ok ? GREEN : BORDER,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}>
+                    display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {ok && (
                       <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
                         <path d="M1 4l2.5 2.5L9 1" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -639,8 +618,7 @@ export function SecuritySettingsClient() {
                   width: "100%", height: 44, borderRadius: 0, boxSizing: "border-box",
                   border: `1px solid ${disableError ? RED : BORDER}`,
                   textAlign: "center", fontSize: 22, fontWeight: 700, letterSpacing: "0.3em",
-                  fontFamily: "monospace", outline: "none", marginBottom: 8,
-                }}
+                  fontFamily: "monospace", outline: "none", marginBottom: 8 }}
               />
               {disableError && <p style={{ margin: "0 0 8px", fontSize: 12, color: RED }}>{disableError}</p>}
               <div style={{ display: "flex", gap: 8 }}>
@@ -687,14 +665,12 @@ export function SecuritySettingsClient() {
                 <div style={{
                   display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8,
                   background: "#fff", border: `1px solid ${BORDER}`, padding: "16px",
-                  marginBottom: 12,
-                }}>
+                  marginBottom: 12 }}>
                   {backupCodes.map((c) => (
                     <code key={c} style={{
                       fontSize: 14, fontWeight: 700, letterSpacing: "0.15em",
                       fontFamily: "monospace", color: TEXT, padding: "6px 8px",
-                      background: BG, border: `1px solid ${BORDER}`, textAlign: "center",
-                    }}>
+                      background: BG, border: `1px solid ${BORDER}`, textAlign: "center" }}>
                       {c}
                     </code>
                   ))}
@@ -745,8 +721,7 @@ export function SecuritySettingsClient() {
                     style={{
                       width: "100%", height: 40, borderRadius: 0, border: `1px solid ${BORDER}`,
                       padding: "0 12px", fontSize: 14, fontFamily: F, outline: "none", boxSizing: "border-box",
-                      transition: "border-color .15s",
-                    }}
+                      transition: "border-color .15s" }}
                     onFocus={e => (e.currentTarget.style.borderColor = BLUE)}
                     onBlur={e => (e.currentTarget.style.borderColor = BORDER)}
                   />
@@ -778,13 +753,11 @@ export function SecuritySettingsClient() {
                 <div key={s.id} style={{
                   display: "flex", alignItems: "center", justifyContent: "space-between",
                   padding: "11px 0",
-                  borderBottom: i < sessions.length - 1 ? `1px solid ${BORDER}` : "none",
-                }}>
+                  borderBottom: i < sessions.length - 1 ? `1px solid ${BORDER}` : "none" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <div style={{
                       width: 36, height: 36, background: BG, border: `1px solid ${BORDER}`,
-                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                    }}>
+                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={MUTED} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
                       </svg>
@@ -829,14 +802,12 @@ export function SecuritySettingsClient() {
                 <div key={entry.id} style={{
                   display: "flex", alignItems: "flex-start", justifyContent: "space-between",
                   padding: "11px 0",
-                  borderBottom: i < secLog.length - 1 ? `1px solid ${BORDER}` : "none",
-                }}>
+                  borderBottom: i < secLog.length - 1 ? `1px solid ${BORDER}` : "none" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{
                       width: 8, height: 8, borderRadius: "50%", flexShrink: 0, marginTop: 3,
                       background: entry.action.includes("DISABLED") || entry.action === "ACCOUNT_LOCKED"
-                        ? RED : entry.action === "LOGIN" ? GREEN : BLUE,
-                    }} />
+                        ? RED : entry.action === "LOGIN" ? GREEN : BLUE }} />
                     <div>
                       <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: TEXT }}>
                         {ACTION_LABELS[entry.action] ?? entry.action}

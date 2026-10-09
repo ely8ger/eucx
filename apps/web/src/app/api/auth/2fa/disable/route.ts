@@ -7,19 +7,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verify as totpVerify }      from "otplib";
 import { db }                        from "@/lib/db/client";
-import { verifyAccessToken }         from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  let tokenPayload: Awaited<ReturnType<typeof verifyAccessToken>>;
-  try {
-    const authHeader = req.headers.get("authorization");
-    tokenPayload = await verifyAccessToken(authHeader?.slice(7) ?? "");
-  } catch {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
+  let tokenPayload;
+  try { tokenPayload = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   // TOTP-Code prüfen
   let body: { code?: string } = {};

@@ -14,7 +14,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
-import { verifyAccessToken }         from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
 import { runSettlement }             from "@/lib/clearing/clearing-service";
 
@@ -29,16 +29,9 @@ export async function POST(
   const { dealId } = await context.params;
 
   // ── Auth ──────────────────────────────────────────────────────────────────
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
-  let tokenPayload: { userId: string };
-  try {
-    tokenPayload = await verifyAccessToken(authHeader.slice(7));
-  } catch {
-    return NextResponse.json({ error: "Token ungültig" }, { status: 401 });
-  }
+  let tokenPayload;
+  try { tokenPayload = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   try {
     // ── Deal laden + Berechtigung prüfen ──────────────────────────────────
@@ -149,15 +142,9 @@ export async function GET(
 ) {
   const { dealId } = await context.params;
 
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
-  try {
-    await verifyAccessToken(authHeader.slice(7));
-  } catch {
-    return NextResponse.json({ error: "Token ungültig" }, { status: 401 });
-  }
+  let token;
+  try { token = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   const settlement = await db.settlement.findUnique({
     where:   { dealId },

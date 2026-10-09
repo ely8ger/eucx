@@ -44,10 +44,8 @@ async function login(email: string, password: string, ip: string): Promise<strin
     method:  "POST",
     headers: {
       "Content-Type":    "application/json",
-      "X-Forwarded-For": ip,
-    },
-    body: JSON.stringify({ email, password }),
-  });
+      "X-Forwarded-For": ip },
+    body: JSON.stringify({ email, password }) });
   const body = await res.json() as { data?: { accessToken?: string } };
   const token = body.data?.accessToken;
   if (!token) throw new Error(`Login fehlgeschlagen für ${email}: ${JSON.stringify(body)}`);
@@ -70,8 +68,7 @@ function validLotBody(overrides: Record<string, unknown> = {}): Record<string, u
     qualityGrade:     "B500B",
     description:      "Standard-Testbeschreibung",
     greenSteel:       false,
-    ...overrides,
-  };
+    ...overrides };
 }
 
 async function createLot(
@@ -83,11 +80,8 @@ async function createLot(
     method:  "POST",
     headers: {
       "Content-Type":    "application/json",
-      "Authorization":   `Bearer ${buyerToken}`,
-      "X-Forwarded-For": ip,
-    },
-    body: JSON.stringify(body),
-  });
+      "Authorization": `Bearer ${buyerToken}`, "X-Forwarded-For": ip },
+    body: JSON.stringify(body) });
   const json = await res.json() as Record<string, unknown>;
   return { status: res.status, json };
 }
@@ -110,23 +104,20 @@ test.describe("Payload-Stress: Feldlängen-Validierung (Zod)", () => {
 
   test("deliveryLocation 200 Zeichen (Grenzwert) → 201 akzeptiert", async () => {
     const { status } = await createLot(buyerToken, IP_ZOD, validLotBody({
-      deliveryLocation: repeat("X", 200),
-    }));
+      deliveryLocation: repeat("X", 200) }));
     expect(status).toBe(201);
   });
 
   test("deliveryLocation 201 Zeichen → 422 (max 200)", async () => {
     const { status, json } = await createLot(buyerToken, IP_ZOD, validLotBody({
-      deliveryLocation: repeat("X", 201),
-    }));
+      deliveryLocation: repeat("X", 201) }));
     expect(status).toBe(422);
     expect(json["error"] ?? json["details"]).toBeTruthy();
   });
 
   test("deliveryLocation 10.000 Zeichen → 422", async () => {
     const { status, json } = await createLot(buyerToken, IP_ZOD, validLotBody({
-      deliveryLocation: repeat("A", 10_000),
-    }));
+      deliveryLocation: repeat("A", 10_000) }));
     expect(status).toBe(422);
     expect(json["error"] ?? json["details"]).toBeTruthy();
   });
@@ -135,23 +126,20 @@ test.describe("Payload-Stress: Feldlängen-Validierung (Zod)", () => {
 
   test("description 2.000 Zeichen (Grenzwert) → 201 akzeptiert", async () => {
     const { status } = await createLot(buyerToken, IP_ZOD, validLotBody({
-      description: repeat("B", 2_000),
-    }));
+      description: repeat("B", 2_000) }));
     expect(status).toBe(201);
   });
 
   test("description 2.001 Zeichen → 422", async () => {
     const { status, json } = await createLot(buyerToken, IP_ZOD, validLotBody({
-      description: repeat("B", 2_001),
-    }));
+      description: repeat("B", 2_001) }));
     expect(status).toBe(422);
     expect(json["error"] ?? json["details"]).toBeTruthy();
   });
 
   test("description 10.000 Zeichen → 422", async () => {
     const { status, json } = await createLot(buyerToken, IP_ZOD, validLotBody({
-      description: repeat("C", 10_000),
-    }));
+      description: repeat("C", 10_000) }));
     expect(status).toBe(422);
     expect(json["error"] ?? json["details"]).toBeTruthy();
   });
@@ -170,8 +158,7 @@ test.describe("Payload-Stress: Feldlängen-Validierung (Zod)", () => {
 
   test("qualityGrade 121 Zeichen → 422", async () => {
     const { status, json } = await createLot(buyerToken, IP_ZOD, validLotBody({
-      qualityGrade: repeat("Q", 121),
-    }));
+      qualityGrade: repeat("Q", 121) }));
     expect(status).toBe(422);
     expect(json["error"] ?? json["details"]).toBeTruthy();
   });
@@ -180,8 +167,7 @@ test.describe("Payload-Stress: Feldlängen-Validierung (Zod)", () => {
 
   test("hsCode 21 Zeichen → 422 (max 20)", async () => {
     const { status, json } = await createLot(buyerToken, IP_ZOD, validLotBody({
-      hsCode: repeat("7", 21),
-    }));
+      hsCode: repeat("7", 21) }));
     expect(status).toBe(422);
     expect(json["error"] ?? json["details"]).toBeTruthy();
   });
@@ -191,23 +177,20 @@ test.describe("Payload-Stress: Feldlängen-Validierung (Zod)", () => {
   test("quantity = 1.000.000 TON → 201 (kein Max-Limit in Zod)", async () => {
     const { status } = await createLot(buyerToken, IP_ZOD, validLotBody({
       quantity:   1_000_000,
-      startPrice: 0.01,
-    }));
+      startPrice: 0.01 }));
     expect(status).toBe(201);
   });
 
   test("quantity = -1 → 422 (muss positiv sein)", async () => {
     const { status, json } = await createLot(buyerToken, IP_ZOD, validLotBody({
-      quantity: -1,
-    }));
+      quantity: -1 }));
     expect(status).toBe(422);
     expect(json["error"] ?? json["details"]).toBeTruthy();
   });
 
   test("quantity = 0 → 422 (muss positiv sein)", async () => {
     const { status, json } = await createLot(buyerToken, IP_ZOD, validLotBody({
-      quantity: 0,
-    }));
+      quantity: 0 }));
     expect(status).toBe(422);
     expect(json["error"] ?? json["details"]).toBeTruthy();
   });
@@ -224,30 +207,26 @@ test.describe("Payload-Stress: Unicode & Emoji in Textfeldern", () => {
 
   test("Chinesische Schriftzeichen in deliveryLocation (< 200 Zeichen) → 201", async () => {
     const { status } = await createLot(buyerToken, IP_UNICODE, validLotBody({
-      deliveryLocation: "上海自由貿易試驗區 - 中国上海市浦東新区",
-    }));
+      deliveryLocation: "上海自由貿易試驗區 - 中国上海市浦東新区" }));
     expect(status).toBe(201);
   });
 
   test("Arabische Schriftzeichen in deliveryLocation → 201", async () => {
     const { status } = await createLot(buyerToken, IP_UNICODE, validLotBody({
-      deliveryLocation: "منطقة دبي الصناعية - دبي، الإمارات",
-    }));
+      deliveryLocation: "منطقة دبي الصناعية - دبي، الإمارات" }));
     expect(status).toBe(201);
   });
 
   test("Emojis in description (< 2000 Zeichen) → 201, kein Server-Absturz", async () => {
     const { status, json } = await createLot(buyerToken, IP_UNICODE, validLotBody({
-      description: "Lot 🚢 für Exportlieferung 🇩🇪→🇧🇷 · Qualität: ✅ · Preis: 💰",
-    }));
+      description: "Lot 🚢 für Exportlieferung 🇩🇪→🇧🇷 · Qualität: ✅ · Preis: 💰" }));
     expect(status).toBe(201);
     expect(json["lotId"]).toBeTruthy();
   });
 
   test("Null-Byte in deliveryLocation → kein 500 (Server darf nicht abstürzen)", async () => {
     const { status } = await createLot(buyerToken, IP_UNICODE, validLotBody({
-      deliveryLocation: "Frankfurt Böse",
-    }));
+      deliveryLocation: "Frankfurt Böse" }));
     expect(status).not.toBe(500);
     expect(status).not.toBe(502);
   });
@@ -265,16 +244,14 @@ test.describe("Payload-Stress: Unicode & Emoji in Textfeldern", () => {
     // Zod max(200) zählt JS-String-Länge = UTF-16-Einheiten: 100 × 🏭 = 200 → OK
     const hundert = "🏭".repeat(100);
     const { status } = await createLot(buyerToken, IP_UNICODE, validLotBody({
-      deliveryLocation: hundert,
-    }));
+      deliveryLocation: hundert }));
     expect(status).toBe(201);
   });
 
   test("101 Emojis (🏭) in deliveryLocation = 202 UTF-16-Einheiten → 422", async () => {
     const hundertEins = "🏭".repeat(101); // 101 × 2 = 202 > 200
     const { status } = await createLot(buyerToken, IP_UNICODE, validLotBody({
-      deliveryLocation: hundertEins,
-    }));
+      deliveryLocation: hundertEins }));
     expect(status).toBe(422);
   });
 });
@@ -297,40 +274,31 @@ test.describe("Payload-Stress: PDF-Generierung mit Unicode-Inhalt", () => {
       qualityGrade:     "B500B ✅ nach DIN 488",
       description:      "Bewehrungsstahl 📦 für Bauprojekt 🏗️ Hamburg",
       deliveryPeriod:   "4 Wochen 📅",
-      paymentTerms:     "30 Tage netto 💳",
-    }));
+      paymentTerms:     "30 Tage netto 💳" }));
     expect(cs).toBe(201);
     const lotId = cj["lotId"] as string;
 
     // Lot durch Auction-Flow führen
     await fetch(`${BASE}/api/auction/lots/${lotId}/publish`, {
       method: "PATCH",
-      headers: { "Authorization": `Bearer ${buyerToken}`, "X-Forwarded-For": IP_PDF },
-    });
+      headers: { "Authorization": `Bearer ${buyerToken}`, "X-Forwarded-For": IP_PDF } });
     await fetch(`${BASE}/api/auction/lots/${lotId}/register`, {
       method: "POST",
-      headers: { "Authorization": `Bearer ${sellerToken}`, "X-Forwarded-For": IP_PDF },
-    });
+      headers: { "Authorization": `Bearer ${sellerToken}`, "X-Forwarded-For": IP_PDF } });
     await fetch(`${BASE}/api/auction/lots/${lotId}/open`, {
       method:  "POST",
       headers: {
         "Content-Type":    "application/json",
-        "Authorization":   `Bearer ${buyerToken}`,
-        "X-Forwarded-For": IP_PDF,
-      },
-      body: JSON.stringify({ auctionEnd: new Date(Date.now() + 30 * 60_000).toISOString() }),
-    });
+        "Authorization": `Bearer ${buyerToken}`, "X-Forwarded-For": IP_PDF },
+      body: JSON.stringify({ auctionEnd: new Date(Date.now() + 30 * 60_000).toISOString() }) });
 
     // Bid (Seller)
     const bidRes = await fetch(`${BASE}/api/auction/lots/${lotId}/bids`, {
       method:  "POST",
       headers: {
         "Content-Type":    "application/json",
-        "Authorization":   `Bearer ${sellerToken}`,
-        "X-Forwarded-For": IP_PDF,
-      },
-      body: JSON.stringify({ price: 380 }),
-    });
+        "Authorization": `Bearer ${sellerToken}`, "X-Forwarded-For": IP_PDF },
+      body: JSON.stringify({ price: 380 }) });
     expect(bidRes.status).toBe(201);
     const bidBody = await bidRes.json() as { bidId?: string };
     const bidId   = bidBody.bidId!;
@@ -340,11 +308,8 @@ test.describe("Payload-Stress: PDF-Generierung mit Unicode-Inhalt", () => {
       method:  "POST",
       headers: {
         "Content-Type":    "application/json",
-        "Authorization":   `Bearer ${buyerToken}`,
-        "X-Forwarded-For": IP_PDF,
-      },
-      body: JSON.stringify({ bidId }),
-    });
+        "Authorization": `Bearer ${buyerToken}`, "X-Forwarded-For": IP_PDF },
+      body: JSON.stringify({ bidId }) });
 
     // Server darf unter keinen Umständen abstürzen (kein 500/502)
     expect(acceptRes.status).not.toBe(500);
@@ -360,10 +325,7 @@ test.describe("Payload-Stress: PDF-Generierung mit Unicode-Inhalt", () => {
           `${BASE}/api/auction/contracts/${contractId}/pdf`,
           {
             headers: {
-              "Authorization":   `Bearer ${buyerToken}`,
-              "X-Forwarded-For": IP_PDF,
-            },
-          }
+              "Authorization": `Bearer ${buyerToken}`, "X-Forwarded-For": IP_PDF } }
         );
 
         // Kein unkontrollierter Fehler

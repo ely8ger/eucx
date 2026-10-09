@@ -19,44 +19,37 @@ const IN_APP_TYPES = [
     code: "OUTBID",
     label: "Überboten",
     desc:  "Erscheint sofort, wenn ein Mitbieter Ihr aktuelles Gebot unterbietet. Rot hervorgehoben.",
-    moment: "Sekunden nach Eingabe eines neuen Gebots",
-  },
+    moment: "Sekunden nach Eingabe eines neuen Gebots" },
   {
     code: "LEADING",
     label: "Führendes Gebot",
     desc:  "Bestätigung: Sie halten aktuell das niedrigste Angebot und führen die Auktion.",
-    moment: "Nach erfolgreicher Gebotsannahme",
-  },
+    moment: "Nach erfolgreicher Gebotsannahme" },
   {
     code: "URGENCY_10M",
     label: "10-Minuten-Warnung",
     desc:  "Erinnerung, wenn die Angebotsphase noch 10 Minuten läuft und Sie registriert sind.",
-    moment: "Automatisch T−10 min vor Angebotsschluss",
-  },
+    moment: "Automatisch T−10 min vor Angebotsschluss" },
   {
     code: "URGENCY_5M",
     label: "5-Minuten-Alarm",
     desc:  "Kritische Warnung (rot) bei 5 Minuten Restlaufzeit. Mit Vibration auf Mobilgeräten.",
-    moment: "Automatisch T−5 min vor Angebotsschluss",
-  },
+    moment: "Automatisch T−5 min vor Angebotsschluss" },
   {
     code: "WON",
     label: "Auktion gewonnen",
     desc:  "Bestätigung des Zuschlags, Vertragsnummer und Link zum unterzeichneten PDF-Dokument.",
-    moment: "Sofort nach Auktionsabschluss",
-  },
+    moment: "Sofort nach Auktionsabschluss" },
   {
     code: "LOST",
     label: "Nicht erhalten",
     desc:  "Benachrichtigung, dass ein anderer Bieter den Zuschlag erhalten hat.",
-    moment: "Sofort nach Auktionsabschluss",
-  },
+    moment: "Sofort nach Auktionsabschluss" },
   {
     code: "DEPOSIT_WARN",
     label: "Kaution niedrig",
     desc:  "Warnung, wenn Ihre Sicherheitsleistung unter den Mindestbetrag für laufende Positionen sinkt.",
-    moment: "Wenn Kontostand unter Schwellwert fällt",
-  },
+    moment: "Wenn Kontostand unter Schwellwert fällt" },
 ];
 
 export function NotificationsSettingsClient() {
@@ -70,8 +63,7 @@ export function NotificationsSettingsClient() {
   useEffect(() => {
     if (!token) return;
     fetch("/api/notifications/preferences", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+      headers: { } })
       .then((r) => r.ok ? r.json() : null)
       .then((d: Prefs | null) => { if (d) setPrefs(d); setLoading(false); })
       .catch(() => setLoading(false));
@@ -84,13 +76,11 @@ export function NotificationsSettingsClient() {
     try {
       const r = await fetch("/api/notifications/preferences", {
         method:  "PATCH",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body:    JSON.stringify(patch),
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(patch) });
       if (r.ok) {
         toast.success("Gespeichert", {
-          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" },
-        });
+          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" } });
       } else {
         toast.error("Speichern fehlgeschlagen");
       }

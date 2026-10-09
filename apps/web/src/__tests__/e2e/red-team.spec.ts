@@ -79,8 +79,7 @@ test.describe("RED TEAM - Authentifizierung", () => {
     const payload = Buffer.from(JSON.stringify({
       userId: "seed-user-buyer", orgId: "seed-org-eucx-test", role: "BUYER",
       email: "buyer@eucx-test.de", iss: "eucx.eu", aud: "eucx-api",
-      iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + 3600,
-    })).toString("base64url");
+      iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + 3600 })).toString("base64url");
     const noneToken = `${header}.${payload}.`;
 
     const { status } = await api("/api/auction/lots", noneToken);
@@ -213,8 +212,7 @@ test.describe("RED TEAM - IDOR & Autorisierung", () => {
       commodity: "REBAR_B500B", quantity: 5, unit: "TON", startPrice: 300,
       incoterms: "DAP", deliveryLocation: "Red-Team-Ort", deliveryPeriod: "1 Woche",
       paymentTerms: "7 Tage", vatTreatment: "INLAND_19", hsCode: "7214200010",
-      qualityGrade: "B500B", description: "Red-Team-Lot", greenSteel: false,
-    });
+      qualityGrade: "B500B", description: "Red-Team-Lot", greenSteel: false });
     expect(createRes.status).toBe(201);
     const lotId = (createRes.body as { lotId: string }).lotId;
 
@@ -233,8 +231,7 @@ test.describe("RED TEAM - IDOR & Autorisierung", () => {
       commodity: "REBAR_B500B", quantity: 5, unit: "TON", startPrice: 300,
       incoterms: "DAP", deliveryLocation: "Red-Team-Ort-2", deliveryPeriod: "1 Woche",
       paymentTerms: "7 Tage", vatTreatment: "INLAND_19", hsCode: "7214200010",
-      qualityGrade: "B500B", description: "IDOR-Test-Lot", greenSteel: false,
-    });
+      qualityGrade: "B500B", description: "IDOR-Test-Lot", greenSteel: false });
     const lotId = (createRes.body as { lotId: string }).lotId;
     await api(`/api/auction/lots/${lotId}/publish`, buyerToken, "PATCH");
     await api(`/api/auction/lots/${lotId}/register`, seller1Token, "POST"); // nur seller1 registriert
@@ -266,8 +263,7 @@ test.describe("RED TEAM - Business Logic", () => {
       commodity: "REBAR_B500B", quantity: 10, unit: "TON", startPrice: 500,
       incoterms: "DAP", deliveryLocation: "Race-Condition-Ort", deliveryPeriod: "2 Wochen",
       paymentTerms: "30 Tage", vatTreatment: "INLAND_19", hsCode: "7214200010",
-      qualityGrade: "B500B", description: "Race-Test", greenSteel: false,
-    });
+      qualityGrade: "B500B", description: "Race-Test", greenSteel: false });
     const lotId = (cr.body as { lotId: string }).lotId;
     await api(`/api/auction/lots/${lotId}/publish`, buyerToken, "PATCH");
     await api(`/api/auction/lots/${lotId}/register`, sellerToken, "POST");
@@ -289,8 +285,7 @@ test.describe("RED TEAM - Business Logic", () => {
       commodity: "REBAR_B500B", quantity: 10, unit: "TON", startPrice: 400,
       incoterms: "DAP", deliveryLocation: "Preis-Attack-Ort", deliveryPeriod: "2 Wochen",
       paymentTerms: "30 Tage", vatTreatment: "INLAND_19", hsCode: "7214200010",
-      qualityGrade: "B500B", description: "Preis-Attack", greenSteel: false,
-    });
+      qualityGrade: "B500B", description: "Preis-Attack", greenSteel: false });
     const lotId = (cr.body as { lotId: string }).lotId;
     await api(`/api/auction/lots/${lotId}/publish`, buyerToken, "PATCH");
     await api(`/api/auction/lots/${lotId}/register`, sellerToken, "POST");
@@ -307,8 +302,7 @@ test.describe("RED TEAM - Business Logic", () => {
       commodity: "REBAR_B500B", quantity: 10, unit: "TON", startPrice: 300,
       incoterms: "DAP", deliveryLocation: "State-Machine-Bypass", deliveryPeriod: "1 Woche",
       paymentTerms: "7 Tage", vatTreatment: "INLAND_19", hsCode: "7214200010",
-      qualityGrade: "B500B", description: "Draft-Lot", greenSteel: false,
-    });
+      qualityGrade: "B500B", description: "Draft-Lot", greenSteel: false });
     const lotId = (cr.body as { lotId: string }).lotId;
     // Kein publish/register/open - Lot ist DRAFT
     const { status } = await api(`/api/auction/lots/${lotId}/bids`, sellerToken, "POST", { price: 250 });
@@ -320,8 +314,7 @@ test.describe("RED TEAM - Business Logic", () => {
       commodity: "REBAR_B500B", quantity: 5, unit: "TON", startPrice: 300,
       incoterms: "DAP", deliveryLocation: "Neg-Preis-Test", deliveryPeriod: "1 Woche",
       paymentTerms: "7 Tage", vatTreatment: "INLAND_19", hsCode: "7214200010",
-      qualityGrade: "B500B", description: "Neg-Test", greenSteel: false,
-    });
+      qualityGrade: "B500B", description: "Neg-Test", greenSteel: false });
     const lotId = (cr.body as { lotId: string }).lotId;
     await api(`/api/auction/lots/${lotId}/publish`, buyerToken, "PATCH");
     await api(`/api/auction/lots/${lotId}/register`, sellerToken, "POST");
@@ -379,8 +372,7 @@ test.describe("RED TEAM - Injection & Payloads", () => {
   test("[BLOCKED] Oversized JSON-Body (1MB+)", async () => {
     const huge = "X".repeat(1_100_000); // 1.1MB
     const { status } = await api("/api/auction/lots", buyerToken, "POST", {
-      commodity: huge,
-    });
+      commodity: huge });
     // Server darf nicht abstürzen (kein 500). 413 oder 422 erwartet.
     expect(status).not.toBe(500);
     expect([400, 413, 422]).toContain(status);
@@ -392,8 +384,7 @@ test.describe("RED TEAM - Injection & Payloads", () => {
     const res = await fetch(`${BASE}/api/auction/lots`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${buyerToken}` },
-      body: poisoned,
-    });
+      body: poisoned });
     // Muss abgeblockt oder sauber verarbeitet werden - kein 500, keine Rechteerhöhung
     expect(res.status).not.toBe(500);
   });
@@ -429,8 +420,7 @@ test.describe("RED TEAM - Session & Token", () => {
     // Logout
     await fetch(`${BASE}/api/auth/logout`, {
       method: "POST",
-      headers: { "Authorization": `Bearer ${token}`, "X-Forwarded-For": "172.16.3.1" },
-    });
+      headers: { "Authorization": `Bearer ${token}`, "X-Forwarded-For": "172.16.3.1" } });
 
     // Nach Logout: Token muss gesperrt sein (JTI in Blacklist)
     const { status: after } = await api("/api/auction/lots", token!, "GET", undefined, "172.16.3.1");
@@ -442,8 +432,7 @@ test.describe("RED TEAM - Session & Token", () => {
     const loginRes = await fetch(`${BASE}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "seller1@eucx-test.de", password: "Test1234!" }),
-    });
+      body: JSON.stringify({ email: "seller1@eucx-test.de", password: "Test1234!" }) });
     const setCookie = loginRes.headers.get("set-cookie") ?? "";
     const rtMatch   = setCookie.match(/refresh_token=([^;]+)/);
     if (!rtMatch) { return; } // kein Cookie-Flow im Test-Kontext - skip
@@ -451,14 +440,12 @@ test.describe("RED TEAM - Session & Token", () => {
     // Logout
     await fetch(`${BASE}/api/auth/logout`, {
       method: "POST",
-      headers: { "Cookie": `refresh_token=${rtMatch[1]}` },
-    });
+      headers: { "Cookie": `refresh_token=${rtMatch[1]}` } });
 
     // Refresh-Token nochmal verwenden → muss scheitern
     const refreshRes = await fetch(`${BASE}/api/auth/refresh`, {
       method: "POST",
-      headers: { "Cookie": `refresh_token=${rtMatch[1]}` },
-    });
+      headers: { "Cookie": `refresh_token=${rtMatch[1]}` } });
     expect([401, 403]).toContain(refreshRes.status);
   });
 

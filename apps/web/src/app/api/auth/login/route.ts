@@ -185,7 +185,7 @@ export async function POST(req: NextRequest) {
       data: {
         userId:    user.id,
         tokenHash,
-        expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         ipAddress: ip,
         userAgent: req.headers.get("user-agent") ?? "unbekannt",
       },
@@ -224,7 +224,7 @@ export async function POST(req: NextRequest) {
       httpOnly: true,
       secure:   process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge:   90 * 24 * 60 * 60,
+      maxAge:   30 * 24 * 60 * 60,
       path:     "/api/auth/refresh",
     });
 

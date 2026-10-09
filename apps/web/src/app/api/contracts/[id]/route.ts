@@ -12,7 +12,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { verifyAccessToken } from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { audit } from "@/lib/audit/logger";
 import { compare as bcryptCompare } from "bcryptjs";
 import { verifyContractIntegrity } from "@/lib/contracts/generator";
@@ -28,16 +28,9 @@ export async function POST(
   const { id: contractId } = await context.params;
 
   // ── Auth ──────────────────────────────────────────────────────────────────
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
-  let tokenPayload: { userId: string };
-  try {
-    tokenPayload = await verifyAccessToken(authHeader.slice(7));
-  } catch {
-    return NextResponse.json({ error: "Token ungültig" }, { status: 401 });
-  }
+  let tokenPayload;
+  try { tokenPayload = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   const body = await req.json().catch(() => null) as { edsToken?: string } | null;
   if (!body?.edsToken) {
@@ -193,16 +186,9 @@ export async function GET(
 ) {
   const { id: contractId } = await context.params;
 
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
-  let tokenPayload: { userId: string };
-  try {
-    tokenPayload = await verifyAccessToken(authHeader.slice(7));
-  } catch {
-    return NextResponse.json({ error: "Token ungültig" }, { status: 401 });
-  }
+  let tokenPayload;
+  try { tokenPayload = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   const contract = await db.contract.findUnique({
     where:   { id: contractId },

@@ -111,8 +111,7 @@ export async function middleware(req: NextRequest) {
             ip,
             userId: payload.userId,
             path:   pathname,
-            detail: `JTI ${payload.jti}`,
-          });
+            detail: `JTI ${payload.jti}` });
           return NextResponse.json(
             { code: "TOKEN_REVOKED", message: "Sitzung wurde beendet. Bitte erneut anmelden." },
             { status: 401 },
@@ -128,8 +127,7 @@ export async function middleware(req: NextRequest) {
           ip,
           userId: payload.userId,
           path:   pathname,
-          bucket: "api",
-        });
+          bucket: "api" });
         return NextResponse.json(
           { code: "RATE_LIMITED", message: "Zu viele Anfragen. Bitte warten Sie kurz." },
           { status: 429, headers: rateLimitHeaders(apiRl) },
@@ -204,5 +202,4 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
-};
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"] };

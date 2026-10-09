@@ -10,7 +10,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
-import { verifyAccessToken }         from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
 import { z }                         from "zod";
@@ -29,13 +29,9 @@ const bodySchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  let tokenPayload: Awaited<ReturnType<typeof verifyAccessToken>>;
-  try {
-    tokenPayload = await verifyAccessToken(authHeader?.slice(7) ?? "");
-  } catch {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
+  let tokenPayload;
+  try { tokenPayload = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   let body: unknown;
   try { body = await req.json(); } catch {

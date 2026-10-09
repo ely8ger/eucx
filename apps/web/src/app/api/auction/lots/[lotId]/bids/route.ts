@@ -9,7 +9,7 @@
  * Auth: Bearer JWT
  */
 import { NextRequest, NextResponse } from "next/server";
-import { verifyAccessToken } from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { placeBid, type BidCbamData } from "@/lib/auction/price-engine";
 import { checkBidEligibility } from "@/lib/auction/kyc-guard";
 import { notifyOutbid, notifyLeading } from "@/lib/notifications/notification-service";
@@ -69,13 +69,9 @@ async function _handlePost(
   }
 
   // ── Auth ──────────────────────────────────────────────────────────
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
   let token;
-  try { token = await verifyAccessToken(authHeader.slice(7)); }
-  catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
+  try { token = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   // ── Validation ────────────────────────────────────────────────────
   let body: unknown;
@@ -213,13 +209,9 @@ export async function GET(
   { params }: { params: Promise<{ lotId: string }> }
 ) {
   const { lotId } = await params;
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
   let token;
-  try { token = await verifyAccessToken(authHeader.slice(7)); }
-  catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
+  try { token = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   const lot = await db.lot.findUnique({
     where:  { id: lotId },

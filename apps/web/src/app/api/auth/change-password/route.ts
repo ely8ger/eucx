@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z }                         from "zod";
 import { db }                        from "@/lib/db/client";
-import { verifyAccessToken }         from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { verifyPassword, hashPassword } from "@/lib/auth/password";
 import { isPwnedPassword }           from "@/lib/auth/pwned-password";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
@@ -19,13 +19,9 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const auth = req.headers.get("authorization");
-  let payload: Awaited<ReturnType<typeof verifyAccessToken>>;
-  try {
-    payload = await verifyAccessToken(auth?.slice(7) ?? "");
-  } catch {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
+  let payload;
+  try { payload = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   let body: unknown;
   try { body = await req.json(); } catch {

@@ -15,8 +15,7 @@ const F     = "'IBM Plex Sans', Arial, sans-serif";
 const SCOPE_INFO: Record<string, { label: string; desc: string; color: string }> = {
   "market:read":  { label: "Markt lesen",      desc: "Kurse, Orderbuch, Handelssitzungen und OHLC-Kerzendaten abrufen", color: "#154194" },
   "trade:write":  { label: "Handel schreiben", desc: "Ausschreibungen erstellen, Gebote abgeben, Registrierungen verwalten", color: "#16a34a" },
-  "wallet:read":  { label: "Konto lesen",      desc: "Kontostand, Gebühren und Transaktionsverlauf abrufen", color: "#7c3aed" },
-};
+  "wallet:read":  { label: "Konto lesen",      desc: "Kontostand, Gebühren und Transaktionsverlauf abrufen", color: "#7c3aed" } };
 
 const ALL_SCOPES = Object.keys(SCOPE_INFO) as Array<keyof typeof SCOPE_INFO>;
 
@@ -69,8 +68,7 @@ export function ApiKeysClient() {
     setLoading(true);
     try {
       const r = await fetch("/api/settings/api-keys", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (r.ok) {
         const d = await r.json() as { data: ApiKey[] };
         setKeys(d.data ?? []);
@@ -95,9 +93,8 @@ export function ApiKeysClient() {
 
       const r = await fetch("/api/settings/api-keys", {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body:    JSON.stringify(body),
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(body) });
       const d = await r.json() as { data?: { fullKey: string }; error?: string };
       if (!r.ok) { setFormError(d.error ?? "Fehler beim Erstellen."); return; }
 
@@ -117,12 +114,10 @@ export function ApiKeysClient() {
     try {
       const r = await fetch(`/api/settings/api-keys/${id}`, {
         method:  "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (r.ok) {
         toast.success("API-Schlüssel widerrufen", {
-          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" },
-        });
+          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" } });
         setConfirmId(null);
         await load();
       } else {
@@ -565,7 +560,7 @@ export function ApiKeysClient() {
               <code style={{ fontFamily: "monospace", background: "#f3f4f6", padding: "1px 5px", fontSize: 12 }}>Authorization</code>
               -Header jeder Anfrage:
             </p>
-            <div className="ak-code">{`curl -H "Authorization: Bearer eucx_live_XXXXX_..." \\
+            <div className="ak-code">{`curl -H " Bearer eucx_live_XXXXX_..." \\
      https://eucx.eu/api/auction/lots`}</div>
             <p style={{ fontSize: 12, color: "#6b7280", margin: "0 0 16px", lineHeight: 1.6 }}>
               Antworten erfolgen im JSON-Format. HTTP-Statuscodes: <code style={{ fontFamily: "monospace" }}>200</code> OK,{" "}

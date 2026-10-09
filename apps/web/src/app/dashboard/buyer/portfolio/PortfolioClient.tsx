@@ -51,8 +51,7 @@ const COMMODITY_LABELS: Record<string, string> = {
   REBAR_B500B: "Betonstahl B500B",
   WIRE_ROD:   "Walzdraht",
   HRC:        "Warmbreitband",
-  PLATE:      "Grobblech",
-};
+  PLATE:      "Grobblech" };
 const commodityLabel = (c: string) => COMMODITY_LABELS[c] ?? c.replace(/_/g, " ");
 
 export function PortfolioClient() {
@@ -68,7 +67,7 @@ export function PortfolioClient() {
     if (!token) return;
     setLoading(true);
     try {
-      const hdrs = { Authorization: `Bearer ${token}` };
+      const hdrs = { };
 
       const [cRes, lRes] = await Promise.all([
         fetch("/api/auction/contracts", { headers: hdrs }),
@@ -91,8 +90,7 @@ export function PortfolioClient() {
           contract:    c,
           lot,
           savings:     Math.max(0, (sp - fp) * qty),
-          co2Exposure: co2,
-        };
+          co2Exposure: co2 };
       });
 
       setData(enriched);
@@ -106,8 +104,7 @@ export function PortfolioClient() {
     setExporting(true);
     try {
       const r = await fetch("/api/market/export?format=csv", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (!r.ok) return;
       const blob = await r.blob();
       const url  = URL.createObjectURL(blob);

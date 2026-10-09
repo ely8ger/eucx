@@ -4,7 +4,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { verifyAccessToken } from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { ChargeStatus } from "@prisma/client";
 import { z } from "zod";
 import { audit } from "@/lib/audit/logger";
@@ -28,14 +28,8 @@ const createSchema = z.object({
 });
 
 async function authenticate(req: NextRequest) {
-  const auth = req.headers.get("authorization");
-  if (!auth?.startsWith("Bearer ")) return null;
-  try {
-    const token = await verifyAccessToken(auth.slice(7));
-    return token;
-  } catch {
-    return null;
-  }
+  try { return await requireAuth(req); }
+  catch { return null; }
 }
 
 // ── GET ────────────────────────────────────────────────────────────────────────

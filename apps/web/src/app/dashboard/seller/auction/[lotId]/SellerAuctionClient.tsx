@@ -76,8 +76,7 @@ function useCountdown(endIso: string | null) {
   return {
     label:    ms === 0 ? (endIso ? "Abgelaufen" : "-") : `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`,
     isUrgent: ms > 0 && ms < 10 * 60_000,
-    ms,
-  };
+    ms };
 }
 
 // ── Main Component ────────────────────────────────────────────────────────────
@@ -99,8 +98,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   const [cbamData,    setCbamData]    = useState<CbamData>({
     cbamCountryOfOrigin: "", cbamCountryOfExport: "", cbamProductionSiteId: "",
     cbamCo2DirectPerTonne: "", cbamCo2IndirectPerTonne: "",
-    cbamCarbonPricePaid: "", cbamVerificationRef: "",
-  });
+    cbamCarbonPricePaid: "", cbamVerificationRef: "" });
 
   const prevBest    = useRef<string | null>(lot.currentBest);
   const prevLeading = useRef<boolean | null>(null);
@@ -116,7 +114,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   // ── KYC ──────────────────────────────────────────────────────────
   const loadKyc = useCallback(async (tkn: string) => {
     try {
-      const r = await fetch("/api/auth/me", { headers: { Authorization: `Bearer ${tkn}` } });
+      const r = await fetch("/api/auth/me", { headers: { } });
       if (!r.ok) return;
       const d = await r.json();
       setKyc({ verificationStatus: d.verificationStatus ?? "GUEST", isYoungCompany: d.isYoungCompany ?? false, walletBalance: d.walletBalance ?? "0" });
@@ -153,7 +151,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   const loadBids = useCallback(async (tkn: string) => {
     if (!tkn) return;
     try {
-      const r = await fetch(`/api/auction/lots/${lot.id}/bids`, { headers: { Authorization: `Bearer ${tkn}` } });
+      const r = await fetch(`/api/auction/lots/${lot.id}/bids`, { headers: { } });
       if (!r.ok) return;
       const d = await r.json();
       setAllBids(d.bids ?? []);
@@ -195,26 +193,22 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         cbamCo2DirectPerTonne:   cbamData.cbamCo2DirectPerTonne   ? Number(cbamData.cbamCo2DirectPerTonne)   : undefined,
         cbamCo2IndirectPerTonne: cbamData.cbamCo2IndirectPerTonne ? Number(cbamData.cbamCo2IndirectPerTonne) : undefined,
         cbamCarbonPricePaid:     cbamData.cbamCarbonPricePaid     ? Number(cbamData.cbamCarbonPricePaid)     : undefined,
-        cbamVerificationRef:     cbamData.cbamVerificationRef     || undefined,
-      } : undefined;
+        cbamVerificationRef:     cbamData.cbamVerificationRef     || undefined } : undefined;
       if (cbamPayload) localStorage.setItem(CBAM_STORAGE_KEY, JSON.stringify(cbamData));
       const r = await fetch(`/api/auction/lots/${lot.id}/bids`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ price, cbam: cbamPayload }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ price, cbam: cbamPayload }) });
       const d = await r.json();
       if (!r.ok) {
         if (d.kycRequired) {
           toast.error("Aktion verweigert: KYC-Profil abschließen", {
             action: { label: "Jetzt verifizieren", onClick: () => { window.location.href = "/dashboard/settings/verification"; } },
             style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" },
-            duration: 8000,
-          });
+            duration: 8000 });
         } else {
           toast.error(d.error ?? "Gebot abgelehnt", {
-            style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" },
-          });
+            style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" } });
         }
         setBtnState("error");
         setTimeout(() => setBtnState("idle"), 1500);
@@ -255,47 +249,41 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         toast.error(n.title, {
           description: n.message,
           duration:    8000,
-          style: { background: "#fef2f2", border: "2px solid #dc2626", color: "#7f1d1d" },
-        });
+          style: { background: "#fef2f2", border: "2px solid #dc2626", color: "#7f1d1d" } });
         break;
       case "LEADING":
         toast.success(n.title, {
           description: n.message,
           duration:    4000,
-          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" },
-        });
+          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" } });
         break;
       case "URGENCY_10M":
         vibrate([100]);
         toast(n.title, {
           description: n.message,
           duration:    10000,
-          style: { background: "#fffbeb", border: "1px solid #d97706", color: "#92400e" },
-        });
+          style: { background: "#fffbeb", border: "1px solid #d97706", color: "#92400e" } });
         break;
       case "URGENCY_5M":
         vibrate([300, 100, 300, 100, 300]);
         toast.error(n.title, {
           description: n.message,
           duration:    15000,
-          style: { background: "#fef2f2", border: "2px solid #dc2626", color: "#7f1d1d" },
-        });
+          style: { background: "#fef2f2", border: "2px solid #dc2626", color: "#7f1d1d" } });
         break;
       case "WON":
         vibrate([100, 50, 100]);
         toast.success(n.title, {
           description: n.message,
           duration:    10000,
-          style: { background: "#f0fdf4", border: "2px solid #16a34a", color: "#14532d" },
-        });
+          style: { background: "#f0fdf4", border: "2px solid #16a34a", color: "#14532d" } });
         break;
       case "DEPOSIT_WARN":
         vibrate([100]);
         toast(n.title, {
           description: n.message,
           duration:    10000,
-          style: { background: "#fffbeb", border: "1px solid #d97706", color: "#92400e" },
-        });
+          style: { background: "#fffbeb", border: "1px solid #d97706", color: "#92400e" } });
         break;
       default:
         toast(n.title, { description: n.message, duration: 5000 });
@@ -314,21 +302,19 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
 
   const downloadContract = async () => {
     try {
-      const r = await fetch(`/api/auction/lots/${lot.id}/contract`, { headers: { Authorization: `Bearer ${token}` } });
+      const r = await fetch(`/api/auction/lots/${lot.id}/contract`, { headers: { } });
       if (r.status === 202) {
         const d = await r.json();
         toast("Kaufvertrag wird generiert", {
           description: `Bitte in ${d.retry ?? 15} Sekunden erneut versuchen.`,
           duration: 8000,
-          style: { background: "#fffbeb", border: "1px solid #d97706", color: "#92400e" },
-        });
+          style: { background: "#fffbeb", border: "1px solid #d97706", color: "#92400e" } });
         return;
       }
       if (!r.ok) {
         const d = await r.json().catch(() => ({}));
         toast.error(d.error ?? "Vertrag noch nicht verfügbar", {
-          style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" },
-        });
+          style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" } });
         return;
       }
       const blob = await r.blob();
@@ -342,11 +328,9 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   };
 
   const PHASE_LABEL: Record<string, string> = {
-    COLLECTION: "Sammelphase", PROPOSAL: "Erstgebote", REDUCTION: "Auktion läuft", CONCLUSION: "Abgeschlossen",
-  };
+    COLLECTION: "Sammelphase", PROPOSAL: "Erstgebote", REDUCTION: "Auktion läuft", CONCLUSION: "Abgeschlossen" };
   const PHASE_COLOR: Record<string, string> = {
-    COLLECTION: "#6b7280", PROPOSAL: "#d97706", REDUCTION: "#154194", CONCLUSION: "#16a34a",
-  };
+    COLLECTION: "#6b7280", PROPOSAL: "#d97706", REDUCTION: "#154194", CONCLUSION: "#16a34a" };
 
   return (
     <>
@@ -487,8 +471,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
           borderBottom: "1px solid #1a2d5a",
           padding: "0 28px", height: 36,
           display: "flex", alignItems: "center",
-          fontFamily: "'IBM Plex Sans', Arial, sans-serif",
-        }}>
+          fontFamily: "'IBM Plex Sans', Arial, sans-serif" }}>
           <div style={{ maxWidth: 1080, margin: "0 auto", width: "100%", display: "flex", alignItems: "center", gap: 12 }}>
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,.9)", background: "rgba(255,255,255,.12)", padding: "3px 10px" }}>
               HANDELSSITZUNG
@@ -771,8 +754,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                       width: "100%", padding: "13px 22px", border: "none", background: "none",
                       display: "flex", alignItems: "center", justifyContent: "space-between",
                       cursor: "pointer", fontFamily: "'IBM Plex Sans',Arial,sans-serif",
-                      borderLeft: "4px solid #d97706",
-                    }}
+                      borderLeft: "4px solid #d97706" }}
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -819,8 +801,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                               style={{
                                 width: "100%", height: 36, border: "1px solid #fde68a", background: "#fffbeb",
                                 padding: "0 10px", fontSize: 13, fontFamily: "'IBM Plex Mono',monospace",
-                                outline: "none", color: "#0d1b2a",
-                              }}
+                                outline: "none", color: "#0d1b2a" }}
                               onFocus={e => (e.currentTarget.style.borderColor = "#d97706")}
                               onBlur={e => (e.currentTarget.style.borderColor = "#fde68a")}
                             />
@@ -839,8 +820,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                           style={{
                             width: "100%", height: 36, border: "1px solid #fde68a", background: "#fffbeb",
                             padding: "0 10px", fontSize: 13, fontFamily: "'IBM Plex Mono',monospace",
-                            outline: "none", color: "#0d1b2a",
-                          }}
+                            outline: "none", color: "#0d1b2a" }}
                           onFocus={e => (e.currentTarget.style.borderColor = "#d97706")}
                           onBlur={e => (e.currentTarget.style.borderColor = "#fde68a")}
                         />

@@ -37,8 +37,7 @@ const TYPE_ICON: Record<string, string> = {
   LOST:         "○",
   CLOSED_BUYER: "✓",
   DEPOSIT_WARN: "!",
-  KYC_INQUIRY:  "?",
-};
+  KYC_INQUIRY:  "?" };
 
 const TYPE_COLOR: Record<string, string> = {
   OUTBID:       "#dc2626",
@@ -49,8 +48,7 @@ const TYPE_COLOR: Record<string, string> = {
   LOST:         "#6b7280",
   CLOSED_BUYER: "#154194",
   DEPOSIT_WARN: "#d97706",
-  KYC_INQUIRY:  "#154194",
-};
+  KYC_INQUIRY:  "#154194" };
 
 export function NotificationBell({ token }: Props) {
   const router = useRouter();
@@ -64,8 +62,7 @@ export function NotificationBell({ token }: Props) {
     if (!token) return;
     try {
       const r = await fetch("/api/notifications?limit=10", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (!r.ok) return;
       const d = await r.json() as { notifications: NotifItem[]; unreadCount: number };
       setItems(d.notifications);
@@ -96,9 +93,8 @@ export function NotificationBell({ token }: Props) {
     if (!token || unreadCount === 0) return;
     await fetch("/api/notifications", {
       method:  "PATCH",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body:    JSON.stringify({ markAllRead: true }),
-    }).catch(() => {});
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ markAllRead: true }) }).catch(() => {});
     setUnreadCount(0);
     setItems((prev) => prev.map((n) => ({ ...n, isRead: true })));
   }
@@ -107,9 +103,8 @@ export function NotificationBell({ token }: Props) {
   async function markRead(id: string) {
     await fetch("/api/notifications", {
       method:  "PATCH",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body:    JSON.stringify({ ids: [id] }),
-    }).catch(() => {});
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ ids: [id] }) }).catch(() => {});
     setItems((prev) => prev.map((n) => n.id === id ? { ...n, isRead: true } : n));
     setUnreadCount((c) => Math.max(0, c - 1));
   }
@@ -135,8 +130,7 @@ export function NotificationBell({ token }: Props) {
           color:        "#374151",
           lineHeight:   1,
           borderRadius: 4,
-          transition:   "color .15s, background .15s",
-        }}
+          transition:   "color .15s, background .15s" }}
         onMouseEnter={e => { e.currentTarget.style.color = "#154194"; e.currentTarget.style.background = "#f0f4ff"; }}
         onMouseLeave={e => { e.currentTarget.style.color = "#374151"; e.currentTarget.style.background = "transparent"; }}
         aria-label="Benachrichtigungen"
@@ -159,8 +153,7 @@ export function NotificationBell({ token }: Props) {
             alignItems:     "center",
             justifyContent: "center",
             lineHeight:     1,
-            padding:        "0 3px",
-          }}>
+            padding:        "0 3px" }}>
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
@@ -177,16 +170,14 @@ export function NotificationBell({ token }: Props) {
           border:       "1px solid #e5e7eb",
           boxShadow:    "0 8px 24px rgba(0,0,0,0.12)",
           zIndex:       1000,
-          fontFamily:   '"IBM Plex Sans", Helvetica Neue, Arial, sans-serif',
-        }}>
+          fontFamily:   '"IBM Plex Sans", Helvetica Neue, Arial, sans-serif' }}>
           {/* Header */}
           <div style={{
             padding:        "12px 16px",
             borderBottom:   "2px solid #154194",
             display:        "flex",
             justifyContent: "space-between",
-            alignItems:     "center",
-          }}>
+            alignItems:     "center" }}>
             <span style={{ fontWeight: 700, fontSize: 13, color: "#1a1a1a" }}>
               Benachrichtigungen
               {unreadCount > 0 && (
@@ -197,8 +188,7 @@ export function NotificationBell({ token }: Props) {
                   fontSize:   10,
                   fontWeight: 700,
                   padding:    "1px 6px",
-                  borderRadius: 2,
-                }}>
+                  borderRadius: 2 }}>
                   {unreadCount} neu
                 </span>
               )}
@@ -212,8 +202,7 @@ export function NotificationBell({ token }: Props) {
                   fontSize:   11,
                   color:      "#154194",
                   cursor:     "pointer",
-                  fontWeight: 600,
-                }}
+                  fontWeight: 600 }}
               >
                 Alle gelesen
               </button>
@@ -245,8 +234,7 @@ export function NotificationBell({ token }: Props) {
                     display:       "flex",
                     gap:           10,
                     alignItems:    "flex-start",
-                    transition:    "background 0.15s",
-                  }}
+                    transition:    "background 0.15s" }}
                 >
                   {/* Typ-Icon */}
                   <span style={{
@@ -254,8 +242,7 @@ export function NotificationBell({ token }: Props) {
                     color:          TYPE_COLOR[n.type] ?? "#6b7280",
                     fontWeight:     700,
                     minWidth:       16,
-                    lineHeight:     1.4,
-                  }}>
+                    lineHeight:     1.4 }}>
                     {TYPE_ICON[n.type] ?? "•"}
                   </span>
 
@@ -266,8 +253,7 @@ export function NotificationBell({ token }: Props) {
                       fontWeight:  n.isRead ? 400 : 700,
                       color:       "#1a1a1a",
                       marginBottom: 2,
-                      lineHeight:  1.3,
-                    }}>
+                      lineHeight:  1.3 }}>
                       {n.title}
                     </div>
                     <div style={{ fontSize: 11.5, color: "#6b7280", lineHeight: 1.4 }}>
@@ -288,8 +274,7 @@ export function NotificationBell({ token }: Props) {
           <div style={{
             padding:      "10px 16px",
             borderTop:    "1px solid #e5e7eb",
-            textAlign:    "center",
-          }}>
+            textAlign:    "center" }}>
             <a
               href="/dashboard/settings/notifications"
               style={{ fontSize: 11.5, color: "#154194", textDecoration: "none", fontWeight: 500 }}

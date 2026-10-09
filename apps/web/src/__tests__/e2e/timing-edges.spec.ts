@@ -32,8 +32,7 @@ async function login(email: string, password: string): Promise<string> {
   const res  = await fetch(`${BASE}/api/auth/login`, {
     method:  "POST",
     headers: { "Content-Type": "application/json", "X-Forwarded-For": IP_TIMING },
-    body:    JSON.stringify({ email, password }),
-  });
+    body:    JSON.stringify({ email, password }) });
   const body = await res.json() as { data?: { accessToken?: string } };
   const token = body.data?.accessToken;
   if (!token) throw new Error(`Login fehlgeschlagen für ${email}: ${JSON.stringify(body)}`);
@@ -57,9 +56,7 @@ async function createLot(buyerToken: string): Promise<string> {
       hsCode:           "7214200010",
       qualityGrade:     "B500B",
       description:      "Timing-Edge-Lot",
-      greenSteel:       false,
-    }),
-  });
+      greenSteel:       false }) });
   expect(res.status).toBe(201);
   const { lotId } = await res.json() as { lotId: string };
   return lotId;
@@ -67,15 +64,13 @@ async function createLot(buyerToken: string): Promise<string> {
 
 async function publishLot(lotId: string, buyerToken: string): Promise<void> {
   const res = await fetch(`${BASE}/api/auction/lots/${lotId}/publish`, {
-    method: "PATCH", headers: { "Authorization": `Bearer ${buyerToken}` },
-  });
+    method: "PATCH", headers: { "Authorization": `Bearer ${buyerToken}` } });
   expect([200, 204]).toContain(res.status);
 }
 
 async function registerSeller(lotId: string, sellerToken: string): Promise<void> {
   const res = await fetch(`${BASE}/api/auction/lots/${lotId}/register`, {
-    method: "POST", headers: { "Authorization": `Bearer ${sellerToken}` },
-  });
+    method: "POST", headers: { "Authorization": `Bearer ${sellerToken}` } });
   expect([200, 201]).toContain(res.status);
 }
 
@@ -86,8 +81,7 @@ async function openLot(lotId: string, buyerToken: string): Promise<void> {
   const res = await fetch(`${BASE}/api/auction/lots/${lotId}/open`, {
     method:  "POST",
     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${buyerToken}` },
-    body:    JSON.stringify({ auctionEnd: new Date(Date.now() + 60 * 60_000).toISOString() }),
-  });
+    body:    JSON.stringify({ auctionEnd: new Date(Date.now() + 60 * 60_000).toISOString() }) });
   expect([200, 201]).toContain(res.status);
 }
 
@@ -95,8 +89,7 @@ async function setAuctionEnd(lotId: string, auctionEndIso: string): Promise<void
   const res = await fetch(`${BASE}/api/test/set-lot-auction-end`, {
     method:  "PATCH",
     headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ lotId, auctionEnd: auctionEndIso }),
-  });
+    body:    JSON.stringify({ lotId, auctionEnd: auctionEndIso }) });
   expect(res.status).toBe(200);
   const body = await res.json() as { ok?: boolean };
   expect(body.ok).toBe(true);
@@ -110,8 +103,7 @@ async function bid(
   const res  = await fetch(`${BASE}/api/auction/lots/${lotId}/bids`, {
     method:  "POST",
     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-    body:    JSON.stringify({ price }),
-  });
+    body:    JSON.stringify({ price }) });
   const body = await res.json() as Record<string, unknown>;
   return { status: res.status, body };
 }
@@ -168,8 +160,7 @@ test.describe("Timing Edge-Cases", () => {
 
     // Lot-Status abrufen
     const lotRes  = await fetch(`${BASE}/api/auction/lots/${lotId}`, {
-      headers: { "Authorization": `Bearer ${buyerToken}` },
-    });
+      headers: { "Authorization": `Bearer ${sellerToken}` } });
     expect(lotRes.status).toBe(200);
     const lotBody = await lotRes.json() as { lot?: { phase?: string }; phase?: string };
     const phase   = lotBody.lot?.phase ?? lotBody.phase;

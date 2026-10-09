@@ -68,12 +68,10 @@ export async function POST(req: NextRequest) {
     const [lot, contract] = await Promise.all([
       db.lot.findUnique({
         where:  { id: lotId },
-        select: { buyerId: true, winnerId: true, commodity: true, currentBest: true },
-      }),
+        select: { buyerId: true, winnerId: true, commodity: true, currentBest: true } }),
       db.lotContract.findUnique({
         where:  { lotId },
-        select: { contractNumber: true },
-      }),
+        select: { contractNumber: true } }),
     ]);
 
     if (lot?.winnerId && lot?.buyerId && contract) {

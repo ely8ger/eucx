@@ -10,7 +10,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { put }                       from "@vercel/blob";
-import { verifyAccessToken }         from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { apiRoute }                  from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
@@ -26,12 +26,9 @@ const VALID_DOC_TYPES = new Set([
 
 async function _POST(req: NextRequest) {
   // ── Auth ─────────────────────────────────────────────────────────────────
-  let token: Awaited<ReturnType<typeof verifyAccessToken>>;
-  try {
-    token = await verifyAccessToken(req.headers.get("authorization")?.slice(7) ?? "");
-  } catch {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
+  let token;
+  try { token = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   // ── FormData ──────────────────────────────────────────────────────────────
   let formData: FormData;

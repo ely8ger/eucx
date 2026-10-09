@@ -10,6 +10,7 @@
  *   export const POST = apiRoute(async (req, { params }) => { ... });
  */
 import { NextRequest, NextResponse } from "next/server";
+import { ApiError } from "@/lib/auth/jwt";
 
 type RouteContext<P = Record<string, string>> = {
   params: Promise<P>;
@@ -25,6 +26,9 @@ export function apiRoute<P = Record<string, string>>(handler: Handler<P>): Handl
     try {
       return await handler(req, ctx);
     } catch (err) {
+      if (err instanceof ApiError) {
+        return NextResponse.json({ error: err.message }, { status: err.status });
+      }
       const msg = err instanceof Error ? err.message : "Interner Serverfehler";
       console.error("[API]", req.method, req.nextUrl.pathname, err);
       return NextResponse.json({ error: msg }, { status: 500 });

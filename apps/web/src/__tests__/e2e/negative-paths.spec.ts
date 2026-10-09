@@ -32,8 +32,7 @@ const LOT_BUYER_CONTRACT = "cmsyw61gy0001oefvgzb3tf04"; // Buyer-Vertrag zum Spo
 const USERS = {
   buyer:  { id: "seed-user-buyer",    orgId: "seed-org-eucx-test", role: "BUYER",  email: "buyer@eucx-test.de",   pw: "Test1234!" },
   seller1:{ id: "seed-user-seller-1", orgId: "seed-org-eucx-test", role: "SELLER", email: "seller1@eucx-test.de", pw: "Test1234!" },
-  seller2:{ id: "seed-user-seller-2", orgId: "seed-org-another",   role: "SELLER", email: "seller2@eucx-test.de", pw: "Test1234!" },
-};
+  seller2:{ id: "seed-user-seller-2", orgId: "seed-org-another",   role: "SELLER", email: "seller2@eucx-test.de", pw: "Test1234!" } };
 
 // ─── Hilfsfunktionen ──────────────────────────────────────────────────────────
 
@@ -117,8 +116,7 @@ test.beforeAll(async ({ request }) => {
     incoterms: "EXW", deliveryLocation: "Hamburg", deliveryPeriod: "2 Wochen",
     paymentTerms: "14 Tage netto", vatTreatment: "INLAND_19",
     hsCode: "7208370010", qualityGrade: "S235JR", description: "Negativ-Test Lot",
-    greenSteel: false,
-  });
+    greenSteel: false });
   if (createRes.status() === 201 || createRes.status() === 200) {
     const b = await createRes.json() as Record<string, unknown>;
     proposalLotId = (b["lotId"] ?? b["id"]) as string;
@@ -127,8 +125,7 @@ test.beforeAll(async ({ request }) => {
     await api(request, "PATCH", `/api/auction/lots/${proposalLotId}/publish`, buyerToken);
     await api(request, "POST",  `/api/auction/lots/${proposalLotId}/register`, seller1Token);
     await api(request, "POST",  `/api/auction/lots/${proposalLotId}/open`, buyerToken, {
-      auctionEnd: new Date(Date.now() + 60 * 60 * 1_000).toISOString(),
-    });
+      auctionEnd: new Date(Date.now() + 60 * 60 * 1_000).toISOString() });
     console.log(`[Setup] PROPOSAL-Lot angelegt: ${proposalLotId}`);
   } else {
     console.warn(`[Setup] Lot-Erstellung fehlgeschlagen: ${createRes.status()}`);
@@ -151,8 +148,7 @@ test("A2: Verkäufer versucht Lot zu erstellen (nur Käufer erlaubt)", async ({ 
     commodity: "REBAR_B500B", quantity: 10, unit: "TON", startPrice: 300,
     incoterms: "DAP", deliveryLocation: "Berlin", deliveryPeriod: "1 Woche",
     paymentTerms: "30 Tage", vatTreatment: "INLAND_19", hsCode: "7214200010",
-    qualityGrade: "B500B", description: "Verkäufer-Lot-Versuch", greenSteel: false,
-  });
+    qualityGrade: "B500B", description: "Verkäufer-Lot-Versuch", greenSteel: false });
   await assertBlocked(res, [403], "Verkäufer erstellt Lot (Rollenverstoß)");
 });
 
@@ -186,8 +182,7 @@ test("B3: Lot-Erstellung mit negativer Menge (-500 Tonnen)", async ({ request })
     commodity: "REBAR_B500B", quantity: -500, unit: "TON", startPrice: 400,
     incoterms: "DAP", deliveryLocation: "München", deliveryPeriod: "1 Woche",
     paymentTerms: "30 Tage", vatTreatment: "INLAND_19", hsCode: "7214200010",
-    qualityGrade: "B500B", description: "Negativ-Menge Test", greenSteel: false,
-  });
+    qualityGrade: "B500B", description: "Negativ-Menge Test", greenSteel: false });
   await assertBlocked(res, [400, 422], "Lot mit negativer Menge");
 });
 
@@ -196,8 +191,7 @@ test("B4: Lot-Erstellung mit Menge Null", async ({ request }) => {
     commodity: "REBAR_B500B", quantity: 0, unit: "TON", startPrice: 400,
     incoterms: "DAP", deliveryLocation: "München", deliveryPeriod: "1 Woche",
     paymentTerms: "30 Tage", vatTreatment: "INLAND_19", hsCode: "7214200010",
-    qualityGrade: "B500B", description: "Menge-Null Test", greenSteel: false,
-  });
+    qualityGrade: "B500B", description: "Menge-Null Test", greenSteel: false });
   await assertBlocked(res, [400, 422], "Lot mit Menge 0");
 });
 
@@ -217,8 +211,7 @@ test("B7: Lot-Erstellung mit ungültigem unit-Enum", async ({ request }) => {
     commodity: "REBAR_B500B", quantity: 100, unit: "FÄSSER", startPrice: 400,
     incoterms: "DAP", deliveryLocation: "Berlin", deliveryPeriod: "1 Woche",
     paymentTerms: "30 Tage", vatTreatment: "INLAND_19", hsCode: "7214200010",
-    qualityGrade: "B500B", description: "Ungültiges Unit", greenSteel: false,
-  });
+    qualityGrade: "B500B", description: "Ungültiges Unit", greenSteel: false });
   await assertBlocked(res, [400, 422], "Lot mit ungültigem unit-Enum");
 });
 
@@ -239,8 +232,7 @@ test("C2: Gebot auf nicht existierendes Lot (UUID-Erfindung)", async ({ request 
 
 test("C3: Lieferstatus-Sprung rückwärts (DELIVERED → MATCHED)", async ({ request }) => {
   const res = await api(request, "PATCH", `/api/auction/lots/${LOT_CONCLUDED}/delivery`, seller1Token, {
-    status: "MATCHED",
-  });
+    status: "MATCHED" });
   await assertBlocked(res, [400, 403, 404, 409, 422], "Lieferstatus rückwärts (DELIVERED→MATCHED)");
 });
 
@@ -250,8 +242,7 @@ test("C4: Lot öffnen ohne Verkäufer-Registrierung", async ({ request }) => {
     commodity: "STRUCTURAL_STEEL", quantity: 20, unit: "TON", startPrice: 600,
     incoterms: "FCA", deliveryLocation: "Köln", deliveryPeriod: "3 Wochen",
     paymentTerms: "30 Tage", vatTreatment: "INLAND_19", hsCode: "7216330090",
-    qualityGrade: "S355JR", description: "Open-ohne-Register Test", greenSteel: false,
-  });
+    qualityGrade: "S355JR", description: "Open-ohne-Register Test", greenSteel: false });
 
   if (createRes.status() !== 201 && createRes.status() !== 200) { test.skip(); return; }
   const cb = await createRes.json() as Record<string, unknown>;
@@ -261,15 +252,13 @@ test("C4: Lot öffnen ohne Verkäufer-Registrierung", async ({ request }) => {
 
   // Direkt open - ohne einen Verkäufer zu registrieren → muss 422 sein
   const openRes = await api(request, "POST", `/api/auction/lots/${newLotId}/open`, buyerToken, {
-    auctionEnd: new Date(Date.now() + 3600_000).toISOString(),
-  });
+    auctionEnd: new Date(Date.now() + 3600_000).toISOString() });
   await assertBlocked(openRes, [400, 409, 422], "Lot öffnen ohne Verkäufer");
 });
 
 test("C5: Dispute auf Lot das nicht DELIVERED ist", async ({ request }) => {
   const res = await api(request, "POST", `/api/auction/lots/${LOT_CONCLUDED}/dispute`, buyerToken, {
-    reason: "Test-Sabotage Qualitätsmangel detailliert",
-  });
+    reason: "Test-Sabotage Qualitätsmangel detailliert" });
   // COMPLETED-Lot ist bereits abgeschlossen - kein Dispute mehr möglich (409)
   // Falls lot_disputes-Tabelle fehlt → 503 (robuster DB-Fehler, kein leerer 500)
   // 403: Buyer ist nicht Vertragspartei dieses Lots
@@ -295,7 +284,7 @@ test("D2: Seller1 versucht Gebote des anderen Sellers einzusehen (anonymisiert?)
     for (const bid of bids) {
       // Kein echtes sellerId darf für fremde Gebote sichtbar sein (nur "Verkäufer-2" o.ä.)
       const sellerId = String(bid["sellerId"] ?? "");
-      if (bid["isOwn"] !== true && sellerId.match(/^[a-z0-9-]{20,}$/)) {
+      if (bid["isOwn"] !== true && sellerId.match(/^[a-z0-9-]{20 }$/)) {
         throw new Error(`[DATENLECK] Echte sellerId "${sellerId}" in Gebot sichtbar!`);
       }
     }
@@ -336,8 +325,7 @@ test("D6: Abgelaufener JWT-Token", async ({ request }) => {
     commodity: "REBAR_B500B", quantity: 10, unit: "TON", startPrice: 300,
     incoterms: "DAP", deliveryLocation: "Berlin", deliveryPeriod: "1 Woche",
     paymentTerms: "30 Tage", vatTreatment: "INLAND_19", hsCode: "7214200010",
-    qualityGrade: "B500B", description: "Expired Token Test", greenSteel: false,
-  });
+    qualityGrade: "B500B", description: "Expired Token Test", greenSteel: false });
   await assertBlocked(res, [401], "Abgelaufener JWT");
 });
 
@@ -350,8 +338,7 @@ test("E1: Kein Authorization-Header (kein Token)", async ({ request }) => {
     commodity: "REBAR_B500B", quantity: 10, unit: "TON", startPrice: 300,
     incoterms: "DAP", deliveryLocation: "Berlin", deliveryPeriod: "1 Woche",
     paymentTerms: "30 Tage", vatTreatment: "INLAND_19", hsCode: "7214200010",
-    qualityGrade: "B500B", description: "Kein Token Test", greenSteel: false,
-  });
+    qualityGrade: "B500B", description: "Kein Token Test", greenSteel: false });
   await assertBlocked(res, [401], "Lot-Erstellung ohne Token");
 });
 
@@ -389,8 +376,7 @@ test("E4: XSS-Payload im Lot-Beschreibungsfeld", async ({ request }) => {
     hsCode:          "7214200010",
     qualityGrade:    "B500B",
     description:     "<script>alert('xss')</script>", // XSS
-    greenSteel:      false,
-  });
+    greenSteel:      false });
 
   // Die API sollte den Input entweder ablehnen (422) oder sanitieren
   // Falls 200/201: Prüfe ob der XSS-String im Response gespeichert wurde

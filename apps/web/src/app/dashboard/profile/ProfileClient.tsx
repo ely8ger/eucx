@@ -18,8 +18,7 @@ const RED    = "#dc2626";
 const COUNTRY_NAMES: Record<string, string> = {
   DE: "Deutschland", AT: "Österreich", CH: "Schweiz", PL: "Polen",
   FR: "Frankreich", IT: "Italien", ES: "Spanien", NL: "Niederlande",
-  BE: "Belgien",   CZ: "Tschechien", SK: "Slowakei", HU: "Ungarn",
-};
+  BE: "Belgien",   CZ: "Tschechien", SK: "Slowakei", HU: "Ungarn" };
 
 interface OrgData {
   id:                  string;
@@ -97,7 +96,7 @@ export function ProfileClient() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/auth/me", { headers: { } })
       .then((r) => r.json() as Promise<MeData>)
       .then((d) => {
         setMe(d);
@@ -119,9 +118,8 @@ export function ProfileClient() {
     try {
       const r = await fetch("/api/profile/cbam", {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${tkn}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ eoriNumber: eoriInput || null, cbamAccountNumber: cbamAccInput || null }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ eoriNumber: eoriInput || null, cbamAccountNumber: cbamAccInput || null }) });
       if (!r.ok) { const d = await r.json(); setZollError(d.error ?? "Fehler beim Speichern"); }
       else { setZollSaved(true); setTimeout(() => setZollSaved(false), 3000); }
     } catch { setZollError("Netzwerkfehler"); }
@@ -147,8 +145,7 @@ export function ProfileClient() {
         {org?.memberId && (
           <div style={{
             background: "#0d1e4a", marginBottom: 16,
-            padding: "18px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12,
-          }}>
+            padding: "18px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
             <div>
               <p style={{ margin: "0 0 3px", fontSize: 10, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "rgba(255,255,255,.45)", fontFamily: F }}>
                 Ihre EUCX Marktteilnehmer-ID
@@ -160,8 +157,7 @@ export function ProfileClient() {
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
               <span style={{
                 padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".06em",
-                background: "rgba(255,255,255,.12)", color: "rgba(255,255,255,.85)",
-              }}>
+                background: "rgba(255,255,255,.12)", color: "rgba(255,255,255,.85)" }}>
                 {me?.role === "SELLER" ? "VERKÄUFER" : "KÄUFER"}
               </span>
               <span style={{ fontSize: 11, color: "rgba(255,255,255,.4)", fontFamily: F }}>
@@ -182,8 +178,7 @@ export function ProfileClient() {
               <span style={{
                 padding: "3px 12px", fontSize: 11, fontWeight: 700,
                 background: me.role === "SELLER" ? "#fef3c7" : "#e8edf8",
-                color: me.role === "SELLER" ? "#92400e" : BLUE,
-              }}>
+                color: me.role === "SELLER" ? "#92400e" : BLUE }}>
                 {me.role === "SELLER" ? "Verkäufer" : "Käufer"}
               </span>
               <KycStatusBadge status={me.verificationStatus as "GUEST" | "PENDING_VERIFICATION" | "VERIFIED" | "REJECTED" | "SUSPENDED"} />
@@ -204,8 +199,7 @@ export function ProfileClient() {
                   color: tab === t.id ? BLUE : MUTED,
                   borderBottom: `3px solid ${tab === t.id ? BLUE : "transparent"}`,
                   cursor: "pointer", transition: "color .15s, border-color .15s",
-                  whiteSpace: "nowrap",
-                }}
+                  whiteSpace: "nowrap" }}
               >
                 {t.label}
               </button>
@@ -219,8 +213,7 @@ export function ProfileClient() {
                 style={{
                   fontSize: 12, color: MUTED, textDecoration: "none", padding: "0 8px", height: 44,
                   display: "inline-flex", alignItems: "center", transition: "color .15s",
-                  whiteSpace: "nowrap",
-                }}
+                  whiteSpace: "nowrap" }}
                 onMouseEnter={e => { e.currentTarget.style.color = BLUE; e.currentTarget.style.fontWeight = "600"; }}
                 onMouseLeave={e => { e.currentTarget.style.color = MUTED; e.currentTarget.style.fontWeight = "400"; }}
               >
@@ -276,8 +269,7 @@ export function ProfileClient() {
               <div style={{
                 marginTop: 20, padding: "12px 14px",
                 background: "#f8fafc", border: "1px solid #e5e7eb",
-                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
-              }}>
+                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
                 <p style={{ margin: 0, fontSize: 12, color: MUTED, fontFamily: F, lineHeight: 1.55 }}>
                   Unternehmensdaten sind nach der Registrierung aus Compliance-Gründen gesperrt.
                   Für Änderungen wenden Sie sich bitte an unseren Support.
@@ -287,8 +279,7 @@ export function ProfileClient() {
                   style={{
                     flexShrink: 0, fontSize: 12, fontWeight: 600, color: BLUE,
                     textDecoration: "none", whiteSpace: "nowrap",
-                    padding: "6px 14px", border: `1px solid ${BLUE}`,
-                  }}
+                    padding: "6px 14px", border: `1px solid ${BLUE}` }}
                   onMouseEnter={e => (e.currentTarget.style.background = "#f0f4ff")}
                   onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                 >
@@ -311,8 +302,7 @@ export function ProfileClient() {
               {org.isGeschaeftsfuehrer === false && (
                 <div style={{
                   margin: "12px 0", padding: "12px 14px",
-                  background: "#fffbeb", border: "1px solid #fde68a", borderLeft: "4px solid #d97706",
-                }}>
+                  background: "#fffbeb", border: "1px solid #fde68a", borderLeft: "4px solid #d97706" }}>
                   <p style={{ margin: "0 0 4px", fontSize: 13, fontWeight: 700, color: "#92400e", fontFamily: F }}>
                     Handlungsvollmacht erforderlich
                   </p>
@@ -333,8 +323,7 @@ export function ProfileClient() {
                 <div style={{
                   margin: "12px 0", padding: "10px 14px",
                   background: "#f0fdf4", border: "1px solid #bbf7d0",
-                  display: "flex", alignItems: "center", gap: 10,
-                }}>
+                  display: "flex", alignItems: "center", gap: 10 }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
@@ -358,8 +347,7 @@ export function ProfileClient() {
               <div style={{
                 marginTop: 20, padding: "12px 14px",
                 background: "#f8fafc", border: "1px solid #e5e7eb",
-                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
-              }}>
+                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
                 <p style={{ margin: 0, fontSize: 12, color: MUTED, fontFamily: F, lineHeight: 1.55 }}>
                   Änderungen des Ansprechpartners (z.B. bei Personalwechsel) erfordern eine neue
                   Bevollmächtigung und werden durch unser Compliance-Team geprüft.
@@ -369,8 +357,7 @@ export function ProfileClient() {
                   style={{
                     flexShrink: 0, fontSize: 12, fontWeight: 600, color: BLUE,
                     textDecoration: "none", whiteSpace: "nowrap",
-                    padding: "6px 14px", border: `1px solid ${BLUE}`,
-                  }}
+                    padding: "6px 14px", border: `1px solid ${BLUE}` }}
                   onMouseEnter={e => (e.currentTarget.style.background = "#f0f4ff")}
                   onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                 >
@@ -409,8 +396,7 @@ export function ProfileClient() {
                   maxLength={17}
                   style={{
                     width: "100%", height: 42, border: `1px solid ${BORDER}`, padding: "0 12px",
-                    fontSize: 14, fontFamily: "'IBM Plex Mono',monospace", outline: "none", color: TEXT,
-                  }}
+                    fontSize: 14, fontFamily: "'IBM Plex Mono',monospace", outline: "none", color: TEXT }}
                   onFocus={e => (e.currentTarget.style.borderColor = BLUE)}
                   onBlur={e => (e.currentTarget.style.borderColor = BORDER)}
                 />
@@ -430,8 +416,7 @@ export function ProfileClient() {
                   placeholder="z.B. EU-CBAM-000123456"
                   style={{
                     width: "100%", height: 42, border: `1px solid ${BORDER}`, padding: "0 12px",
-                    fontSize: 14, fontFamily: "'IBM Plex Mono',monospace", outline: "none", color: TEXT,
-                  }}
+                    fontSize: 14, fontFamily: "'IBM Plex Mono',monospace", outline: "none", color: TEXT }}
                   onFocus={e => (e.currentTarget.style.borderColor = BLUE)}
                   onBlur={e => (e.currentTarget.style.borderColor = BORDER)}
                 />
@@ -448,8 +433,7 @@ export function ProfileClient() {
                   style={{
                     height: 38, padding: "0 22px", background: zollSaving ? "#9ca3af" : BLUE,
                     color: "#fff", border: "none", fontSize: 13, fontWeight: 700, fontFamily: F,
-                    cursor: zollSaving ? "not-allowed" : "pointer", transition: "background .15s",
-                  }}
+                    cursor: zollSaving ? "not-allowed" : "pointer", transition: "background .15s" }}
                   onMouseEnter={e => { if (!zollSaving) e.currentTarget.style.background = BLUE2; }}
                   onMouseLeave={e => { if (!zollSaving) e.currentTarget.style.background = BLUE; }}
                 >
@@ -491,8 +475,7 @@ export function ProfileClient() {
                     <path d="M12 3L4 7v5c0 5.5 3.8 9.5 8 10.5 4.2-1 8-5 8-10.5V7L12 3Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
                     <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                ),
-              },
+                ) },
               {
                 label: "KYC-Verifikation", sub: "Dokumente & Freischaltung",
                 href: "/dashboard/settings/verification",
@@ -503,8 +486,7 @@ export function ProfileClient() {
                     <circle cx="12.5" cy="11.5" r="2.5" fill="#fff" stroke="currentColor" strokeWidth="1.2"/>
                     <path d="M11.5 11.5l.8.8 1.2-1.2" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                ),
-              },
+                ) },
               {
                 label: "Benachrichtigungen", sub: "E-Mail & Plattform-Alerts",
                 href: "/dashboard/settings/notifications",
@@ -513,8 +495,7 @@ export function ProfileClient() {
                     <path d="M8 1.5a5 5 0 00-5 5v3l-1.5 2h13L13 9.5v-3a5 5 0 00-5-5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
                     <path d="M6.5 13.5a1.5 1.5 0 003 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
                   </svg>
-                ),
-              },
+                ) },
             ] as { label: string; sub: string; href: string; icon: React.ReactNode }[]).map((card) => (
               <a
                 key={card.href}
@@ -523,8 +504,7 @@ export function ProfileClient() {
                   display: "block", padding: "16px 18px",
                   background: "#fff", border: `1px solid ${BORDER}`,
                   textDecoration: "none",
-                  transition: "border-color .15s, box-shadow .15s",
-                }}
+                  transition: "border-color .15s, box-shadow .15s" }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = BLUE; e.currentTarget.style.boxShadow = "0 2px 8px rgba(21,65,148,.1)"; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.boxShadow = "none"; }}
               >

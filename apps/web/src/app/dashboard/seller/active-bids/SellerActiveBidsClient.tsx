@@ -33,15 +33,13 @@ const PHASE_LABEL: Record<Phase, string> = {
   COLLECTION: "Registrierung",
   PROPOSAL:   "Angebotsphase",
   REDUCTION:  "Reduktion",
-  CONCLUSION: "Abgeschlossen",
-};
+  CONCLUSION: "Abgeschlossen" };
 
 const PHASE_COLOR: Record<Phase, string> = {
   COLLECTION: B,
   PROPOSAL:   A,
   REDUCTION:  "#dc2626",
-  CONCLUSION: "#6b7280",
-};
+  CONCLUSION: "#6b7280" };
 
 const fmtEur = (v: string | null) =>
   v == null ? "-" :
@@ -114,8 +112,7 @@ export function SellerActiveBidsClient() {
     setLoading(true);
     try {
       const r = await fetch("/api/seller/bids", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (r.ok) setBids(await r.json() as BidRow[]);
     } catch { /* ignore */ }
     finally { setLoading(false); }
@@ -291,8 +288,7 @@ export function SellerActiveBidsClient() {
                           <span style={{
                             display: "inline-block", padding: "3px 9px",
                             fontSize: 10.5, fontWeight: 700,
-                            background: PHASE_COLOR[row.phase], color: "#fff",
-                          }}>
+                            background: PHASE_COLOR[row.phase], color: "#fff" }}>
                             {PHASE_LABEL[row.phase]}
                           </span>
                         </td>

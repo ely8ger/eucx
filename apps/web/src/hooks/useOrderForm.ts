@@ -133,18 +133,14 @@ export function useOrderForm({ sessionId, productId, dispatch }: UseOrderFormOpt
     dispatch({
       type:      "OPTIMISTIC_ORDER",
       direction,
-      entry:     makeOptimisticEntry(tempId, price, qty),
-    });
+      entry:     makeOptimisticEntry(tempId, price, qty) });
 
     setIsSubmitting(true);
 
     try {
       const res  = await fetch("/api/orders", {
         method:  "POST",
-        headers: {
-          "Content-Type":  "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sessionId,
           productId,
@@ -152,9 +148,7 @@ export function useOrderForm({ sessionId, productId, dispatch }: UseOrderFormOpt
           pricePerUnit:   parseFloat(price),
           quantityTons:   parseFloat(qty),
           currency:       "EUR",
-          idempotencyKey: crypto.randomUUID(),
-        }),
-      });
+          idempotencyKey: crypto.randomUUID() }) });
 
       const data = (await res.json()) as OrderApiResponse;
 
@@ -215,6 +209,5 @@ export function useOrderForm({ sessionId, productId, dispatch }: UseOrderFormOpt
     // Actions
     submitOrder,
     reset,
-    isSubmitting,
-  };
+    isSubmitting };
 }

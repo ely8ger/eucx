@@ -59,22 +59,19 @@ const PHASE_LABEL: Record<string, string> = {
   COLLECTION: "Registrierung",
   PROPOSAL:   "Angebote",
   REDUCTION:  "Reduktion",
-  CONCLUSION: "Abgeschlossen",
-};
+  CONCLUSION: "Abgeschlossen" };
 
 const PHASE_COLOR: Record<string, string> = {
   COLLECTION: "#154194",
   PROPOSAL:   "#d97706",
   REDUCTION:  "#dc2626",
-  CONCLUSION: "#6b7280",
-};
+  CONCLUSION: "#6b7280" };
 
 const PHASE_TOOLTIP: Record<string, string> = {
   COLLECTION: "Sammelphase - Jetzt registrieren, um in der Angebotsphase mitzubieten",
   PROPOSAL:   "Angebotsphase - Registrierte Verkäufer können Gebote abgeben",
   REDUCTION:  "Reduktionsphase - Beste Gebote werden verglichen und optimiert",
-  CONCLUSION: "Abgeschlossen - Auktion beendet, Ergebnis festgestellt",
-};
+  CONCLUSION: "Abgeschlossen - Auktion beendet, Ergebnis festgestellt" };
 
 // ── Countdown Helper ───────────────────────────────────────────────────────────
 
@@ -119,7 +116,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
   // ── KYC-Status ────────────────────────────────────────────────────
   useEffect(() => {
     if (!token) return;
-    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/auth/me", { headers: { } })
       .then((r) => r.ok ? r.json() : null)
       .then((d) => { if (d) setKyc({ verificationStatus: d.verificationStatus ?? "GUEST", walletBalance: d.walletBalance ?? "0", role: d.role ?? "" }); })
       .catch(() => {});
@@ -130,7 +127,7 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
     if (!token) { setLoading(false); return; }
     setLoading(true);
     try {
-      const r = await fetch("/api/auction/lots", { headers: { Authorization: `Bearer ${token}` } });
+      const r = await fetch("/api/auction/lots", { headers: { } });
       if (!r.ok) return;
       const d = await r.json();
       setLots(d.lots ?? []);
@@ -147,18 +144,15 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
     try {
       const r = await fetch(`/api/auction/lots/${lotId}/register`, {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       const d = await r.json();
       if (r.ok) {
         toast.success("Registrierung erfolgreich", {
-          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" },
-        });
+          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" } });
         setLots((prev) => prev.map((l) => l.id === lotId ? { ...l, isRegistered: true } : l));
       } else {
         toast.error(d.error ?? "Registrierung fehlgeschlagen", {
-          style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" },
-        });
+          style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" } });
       }
     } catch {
       toast.error("Netzwerkfehler");
@@ -333,14 +327,12 @@ export function SellerLotsClient({ initialFilter = "all" }: { initialFilter?: "a
           borderBottom: "1px solid #b45309",
           padding: "0 28px", height: 36,
           display: "flex", alignItems: "center",
-          fontFamily: "'IBM Plex Sans', Arial, sans-serif",
-        }}>
+          fontFamily: "'IBM Plex Sans', Arial, sans-serif" }}>
           <div style={{ maxWidth: 1080, margin: "0 auto", width: "100%", display: "flex", alignItems: "center", gap: 12 }}>
             <span style={{
               fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
               color: "#fde68a", background: "rgba(255,255,255,.12)",
-              padding: "3px 10px",
-            }}>
+              padding: "3px 10px" }}>
               VERKÄUFER-PORTAL
             </span>
             <span style={{ fontSize: 11, color: "rgba(253,230,138,.7)", letterSpacing: "0.02em" }}>

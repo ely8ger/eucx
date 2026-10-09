@@ -234,15 +234,13 @@ const PHASE_LABEL: Record<Phase, string> = {
   COLLECTION: "Registrierung",
   PROPOSAL:   "Angebotsphase",
   REDUCTION:  "Auktion läuft",
-  CONCLUSION: "Abgeschlossen",
-};
+  CONCLUSION: "Abgeschlossen" };
 
 const PHASE_COLOR: Record<Phase, string> = {
   COLLECTION: "#6b7280",
   PROPOSAL:   "#2563eb",
   REDUCTION:  "#16a34a",
-  CONCLUSION: "#9ca3af",
-};
+  CONCLUSION: "#9ca3af" };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -326,7 +324,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   // ── KYC ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (!token) return;
-    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/auth/me", { headers: { } })
       .then((r) => r.ok ? r.json() : null)
       .then((d) => { if (d) setKyc({ verificationStatus: d.verificationStatus ?? "GUEST", role: d.role ?? "", totpEnabled: d.totpEnabled ?? false, phoneVerified: d.phoneVerified ?? false }); })
       .catch(() => {});
@@ -338,8 +336,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     setLoading(true);
     try {
       const r = await fetch("/api/auction/lots?mine=true", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (!r.ok) return;
       const d = await r.json();
       setLots(d.lots ?? []);
@@ -523,9 +520,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
       const r = await fetch("/api/auction/lots", {
         method:  "POST",
-        headers: { Authorization: `Bearer ${activeToken}`, "Content-Type": "application/json" },
-        body:    JSON.stringify(body),
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(body) });
       const d = await r.json().catch(() => ({})) as { error?: string; detail?: string; message?: string; code?: string; details?: Record<string, string[]> };
       if (!r.ok) {
         if (r.status === 401) {
@@ -542,8 +538,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
             ? "Verkäufer können sich jetzt registrieren. Sobald genug angemeldet sind, starten Sie die Auktion."
             : 'Privater Entwurf gespeichert. Klicken Sie "Veröffentlichen" in der Tabelle, wenn Sie bereit sind.',
           style: { background: "#eff6ff", border: "1px solid #154194", color: "#1e3a6e" },
-          duration: 6000,
-        });
+          duration: 6000 });
         setCommodity(""); setQuantity(""); setUnit("TON"); setStartPrice(""); setDescription(""); setGreenSteel(false);
         setCbamCategory(""); setCo2PerTonne(""); setCountryOfOrigin(""); setProductionSiteId(""); setIncoterms("DAP");
         setHsCode(""); setQualityGrade(""); setDeliveryPeriod(""); setDeliveryLocation(""); setPaymentTerms(""); setVatTreatment("");
@@ -574,21 +569,18 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     try {
       const r = await fetch(`/api/auction/lots/${openingLotId}/open`, {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body:    "{}",
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    "{}" });
       const d = await r.json();
       if (r.ok) {
         toast.success("Auktion gestartet", {
           description: `Angebotsphase läuft bis ${fmtDate(d.auctionEnd)}.`,
-          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" },
-        });
+          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" } });
         setOpeningLotId(null);
         await loadLots();
       } else {
         toast.error(d.error ?? "Fehler beim Starten", {
-          style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" },
-        });
+          style: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" } });
       }
     } catch {
       toast.error("Netzwerkfehler");
@@ -602,13 +594,11 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     try {
       const r = await fetch(`/api/auction/lots/${lotId}/publish`, {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (r.ok) {
         toast.success("Ausschreibung veröffentlicht ✓", {
           description: "Verkäufer können sich jetzt registrieren.",
-          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" },
-        });
+          style: { background: "#f0fdf4", border: "1px solid #16a34a", color: "#14532d" } });
         await loadLots();
       } else {
         const d = await r.json().catch(() => ({})) as { error?: string };
@@ -624,11 +614,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     const now = new Date();
     const fmt = (d: Date) => d.toLocaleDateString("de-DE", {
       weekday: "short", day: "2-digit", month: "2-digit",
-      timeZone: "Europe/Berlin",
-    });
+      timeZone: "Europe/Berlin" });
     const berlinHour = parseInt(new Intl.DateTimeFormat("de-DE", {
-      timeZone: "Europe/Berlin", hour: "2-digit", hour12: false,
-    }).format(now), 10);
+      timeZone: "Europe/Berlin", hour: "2-digit", hour12: false }).format(now), 10);
     const day = now.getDay();
     const isWeekday = day >= 1 && day <= 5;
     const inSlot = isWeekday && berlinHour >= 13 && berlinHour < 15;
@@ -646,11 +634,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     const now = new Date();
     const fmt = (d: Date) => d.toLocaleDateString("de-DE", {
       weekday: "short", day: "2-digit", month: "2-digit",
-      timeZone: "Europe/Berlin",
-    });
+      timeZone: "Europe/Berlin" });
     const berlinHour = parseInt(new Intl.DateTimeFormat("de-DE", {
-      timeZone: "Europe/Berlin", hour: "2-digit", hour12: false,
-    }).format(now), 10);
+      timeZone: "Europe/Berlin", hour: "2-digit", hour12: false }).format(now), 10);
     const day = now.getDay();
     const isWeekday = day >= 1 && day <= 5;
     const inSlot = isWeekday && berlinHour >= 13 && berlinHour < 15;
@@ -676,8 +662,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     total:      lots.length,
     active:     lots.filter((l) => (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && !isLotExpired(l)).length,
     collection: lots.filter((l) => l.phase === "COLLECTION").length,
-    concluded:  lots.filter((l) => l.phase === "CONCLUSION").length,
-  };
+    concluded:  lots.filter((l) => l.phase === "CONCLUSION").length };
 
   // CO₂-Fußabdruck aus abgeschlossenen Lots (nur wenn co2PerTonne vorhanden)
   const co2Lots = lots.filter((l) => l.co2PerTonne && l.phase === "CONCLUSION");
@@ -910,14 +895,12 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
           borderBottom: "1px solid #1a52c2",
           padding: "0 28px", height: 36,
           display: "flex", alignItems: "center",
-          fontFamily: "'IBM Plex Sans', Arial, sans-serif",
-        }}>
+          fontFamily: "'IBM Plex Sans', Arial, sans-serif" }}>
           <div style={{ maxWidth: 1100, margin: "0 auto", width: "100%", display: "flex", alignItems: "center", gap: 12 }}>
             <span style={{
               fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
               color: "#bfdbfe", background: "rgba(255,255,255,.12)",
-              padding: "3px 10px",
-            }}>
+              padding: "3px 10px" }}>
               KÄUFER-PORTAL
             </span>
             <span style={{ fontSize: 11, color: "rgba(191,219,254,.7)", letterSpacing: "0.02em" }}>
@@ -1196,8 +1179,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         background: "#f0f5ff", border: "none", borderLeft: "1px solid #c7d7fc",
                         cursor: "pointer", color: "#154194", fontSize: 10, fontWeight: 700,
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        transition: "background .12s",
-                      }}
+                        transition: "background .12s" }}
                     >
                       {catalogOpen ? "▲" : "▼"}
                     </button>
@@ -1323,8 +1305,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                                 color: selectedSize === s ? "#fff" : "#374151",
                                 transition: "all .1s",
                                 textAlign: "center" as const,
-                                overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis",
-                              }}
+                                overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}
                               title={s}
                             >{s}</button>
                           ))}
@@ -1380,8 +1361,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                                 background: selectedPrimary === p ? "#154194" : "transparent",
                                 color: selectedPrimary === p ? "#fff" : "#374151",
                                 borderBottom: "1px solid #f1f5f9",
-                                display: "flex", justifyContent: "space-between",
-                              }}
+                                display: "flex", justifyContent: "space-between" }}
                             >
                               <span>{p}</span>
                               <span style={{ fontSize: 10, opacity: 0.6 }}>{grouped.get(p)!.length}</span>
@@ -1546,8 +1526,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     background: greenSteel ? "#f0fdf4" : "#fafafa",
                     cursor: "pointer",
                     transition: "border-color .15s, background .15s",
-                    userSelect: "none" as const,
-                  }}
+                    userSelect: "none" as const }}
                 >
                   {/* Checkbox */}
                   <div style={{
@@ -1555,8 +1534,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     border: `2px solid ${greenSteel ? "#16a34a" : "#d1d5db"}`,
                     background: greenSteel ? "#16a34a" : "#fff",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    transition: "background .15s, border-color .15s",
-                  }}>
+                    transition: "background .15s, border-color .15s" }}>
                     {greenSteel && <span style={{ color: "#fff", fontSize: 13, fontWeight: 700, lineHeight: 1 }}>✓</span>}
                   </div>
                   {/* Text */}
@@ -1672,24 +1650,21 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           position:"absolute", zIndex:200, left:0, right:0,
                           background:"#fff", border:"1px solid #154194",
                           borderTop:"none", boxShadow:"0 4px 12px rgba(0,0,0,.10)",
-                          maxHeight:260, overflowY:"auto",
-                        }}>
+                          maxHeight:260, overflowY:"auto" }}>
                           {countryFiltered.map((c) => (
                             <div
                               key={c.code}
                               onMouseDown={(e) => { e.preventDefault(); selectCountry(c); }}
                               style={{
                                 padding:"9px 14px", cursor:"pointer", borderBottom:"1px solid #f1f5f9",
-                                display:"flex", alignItems:"center", gap:10,
-                              }}
+                                display:"flex", alignItems:"center", gap:10 }}
                               onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f4ff")}
                               onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
                             >
                               <CountryFlag code={c.code} />
                               <span style={{
                                 minWidth:32, fontFamily:"IBM Plex Mono,monospace",
-                                fontSize:11, fontWeight:700, color:"#154194",
-                              }}>{c.code}</span>
+                                fontSize:11, fontWeight:700, color:"#154194" }}>{c.code}</span>
                               <span style={{ fontSize:13 }}>{c.name}</span>
                             </div>
                           ))}
@@ -1702,8 +1677,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           position:"absolute", zIndex:200, left:0, right:0,
                           background:"#fff", border:"1px solid #e9edf5",
                           borderTop:"none", padding:"10px 14px",
-                          fontSize:12.5, color:"#dc2626",
-                        }}>
+                          fontSize:12.5, color:"#dc2626" }}>
                           Kein anerkanntes Land gefunden - bitte aus der Liste wählen.
                         </div>
                       )}
@@ -1715,8 +1689,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           <div style={{
                             marginTop:6, padding:"6px 10px",
                             background:"#f0fdf4", border:"1px solid #bbf7d0",
-                            display:"flex", alignItems:"center", gap:10, fontSize:12.5,
-                          }}>
+                            display:"flex", alignItems:"center", gap:10, fontSize:12.5 }}>
                             <CountryFlag code={entry.code} />
                             <span style={{ background:"#15803d", color:"#fff", fontFamily:"IBM Plex Mono,monospace", fontWeight:700, fontSize:12, padding:"1px 8px" }}>{entry.code}</span>
                             <span style={{ color:"#374151", fontWeight:600 }}>{entry.name}</span>
@@ -1925,8 +1898,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           position:"absolute", zIndex:200, left:0, right:0,
                           background:"#fff", border:"1px solid #154194",
                           borderTop:"none", boxShadow:"0 4px 12px rgba(0,0,0,.10)",
-                          maxHeight:280, overflowY:"auto",
-                        }}>
+                          maxHeight:280, overflowY:"auto" }}>
                           {addrSuggestions.map((f, i) => {
                             const p   = f.properties;
                             const plz = p.postcode ?? "";
@@ -1938,8 +1910,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                                 onMouseDown={(e) => { e.preventDefault(); selectAddress(f); }}
                                 style={{
                                   padding:"10px 14px", cursor:"pointer", borderBottom:"1px solid #f1f5f9",
-                                  display:"flex", alignItems:"center", gap:12,
-                                }}
+                                  display:"flex", alignItems:"center", gap:12 }}
                                 onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f4ff")}
                                 onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
                               >
@@ -1948,8 +1919,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                                   minWidth:54, textAlign:"center",
                                   background:"#154194", color:"#fff",
                                   fontSize:12, fontWeight:700, fontFamily:"IBM Plex Mono,monospace",
-                                  padding:"2px 6px", letterSpacing:".04em", flexShrink:0,
-                                }}>
+                                  padding:"2px 6px", letterSpacing:".04em", flexShrink:0 }}>
                                   {plz || "-"}
                                 </span>
                                 <span style={{ fontSize:13 }}>
@@ -1969,14 +1939,12 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           <div style={{
                             marginTop:6, padding:"6px 10px",
                             background:"#f0fdf4", border:"1px solid #bbf7d0",
-                            display:"flex", alignItems:"center", gap:10, fontSize:12.5,
-                          }}>
+                            display:"flex", alignItems:"center", gap:10, fontSize:12.5 }}>
                             <span style={{ color:"#15803d", fontWeight:700 }}>PLZ verifiziert:</span>
                             <span style={{
                               background:"#15803d", color:"#fff",
                               fontFamily:"IBM Plex Mono,monospace", fontWeight:700,
-                              fontSize:14, padding:"1px 8px", letterSpacing:".06em",
-                            }}>{plz}</span>
+                              fontSize:14, padding:"1px 8px", letterSpacing:".06em" }}>{plz}</span>
                             <span style={{ color:"#374151" }}>{addrInput.replace(plz, "").replace(/^,?\s*/, "").trim()}</span>
                             <button
                               type="button"

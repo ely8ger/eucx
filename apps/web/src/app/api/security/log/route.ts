@@ -3,7 +3,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
-import { verifyAccessToken }         from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 
 export const dynamic = "force-dynamic";
 
@@ -18,13 +18,9 @@ const SECURITY_ACTIONS = new Set([
 ]);
 
 export async function GET(req: NextRequest) {
-  let payload: Awaited<ReturnType<typeof verifyAccessToken>>;
-  try {
-    const header = req.headers.get("authorization");
-    payload = await verifyAccessToken(header?.slice(7) ?? "");
-  } catch {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
+  let payload;
+  try { payload = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   const logs = await db.auditLog.findMany({
     where: {

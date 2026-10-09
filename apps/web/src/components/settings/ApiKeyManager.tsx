@@ -89,9 +89,7 @@ function CreateModal({ onClose, onCreated }: CreateModalProps) {
         body:    JSON.stringify({
           name,
           scopes,
-          expiresAt: expiresAt || undefined,
-        }),
-      });
+          expiresAt: expiresAt || undefined }) });
       const data = await res.json() as { data?: CreateKeyResult; error?: string };
       if (!res.ok) throw new Error(data.error ?? "Fehler beim Erstellen");
       return data.data!;
@@ -100,8 +98,7 @@ function CreateModal({ onClose, onCreated }: CreateModalProps) {
       void queryClient.invalidateQueries({ queryKey: ["api-keys"] });
       onCreated(data);
     },
-    onError: (e: Error) => setError(e.message),
-  });
+    onError: (e: Error) => setError(e.message) });
 
   function toggleScope(scope: ApiKeyScope) {
     setScopes((prev) =>
@@ -267,20 +264,17 @@ export function ApiKeyManager() {
     queryKey: ["api-keys"],
     queryFn:  async () => {
       const res  = await fetch("/api/settings/api-keys", {
-        headers: { Authorization: getAuthHeader() },
-      });
+        headers: { Authorization: getAuthHeader() } });
       const json = await res.json() as { data?: ApiKey[]; error?: string };
       if (!res.ok) throw new Error(json.error);
       return json.data ?? [];
-    },
-  });
+    } });
 
   const revokeMutation = useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/settings/api-keys/${id}`, {
         method:  "DELETE",
-        headers: { Authorization: getAuthHeader() },
-      });
+        headers: { Authorization: getAuthHeader() } });
       if (!res.ok) {
         const j = await res.json() as { error?: string };
         throw new Error(j.error ?? "Fehler beim Widerrufen");
@@ -289,8 +283,7 @@ export function ApiKeyManager() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["api-keys"] });
       setRevokeId(null);
-    },
-  });
+    } });
 
   const keys       = data ?? [];
   const activeCount = keys.filter((k) => k.isActive).length;

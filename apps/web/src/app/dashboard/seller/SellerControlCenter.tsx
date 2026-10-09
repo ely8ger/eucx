@@ -90,15 +90,13 @@ const PHASE_COLOR: Record<string, string> = {
   COLLECTION: "#6b7280",
   PROPOSAL:   "#2563eb",
   REDUCTION:  "#dc2626",
-  CONCLUSION: "#9ca3af",
-};
+  CONCLUSION: "#9ca3af" };
 
 const PHASE_LABEL: Record<string, string> = {
   COLLECTION: "Registrierung",
   PROPOSAL:   "Angebote",
   REDUCTION:  "Reduktion",
-  CONCLUSION: "Abgeschlossen",
-};
+  CONCLUSION: "Abgeschlossen" };
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
@@ -123,7 +121,7 @@ export function SellerControlCenter() {
     if (!token) return;
     setLoadingKpi(true);
     try {
-      const r = await fetch("/api/seller/stats", { headers: { Authorization: `Bearer ${token}` } });
+      const r = await fetch("/api/seller/stats", { headers: { } });
       if (r.ok) setStats(await r.json());
     } catch { /* ignore */ }
     finally { setLoadingKpi(false); }
@@ -134,7 +132,7 @@ export function SellerControlCenter() {
     if (!token) return;
     setLoadingLots(true);
     try {
-      const r = await fetch("/api/auction/lots", { headers: { Authorization: `Bearer ${token}` } });
+      const r = await fetch("/api/auction/lots", { headers: { } });
       if (r.ok) setLots((await r.json()).lots ?? []);
     } catch { /* ignore */ }
     finally { setLoadingLots(false); }
@@ -149,8 +147,7 @@ export function SellerControlCenter() {
     const poll = async () => {
       try {
         const r = await fetch("/api/auction/lots?phase=COLLECTION", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+          headers: { } });
         if (!r.ok) return;
         const d = await r.json();
         const fresh: LotRow[] = d.lots ?? [];
@@ -165,8 +162,7 @@ export function SellerControlCenter() {
                 commodity: l.commodity,
                 quantity:  l.quantity,
                 unit:      l.unit,
-                createdAt: new Date().toISOString(),
-              }));
+                createdAt: new Date().toISOString() }));
               const updated = [...events, ...t].slice(0, 10);
               // Scroll Ticker nach oben
               setTimeout(() => tickerRef.current?.scrollTo({ top: 0, behavior: "smooth" }), 100);
@@ -174,8 +170,7 @@ export function SellerControlCenter() {
             });
             toast(`Neues Gesuch: ${newOnes[0]!.commodity}`, {
               description: `${Number(newOnes[0]!.quantity).toLocaleString("de-DE")} ${newOnes[0]!.unit} - Registrierung offen`,
-              style: { background: "#fffbeb", border: `1px solid ${A}`, color: A3 },
-            });
+              style: { background: "#fffbeb", border: `1px solid ${A}`, color: A3 } });
           }
           return fresh.length > 0 ? fresh : prev;
         });
@@ -193,8 +188,7 @@ export function SellerControlCenter() {
     setRegistering(lotId);
     try {
       const r = await fetch(`/api/auction/lots/${lotId}/register`, {
-        method: "POST", headers: { Authorization: `Bearer ${token}` },
-      });
+        method: "POST", headers: { } });
       const d = await r.json();
       if (r.ok) {
         toast.success("Registrierung erfolgreich");

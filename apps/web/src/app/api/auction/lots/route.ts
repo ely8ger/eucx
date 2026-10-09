@@ -8,7 +8,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { verifyAccessToken } from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { z } from "zod";
 import { CbamCategory } from "@prisma/client";
 import { runAuctionTimer } from "@/lib/auction/auction-timer";
@@ -44,13 +44,9 @@ const createLotSchema = z.object({
 
 export async function POST(req: NextRequest) {
   // ── Auth ──────────────────────────────────────────────────────────
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
   let token;
-  try { token = await verifyAccessToken(authHeader.slice(7)); }
-  catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
+  try { token = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   // ── Validation ────────────────────────────────────────────────────
   let body: unknown;
@@ -137,13 +133,9 @@ export async function POST(req: NextRequest) {
  * Öffentlich lesbar für registrierte Verkäufer.
  */
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
-  let tokenPayload: { userId: string };
-  try { tokenPayload = await verifyAccessToken(authHeader.slice(7)); }
-  catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
+  let tokenPayload;
+  try { tokenPayload = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   const userId = tokenPayload.userId;
   const { searchParams } = new URL(req.url);

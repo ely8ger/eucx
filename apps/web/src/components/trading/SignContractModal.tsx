@@ -63,12 +63,8 @@ export default function SignContractModal({ deal, token, onClose, onSigned }: Si
     try {
       const res = await fetch("/api/contracts", {
         method:  "POST",
-        headers: {
-          "Content-Type":  "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ dealId: deal.dealId }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dealId: deal.dealId }) });
 
       const data = await res.json() as {
         contractId?: string;
@@ -113,12 +109,8 @@ export default function SignContractModal({ deal, token, onClose, onSigned }: Si
     try {
       const res = await fetch(`/api/contracts/${contractId}`, {
         method:  "POST",
-        headers: {
-          "Content-Type":  "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ edsToken: edsInput }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ edsToken: edsInput }) });
 
       const data = await res.json() as {
         status?:   string;
@@ -153,7 +145,7 @@ export default function SignContractModal({ deal, token, onClose, onSigned }: Si
     a.href    = url;
     a.setAttribute("download", `eucx-vertrag-${contractId.slice(0, 8)}.pdf`);
     // Auth-Header geht nicht bei <a download> - separat fetchen
-    fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(url, { headers: { } })
       .then((r) => r.blob())
       .then((blob) => {
         const blobUrl = URL.createObjectURL(blob);

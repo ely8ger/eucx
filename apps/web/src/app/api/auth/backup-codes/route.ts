@@ -5,13 +5,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes, createHash }   from "crypto";
 import { db }                        from "@/lib/db/client";
-import { verifyAccessToken }         from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 
 export const dynamic = "force-dynamic";
 
 async function auth(req: NextRequest) {
-  const header = req.headers.get("authorization");
-  return verifyAccessToken(header?.slice(7) ?? "");
+  return requireAuth(req);
 }
 
 function generateCode(): string {

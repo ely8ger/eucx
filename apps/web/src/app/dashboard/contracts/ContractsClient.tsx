@@ -46,14 +46,12 @@ const STATUS_META: Record<DeliveryStatus, { label: string; color: string; bg: st
   READY_FOR_PICKUP: { label: "Abholbereit",        color: "#fff",    bg: "#d97706" },
   IN_TRANSIT:       { label: "In Transport",       color: "#fff",    bg: "#2563eb" },
   DELIVERED:        { label: "Geliefert",          color: "#fff",    bg: "#16a34a" },
-  COMPLETED:        { label: "Abgeschlossen",      color: "#fff",    bg: "#15803d" },
-};
+  COMPLETED:        { label: "Abgeschlossen",      color: "#fff",    bg: "#15803d" } };
 
 const COUNTERPARTY_LABEL: Record<"buyer" | "seller" | "admin", string> = {
   buyer:  "Verkäufer",
   seller: "Käufer",
-  admin:  "Parteien",
-};
+  admin:  "Parteien" };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -74,7 +72,7 @@ export function ContractsClient() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("/api/auction/contracts", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/auction/contracts", { headers: { } })
       .then((r) => r.ok ? r.json() : Promise.reject(r.status))
       .then((d) => { setContracts(d.contracts ?? []); setLoading(false); })
       .catch(() => { setError("Verträge konnten nicht geladen werden."); setLoading(false); });

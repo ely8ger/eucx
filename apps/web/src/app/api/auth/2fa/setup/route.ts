@@ -11,20 +11,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateSecret, generateURI } from "otplib";
 import { db }                          from "@/lib/db/client";
-import { verifyAccessToken }           from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 
 export const dynamic = "force-dynamic";
 
 const APP_NAME = "EUCX";
 
 export async function POST(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  let tokenPayload: Awaited<ReturnType<typeof verifyAccessToken>>;
-  try {
-    tokenPayload = await verifyAccessToken(authHeader?.slice(7) ?? "");
-  } catch {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
+  let tokenPayload;
+  try { tokenPayload = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   const user = await db.user.findUnique({
     where:  { id: tokenPayload.userId },

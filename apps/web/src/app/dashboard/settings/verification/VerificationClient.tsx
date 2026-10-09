@@ -33,8 +33,7 @@ const DOC_TYPE_LABELS: Record<DocType, string> = {
   EORI_CERTIFICATE:  "EORI-Registrierungsnachweis",
   ISO_CERTIFICATE:   "ISO 9001 / EN ISO 3834 Zertifikat",
   CBAM_REGISTRATION: "CBAM-Registrierungsnachweis",
-  OTHER:             "Sonstiges",
-};
+  OTHER:             "Sonstiges" };
 
 const DOC_TYPE_HELP: Record<DocType, string> = {
   TRADE_REGISTER:    "Erhältlich unter handelsregister.de - nicht älter als 3 Monate, ca. 12 €",
@@ -46,8 +45,7 @@ const DOC_TYPE_HELP: Record<DocType, string> = {
   EORI_CERTIFICATE:  "EORI-Registrierungsnachweis für grenzüberschreitenden Warenverkehr in der EU (zoll.de)",
   ISO_CERTIFICATE:   "ISO 9001 Qualitätsmanagementsystem oder EN ISO 3834 Schweißqualitätsnorm - sofern vorhanden",
   CBAM_REGISTRATION: "CBAM-Registrierungsnachweis gemäß EU-Verordnung 2023/956 - erforderlich bei Import von Stahl aus Nicht-EU-Ländern",
-  OTHER:             "Weitere relevante Unterlagen, z. B. Gesellschaftsvertrag oder Vollmacht",
-};
+  OTHER:             "Weitere relevante Unterlagen, z. B. Gesellschaftsvertrag oder Vollmacht" };
 
 // Role-specific doc config - evaluated at render time
 const REQUIRED_BASE: DocType[] = ["TRADE_REGISTER", "VAT_CONFIRMATION", "ID_DOCUMENT", "UBO_DOCUMENT"];
@@ -59,8 +57,7 @@ const CHECK_STATUS_LABEL: Record<CheckStatus, string> = {
   pending:  "In Prüfung",
   rejected: "Abgelehnt",
   revision: "Überarbeitung erforderlich",
-  missing:  "Ausstehend",
-};
+  missing:  "Ausstehend" };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -116,14 +113,14 @@ export function VerificationClient() {
 
   async function loadStatus(tkn: string) {
     try {
-      const res  = await fetch("/api/auth/me", { headers: { Authorization: `Bearer ${tkn}` } });
+      const res  = await fetch("/api/auth/me", { headers: { } });
       if (!res.ok) return;
       const data = await res.json() as { email?: string; role?: string; verificationStatus?: VerificationStatus; organization?: { isGeschaeftsfuehrer?: boolean | null } };
       setUserEmail(data.email ?? "");
       setUserRole(data.role === "SELLER" ? "SELLER" : "BUYER");
       setIsGeschaeftsfuehrer(data.organization?.isGeschaeftsfuehrer ?? null);
       setKycStatus(data.verificationStatus ?? "GUEST");
-      const docsRes = await fetch("/api/kyc/documents", { headers: { Authorization: `Bearer ${tkn}` } });
+      const docsRes = await fetch("/api/kyc/documents", { headers: { } });
       if (docsRes.ok) {
         const docsData = await docsRes.json() as { documents?: ExistingDoc[] };
         setExistingDocs(docsData.documents ?? []);
@@ -161,9 +158,8 @@ export function VerificationClient() {
         fd.append("docType", type);
         const res = await fetch("/api/kyc/upload", {
           method:  "POST",
-          headers: { Authorization: `Bearer ${freshToken}` },
-          body:    fd,
-        });
+          headers: { },
+          body:    fd });
         if (!res.ok) {
           const err = await res.json().catch(() => ({})) as { error?: string; message?: string; code?: string };
           const msg = err.error ?? err.message;
@@ -194,9 +190,8 @@ export function VerificationClient() {
       setUploadStatus("Antrag wird eingereicht …");
       const res  = await fetch("/api/kyc/submit", {
         method:  "POST",
-        headers: { Authorization: `Bearer ${freshToken}`, "Content-Type": "application/json" },
-        body:    JSON.stringify({ documents, notes: notes || undefined }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ documents, notes: notes || undefined }) });
       const data = await res.json() as { error?: string };
       if (!res.ok) {
         toast.error(data.error ?? "Fehler beim Einreichen");
@@ -233,8 +228,7 @@ export function VerificationClient() {
     PENDING:        { color: "#92400e", label: "In Prüfung"               },
     APPROVED:       { color: "#14532d", label: "Genehmigt"                },
     REJECTED:       { color: "#7f1d1d", label: "Abgelehnt"                },
-    NEEDS_REVISION: { color: "#7c3d0e", label: "Überarbeitung erforderlich" },
-  };
+    NEEDS_REVISION: { color: "#7c3d0e", label: "Überarbeitung erforderlich" } };
 
   const unlockItems = userRole === "SELLER"
     ? ["An Ausschreibungen registrieren", "Wettbewerbsfähige Gebote abgeben", "Kaufverträge abschließen", "Lieferaufträge verwalten"]

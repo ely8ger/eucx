@@ -8,7 +8,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { verifyAccessToken } from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
@@ -19,13 +19,9 @@ async function _POST(
 ) {
   const { lotId } = await params;
   // ── Auth ──────────────────────────────────────────────────────────
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
   let token;
-  try { token = await verifyAccessToken(authHeader.slice(7)); }
-  catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
+  try { token = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   // ── User + Lot prüfen ─────────────────────────────────────────────
   const [user, lot] = await Promise.all([

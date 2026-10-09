@@ -8,7 +8,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { verifyAccessToken } from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { submitOrderSchema } from "@/lib/validation/schemas";
 import { audit } from "@/lib/audit/logger";
 import { runMatchingCycle } from "@/lib/trading/matching-engine";
@@ -18,16 +18,9 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   // ── 1. Auth ────────────────────────────────────────────────────────
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
   let tokenPayload;
-  try {
-    tokenPayload = await verifyAccessToken(authHeader.slice(7));
-  } catch {
-    return NextResponse.json({ error: "Token ungültig" }, { status: 401 });
-  }
+  try { tokenPayload = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   // ── 2. Zod Validation ──────────────────────────────────────────────
   let body: unknown;
@@ -164,16 +157,9 @@ export async function POST(req: NextRequest) {
 
 // GET /api/orders - eigene Aufträge des eingeloggten Nutzers
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
   let tokenPayload;
-  try {
-    tokenPayload = await verifyAccessToken(authHeader.slice(7));
-  } catch {
-    return NextResponse.json({ error: "Token ungültig" }, { status: 401 });
-  }
+  try { tokenPayload = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   const sessionId = req.nextUrl.searchParams.get("sessionId");
 

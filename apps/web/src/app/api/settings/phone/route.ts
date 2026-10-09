@@ -4,16 +4,14 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { verifyAccessToken } from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { z } from "zod";
 import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
 async function authenticate(req: NextRequest) {
-  const auth = req.headers.get("authorization");
-  if (!auth?.startsWith("Bearer ")) return null;
-  try { return await verifyAccessToken(auth.slice(7)); }
+  try { return await requireAuth(req); }
   catch { return null; }
 }
 

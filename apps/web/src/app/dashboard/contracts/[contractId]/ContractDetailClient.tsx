@@ -71,8 +71,7 @@ const STEPS: { key: DeliveryStatus; label: string; hint: string }[] = [
 
 const STATUS_IDX: Record<DeliveryStatus, number> = {
   MATCHED: 0, AWAITING_PAYMENT: 1, READY_FOR_PICKUP: 2, IN_TRANSIT: 3, DELIVERED: 4, COMPLETED: 5,
-  DISPUTED: 4, DEFAULTED: 4,
-};
+  DISPUTED: 4, DEFAULTED: 4 };
 
 const NEXT_STATUS: Record<DeliveryStatus, DeliveryStatus | null> = {
   MATCHED:          "AWAITING_PAYMENT",
@@ -82,8 +81,7 @@ const NEXT_STATUS: Record<DeliveryStatus, DeliveryStatus | null> = {
   DELIVERED:        "COMPLETED",
   COMPLETED:        null,
   DISPUTED:         null,
-  DEFAULTED:        null,
-};
+  DEFAULTED:        null };
 
 const STATUS_COLORS: Record<DeliveryStatus, string> = {
   MATCHED:          "#6b7280",
@@ -93,15 +91,13 @@ const STATUS_COLORS: Record<DeliveryStatus, string> = {
   DELIVERED:        "#16a34a",
   COMPLETED:        "#7c3aed",
   DISPUTED:         "#dc2626",
-  DEFAULTED:        "#7f1d1d",
-};
+  DEFAULTED:        "#7f1d1d" };
 
 const NEXT_LABELS: Partial<Record<DeliveryStatus, string>> = {
   MATCHED:          "Zahlung einfordern",
   AWAITING_PAYMENT: "Zahlungseingang bestätigen",
   READY_FOR_PICKUP: "CMR hochgeladen - In Transport setzen",
-  DELIVERED:        "Abschluss bestätigen (CBAM erhalten)",
-};
+  DELIVERED:        "Abschluss bestätigen (CBAM erhalten)" };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -141,8 +137,7 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
     setError(null);
     try {
       const r = await fetch(`/api/auction/contracts/${contractId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (!r.ok) {
         const d = await r.json() as { error?: string };
         setError(d.error ?? "Fehler beim Laden.");
@@ -165,8 +160,7 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
     try {
       const r = await fetch(`/api/auction/lots/${contract.lotId}/payment-sent`, {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (r.ok) { await load(); }
       else {
         const d = await r.json() as { error?: string };
@@ -180,8 +174,7 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
     if (!contract) return;
     try {
       const r = await fetch(`/api/auction/lots/${contract.lotId}/cmr-download`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (!r.ok) { alert("CMR nicht verfügbar."); return; }
       const blob = await r.blob();
       const url  = URL.createObjectURL(blob);
@@ -203,9 +196,8 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
     try {
       const r = await fetch(`/api/auction/lots/${contract.lotId}/delivery`, {
         method:  "PATCH",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body:    JSON.stringify({ status: next }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ status: next }) });
       if (r.ok) { await load(); }
       else {
         const d = await r.json() as { error?: string };
@@ -226,9 +218,8 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
       fd.append("file", file);
       const r = await fetch(`/api/auction/lots/${contract.lotId}/cmr-upload`, {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body:    fd,
-      });
+        headers: { },
+        body:    fd });
       if (r.ok) {
         if (fileRef.current) fileRef.current.value = "";
         await load();
@@ -247,8 +238,7 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
     try {
       const r = await fetch(`/api/auction/lots/${contract.lotId}/buyer-delivery`, {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (r.ok) { await load(); }
       else {
         const d = await r.json() as { error?: string };
@@ -265,9 +255,8 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
     try {
       const r = await fetch(`/api/auction/lots/${contract.lotId}/dispute`, {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body:    JSON.stringify({ reason: disputeReason.trim() }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ reason: disputeReason.trim() }) });
       if (r.ok) {
         setDisputeDone(true);
         setDisputeOpen(false);
@@ -285,8 +274,7 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
     if (!contract) return;
     try {
       const r = await fetch(`/api/auction/lots/${contract.lotId}/contract`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (!r.ok) { alert("PDF nicht verfügbar."); return; }
       const blob = await r.blob();
       const url  = URL.createObjectURL(blob);
@@ -515,8 +503,7 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
                       background: contract.paymentSentAt ? "#f0fdf4" : "#fffbeb",
                       border: `1px solid ${contract.paymentSentAt ? "#bbf7d0" : "#fde68a"}`,
                       fontSize: 12.5,
-                      color: contract.paymentSentAt ? "#14532d" : "#92400e",
-                    }}>
+                      color: contract.paymentSentAt ? "#14532d" : "#92400e" }}>
                       {contract.paymentSentAt
                         ? `Käufer hat Zahlung gemeldet am ${fmtDateTime(contract.paymentSentAt)} - Sie können jetzt den Zahlungseingang bestätigen.`
                         : "Warten auf Zahlungsmeldung des Käufers. Der Käufer muss zuerst die Überweisung melden."}
@@ -531,8 +518,7 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
                       background: "#f0fdf4",
                       border: "1px solid #bbf7d0",
                       fontSize: 12.5,
-                      color: "#14532d",
-                    }}>
+                      color: "#14532d" }}>
                       Zahlung gemeldet am {fmtDateTime(contract.paymentSentAt)} - Verkäufer bestätigt den Eingang.
                     </div>
                   )}

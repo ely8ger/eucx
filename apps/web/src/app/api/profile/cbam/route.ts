@@ -5,7 +5,7 @@
  * Beide Felder sind selbst einzutragen (nicht aus Handelsregister ableitbar).
  */
 import { NextRequest, NextResponse } from "next/server";
-import { verifyAccessToken } from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { db } from "@/lib/db/client";
 import { z } from "zod";
 import { apiRoute } from "@/lib/api/route-handler";
@@ -16,13 +16,9 @@ const schema = z.object({
 });
 
 async function _PATCH(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
   let token;
-  try { token = await verifyAccessToken(authHeader.slice(7)); }
-  catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
+  try { token = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   let body: unknown;
   try { body = await req.json(); }

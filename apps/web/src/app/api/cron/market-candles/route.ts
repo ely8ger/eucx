@@ -43,8 +43,7 @@ export async function GET(req: NextRequest) {
       ok:        true,
       refreshed,
       errors,
-      durationMs: Date.now() - start,
-    });
+      durationMs: Date.now() - start });
   } catch (err) {
     console.error("[cron/market-candles]", err);
     return NextResponse.json({
@@ -52,7 +51,6 @@ export async function GET(req: NextRequest) {
       error:  process.env.NODE_ENV !== "production"
         ? (err instanceof Error ? err.message : String(err))
         : "Interner Fehler",
-      durationMs: Date.now() - start,
-    }, { status: 500 });
+      durationMs: Date.now() - start }, { status: 500 });
   }
 }

@@ -31,16 +31,13 @@ export async function sendAuctionMail(params: MailParams): Promise<void> {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${apiKey}`,
-      "Content-Type":  "application/json",
-    },
+      "Authorization": `Bearer ${process.env.RESEND_API_KEY}`,
+      "Content-Type":  "application/json" },
     body: JSON.stringify({
       from:    "EUCX Plattform <noreply@eucx.eu>",
       to:      [params.to],
       subject: params.subject,
-      html,
-    }),
-  });
+      html }) });
 
   if (!res.ok) {
     const detail = await res.text().catch(() => "");

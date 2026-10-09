@@ -30,7 +30,7 @@ export default function SettingsPage() {
   useEffect(() => {
     if (tab !== "security") return;
     const token = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
-    fetch("/api/auth/2fa/status", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/auth/2fa/status", { headers: { } })
       .then((r) => r.json() as Promise<TwoFaStatus & { error?: string }>)
       .then((d) => { if (!d.error) setTfaStatus(d); })
       .catch(() => {})
@@ -42,8 +42,7 @@ export default function SettingsPage() {
     try {
       const token = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
       const res   = await fetch("/api/auth/2fa/disable", {
-        method: "POST", headers: { Authorization: `Bearer ${token}` },
-      });
+        method: "POST", headers: { } });
       const data = await res.json() as { ok?: boolean; error?: string };
       if (!res.ok) { setError(data.error ?? t("settings_2fa_err_disable")); return; }
       setTfaStatus((prev) => prev ? { ...prev, totpEnabled: false } : null);
@@ -73,8 +72,7 @@ export default function SettingsPage() {
             borderBottomWidth: 2,
             borderBottomColor: tab === tabKey ? BLUE : "transparent",
             cursor: "pointer", fontFamily: F,
-            marginBottom: -1,
-          }}>
+            marginBottom: -1 }}>
             {tabKey === "profile" ? t("settings_tab_profile") : t("settings_tab_security")}
           </button>
         ))}
@@ -124,8 +122,7 @@ export default function SettingsPage() {
                 <span style={{
                   fontSize: 11, fontWeight: 600, padding: "3px 10px", flexShrink: 0,
                   color:           tfaStatus?.totpEnabled ? "#166534" : "#505050",
-                  backgroundColor: tfaStatus?.totpEnabled ? "#f0fdf4" : "#f5f5f5",
-                }}>
+                  backgroundColor: tfaStatus?.totpEnabled ? "#f0fdf4" : "#f5f5f5" }}>
                   {tfaStatus?.totpEnabled ? t("settings_2fa_enabled") : t("settings_2fa_disabled")}
                 </span>
               )}
@@ -179,7 +176,7 @@ export default function SettingsPage() {
             </p>
             <button onClick={() => {
               const token = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
-              void fetch("/api/auth/logout", { method: "POST", headers: { Authorization: `Bearer ${token}` }, credentials: "include" })
+              void fetch("/api/auth/logout", { method: "POST", headers: { }, credentials: "include" })
                 .finally(() => { useAuthStore.getState().logout(); });
             }}
               style={{ marginTop: 12, fontSize: 13, color: RED, background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: F }}

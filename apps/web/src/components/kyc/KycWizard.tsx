@@ -82,8 +82,7 @@ function StepIndicator({ current, total }: { current: number; total: number }) {
 const slideVariants = {
   enter:  (dir: number) => ({ x: dir > 0 ? 40 : -40, opacity: 0 }),
   center: { x: 0, opacity: 1 },
-  exit:   (dir: number) => ({ x: dir > 0 ? -40 : 40, opacity: 0 }),
-};
+  exit:   (dir: number) => ({ x: dir > 0 ? -40 : 40, opacity: 0 }) };
 
 // ─── Haupt-Wizard ─────────────────────────────────────────────────────────────
 
@@ -103,9 +102,8 @@ export function KycWizard() {
       const tkn = document.cookie.match(/access_token=([^;]+)/)?.[1] ?? "";
       void fetch("/api/track/event", {
         method:  "POST",
-        headers: { "Content-Type": "application/json", ...(tkn ? { Authorization: `Bearer ${tkn}` } : {}) },
-        body:    JSON.stringify({ action: "KYC_STEP_COMPLETED", meta: { step, stepName: ["company_info", "documents", "review"][step] } }),
-      });
+        headers: { "Content-Type": "application/json", ...(tkn ? { } : {}) },
+        body:    JSON.stringify({ action: "KYC_STEP_COMPLETED", meta: { step, stepName: ["company_info", "documents", "review"][step] } }) });
     }
     setDir(next > step ? 1 : -1);
     setStep(next);
@@ -117,8 +115,7 @@ export function KycWizard() {
       preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : "",
       sizeStr: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
       error:   file.size > MAX_FILE_SIZE_MB * 1024 * 1024 ? `Datei überschreitet ${MAX_FILE_SIZE_MB} MB` : undefined,
-      docType: "OTHER",
-    }));
+      docType: "OTHER" }));
     setFiles((prev) => [...prev, ...enriched].slice(0, 10));
   }, []);
 
@@ -126,8 +123,7 @@ export function KycWizard() {
     onDrop,
     accept:   ACCEPTED_TYPES,
     maxSize:  MAX_FILE_SIZE_MB * 1024 * 1024,
-    maxFiles: 10 - files.length,
-  });
+    maxFiles: 10 - files.length });
 
   const removeFile = (idx: number) => {
     setFiles((prev) => {
@@ -360,9 +356,8 @@ export function KycWizard() {
           fd.append("docType", f.docType);
           const r = await fetch("/api/kyc/upload", {
             method:  "POST",
-            headers: { Authorization: `Bearer ${tkn}` },
-            body:    fd,
-          });
+            headers: { },
+            body:    fd });
           if (!r.ok) {
             const e = await r.json().catch(() => ({})) as { error?: string };
             throw new Error(e.error ?? `Upload fehlgeschlagen: ${f.file.name}`);
@@ -375,9 +370,8 @@ export function KycWizard() {
       // 2. KYC-Antrag einreichen
       const res  = await fetch("/api/kyc/submit", {
         method:  "POST",
-        headers: { Authorization: `Bearer ${tkn}`, "Content-Type": "application/json" },
-        body:    JSON.stringify({ documents: uploaded, notes: notes || undefined }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ documents: uploaded, notes: notes || undefined }) });
       const data = await res.json() as { ok?: boolean; error?: string };
       if (!res.ok) { setError(data.error ?? "Fehler beim Absenden"); return; }
       setDone(true);

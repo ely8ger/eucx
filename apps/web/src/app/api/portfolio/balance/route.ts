@@ -9,22 +9,15 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
-import { verifyAccessToken }         from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   // ── 1. Auth ──────────────────────────────────────────────────────────────
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
-  }
-  let tokenPayload: Awaited<ReturnType<typeof verifyAccessToken>>;
-  try {
-    tokenPayload = await verifyAccessToken(authHeader.slice(7));
-  } catch {
-    return NextResponse.json({ error: "Token ungültig" }, { status: 401 });
-  }
+  let tokenPayload;
+  try { tokenPayload = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   try {
     // ── 2. OrganizationId des Nutzers ────────────────────────────────────

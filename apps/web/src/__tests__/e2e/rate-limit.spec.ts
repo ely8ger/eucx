@@ -30,8 +30,7 @@ async function login(email: string, password: string, ip?: string): Promise<stri
   const res  = await fetch(`${BASE}/api/auth/login`, {
     method:  "POST",
     headers,
-    body:    JSON.stringify({ email, password }),
-  });
+    body:    JSON.stringify({ email, password }) });
   const body = await res.json() as { data?: { accessToken?: string } };
   const token = body.data?.accessToken;
   if (!token) throw new Error(`Login fehlgeschlagen: ${JSON.stringify(body)}`);
@@ -45,8 +44,7 @@ async function checkRateLimit(
   const res  = await fetch(`${BASE}/api/test/rate-limit-check`, {
     method:  "POST",
     headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ ip, bucket }),
-  });
+    body:    JSON.stringify({ ip, bucket }) });
   return res.json() as Promise<{ allowed: boolean; remaining: number; reset: number }>;
 }
 
@@ -60,11 +58,8 @@ async function placeBid(lotId: string, token: string, price: number, ip = TEST_I
     method:  "POST",
     headers: {
       "Content-Type":    "application/json",
-      "Authorization":   `Bearer ${token}`,
-      "X-Forwarded-For": ip,
-    },
-    body: JSON.stringify({ price }),
-  });
+      "Authorization": `Bearer ${token}`, "X-Forwarded-For": ip },
+    body: JSON.stringify({ price }) });
 }
 
 function is429Block(status: number, body: Record<string, unknown>): boolean {
@@ -176,7 +171,7 @@ test.describe("Rate Limiter - E2E Bid-Request Nachweis", () => {
 
     const createRes = await fetch(`${BASE}/api/auction/lots`, {
       method:  "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${buyerToken}` },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${sellerToken}` },
       body: JSON.stringify({
         commodity:        "REBAR_B500B",
         quantity:         50,
@@ -190,24 +185,19 @@ test.describe("Rate Limiter - E2E Bid-Request Nachweis", () => {
         hsCode:           "7214200010",
         qualityGrade:     "B500B",
         description:      "Rate-Limit-E2E-Test",
-        greenSteel:       false,
-      }),
-    });
+        greenSteel:       false }) });
     expect(createRes.status).toBe(201);
     const { lotId: id } = await createRes.json() as { lotId: string };
     lotId = id;
 
     await fetch(`${BASE}/api/auction/lots/${lotId}/publish`, {
-      method: "PATCH", headers: { "Authorization": `Bearer ${buyerToken}` },
-    });
+      method: "PATCH", headers: { "Authorization": `Bearer ${sellerToken}` } });
     await fetch(`${BASE}/api/auction/lots/${lotId}/register`, {
-      method: "POST", headers: { "Authorization": `Bearer ${sellerToken}` },
-    });
+      method: "POST", headers: { "Authorization": `Bearer ${buyerToken}` } });
     await fetch(`${BASE}/api/auction/lots/${lotId}/open`, {
       method:  "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${buyerToken}` },
-      body:    JSON.stringify({ auctionEnd: new Date(Date.now() + 60 * 60_000).toISOString() }),
-    });
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${sellerToken}` },
+      body:    JSON.stringify({ auctionEnd: new Date(Date.now() + 60 * 60_000).toISOString() }) });
   });
 
   test("E2E-1: 20 Gebote von TEST_IP werden nicht rate-limited", async () => {

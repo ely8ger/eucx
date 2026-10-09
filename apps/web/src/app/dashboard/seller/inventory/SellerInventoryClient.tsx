@@ -41,15 +41,13 @@ const STATUS_COLOR: Record<string, string> = {
   AVAILABLE:  "#16a34a",
   RESERVED:   "#d97706",
   SOLD:       "#6b7280",
-  CANCELLED:  "#dc2626",
-};
+  CANCELLED:  "#dc2626" };
 
 const STATUS_LABEL: Record<string, string> = {
   AVAILABLE:  "Verfügbar",
   RESERVED:   "Reserviert",
   SOLD:       "Verkauft",
-  CANCELLED:  "Storniert",
-};
+  CANCELLED:  "Storniert" };
 
 const COUNTRIES = [
   "DE - Deutschland", "AT - Österreich", "PL - Polen", "CZ - Tschechien",
@@ -106,7 +104,7 @@ export function SellerInventoryClient() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/auth/me", { headers: { } })
       .then((r) => r.ok ? r.json() : null)
       .then((d) => {
         if (d) setUserStatus({ totpEnabled: d.totpEnabled ?? false, verificationStatus: d.verificationStatus ?? "GUEST", phoneVerified: d.phoneVerified ?? false });
@@ -130,14 +128,12 @@ export function SellerInventoryClient() {
     setError("");
     try {
       let r = await fetch("/api/seller/inventory", {
-        headers: { Authorization: `Bearer ${t}` },
-      });
+        headers: { } });
       if (r.status === 401) {
         const fresh = await tryRefresh();
         if (!fresh) { setError("Sitzung abgelaufen - bitte neu anmelden."); router.replace("/login"); return; }
         r = await fetch("/api/seller/inventory", {
-          headers: { Authorization: `Bearer ${fresh}` },
-        });
+          headers: { } });
       }
       if (r.ok) {
         const data = await r.json() as Charge[];
@@ -171,23 +167,20 @@ export function SellerInventoryClient() {
         co2PerTonne:       fCo2 ? parseFloat(fCo2) : undefined,
         countryOfOrigin:   fLand || undefined,
         productionSiteId:  fRegistryId || undefined,
-        incoterms:         fIncoterms,
-      };
+        incoterms:         fIncoterms };
       let tkn = token;
       let r = await fetch("/api/seller/inventory", {
         method:  "POST",
-        headers: { Authorization: `Bearer ${tkn}`, "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body) });
       if (r.status === 401) {
         const fresh = await tryRefresh();
         if (!fresh) { setError("Sitzung abgelaufen - bitte neu anmelden."); router.replace("/login"); return; }
         tkn = fresh;
         r = await fetch("/api/seller/inventory", {
           method:  "POST",
-          headers: { Authorization: `Bearer ${tkn}`, "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body) });
       }
       if (r.ok) {
         setShowForm(false);
@@ -215,8 +208,7 @@ export function SellerInventoryClient() {
     if (!confirm("Charge unwiderruflich löschen?")) return;
     const r = await fetch(`/api/seller/inventory/${id}`, {
       method:  "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+      headers: { } });
     if (r.ok || r.status === 204) {
       setCharges((prev) => prev.filter((c) => c.id !== id));
     } else {

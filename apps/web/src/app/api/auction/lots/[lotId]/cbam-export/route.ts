@@ -4,7 +4,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { verifyAccessToken } from "@/lib/auth/jwt";
+import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { PDFDocument, rgb, StandardFonts, type PDFFont } from "pdf-lib";
 import { apiRoute } from "@/lib/api/route-handler";
 
@@ -47,13 +47,9 @@ async function _GET(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> },
 ) {
-  const authHeader = req.headers.get("authorization");
-  const qToken     = req.nextUrl.searchParams.get("token");
-  const rawToken   = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : qToken;
-  if (!rawToken) return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
   let token;
-  try { token = await verifyAccessToken(rawToken); }
-  catch { return NextResponse.json({ error: "Token ungültig" }, { status: 401 }); }
+  try { token = await requireAuth(req); }
+  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
   const { lotId } = await params;
   const lot = await db.lot.findUnique({

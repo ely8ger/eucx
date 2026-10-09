@@ -71,8 +71,7 @@ const NAV: Record<string, NavItem[]> = {
     { label: "Benachrichtigungen", href: "/dashboard/settings/notifications",activePrefix: "/dashboard/settings/notifications" },
     { label: "API-Schlüssel",      href: "/dashboard/settings/api-keys",     activePrefix: "/dashboard/settings/api-keys" },
   ],
-  admin: [],
-};
+  admin: [] };
 
 // ─── Hierarchical Page Map ────────────────────────────────────────────────────
 //
@@ -89,81 +88,63 @@ const BREADCRUMB_MAP: Array<{
     config: (p) => {
       const id = p.split("/").pop() ?? "";
       return { area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Handelssitzung", pageHref: "/dashboard/buyer", detail: `Los ${id.slice(0, 8).toUpperCase()}` };
-    },
-  },
+    } },
   {
     match:  (p) => p.startsWith("/dashboard/buyer/auction"),
-    config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Handelssitzung", pageHref: "/dashboard/buyer" }),
-  },
+    config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Handelssitzung", pageHref: "/dashboard/buyer" }) },
   {
     match:  (p) => p.startsWith("/dashboard/buyer/portfolio"),
-    config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Portfolio", pageHref: "/dashboard/buyer/portfolio" }),
-  },
+    config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Portfolio", pageHref: "/dashboard/buyer/portfolio" }) },
   {
     match:  (p) => p.startsWith("/dashboard/buyer/wallet"),
-    config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Wallet & Guthaben", pageHref: "/dashboard/buyer/wallet" }),
-  },
+    config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Wallet & Guthaben", pageHref: "/dashboard/buyer/wallet" }) },
   // ── Verkäufer-Portal ───────────────────────────────────────────────────────
   {
     match:  (p) => p === "/dashboard/seller",
-    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Verkaufs-Dashboard", pageHref: "/dashboard/seller" }),
-  },
+    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Verkaufs-Dashboard", pageHref: "/dashboard/seller" }) },
   {
     match:  (p) => p.startsWith("/dashboard/seller/auctions"),
-    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Ausschreibungen", pageHref: "/dashboard/seller/auctions" }),
-  },
+    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Ausschreibungen", pageHref: "/dashboard/seller/auctions" }) },
   {
     match:  (p) => p.startsWith("/dashboard/seller/inventory"),
-    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Lagerbestand", pageHref: "/dashboard/seller/inventory" }),
-  },
+    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Lagerbestand", pageHref: "/dashboard/seller/inventory" }) },
   {
     match:  (p) => p.startsWith("/dashboard/seller/logistics"),
-    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Lieferungen", pageHref: "/dashboard/seller/logistics" }),
-  },
+    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Lieferungen", pageHref: "/dashboard/seller/logistics" }) },
   {
     match:  (p) => p.startsWith("/dashboard/seller/billing"),
-    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Abrechnung", pageHref: "/dashboard/seller/billing" }),
-  },
+    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/auctions", page: "Abrechnung", pageHref: "/dashboard/seller/billing" }) },
   {
     match:  (p) => p.startsWith("/dashboard/seller/auction/"),
     config: (p) => {
       const id = p.split("/").pop() ?? "";
       return { area: "Verkäufer-Portal", areaHref: "/dashboard/seller/active-bids", page: "Meine Auktionen", pageHref: "/dashboard/seller/active-bids", detail: `Los ${id.slice(0, 8).toUpperCase()}` };
-    },
-  },
+    } },
   {
     match:  (p) => p.startsWith("/dashboard/seller/auction"),
-    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/active-bids", page: "Meine Auktionen", pageHref: "/dashboard/seller/active-bids" }),
-  },
+    config: ()  => ({ area: "Verkäufer-Portal", areaHref: "/dashboard/seller/active-bids", page: "Meine Auktionen", pageHref: "/dashboard/seller/active-bids" }) },
   // ── Konto & Compliance ─────────────────────────────────────────────────────
   {
     match:  (p) => p.startsWith("/dashboard/contracts"),
-    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/contracts", page: "Verträge", pageHref: "/dashboard/contracts" }),
-  },
+    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/contracts", page: "Verträge", pageHref: "/dashboard/contracts" }) },
   {
     match:  (p) => p.startsWith("/dashboard/profile"),
-    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "Profil", pageHref: "/dashboard/profile" }),
-  },
+    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "Profil", pageHref: "/dashboard/profile" }) },
   {
     match:  (p) => p === "/dashboard/settings/verification",
-    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "KYC-Verifikation", pageHref: "/dashboard/settings/verification" }),
-  },
+    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "KYC-Verifikation", pageHref: "/dashboard/settings/verification" }) },
   {
     match:  (p) => p === "/dashboard/settings/security",
-    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "Sicherheit", pageHref: "/dashboard/settings/security" }),
-  },
+    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "Sicherheit", pageHref: "/dashboard/settings/security" }) },
   {
     match:  (p) => p === "/dashboard/settings/notifications",
-    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "Benachrichtigungen", pageHref: "/dashboard/settings/notifications" }),
-  },
+    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "Benachrichtigungen", pageHref: "/dashboard/settings/notifications" }) },
   {
     match:  (p) => p.startsWith("/dashboard/settings/api-keys"),
-    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "API-Schlüssel", pageHref: "/dashboard/settings/api-keys" }),
-  },
+    config: ()  => ({ area: "Konto & Compliance", areaHref: "/dashboard/profile", page: "API-Schlüssel", pageHref: "/dashboard/settings/api-keys" }) },
   {
     match:  (p) => p.startsWith("/dashboard/buyer/portfolio"),
-    config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Portfolio", pageHref: "/dashboard/buyer/portfolio" }),
-  },
+    config: ()  => ({ area: "Käufer-Portal", areaHref: "/dashboard/buyer", page: "Portfolio", pageHref: "/dashboard/buyer/portfolio" }) },
 ];
 
 function resolveBreadcrumb(path: string): BreadcrumbConfig | null {
@@ -193,16 +174,14 @@ const ROLE_META: Record<string, { label: string; color: string; bg: string }> = 
   SELLER:      { label: "Verkäufer",  color: "#92400e", bg: "#fef3c7" },
   ADMIN:       { label: "Admin",      color: "#065f46", bg: "#d1fae5" },
   COMPLIANCE:  { label: "Compliance", color: "#6b21a8", bg: "#f3e8ff" },
-  SUPER_ADMIN: { label: "Super Admin",color: "#991b1b", bg: "#fee2e2" },
-};
+  SUPER_ADMIN: { label: "Super Admin",color: "#991b1b", bg: "#fee2e2" } };
 
 const KYC_META: Record<string, { label: string; color: string }> = {
   GUEST:                { label: "Nicht verifiziert", color: "#9ca3af" },
   PENDING_VERIFICATION: { label: "Prüfung läuft",    color: "#d97706" },
   VERIFIED:             { label: "Verifiziert",       color: "#059669" },
   REJECTED:             { label: "Abgelehnt",         color: "#dc2626" },
-  SUSPENDED:            { label: "Gesperrt",          color: "#dc2626" },
-};
+  SUSPENDED:            { label: "Gesperrt",          color: "#dc2626" } };
 
 const fmtEur = (v: string) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
@@ -218,8 +197,7 @@ function NavLink({ item, active, accentColor }: { item: NavItem; active: boolean
         display: "inline-flex", alignItems: "center",
         fontSize: 13, fontWeight: 400, fontFamily: F,
         color: "#c4ccd6", cursor: "default", userSelect: "none",
-        borderBottom: "3px solid transparent", whiteSpace: "nowrap",
-      }}>
+        borderBottom: "3px solid transparent", whiteSpace: "nowrap" }}>
         {item.label}
       </span>
     );
@@ -237,8 +215,7 @@ function NavLink({ item, active, accentColor }: { item: NavItem; active: boolean
         textDecoration: "none",
         borderBottom: `3px solid ${active ? accentColor : "transparent"}`,
         transition: "color .15s, font-weight .1s",
-        whiteSpace: "nowrap",
-      }}
+        whiteSpace: "nowrap" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -263,12 +240,10 @@ function BreadcrumbBar({ pathname, role }: { pathname: string; role?: string }) 
       padding: "0 28px",
       height: 32,
       display: "flex", alignItems: "center",
-      fontFamily: F,
-    }}>
+      fontFamily: F }}>
       <div style={{
         maxWidth: 1280, margin: "0 auto", width: "100%",
-        display: "flex", alignItems: "center", gap: 6,
-      }}>
+        display: "flex", alignItems: "center", gap: 6 }}>
         {/* Area */}
         <a
           href={crumb.areaHref}
@@ -337,8 +312,7 @@ function UserAvatar({ me }: { me: MeUser | null }) {
         style={{
           display: "flex", alignItems: "center", gap: 8,
           background: "none", border: "none", cursor: "pointer", padding: "4px 6px",
-          fontFamily: F, transition: "background .15s", userSelect: "none",
-        }}
+          fontFamily: F, transition: "background .15s", userSelect: "none" }}
         onMouseEnter={e => { e.currentTarget.style.background = "#f5f7fb"; setHovered(true); }}
         onMouseLeave={e => { e.currentTarget.style.background = "none"; setHovered(false); }}
       >
@@ -347,8 +321,7 @@ function UserAvatar({ me }: { me: MeUser | null }) {
           background: open ? BLUE2 : BLUE,
           color: "#fff",
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 13, fontWeight: 700, flexShrink: 0,
-        }}>
+          fontSize: 13, fontWeight: 700, flexShrink: 0 }}>
           {initial}
         </div>
         <span style={{ fontSize: 13, fontWeight: 600, color: hovered ? BLUE : "#1a1a1a", whiteSpace: "nowrap", transition: "color .15s" }}>
@@ -368,36 +341,31 @@ function UserAvatar({ me }: { me: MeUser | null }) {
             position: "absolute", top: 40, right: 0,
             background: "#fff", border: "1px solid #e0e4ea",
             boxShadow: "0 8px 28px rgba(0,0,0,.14)",
-            minWidth: 240, zIndex: 200, fontFamily: F,
-          }}>
+            minWidth: 240, zIndex: 200, fontFamily: F }}>
             {/* Kopf: Organisation + Email + Rollen-Badge */}
             <div style={{ padding: "16px 18px", borderBottom: "1px solid #f0f2f5" }}>
               <p style={{
                 margin: "0 0 2px", fontSize: 13, fontWeight: 700, color: DARK,
-                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 220,
-              }}>
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 220 }}>
                 {orgName}
               </p>
               {me?.organization?.memberId && (
                 <p style={{
                   margin: "0 0 4px", fontSize: 11, fontFamily: "'IBM Plex Mono',monospace",
-                  fontWeight: 700, color: BLUE, letterSpacing: ".02em",
-                }}>
+                  fontWeight: 700, color: BLUE, letterSpacing: ".02em" }}>
                   {me.organization.memberId}
                 </p>
               )}
               <p style={{
                 margin: "0 0 10px", fontSize: 11, color: MUTED,
-                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 220,
-              }}>
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 220 }}>
                 {me?.email}
               </p>
               <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
                 <span style={{
                   padding: "3px 10px", fontSize: 11, fontWeight: 700,
                   background: roleMeta.bg, color: roleMeta.color,
-                  letterSpacing: "0.04em",
-                }}>
+                  letterSpacing: "0.04em" }}>
                   {roleMeta.label}
                 </span>
                 <span style={{ fontSize: 11, color: kycMeta.color, fontWeight: 600 }}>
@@ -411,8 +379,7 @@ function UserAvatar({ me }: { me: MeUser | null }) {
                   display: "block", textAlign: "center",
                   padding: "7px 0", fontSize: 12, fontWeight: 600,
                   color: BLUE, border: `1px solid ${BLUE}`,
-                  textDecoration: "none", transition: "background .12s, color .12s",
-                }}
+                  textDecoration: "none", transition: "background .12s, color .12s" }}
                 onMouseEnter={e => { e.currentTarget.style.background = BLUE; e.currentTarget.style.color = "#fff"; }}
                 onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = BLUE; }}
               >
@@ -424,8 +391,7 @@ function UserAvatar({ me }: { me: MeUser | null }) {
             {me?.walletBalance !== undefined && (
               <div style={{
                 padding: "10px 18px", borderBottom: "1px solid #f0f2f5",
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-              }}>
+                display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: 11, color: MUTED }}>Guthaben</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: DARK, fontVariantNumeric: "tabular-nums" }}>
                   {fmtEur(me.walletBalance ?? "0")}
@@ -443,8 +409,7 @@ function UserAvatar({ me }: { me: MeUser | null }) {
                   style={{
                     display: "block", padding: "8px 18px",
                     fontSize: 13, color: DARK, textDecoration: "none",
-                    transition: "background .12s, color .12s",
-                  }}
+                    transition: "background .12s, color .12s" }}
                   onMouseEnter={e => { e.currentTarget.style.background = "#f5f7fb"; e.currentTarget.style.color = BLUE; }}
                   onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = DARK; }}
                 >
@@ -461,8 +426,7 @@ function UserAvatar({ me }: { me: MeUser | null }) {
                   display: "block", width: "100%", textAlign: "left",
                   padding: "8px 18px", fontSize: 13, fontFamily: F,
                   background: "none", border: "none", cursor: "pointer",
-                  color: "#dc2626", transition: "background .12s",
-                }}
+                  color: "#dc2626", transition: "background .12s" }}
                 onMouseEnter={e => (e.currentTarget.style.background = "#fef2f2")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
@@ -486,7 +450,7 @@ export function EucxHeader() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/auth/me", { headers: { } })
       .then((r) => r.json() as Promise<MeUser>)
       .then((d) => setMe(d))
       .catch(() => {});
@@ -546,8 +510,7 @@ export function EucxHeader() {
                   background: "none", border: "none", cursor: "pointer", padding: 0,
                   fontSize: 11, fontFamily: F,
                   color: logoutHovered ? "rgba(255,255,255,.75)" : "rgba(255,255,255,.4)",
-                  transition: "color .15s",
-                }}
+                  transition: "color .15s" }}
                 onMouseEnter={() => setLogoutHovered(true)}
                 onMouseLeave={() => setLogoutHovered(false)}
               >
@@ -563,8 +526,7 @@ export function EucxHeader() {
           backgroundColor: "#fff",
           borderTop: `3px solid ${accentColor}`,
           boxShadow: "0 1px 4px rgba(0,0,0,.14)",
-          height: 56,
-        }}>
+          height: 56 }}>
           <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 28px", display: "flex", alignItems: "center", height: "100%" }}>
 
             {/* Logo - fixe Position links, statisch */}
@@ -594,8 +556,7 @@ export function EucxHeader() {
                   color: shieldHovered ? BLUE : "#9ca3af",
                   background: shieldHovered ? "#f0f4ff" : "transparent",
                   borderRadius: 4,
-                  transition: "color .15s, background .15s", textDecoration: "none",
-                }}
+                  transition: "color .15s, background .15s", textDecoration: "none" }}
                 onMouseEnter={() => setShieldHovered(true)}
                 onMouseLeave={() => setShieldHovered(false)}
               >
@@ -618,13 +579,11 @@ export function EucxHeader() {
           borderBottom: `1px solid ${me.verificationStatus === "PENDING_VERIFICATION" ? "#fde68a" : "#fed7aa"}`,
           padding: "9px 28px",
           display: "flex", alignItems: "center", gap: 12,
-          fontFamily: F, fontSize: 13,
-        }}>
+          fontFamily: F, fontSize: 13 }}>
           <span style={{
             width: 7, height: 7, borderRadius: "50%", flexShrink: 0,
             background: me.verificationStatus === "PENDING_VERIFICATION" ? "#d97706" : "#ea580c",
-            display: "inline-block",
-          }} />
+            display: "inline-block" }} />
           <span style={{ color: "#92400e" }}>
             {me.verificationStatus === "PENDING_VERIFICATION"
               ? "Ihre KYC-Unterlagen werden geprüft. Kaufen und Verkaufen ist bis zur Freigabe gesperrt."
@@ -637,8 +596,7 @@ export function EucxHeader() {
                 marginLeft: "auto", flexShrink: 0,
                 fontSize: 12, fontWeight: 600, color: "#154194",
                 textDecoration: "none", padding: "4px 12px",
-                border: "1px solid #154194",
-              }}
+                border: "1px solid #154194" }}
               onMouseEnter={e => { e.currentTarget.style.background = "#154194"; e.currentTarget.style.color = "#fff"; }}
               onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#154194"; }}
             >

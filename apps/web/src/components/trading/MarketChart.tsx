@@ -40,8 +40,7 @@ import {
   useRef,
   useState,
   useCallback,
-  type FC,
-} from "react";
+  type FC } from "react";
 import {
   createChart,
   CandlestickSeries,
@@ -52,8 +51,7 @@ import {
   type CandlestickData,
   type Time,
   ColorType,
-  CrosshairMode,
-} from "lightweight-charts";
+  CrosshairMode } from "lightweight-charts";
 import { useOhlcQuery, INTERVAL_SECONDS, type OhlcInterval, type OhlcCandle } from "@/hooks/useOhlcQuery";
 import { useMarketTicker }                                                      from "@/hooks/useMarketTicker";
 import { useAuthStore }                                                         from "@/store/authStore";
@@ -68,8 +66,7 @@ const C = {
   up:        "#00843d",
   down:      "#e53e3e",
   upAlpha:   "rgba(0,  132, 61,  0.45)",
-  downAlpha: "rgba(229, 62, 62,  0.45)",
-} as const;
+  downAlpha: "rgba(229, 62, 62,  0.45)" } as const;
 
 // ─── Intervall-Konfiguration ──────────────────────────────────────────────────
 
@@ -79,8 +76,7 @@ const INTERVAL_LABELS: Record<OhlcInterval, string> = {
   ONE_MIN:     "1M",
   FIFTEEN_MIN: "15M",
   ONE_HOUR:    "1H",
-  ONE_DAY:     "1T",
-};
+  ONE_DAY:     "1T" };
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -121,25 +117,20 @@ const MarketChart: FC<MarketChartProps> = ({ productId, symbol, className = "" }
       layout: {
         background: { type: ColorType.Solid, color: C.bg },
         textColor:  C.text,
-        fontSize:   12,
-      },
+        fontSize:   12 },
       grid: {
         vertLines: { color: C.grid },
-        horzLines: { color: C.grid },
-      },
+        horzLines: { color: C.grid } },
       crosshair: { mode: CrosshairMode.Normal },
       rightPriceScale: {
         borderColor:  C.border,
-        scaleMargins: { top: 0.08, bottom: 0.28 },
-      },
+        scaleMargins: { top: 0.08, bottom: 0.28 } },
       timeScale: {
         borderColor:    C.border,
         timeVisible:    true,
         secondsVisible: false,
         fixLeftEdge:    false,
-        fixRightEdge:   false,
-      },
-    });
+        fixRightEdge:   false } });
 
     const candleSeries = chart.addSeries(CandlestickSeries, {
       upColor:         C.up,
@@ -147,18 +138,15 @@ const MarketChart: FC<MarketChartProps> = ({ productId, symbol, className = "" }
       borderUpColor:   C.up,
       borderDownColor: C.down,
       wickUpColor:     C.up,
-      wickDownColor:   C.down,
-    } as Partial<CandlestickSeriesOptions>);
+      wickDownColor:   C.down } as Partial<CandlestickSeriesOptions>);
 
     const volSeries = chart.addSeries(HistogramSeries, {
       color:        C.upAlpha,
       priceFormat:  { type: "volume" },
-      priceScaleId: "volume",
-    });
+      priceScaleId: "volume" });
 
     volSeries.priceScale().applyOptions({
-      scaleMargins: { top: 0.78, bottom: 0 },
-    });
+      scaleMargins: { top: 0.78, bottom: 0 } });
 
     chartRef.current        = chart;
     candleSeriesRef.current = candleSeries;
@@ -170,8 +158,7 @@ const MarketChart: FC<MarketChartProps> = ({ productId, symbol, className = "" }
       if (!entry) return;
       chart.applyOptions({
         width:  entry.contentRect.width,
-        height: entry.contentRect.height,
-      });
+        height: entry.contentRect.height });
     });
     ro.observe(containerRef.current);
 
@@ -231,8 +218,7 @@ const MarketChart: FC<MarketChartProps> = ({ productId, symbol, className = "" }
         open:  last.open,
         high:  Math.max(last.high, price),
         low:   Math.min(last.low,  price),
-        close: price,
-      };
+        close: price };
       liveDataRef.current = [...liveData.slice(0, -1), updated];
     } else {
       // Neuer Zeitraum → neue Kerze
@@ -241,8 +227,7 @@ const MarketChart: FC<MarketChartProps> = ({ productId, symbol, className = "" }
         open:  last?.close ?? price,
         high:  price,
         low:   price,
-        close: price,
-      };
+        close: price };
       liveDataRef.current = [...liveData, updated];
     }
 
@@ -254,8 +239,7 @@ const MarketChart: FC<MarketChartProps> = ({ productId, symbol, className = "" }
       volSeries.update({
         time:  candleTs as unknown as Time,
         value: qty,
-        color: isUp ? C.upAlpha : C.downAlpha,
-      });
+        color: isUp ? C.upAlpha : C.downAlpha });
     }
   }, [interval]);
 
@@ -284,7 +268,7 @@ const MarketChart: FC<MarketChartProps> = ({ productId, symbol, className = "" }
     if (!token) return;
 
     const url = `/api/market/export?format=${format}&productId=${productId}`;
-    fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(url, { headers: { } })
       .then((r) => {
         if (r.status === 204) {
           alert("Keine Trades im gewählten Zeitraum.");
@@ -296,8 +280,7 @@ const MarketChart: FC<MarketChartProps> = ({ productId, symbol, className = "" }
         if (!blob) return;
         const a = Object.assign(document.createElement("a"), {
           href:     URL.createObjectURL(blob),
-          download: `eucx-ohlc-${productId}-${interval}.${format}`,
-        });
+          download: `eucx-ohlc-${productId}-${interval}.${format}` });
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

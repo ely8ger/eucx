@@ -52,22 +52,19 @@ function useCountdown(endIso: string | null) {
   return {
     label: ms === 0 ? "Abgelaufen" : `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`,
     isUrgent: ms > 0 && ms < 10 * 60_000,
-    ms,
-  };
+    ms };
 }
 
 const PHASE_LABEL: Record<string, string> = {
   COLLECTION: "Registrierungsphase",
   PROPOSAL:   "Erstgebote",
   REDUCTION:  "Auktion läuft",
-  CONCLUSION: "Abgeschlossen",
-};
+  CONCLUSION: "Abgeschlossen" };
 const PHASE_COLOR: Record<string, string> = {
   COLLECTION: "#6b7280",
   PROPOSAL:   "#2563eb",
   REDUCTION:  "#16a34a",
-  CONCLUSION: "#9ca3af",
-};
+  CONCLUSION: "#9ca3af" };
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
@@ -85,7 +82,7 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
   // ── KYC ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (!token) return;
-    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/auth/me", { headers: { } })
       .then((r) => r.ok ? r.json() : null)
       .then((d) => {
         if (!d) return;
@@ -112,22 +109,19 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
         toast(n.title, {
           description: n.message,
           duration:    10000,
-          style: { background: "#fffbeb", border: "1px solid #d97706", color: "#92400e" },
-        });
+          style: { background: "#fffbeb", border: "1px solid #d97706", color: "#92400e" } });
         break;
       case "URGENCY_5M":
         toast.error(n.title, {
           description: n.message,
           duration:    15000,
-          style: { background: "#fef2f2", border: "2px solid #dc2626", color: "#7f1d1d" },
-        });
+          style: { background: "#fef2f2", border: "2px solid #dc2626", color: "#7f1d1d" } });
         break;
       case "CLOSED_BUYER":
         toast.success(n.title, {
           description: n.message,
           duration:    12000,
-          style: { background: "#f0f4ff", border: "2px solid #154194", color: "#1e3a8a" },
-        });
+          style: { background: "#f0f4ff", border: "2px solid #154194", color: "#1e3a8a" } });
         break;
       default:
         toast(n.title, { description: n.message, duration: 5000 });
@@ -149,7 +143,7 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
   const loadBids = useCallback(async () => {
     if (!token) return;
     try {
-      const r = await fetch(`/api/auction/lots/${lot.id}/bids`, { headers: { Authorization: `Bearer ${token}` } });
+      const r = await fetch(`/api/auction/lots/${lot.id}/bids`, { headers: { } });
       if (!r.ok) return;
       const d = await r.json();
       setBids(
@@ -159,8 +153,7 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
           bieter:    b.sellerId as string,
           price:     b.price,
           isWinner:  b.isWinner,
-          createdAt: b.createdAt,
-        }))
+          createdAt: b.createdAt }))
       );
     } catch { /* ignore */ }
   }, [lot.id, token]);
@@ -293,8 +286,7 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
         <div style={{
           background: "#0d1b2a", padding: "8px 20px",
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          fontFamily: "'IBM Plex Sans', Arial, sans-serif",
-        }}>
+          fontFamily: "'IBM Plex Sans', Arial, sans-serif" }}>
           <a href="/dashboard/buyer" style={{ fontSize: 12, color: "rgba(255,255,255,.6)", textDecoration: "none" }}
             onMouseEnter={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.fontWeight = "600"; }}
             onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,255,255,.6)"; e.currentTarget.style.fontWeight = "400"; }}>
@@ -502,8 +494,7 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
                 margin: "20px 0 0",
                 padding: "20px 24px",
                 background: "#f0f4ff",
-                borderLeft: "4px solid #154194",
-              }}>
+                borderLeft: "4px solid #154194" }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: "#154194", marginBottom: 6, letterSpacing: "0.04em" }}>
                   AUKTION ABGESCHLOSSEN
                 </div>
@@ -519,12 +510,10 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
                     fontSize: 13,
                     fontWeight: 600,
                     letterSpacing: "0.04em",
-                    cursor: "pointer",
-                  }}
+                    cursor: "pointer" }}
                   onClick={() => {
                     fetch(`/api/auction/lots/${lot.id}/contract`, {
-                      headers: { Authorization: `Bearer ${token}` },
-                    })
+                      headers: { } })
                       .then(async (r) => {
                         if (!r.ok) { alert("Kaufvertrag noch nicht verfügbar. Bitte in wenigen Sekunden erneut versuchen."); return; }
                         const blob = await r.blob();

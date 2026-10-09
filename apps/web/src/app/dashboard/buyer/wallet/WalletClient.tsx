@@ -40,8 +40,7 @@ const KYC_DOC_TYPE: Record<string, string> = {
   "Bankgarantie":    "BANK_CONFIRMATION",
   "Kontoauszug":     "BANK_CONFIRMATION",
   "Kapitalnachweis": "SOLVENCY_PROOF",
-  "Sonstiges":       "OTHER",
-};
+  "Sonstiges":       "OTHER" };
 
 const fmtEur = (v: string | number) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(Number(v));
@@ -71,8 +70,7 @@ export function WalletClient() {
     setLoading(true);
     try {
       const r = await fetch("/api/buyer/wallet", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { } });
       if (r.ok) setWallet(await r.json() as WalletData);
     } catch { /* ignore */ }
     finally { setLoading(false); }
@@ -99,9 +97,8 @@ export function WalletClient() {
       fd.append("docType", KYC_DOC_TYPE[docType] ?? "OTHER");
       const r1 = await fetch("/api/kyc/upload", {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body:    fd,
-      });
+        headers: { },
+        body:    fd });
       if (!r1.ok) {
         const d = await r1.json() as { error?: string; message?: string; code?: string };
         if (d.code === "INVALID_TOKEN" || d.code === "UNAUTHORIZED") {
@@ -116,9 +113,8 @@ export function WalletClient() {
       // Schritt 2: POF-Antrag mit Blob-URL einreichen
       const r2 = await fetch("/api/buyer/wallet/proof-of-funds", {
         method:  "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body:    JSON.stringify({ blobUrl, blobName, amount: amt, docType }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ blobUrl, blobName, amount: amt, docType }) });
       if (r2.ok) {
         const data = await r2.json() as PofResult;
         setResult(data);
@@ -346,8 +342,7 @@ export function WalletClient() {
                         const num = parseInt(digits, 10);
                         const fmt = new Intl.NumberFormat("de-DE", {
                           minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        }).format(num);
+                          maximumFractionDigits: 0 }).format(num);
                         setLimitDisplay(fmt);
                         setLimit(String(num));
                       }}
@@ -357,8 +352,7 @@ export function WalletClient() {
                           setLimitDisplay(
                             new Intl.NumberFormat("de-DE", {
                               minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }).format(num)
+                              maximumFractionDigits: 2 }).format(num)
                           );
                         }
                       }}
@@ -368,8 +362,7 @@ export function WalletClient() {
                           setLimitDisplay(
                             new Intl.NumberFormat("de-DE", {
                               minimumFractionDigits: 0,
-                              maximumFractionDigits: 0,
-                            }).format(num)
+                              maximumFractionDigits: 0 }).format(num)
                           );
                         }
                       }}

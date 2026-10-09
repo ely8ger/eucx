@@ -20,7 +20,7 @@ export function PhoneSettingsClient() {
 
   const load = async (tkn: string) => {
     try {
-      const r = await fetch("/api/settings/phone", { headers: { Authorization: `Bearer ${tkn}` } });
+      const r = await fetch("/api/settings/phone", { headers: { } });
       if (!r.ok) return;
       const d = await r.json();
       setPhone(d.phone ?? "");
@@ -35,9 +35,8 @@ export function PhoneSettingsClient() {
     try {
       const r = await fetch("/api/settings/phone", {
         method:  "PUT",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body:    JSON.stringify({ phone: phone.trim() }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ phone: phone.trim() }) });
       const d = await r.json();
       if (!r.ok) {
         setMsg({ type: "err", text: d.error ?? `Fehler ${r.status}` });
