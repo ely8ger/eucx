@@ -1,6 +1,6 @@
 "use client";
 
-import Link        from "next/link";
+import Link           from "next/link";
 import { usePathname } from "next/navigation";
 import { EucxHeader }  from "@/components/layout/EucxHeader";
 
@@ -52,6 +52,7 @@ export function SettingsLayout({ children }: { children: React.ReactNode }) {
       <EucxHeader />
       {children}
       <BottomNav pathname={pathname} />
+      <PageFooter />
     </>
   );
 }
@@ -106,6 +107,34 @@ function BottomNav({ pathname }: { pathname: string }) {
             );
           })}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function PageFooter() {
+  return (
+    <div style={{ maxWidth: 700, margin: "0 auto", padding: "0 32px 48px", fontFamily: F }}>
+      <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 20 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 20px", marginBottom: 8 }}>
+          {[
+            { label: "Impressum",          href: "/impressum" },
+            { label: "Datenschutz",        href: "/datenschutz" },
+            { label: "AGB",                href: "/agb" },
+            { label: "Compliance",         href: "/insights/regulatorik" },
+            { label: "Passwort vergessen", href: "/login?reset=1" },
+          ].map(({ label, href }) => (
+            <a key={label} href={href}
+              style={{ fontSize: 11, color: MUTED, textDecoration: "none" }}
+              onMouseEnter={e => { e.currentTarget.style.color = BLUE_TEXT; e.currentTarget.style.fontWeight = "600"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = MUTED;     e.currentTarget.style.fontWeight = "400"; }}>
+              {label}
+            </a>
+          ))}
+        </div>
+        <p style={{ margin: 0, fontSize: 11, color: "#aab0bb" }}>
+          © 2026 EUCX GmbH · Frankfurt am Main · Reguliert durch die BaFin · MiFID II OTF-Zulassung
+        </p>
       </div>
     </div>
   );

@@ -864,28 +864,6 @@ export function SecuritySettingsClient() {
           )}
         </SectionCard>
 
-        {/* Footer */}
-        <footer style={{ marginTop: 32, paddingTop: 20, borderTop: `1px solid ${BORDER}` }}>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 20px", marginBottom: 8 }}>
-            {[
-              { label: "Impressum",         href: "/impressum" },
-              { label: "Datenschutz",       href: "/datenschutz" },
-              { label: "AGB",               href: "/agb" },
-              { label: "Compliance",        href: "/insights/regulatorik" },
-              { label: "Passwort vergessen", href: "/login?reset=1" },
-            ].map(({ label, href }) => (
-              <a key={label} href={href}
-                style={{ fontSize: 11, color: MUTED, textDecoration: "none", fontFamily: F }}
-                onMouseEnter={e => { e.currentTarget.style.color = BLUE; e.currentTarget.style.fontWeight = "600"; }}
-                onMouseLeave={e => { e.currentTarget.style.color = MUTED; e.currentTarget.style.fontWeight = "400"; }}>
-                {label}
-              </a>
-            ))}
-          </div>
-          <p style={{ margin: 0, fontSize: 11, color: "#aab0bb", fontFamily: F }}>
-            © 2026 EUCX GmbH · Frankfurt am Main · Reguliert durch die BaFin · MiFID II OTF-Zulassung
-          </p>
-        </footer>
       </div>
       </div>
     </SettingsLayout>
