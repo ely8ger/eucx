@@ -7,7 +7,9 @@
  * Body: { userId: string, code: string }
  */
 import { NextRequest, NextResponse } from "next/server";
+import { randomInt }                 from "crypto";
 import { db }                        from "@/lib/db/client";
+import { checkRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +21,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { code: "VALIDATION_ERROR", message: "userId und code sind erforderlich." },
         { status: 400 },
+      );
+    }
+
+    // UUID-Format und Code-Format validieren
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.userId)) {
+      return NextResponse.json({ code: "VALIDATION_ERROR", message: "Ungültige userId." }, { status: 400 });
+    }
+    if (!/^\d{6}$/.test(body.code)) {
+      return NextResponse.json({ code: "VALIDATION_ERROR", message: "Code muss 6 Ziffern haben." }, { status: 400 });
+    }
+
+    // Rate Limit: 5 Versuche/Minute pro userId (verhindert Code-Brute-Force)
+    const rl = await checkRateLimit(`verify:${body.userId}`, "auth");
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { code: "RATE_LIMITED", message: "Zu viele Versuche. Bitte warten Sie eine Minute." },
+        { status: 429, headers: rateLimitHeaders(rl) },
       );
     }
 
@@ -115,7 +134,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ code: "EMAIL_TAKEN", message: "Diese E-Mail-Adresse ist bereits registriert." }, { status: 409 });
     }
 
-    const code      = String(Math.floor(Math.random() * 1_000_000)).padStart(6, "0");
+    const code      = String(randomInt(0, 1_000_000)).padStart(6, "0");
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
     await db.$transaction([
@@ -163,7 +182,7 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    const code      = String(Math.floor(Math.random() * 1_000_000)).padStart(6, "0");
+    const code      = String(randomInt(0, 1_000_000)).padStart(6, "0");
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
     await db.emailVerification.create({

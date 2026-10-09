@@ -4,6 +4,7 @@ import { checkRateLimit, rateLimitHeaders, type LimitBucket } from "@/lib/rate-l
 import { getClientIp }                                      from "@/lib/net/get-client-ip";
 import { isJtiBlacklistedEdge }                             from "@/lib/auth/token-blacklist";
 import { logSecurityEvent }                                 from "@/lib/audit/log-event";
+import { COOKIE_ACCESS_TOKEN, COOKIE_REFRESH_TOKEN }        from "@/lib/auth/cookie-names";
 
 const PUBLIC_EXACT = new Set(["/", "/login", "/register", "/forgot-password", "/reset-password"]);
 
@@ -68,8 +69,10 @@ export async function middleware(req: NextRequest) {
   // ── Rate Limiting (vor allem anderen) ────────────────────────────────────
   // Gilt für Auth-Endpunkte und Bids auch wenn sie PUBLIC_PREFIXES sind.
   const isRateLimited =
-    pathname === "/api/auth/login"    ||
-    pathname === "/api/auth/register" ||
+    pathname === "/api/auth/login"           ||
+    pathname === "/api/auth/register"        ||
+    pathname === "/api/auth/forgot-password" ||
+    pathname === "/api/auth/reset-password"  ||
     pathname.includes("/bids");
 
   if (isRateLimited) {
@@ -91,16 +94,17 @@ export async function middleware(req: NextRequest) {
 
   // ── API: JWT-Verifikation ─────────────────────────────────────────────────
   if (pathname.startsWith("/api/")) {
-    // SSE-Endpoints senden Token als Query-Parameter (EventSource unterstützt keine Header)
-    const queryToken = req.nextUrl.searchParams.get("token");
-    const authHeader = req.headers.get("authorization");
-    const auth = authHeader ?? (queryToken ? `Bearer ${queryToken}` : null);
-    if (!auth?.startsWith("Bearer ")) {
-      logSecurityEvent({ event: "AUTH_INVALID_TOKEN", ip, path: pathname, detail: "Kein Bearer-Token" });
+    // Cookie-Only Architecture: Cookie first, Bearer-Header als Fallback (für E2E-Tests)
+    // Kein ?token= Query-Parameter — Tokens in URLs landen in Server-Logs
+    const cookieToken = req.cookies.get(COOKIE_ACCESS_TOKEN)?.value;
+    const authHeader  = req.headers.get("authorization");
+    const rawToken    = cookieToken ?? (authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null);
+    if (!rawToken) {
+      logSecurityEvent({ event: "AUTH_INVALID_TOKEN", ip, path: pathname, detail: "Kein Token" });
       return NextResponse.json({ code: "UNAUTHORIZED", message: "Token fehlt" }, { status: 401 });
     }
     try {
-      const payload = await verifyAccessToken(auth.slice(7));
+      const payload = await verifyAccessToken(rawToken);
 
       // JTI-Blacklist prüfen (Token nach Logout gesperrt)
       if (payload.jti) {
@@ -142,8 +146,8 @@ export async function middleware(req: NextRequest) {
   }
 
   // ── Seiten: Cookie-basierte Auth ──────────────────────────────────────────
-  const token        = req.cookies.get("access_token")?.value;
-  const refreshToken = req.cookies.get("refresh_token")?.value;
+  const token        = req.cookies.get(COOKIE_ACCESS_TOKEN)?.value;
+  const refreshToken = req.cookies.get(COOKIE_REFRESH_TOKEN)?.value;
 
   if (!token) {
     if (refreshToken) return NextResponse.next();
@@ -162,7 +166,7 @@ export async function middleware(req: NextRequest) {
         const loginUrl = new URL("/login", req.url);
         loginUrl.searchParams.set("next", pathname);
         const res = NextResponse.redirect(loginUrl);
-        res.cookies.delete("access_token");
+        res.cookies.delete(COOKIE_ACCESS_TOKEN);
         return res;
       }
     }
@@ -196,7 +200,7 @@ export async function middleware(req: NextRequest) {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("next", pathname);
     const res = NextResponse.redirect(loginUrl);
-    res.cookies.delete("access_token");
+    res.cookies.delete(COOKIE_ACCESS_TOKEN);
     return res;
   }
 }

@@ -6,6 +6,7 @@ import { verifyPassword, hashPassword } from "@/lib/auth/password";
 import { isPwnedPassword }           from "@/lib/auth/pwned-password";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
 import { blacklistJti }              from "@/lib/auth/token-blacklist";
+import { COOKIE_ACCESS_TOKEN, COOKIE_REFRESH_TOKEN } from "@/lib/auth/cookie-names";
 
 export const dynamic = "force-dynamic";
 
@@ -74,7 +75,7 @@ export async function POST(req: NextRequest) {
 
   const res = NextResponse.json({ ok: true });
   // HttpOnly-Cookies serverseitig löschen — Client muss sich neu einloggen
-  res.cookies.set("access_token",  "", { httpOnly: true, path: "/",                  maxAge: 0 });
-  res.cookies.set("refresh_token", "", { httpOnly: true, path: "/api/auth/refresh",  maxAge: 0 });
+  res.cookies.set(COOKIE_ACCESS_TOKEN,  "", { httpOnly: true, path: "/",                  maxAge: 0 });
+  res.cookies.set(COOKIE_REFRESH_TOKEN, "", { httpOnly: true, path: "/api/auth/refresh",  maxAge: 0 });
   return res;
 }

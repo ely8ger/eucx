@@ -2,28 +2,46 @@
  * POST /api/auth/2fa/validate
  *
  * Validiert den TOTP-Code beim Login (nach Passwort-Check).
- * Kein auth-Header nötig - nutzt pendingUserId aus temporärem Cookie.
+ * userId kommt aus dem HttpOnly pending_2fa Cookie (kein IDOR möglich).
+ * Replay-Schutz: bereits verwendete Codes werden 90s geblockt.
  *
- * body: { email: string; code: string }
- *
- * Bei Erfolg: vollständiges Login-Response wie POST /api/auth/login
+ * body: { code: string }
  */
-import { NextRequest, NextResponse } from "next/server";
-import { verifySync }                from "otplib";
-import { createHash }                from "crypto";
-import { db }                        from "@/lib/db/client";
-import { signAccessToken, signRefreshToken } from "@/lib/auth/jwt";
-import { checkRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
-import { z }                         from "zod";
+import { NextRequest, NextResponse }         from "next/server";
+import { verifySync }                        from "otplib";
+import { createHash }                        from "crypto";
+import { db }                                from "@/lib/db/client";
+import { signAccessToken, signRefreshToken, verifyPending2faToken } from "@/lib/auth/jwt";
+import { COOKIE_ACCESS_TOKEN, COOKIE_REFRESH_TOKEN, COOKIE_PENDING_2FA } from "@/lib/auth/cookie-names";
+import { checkRateLimit, rateLimitHeaders }  from "@/lib/rate-limit";
+import { isTotpCodeUsed, markTotpCodeUsed }  from "@/lib/auth/totp-replay";
+import { getClientIp }                       from "@/lib/net/get-client-ip";
+import { z }                                 from "zod";
 
 export const dynamic = "force-dynamic";
 
 const bodySchema = z.object({
-  email: z.string().email().transform(v => v.toLowerCase().trim()),
-  code:  z.string().length(6, "Code muss 6-stellig sein"),
+  code: z.string().length(6, "Code muss 6-stellig sein").regex(/^\d{6}$/, "Nur Ziffern erlaubt"),
 });
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+
+  // 1. pending_2fa Cookie lesen und verifizieren
+  const pending2fa = req.cookies.get(COOKIE_PENDING_2FA)?.value;
+  if (!pending2fa) {
+    return NextResponse.json({ error: "Kein aktiver Login-Vorgang. Bitte erneut anmelden." }, { status: 401 });
+  }
+
+  let userId: string;
+  try {
+    const p = await verifyPending2faToken(pending2fa);
+    userId = p.userId;
+  } catch {
+    return NextResponse.json({ error: "Abgelaufener Login-Vorgang. Bitte erneut anmelden." }, { status: 401 });
+  }
+
+  // 2. Body validieren
   let body: unknown;
   try { body = await req.json(); } catch {
     return NextResponse.json({ error: "Ungültiger Body" }, { status: 400 });
@@ -34,8 +52,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Code ungültig" }, { status: 422 });
   }
 
-  const user = await db.user.findFirst({
-    where:   { email: { equals: parsed.data.email, mode: "insensitive" } },
+  // 3. Brute-Force-Schutz: 5 Versuche/Minute pro User
+  const rl = await checkRateLimit(`2fa:${userId}`, "auth");
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Zu viele Versuche. Bitte versuchen Sie es in einer Minute erneut." },
+      { status: 429, headers: rateLimitHeaders(rl) },
+    );
+  }
+
+  // 4. User laden
+  const user = await db.user.findUnique({
+    where:   { id: userId },
     include: { organization: { select: { id: true, name: true } } },
   });
 
@@ -46,21 +74,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Konto nicht aktiv" }, { status: 403 });
   }
 
-  // A2 — Brute-Force-Schutz: 5 Versuche/Minute pro User
-  const rl = await checkRateLimit(`2fa:${user.id}`, "auth");
-  if (!rl.allowed) {
-    return NextResponse.json(
-      { error: "Zu viele Versuche. Bitte versuchen Sie es in einer Minute erneut." },
-      { status: 429, headers: rateLimitHeaders(rl) },
-    );
-  }
-
+  // 5. TOTP prüfen
   const isValid = verifySync({ secret: user.totpSecret, token: parsed.data.code, epochTolerance: 30 }).valid;
   if (!isValid) {
     return NextResponse.json({ error: "Code ungültig. Bitte Authenticator-App prüfen." }, { status: 400 });
   }
 
-  // Vollständige Login-Session ausstellen
+  // 6. Replay-Schutz: Code für 90s sperren
+  const alreadyUsed = await isTotpCodeUsed(userId, parsed.data.code);
+  if (alreadyUsed) {
+    return NextResponse.json({ error: "Dieser Code wurde bereits verwendet. Bitte warten Sie auf den nächsten Code." }, { status: 400 });
+  }
+  await markTotpCodeUsed(userId, parsed.data.code);
+
+  // 7. Vollständige Login-Session ausstellen
   const expiresAt    = Date.now() + 15 * 60 * 1000;
   const accessToken  = await signAccessToken({
     userId: user.id,
@@ -76,6 +103,8 @@ export async function POST(req: NextRequest) {
       userId:    user.id,
       tokenHash,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      ipAddress: ip,
+      userAgent: req.headers.get("user-agent") ?? "unbekannt",
     },
   });
 
@@ -94,20 +123,29 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  res.cookies.set("access_token", accessToken, {
+  res.cookies.set(COOKIE_ACCESS_TOKEN, accessToken, {
     httpOnly: true,
     secure:   process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict",
     maxAge:   900,
     path:     "/",
   });
 
-  res.cookies.set("refresh_token", refreshToken, {
+  res.cookies.set(COOKIE_REFRESH_TOKEN, refreshToken, {
     httpOnly: true,
     secure:   process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict",
     maxAge:   30 * 24 * 60 * 60,
     path:     "/api/auth/refresh",
+  });
+
+  // pending_2fa Cookie löschen (Login vollständig)
+  res.cookies.set(COOKIE_PENDING_2FA, "", {
+    httpOnly: true,
+    secure:   process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge:   0,
+    path:     "/api/auth/2fa",
   });
 
   return res;

@@ -10,6 +10,7 @@ import { createHash }                from "crypto";
 import { db }                        from "@/lib/db/client";
 import { verifyAccessToken }         from "@/lib/auth/jwt";
 import { blacklistJti }              from "@/lib/auth/token-blacklist";
+import { COOKIE_ACCESS_TOKEN, COOKIE_REFRESH_TOKEN } from "@/lib/auth/cookie-names";
 import { logSecurityEvent, persistAuditLog } from "@/lib/audit/log-event";
 import { getClientIp }               from "@/lib/net/get-client-ip";
 
@@ -17,7 +18,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   const ip           = getClientIp(req);
-  const refreshToken = req.cookies.get("refresh_token")?.value;
+  const refreshToken = req.cookies.get(COOKIE_REFRESH_TOKEN)?.value;
 
   // Refresh-Token aus DB revozieren
   if (refreshToken) {
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
 
   // Access-Token JTI sofort sperren (Bearer oder Cookie)
   const authHeader  = req.headers.get("authorization");
-  const cookieToken = req.cookies.get("access_token")?.value;
+  const cookieToken = req.cookies.get(COOKIE_ACCESS_TOKEN)?.value;
   const rawToken    = authHeader?.startsWith("Bearer ")
     ? authHeader.slice(7)
     : cookieToken;
@@ -59,7 +60,7 @@ export async function POST(req: NextRequest) {
   });
 
   const res = NextResponse.json({ ok: true });
-  res.cookies.set("access_token",  "", { maxAge: 0, path: "/" });
-  res.cookies.set("refresh_token", "", { maxAge: 0, path: "/api/auth/refresh" });
+  res.cookies.set(COOKIE_ACCESS_TOKEN,  "", { maxAge: 0, path: "/" });
+  res.cookies.set(COOKIE_REFRESH_TOKEN, "", { maxAge: 0, path: "/api/auth/refresh" });
   return res;
 }

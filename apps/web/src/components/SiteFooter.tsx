@@ -63,6 +63,7 @@ export function SiteFooter() {
                   ["Impressum", "/impressum"],
                   ["Datenschutz", "/datenschutz"],
                   ["AGB", "/agb"],
+                  ["Cookie-Richtlinie", "/cookie-richtlinie"],
                 ],
               },
             ].map(({ title, links }) => (
@@ -81,6 +82,23 @@ export function SiteFooter() {
                     {label}
                   </Link>
                 ))}
+                {title === "Rechtliches" && (
+                  <button
+                    onClick={() => {
+                      try { localStorage.removeItem("eucx_cookie_consent"); } catch {}
+                      window.location.reload();
+                    }}
+                    style={{
+                      display: "block", fontSize: 13, color: "#4a5568", textDecoration: "none",
+                      marginBottom: 10, background: "none", border: "none", cursor: "pointer",
+                      padding: 0, fontFamily: "'IBM Plex Sans', Arial, sans-serif", textAlign: "left" as const,
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.color = "#c8d8ec")}
+                    onMouseLeave={e => (e.currentTarget.style.color = "#4a5568")}
+                  >
+                    Cookie-Einstellungen
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -92,7 +110,7 @@ export function SiteFooter() {
           padding: "20px 0", flexWrap: "wrap", gap: 8,
         }}>
           <span style={{ fontSize: 11, color: "#2d4a6b" }}>
-            © 2026 EUCX GmbH · Frankfurt am Main · HRB 123456 AG Frankfurt
+            © 2026 EUCX GmbH · Frankfurt am Main
           </span>
           <span style={{ fontSize: 11, color: "#2d4a6b" }}>
             Reguliert durch die BaFin · MiFID II OTF-Zulassung

@@ -14,6 +14,7 @@ export type SecurityEvent =
   | "RATE_LIMITED"
   | "AUTH_INVALID_TOKEN"
   | "AUTH_TOKEN_REVOKED"
+  | "AUTH_TOKEN_REUSE_DETECTED"
   | "AUTH_FORBIDDEN"
   | "AUTH_LOGIN_FAILED"
   | "AUTH_LOGIN_SUCCESS"
@@ -41,8 +42,9 @@ export function logSecurityEvent(payload: SecurityLogPayload): void {
   };
 
   const isCritical =
-    payload.event === "AUTH_TOKEN_REVOKED" ||
-    payload.event === "AUTH_ACCOUNT_LOCKED" ||
+    payload.event === "AUTH_TOKEN_REVOKED"       ||
+    payload.event === "AUTH_TOKEN_REUSE_DETECTED" ||
+    payload.event === "AUTH_ACCOUNT_LOCKED"      ||
     payload.event === "AUTH_FORBIDDEN";
 
   if (isCritical) {

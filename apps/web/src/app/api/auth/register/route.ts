@@ -10,12 +10,10 @@ import { getClientIp }               from "@/lib/net/get-client-ip";
 
 export const dynamic = "force-dynamic";
 
-/** Kryptographisch sicherer 6-stelliger Code */
+/** Kryptographisch sicherer 6-stelliger Code via crypto.randomInt */
+import { randomInt } from "crypto";
 function generateVerificationCode(): string {
-  const buf = Buffer.allocUnsafe(4);
-  const val = (Math.random() * 0xffffffff) >>> 0; // PRNG reicht für 6-stelligen Code
-  buf.writeUInt32BE(val, 0);
-  return String(buf.readUInt32BE(0) % 1_000_000).padStart(6, "0");
+  return String(randomInt(0, 1_000_000)).padStart(6, "0");
 }
 
 // Generische Erfolgsmeldung - identisch für neue und bereits existierende E-Mails

@@ -5,11 +5,13 @@
  *   (unnamed event / default)  → aktueller Lot-Status (Phase, Preis, Timer)
  *   event: notification        → neue ungelesene Benachrichtigungen für diesen User
  *
- * Auth: Bearer im URL-Parameter ?token=... (SSE kann keine Header senden)
+ * Auth: HttpOnly Cookie (same-origin SSE sendet Cookies automatisch mit).
+ * Kein ?token= URL-Parameter — Token in URLs landen in Server-Logs.
  */
 import { NextRequest } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
+import { COOKIE_ACCESS_TOKEN } from "@/lib/auth/cookie-names";
 
 export const dynamic = "force-dynamic";
 
@@ -19,8 +21,8 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> }
 ) {
-  // Auth via URL-Parameter (SSE-Limitation - kein Authorization-Header möglich)
-  const rawToken = req.nextUrl.searchParams.get("token");
+  // Auth via Cookie (same-origin Browser sendet HttpOnly Cookies automatisch bei SSE)
+  const rawToken = req.cookies.get(COOKIE_ACCESS_TOKEN)?.value;
   if (!rawToken) {
     return new Response("Nicht autorisiert", { status: 401 });
   }

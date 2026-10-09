@@ -62,7 +62,7 @@ function addShownId(id: string): void {
   } catch { /* ignore */ }
 }
 
-export function useAuctionStream(lotId: string, token: string): UseAuctionStreamResult {
+export function useAuctionStream(lotId: string): UseAuctionStreamResult {
   const [state,         setState]         = useState<AuctionState | null>(null);
   const [connected,     setConnected]     = useState(false);
   const [notifications, setNotifications] = useState<AuctionNotification[]>([]);
@@ -71,14 +71,15 @@ export function useAuctionStream(lotId: string, token: string): UseAuctionStream
   const clearNotifications = useCallback(() => setNotifications([]), []);
 
   useEffect(() => {
-    if (!lotId || !token) return;
+    if (!lotId) return;
 
     let retryTimeout: ReturnType<typeof setTimeout>;
     let retryCount = 0;
 
     function connect() {
-      const url = `/api/auction/lots/${lotId}/stream?token=${encodeURIComponent(token)}`;
-      const es   = new EventSource(url);
+      // Kein ?token= — same-origin SSE sendet HttpOnly Cookies automatisch mit
+      const url = `/api/auction/lots/${lotId}/stream`;
+      const es   = new EventSource(url, { withCredentials: true });
       esRef.current = es;
 
       es.onopen = () => {
@@ -130,7 +131,7 @@ export function useAuctionStream(lotId: string, token: string): UseAuctionStream
       esRef.current?.close();
       setConnected(false);
     };
-  }, [lotId, token]);
+  }, [lotId]);
 
   return { state, connected, notifications, clearNotifications };
 }

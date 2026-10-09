@@ -92,7 +92,7 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
   }, [token]);
 
   // ── SSE + Notifications ───────────────────────────────────────────
-  const { state, connected, notifications, clearNotifications } = useAuctionStream(lot.id, token);
+  const { state, connected, notifications, clearNotifications } = useAuctionStream(lot.id);
 
   // Notification-Queue → Toasts für Käufer
   useEffect(() => {

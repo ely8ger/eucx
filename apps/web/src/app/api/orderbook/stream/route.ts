@@ -9,6 +9,7 @@
 import { NextRequest } from "next/server";
 import { db }          from "@/lib/db/client";
 import { verifyAccessToken } from "@/lib/auth/jwt";
+import { COOKIE_ACCESS_TOKEN } from "@/lib/auth/cookie-names";
 
 export const dynamic = "force-dynamic";
 // Edge Runtime für minimale Latenz
@@ -16,7 +17,7 @@ export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
   // A4 — Auth: Cookie first, Bearer-Header als Fallback (kein ?token= in URL)
-  const cookieToken = req.cookies.get("access_token")?.value;
+  const cookieToken = req.cookies.get(COOKIE_ACCESS_TOKEN)?.value;
   const authHeader  = req.headers.get("authorization");
   const rawToken    = cookieToken ?? (authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null);
   if (!rawToken) return new Response("Nicht autorisiert", { status: 401 });

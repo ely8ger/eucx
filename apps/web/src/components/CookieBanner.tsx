@@ -167,9 +167,10 @@ export function CookieBanner() {
         </div>
 
         {/* ── Fußzeile ─────────────────────────────────────── */}
-        <div style={{ padding: "0 28px 20px", display: "flex", gap: 16 }}>
-          <a href="/datenschutz" style={{ fontSize: 12, color: "#888", textDecoration: "underline" }}>Datenschutzerklärung</a>
-          <a href="/impressum"   style={{ fontSize: 12, color: "#888", textDecoration: "underline" }}>Impressum</a>
+        <div style={{ padding: "0 28px 20px", display: "flex", gap: 16, flexWrap: "wrap" }}>
+          <a href="/datenschutz"       style={{ fontSize: 12, color: "#888", textDecoration: "underline" }}>Datenschutzerklärung</a>
+          <a href="/cookie-richtlinie" style={{ fontSize: 12, color: "#888", textDecoration: "underline" }}>Cookie-Richtlinie</a>
+          <a href="/impressum"         style={{ fontSize: 12, color: "#888", textDecoration: "underline" }}>Impressum</a>
         </div>
       </div>
     </div>

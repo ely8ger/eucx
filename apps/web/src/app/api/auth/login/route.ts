@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHash, randomBytes }   from "crypto";
 import { db }                        from "@/lib/db/client";
 import { verifyPassword }            from "@/lib/auth/password";
-import { signAccessToken, signRefreshToken } from "@/lib/auth/jwt";
+import { signAccessToken, signRefreshToken, signPending2faToken } from "@/lib/auth/jwt";
+import { COOKIE_ACCESS_TOKEN, COOKIE_REFRESH_TOKEN, COOKIE_PENDING_2FA } from "@/lib/auth/cookie-names";
 import { loginSchema }               from "@/lib/validation/schemas";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
 import { getClientIp }               from "@/lib/net/get-client-ip";
@@ -151,10 +152,19 @@ export async function POST(req: NextRequest) {
 
     // 2FA erzwingen wenn aktiviert
     if (user.totpEnabled) {
-      return NextResponse.json(
-        { code: "TOTP_REQUIRED", message: "Bitte geben Sie Ihren Authenticator-Code ein.", email: user.email },
+      const pending2faToken = await signPending2faToken(user.id);
+      const res = NextResponse.json(
+        { code: "TOTP_REQUIRED", message: "Bitte geben Sie Ihren Authenticator-Code ein." },
         { status: 200 },
       );
+      res.cookies.set(COOKIE_PENDING_2FA, pending2faToken, {
+        httpOnly: true,
+        secure:   process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge:   300, // 5 Minuten
+        path:     "/api/auth/2fa",
+      });
+      return res;
     }
 
     // Account-Status prüfen
@@ -212,18 +222,18 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    response.cookies.set("access_token", accessToken, {
+    response.cookies.set(COOKIE_ACCESS_TOKEN, accessToken, {
       httpOnly: true,
       secure:   process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "strict",
       maxAge:   900,
       path:     "/",
     });
 
-    response.cookies.set("refresh_token", refreshToken, {
+    response.cookies.set(COOKIE_REFRESH_TOKEN, refreshToken, {
       httpOnly: true,
       secure:   process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "strict",
       maxAge:   30 * 24 * 60 * 60,
       path:     "/api/auth/refresh",
     });

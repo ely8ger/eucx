@@ -41,7 +41,7 @@ export default function ImpressumPage() {
             <h2 style={S.h2}>EUCX GmbH</h2>
             <p style={S.p}>
               <strong>Unternehmensform:</strong> Gesellschaft mit beschränkter Haftung (GmbH)<br/>
-              <strong>Handelsregister:</strong> HRB 123456, Amtsgericht Frankfurt am Main<br/>
+              <strong>Handelsregister:</strong> [HANDELSREGISTERNUMMER], Amtsgericht Frankfurt am Main<br/>
               <strong>Gründungsjahr:</strong> 2025
             </p>
           </div>
@@ -51,13 +51,13 @@ export default function ImpressumPage() {
             <h3 style={S.h3}>Anschrift und Kontakt</h3>
             <p style={S.p}>
               EUCX GmbH<br/>
-              Taunusanlage 18<br/>
-              60325 Frankfurt am Main<br/>
+              [STRASSE UND HAUSNUMMER]<br/>
+              [PLZ] Frankfurt am Main<br/>
               Deutschland
             </p>
             <p style={S.p}>
-              <strong>Telefon:</strong> +49 (0) 69 / 123 456-0<br/>
-              <strong>Telefax:</strong> +49 (0) 69 / 123 456-99<br/>
+              <strong>Telefon:</strong> [TELEFONNUMMER]<br/>
+              <strong>Telefax:</strong> [FAXNUMMER oder entfernen]<br/>
               <strong>E-Mail:</strong> <a href="mailto:info@eucx.eu" style={{ color: "#154194", textDecoration: "none" }}>info@eucx.eu</a><br/>
               <strong>Internet:</strong> <a href="https://www.eucx.eu" style={{ color: "#154194", textDecoration: "none" }}>www.eucx.eu</a>
             </p>
@@ -68,9 +68,7 @@ export default function ImpressumPage() {
             <h3 style={S.h3}>Vertretungsberechtigte Geschäftsführer</h3>
             <p style={S.p}>
               Die EUCX GmbH wird vertreten durch die Geschäftsführer:<br/>
-              <strong>Dr. Markus Steinhardt</strong> (Vorsitzender der Geschäftsführung, CEO)<br/>
-              <strong>Katharina Brenner</strong> (Chief Operating Officer, COO)<br/>
-              <strong>Prof. Dr. Johannes Falk</strong> (Chief Risk Officer, CRO)
+              <strong>[NAME DES/DER GESCHÄFTSFÜHRER/IN]</strong> (Geschäftsführung)
             </p>
           </div>
 
@@ -78,8 +76,8 @@ export default function ImpressumPage() {
           <div>
             <h3 style={S.h3}>Steuerliche Angaben</h3>
             <p style={S.p}>
-              <strong>Umsatzsteuer-Identifikationsnummer (§ 27a UStG):</strong> DE 345 678 901<br/>
-              <strong>Steuernummer:</strong> 045/123/45678, Finanzamt Frankfurt am Main III
+              <strong>Umsatzsteuer-Identifikationsnummer (§ 27a UStG):</strong> [UST-ID-NUMMER]<br/>
+              <strong>Steuernummer:</strong> [STEUERNUMMER], Finanzamt Frankfurt am Main
             </p>
           </div>
 
@@ -93,8 +91,8 @@ export default function ImpressumPage() {
               Art. 18-20 der Richtlinie 2014/65/EU (MiFID II) zugelassen.
             </p>
             <p style={S.p}>
-              <strong>Erlaubnis-Nummer:</strong> 10155.IV.7.0001/2025<br/>
-              <strong>Erlaubnis erteilt am:</strong> 12. März 2025<br/>
+              <strong>Erlaubnis-Nummer:</strong> [BAFIN-ERLAUBNISNUMMER]<br/>
+              <strong>Erlaubnis erteilt am:</strong> [DATUM DER ERLAUBNISERTEILUNG]<br/>
               <strong>Registerführende Behörde:</strong> Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin)
             </p>
             <p style={S.p}>
@@ -174,8 +172,8 @@ export default function ImpressumPage() {
           <div>
             <h3 style={S.h3}>Inhaltlich Verantwortlicher gemäß § 18 Abs. 2 MStV</h3>
             <p style={S.p}>
-              Dr. Markus Steinhardt<br/>
-              EUCX GmbH, Taunusanlage 18, 60325 Frankfurt am Main
+              [NAME DES/DER INHALTLICH VERANTWORTLICHEN]<br/>
+              EUCX GmbH, [ANSCHRIFT]
             </p>
           </div>
 

@@ -132,7 +132,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   useEffect(() => { if (token) loadKyc(token); }, [token, loadKyc]);
 
   // ── SSE + Notifications ───────────────────────────────────────────
-  const { state, connected, notifications, clearNotifications } = useAuctionStream(lot.id, token);
+  const { state, connected, notifications, clearNotifications } = useAuctionStream(lot.id);
 
   // Notification-Queue verarbeiten → Toasts + Vibration
   useEffect(() => {
