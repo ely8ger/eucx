@@ -56,10 +56,14 @@ const EU_COUNTRIES = new Set([
   "NL","PL","PT","RO","SE","SI","SK",
 ]);
 
-// Standard-MwSt. pro Land (vereinfacht - in Produktion: vollständige Tabelle)
+// L7-Fix: Vollständige EU-MwSt.-Tabelle (alle 27 Mitgliedstaaten)
 const VAT_RATES: Record<string, number> = {
-  DE: 19, AT: 20, PL: 23, FR: 20, IT: 22, NL: 21,
-  ES: 21, BE: 21, SE: 25, DK: 25, CZ: 21, HU: 27,
+  AT: 20, BE: 21, BG: 20, CY: 19, CZ: 21,
+  DE: 19, DK: 25, EE: 22, ES: 21, FI: 25,
+  FR: 20, GR: 24, HR: 25, HU: 27, IE: 23,
+  IT: 22, LT: 21, LU: 17, LV: 21, MT: 18,
+  NL: 21, PL: 23, PT: 23, RO: 19, SE: 25,
+  SI: 22, SK: 20,
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -141,10 +145,48 @@ export function calculateFees(input: FeeCalculationInput): FeeCalculationResult 
   };
 }
 
+// L6-Fix: Format-Validierung pro Land verhindert gefälschte USt-IdNr.
+// Regex-Muster nach EU-Standard (Länge + Prefix + Zeichenklassen).
+const VAT_ID_PATTERNS: Record<string, RegExp> = {
+  AT: /^ATU\d{8}$/,
+  BE: /^BE0\d{9}$/,
+  BG: /^BG\d{9,10}$/,
+  CY: /^CY\d{8}[A-Z]$/,
+  CZ: /^CZ\d{8,10}$/,
+  DE: /^DE\d{9}$/,
+  DK: /^DK\d{8}$/,
+  EE: /^EE\d{9}$/,
+  ES: /^ES[A-Z0-9]\d{7}[A-Z0-9]$/,
+  FI: /^FI\d{8}$/,
+  FR: /^FR[A-Z0-9]{2}\d{9}$/,
+  GR: /^EL\d{9}$/,
+  HR: /^HR\d{11}$/,
+  HU: /^HU\d{8}$/,
+  IE: /^IE\d[A-Z0-9+*]\d{5}[A-Z]{1,2}$/,
+  IT: /^IT\d{11}$/,
+  LT: /^LT(\d{9}|\d{12})$/,
+  LU: /^LU\d{8}$/,
+  LV: /^LV\d{11}$/,
+  MT: /^MT\d{8}$/,
+  NL: /^NL\d{9}B\d{2}$/,
+  PL: /^PL\d{10}$/,
+  PT: /^PT\d{9}$/,
+  RO: /^RO\d{2,10}$/,
+  SE: /^SE\d{12}$/,
+  SI: /^SI\d{8}$/,
+  SK: /^SK\d{10}$/,
+};
+
+function isValidVatId(taxId: string, country: string): boolean {
+  const pattern = VAT_ID_PATTERNS[country];
+  if (pattern) return pattern.test(taxId.toUpperCase().replace(/[\s.-]/g, ""));
+  return taxId.length >= 8;
+}
+
 /**
  * Prüft ob EU-Reverse-Charge gilt:
  *   - Beide Länder sind EU-Mitgliedstaaten
- *   - Käufer hat gültige USt-IdNr. (B2B)
+ *   - Käufer hat formatgültige USt-IdNr. (B2B)
  *   - Käufer und Verkäufer sind in VERSCHIEDENEN EU-Ländern
  */
 function isEuReverseCharge(
@@ -157,7 +199,7 @@ function isEuReverseCharge(
     EU_COUNTRIES.has(sellerCountry) &&
     buyerCountry !== sellerCountry &&
     !!buyerTaxId &&
-    buyerTaxId.length >= 8  // Grundlegende Länge-Prüfung
+    isValidVatId(buyerTaxId, buyerCountry)
   );
 }
 

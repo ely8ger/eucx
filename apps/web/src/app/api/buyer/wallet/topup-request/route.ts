@@ -61,10 +61,17 @@ async function _POST(req: NextRequest) {
     },
   });
 
-  // A9 — IBAN/BIC aus Umgebungsvariablen, nicht hardcodiert
+  // L5-Fix: Fehlende Bankverbindungs-Env-Vars führen zu 503, nicht leerer IBAN.
   const iban        = process.env.EUCX_BANK_IBAN ?? "";
   const bic         = process.env.EUCX_BANK_BIC  ?? "";
   const beneficiary = process.env.EUCX_BANK_NAME ?? "EUCX GmbH";
+
+  if (!iban || !bic) {
+    return NextResponse.json(
+      { error: "Bankverbindung nicht konfiguriert — bitte Administrator kontaktieren." },
+      { status: 503 },
+    );
+  }
 
   return NextResponse.json({
     ok:           true,

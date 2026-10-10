@@ -37,6 +37,8 @@ import Decimal    from "decimal.js";
 import { randomUUID } from "crypto";
 import { db } from "@/lib/db/client";
 import { calculateFees, validateLedgerBalance } from "./fee-calculator";
+import { withSerializableRetry }               from "./serializable-retry";
+import { audit }                               from "@/lib/audit/logger";
 import type { FeeCalculationResult } from "./fee-calculator";
 import type { Currency } from "@prisma/client";
 
@@ -58,6 +60,26 @@ export interface SettlementResult {
 // ─── Haupt-Funktion ───────────────────────────────────────────────────────────
 
 export async function runSettlement(dealId: string): Promise<SettlementResult> {
+  try {
+    return await _runSettlement(dealId);
+  } catch (err) {
+    // L8-Fix: Audit-Log bei Settlement-Fehler für Compliance und Nachvollziehbarkeit
+    void audit({
+      userId:     "system",
+      action:     "ADMIN_ACTION",
+      entityType: "Deal",
+      entityId:   dealId,
+      meta: {
+        type:    "SETTLEMENT_FAILED",
+        error:   err instanceof Error ? err.message : String(err),
+        dealId,
+      },
+    });
+    throw err;
+  }
+}
+
+async function _runSettlement(dealId: string): Promise<SettlementResult> {
   // ── Deal laden ─────────────────────────────────────────────────────────────
   const deal = await db.deal.findUnique({
     where:   { id: dealId },
@@ -106,7 +128,8 @@ export async function runSettlement(dealId: string): Promise<SettlementResult> {
   const sellerCreditNumber  = `EUCX-GUT-${year}-${uid()}`;
 
   // ── Atomare Transaktion ────────────────────────────────────────────────────
-  const result = await db.$transaction(async (tx) => {
+  // L4-Fix: withSerializableRetry fängt P2034 (Serialization Failure) ab.
+  const result = await withSerializableRetry(() => db.$transaction(async (tx) => {
     // 1. Settlement-Datensatz anlegen / auf PROCESSING setzen
     const settlement = await tx.settlement.upsert({
       where:  { dealId },
@@ -153,10 +176,15 @@ export async function runSettlement(dealId: string): Promise<SettlementResult> {
     const feeDec   = new Decimal(fees.platformFee);
     const netDec   = new Decimal(fees.netToSeller);
 
-    await tx.wallet.update({
-      where: { id: buyerWallet.id },
+    // L3-Fix: Atomare Balance-Prüfung — WHERE balance >= gross verhindert negative Salden.
+    // updateMany gibt count === 0 zurück wenn Saldo nicht ausreicht (statt silent Underflow).
+    const buyerUpdate = await tx.wallet.updateMany({
+      where: { id: buyerWallet.id, balance: { gte: grossDec.toFixed(8) } },
       data:  { balance: { decrement: grossDec.toFixed(8) } },
     });
+    if (buyerUpdate.count === 0) {
+      throw new Error(`Unzureichendes Wallet-Guthaben für Deal ${dealId} (Käufer ${deal.buyerOrgId})`);
+    }
 
     await tx.wallet.update({
       where: { id: sellerWallet.id },
@@ -241,7 +269,7 @@ export async function runSettlement(dealId: string): Promise<SettlementResult> {
     isolationLevel: "Serializable",
     maxWait: 10_000,
     timeout: 30_000,
-  });
+  }));
 
   return {
     settlementId:      result.settlementId,

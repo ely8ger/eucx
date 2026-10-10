@@ -46,6 +46,7 @@ import Decimal                       from "decimal.js";
 import { db }                        from "@/lib/db/client";
 import { calculateFees }             from "./fee-calculator";
 import { validateLedgerBalance }     from "./fee-calculator";
+import { withSerializableRetry }     from "./serializable-retry";
 import type { Currency, Prisma }     from "@prisma/client";
 
 // ─── Phase 1: Escrow-Sperre bei Zuschlag ─────────────────────────────────────
@@ -71,16 +72,6 @@ export async function lockEscrowForLot(lotContractId: string): Promise<void> {
 
   const gross       = new Decimal(contract.totalValue.toString());
   const buyerWallet = await getOrCreateWalletByUser(contract.buyerId, contract.buyer.organizationId, "EUR");
-
-  // Deckungsprüfung: verfügbares Guthaben = balance - reservedBalance
-  const available = new Decimal(buyerWallet.balance.toString())
-    .minus(new Decimal(buyerWallet.reservedBalance.toString()));
-  if (available.lt(gross)) {
-    throw new Error(
-      `Unzureichendes Wallet-Guthaben: verfügbar ${available.toFixed(2)} EUR, ` +
-      `benötigt ${gross.toFixed(2)} EUR (LotContract ${lotContractId})`
-    );
-  }
 
   const correlationId = `lot:${lotContractId}:escrow-lock`;
 
@@ -113,13 +104,27 @@ export async function lockEscrowForLot(lotContractId: string): Promise<void> {
     throw new Error(`[LotClearing] Bilanzierungsfehler Phase 1 für ${lotContractId}`);
   }
 
-  await db.$transaction(async (tx) => {
-    await tx.ledgerEntry.createMany({ data: entries, skipDuplicates: true });
-    await tx.wallet.update({
-      where: { id: buyerWallet.id },
-      data:  { reservedBalance: { increment: gross.toFixed(8) } },
-    });
-  }, { isolationLevel: "Serializable", maxWait: 8_000, timeout: 20_000 });
+  // L2-Fix: Deckungsprüfung INNERHALB der Serializable-Transaktion —
+  // verhindert TOCTOU zwischen Balance-Check und Wallet-Update.
+  // L4-Fix: withSerializableRetry fängt P2034 (Serialization Failure) ab.
+  await withSerializableRetry(() =>
+    db.$transaction(async (tx) => {
+      const wallet  = await tx.wallet.findUniqueOrThrow({ where: { id: buyerWallet.id } });
+      const avail   = new Decimal(wallet.balance.toString())
+        .minus(new Decimal(wallet.reservedBalance.toString()));
+      if (avail.lt(gross)) {
+        throw new Error(
+          `Unzureichendes Wallet-Guthaben: verfügbar ${avail.toFixed(2)} EUR, ` +
+          `benötigt ${gross.toFixed(2)} EUR (LotContract ${lotContractId})`
+        );
+      }
+      await tx.ledgerEntry.createMany({ data: entries, skipDuplicates: true });
+      await tx.wallet.update({
+        where: { id: buyerWallet.id },
+        data:  { reservedBalance: { increment: gross.toFixed(8) } },
+      });
+    }, { isolationLevel: "Serializable", maxWait: 8_000, timeout: 20_000 })
+  );
 }
 
 // ─── Phase 2: Finale Auszahlung bei Lieferbestätigung ────────────────────────
@@ -214,33 +219,46 @@ export async function settleEscrowForLot(
     { correlationId: corrPayout, walletId: sellerWallet.id,  accountType: "TRADER_WALLET", entryType: "CREDIT", amount: netSeller.toFixed(8), currency: "EUR", description: `Lot-Vertrag ${lotContractId}: Nettogutschrift Verkäufer`, lotContractId, idempotencyKey: `lot:${lotContractId}:p2:payout:CREDIT` },
   );
 
-  // Invariante prüfen: Phase 2 DEBIT == Phase 2 CREDIT
-  // (ESCROW aus Phase 1 war gross; Phase 2 verteilt: fee + vat + net = gross)
+  // L1-Fix: ESCROW-Invariante — Phase 2 muss exakt den Phase-1-Eingang verteilen.
+  // fee + vat + netSeller muss == gross sein, sonst geht ESCROW ins Minus/Plus.
+  const escrowDistribution = feeAmt.plus(vatAmt).plus(netSeller);
+  if (!escrowDistribution.equals(gross)) {
+    throw new Error(
+      `[LotClearing] ESCROW-Invariante verletzt: fee(${feeAmt.toFixed(8)}) + ` +
+      `vat(${vatAmt.toFixed(8)}) + net(${netSeller.toFixed(8)}) = ` +
+      `${escrowDistribution.toFixed(8)} ≠ gross(${gross.toFixed(8)})`
+    );
+  }
+
+  // Symmetrie-Prüfung: DEBIT == CREDIT pro Buchungssatz
   if (!validateLedgerBalance(entries.map((e) => ({ entryType: e.entryType as "DEBIT" | "CREDIT", amount: String(e.amount) })))) {
     throw new Error(`[LotClearing] Bilanzierungsfehler Phase 2 für ${lotContractId}`);
   }
 
-  await db.$transaction(async (tx) => {
-    await tx.ledgerEntry.createMany({ data: entries, skipDuplicates: true });
+  // L4-Fix: withSerializableRetry fängt P2034 (Serialization Failure) ab.
+  await withSerializableRetry(() =>
+    db.$transaction(async (tx) => {
+      await tx.ledgerEntry.createMany({ data: entries, skipDuplicates: true });
 
-    // Verkäufer erhält Netto
-    await tx.wallet.update({
-      where: { id: sellerWallet.id },
-      data:  { balance: { increment: netSeller.toFixed(8) } },
-    });
+      // Verkäufer erhält Netto
+      await tx.wallet.update({
+        where: { id: sellerWallet.id },
+        data:  { balance: { increment: netSeller.toFixed(8) } },
+      });
 
-    // Käufer: Escrow-Reserve auflösen
-    await tx.wallet.update({
-      where: { id: buyerWallet.id },
-      data:  { reservedBalance: { decrement: gross.toFixed(8) } },
-    });
+      // Käufer: Escrow-Reserve auflösen
+      await tx.wallet.update({
+        where: { id: buyerWallet.id },
+        data:  { reservedBalance: { decrement: gross.toFixed(8) } },
+      });
 
-    // LotFees auf PAID setzen
-    await tx.lotFee.updateMany({
-      where:  { contract: { id: lotContractId } },
-      data:   { status: "PAID" },
-    });
-  }, { isolationLevel: "Serializable", maxWait: 10_000, timeout: 30_000 });
+      // LotFees auf PAID setzen
+      await tx.lotFee.updateMany({
+        where:  { contract: { id: lotContractId } },
+        data:   { status: "PAID" },
+      });
+    }, { isolationLevel: "Serializable", maxWait: 10_000, timeout: 30_000 })
+  );
 
   return {
     platformFee:      fees.platformFee,
