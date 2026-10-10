@@ -41,8 +41,8 @@ export function PhoneSettingsClient() {
       if (!r.ok) {
         setMsg({ type: "err", text: d.error ?? `Fehler ${r.status}` });
       } else {
-        setPhoneVerified(true);
-        setMsg({ type: "ok", text: "Telefonnummer gespeichert. Sie werden weitergeleitet …" });
+        setPhoneVerified(false);
+        setMsg({ type: "ok", text: "Telefonnummer gespeichert. Verifikation erfolgt nach SMS-Einrichtung. Sie werden weitergeleitet …" });
         setTimeout(() => router.push("/dashboard/buyer"), 1500);
       }
     } catch {
@@ -115,7 +115,7 @@ export function PhoneSettingsClient() {
             <div className="ph-hint">Format: +49 30 12345678 oder +49-30-12345678</div>
 
             <button className="ph-btn" onClick={save} disabled={saving || !phone.trim()}>
-              {saving ? "Wird gespeichert …" : "Speichern und verifizieren →"}
+              {saving ? "Wird gespeichert …" : "Telefonnummer speichern →"}
             </button>
 
             {msg && (

@@ -173,7 +173,7 @@ export default function SignContractModal({ deal, token, onClose, onSigned }: Si
           <div>
             <h2 className="text-white font-bold text-lg">Elektronische Signatur</h2>
             <p className="text-white/70 text-xs mt-0.5">
-              QES-Simulation gemäß EU-eIDAS · EUCX EDS v1
+              Fortgeschrittene Elektronische Signatur (FES) · EUCX EDS v1
             </p>
           </div>
           <button onClick={onClose} className="text-white/60 hover:text-white text-2xl leading-none">
@@ -308,7 +308,7 @@ export default function SignContractModal({ deal, token, onClose, onSigned }: Si
 
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
                 <strong>Rechtlicher Hinweis:</strong> Durch die Eingabe des Tokens bestätigen Sie
-                verbindlich den obenstehenden Handel gemäß EUCX-Handelsregeln und EU-eIDAS.
+                verbindlich den obenstehenden Handel gemäß EUCX-Handelsregeln (§ 126a BGB).
               </div>
 
               <Button
@@ -336,7 +336,7 @@ export default function SignContractModal({ deal, token, onClose, onSigned }: Si
                 </div>
                 <h3 className="font-bold text-cb-petrol text-lg">Vertrag unterzeichnet</h3>
                 <p className="text-cb-gray-500 text-sm mt-1 text-center">
-                  Rechtsgültig gemäß EU-eIDAS-Verordnung
+                  Fortgeschrittene Elektronische Signatur gemäß § 126a BGB · EUCX-Handelsregeln
                 </p>
                 {signedAt && (
                   <p className="text-xs text-cb-gray-400 mt-1">
