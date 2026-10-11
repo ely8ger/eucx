@@ -1,16 +1,65 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ShieldCheck, TrendingUp, FileText, Users,
   ArrowRight, BarChart3, Layers, Lock,
-  Globe, Building2, FlaskConical, Trees, Package,
+  Globe, Building2, FlaskConical,
   Package2, UserCheck,
 } from "lucide-react";
-import { EucxLogo } from "@/components/logo/EucxLogo";
-import { useI18n } from "@/lib/i18n/context";
-import { SiteNav } from "@/components/SiteNav";
+import { EucxLogo }  from "@/components/logo/EucxLogo";
+import { SiteNav }   from "@/components/SiteNav";
+import { tServer }   from "@/lib/i18n/server";
+import { BASE_URL, buildAlternateLanguages } from "@/lib/seo/metadata";
 
+// ── Page-spezifische Metadata ─────────────────────────────────────────────────
+export function generateMetadata(): Metadata {
+  return {
+    title:       "EUCX — Europäische Rohstoffbörse für institutionellen B2B-Handel",
+    description: "Regulierter B2B-Marktplatz für Metalle, Stahl, Dünger und Agrarprodukte in der EU. KYC-verifizierte Händler, transparentes Orderbuch, DSGVO-konform.",
+    alternates:  buildAlternateLanguages("/"),
+    openGraph: {
+      title:       "EUCX — European Union Commodity Exchange",
+      description: "Institutioneller B2B-Rohstoffhandel: Metalle, Stahl, Dünger, Agrar. Reguliertes Orderbuch, sofortige Clearing-Abwicklung.",
+      url:         BASE_URL,
+      images: [
+        { url: `/api/og?symbol=EUCX%20Exchange`, width: 1200, height: 630, alt: "EUCX — European Union Commodity Exchange" },
+      ],
+    },
+  };
+}
+
+// ── JSON-LD: Organization + WebSite ──────────────────────────────────────────
+const orgJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type":        "Organization",
+      "@id":          `${BASE_URL}#organization`,
+      name:           "EUCX — European Union Commodity Exchange",
+      url:            BASE_URL,
+      logo: { "@type": "ImageObject", url: `${BASE_URL}/icon.png`, width: "512", height: "512" },
+      description:    "Regulierter B2B-Rohstoffmarktplatz der Europäischen Union für Metalle, Stahl, Dünger und Agrarprodukte.",
+      foundingDate:   "2024",
+      areaServed:     { "@type": "Place", name: "Europäische Union" },
+      address:        { "@type": "PostalAddress", addressLocality: "Frankfurt am Main", addressCountry: "DE" },
+    },
+    {
+      "@type":     "WebSite",
+      "@id":       `${BASE_URL}#website`,
+      url:         BASE_URL,
+      name:        "EUCX — European Union Commodity Exchange",
+      publisher:   { "@id": `${BASE_URL}#organization` },
+      inLanguage:  "de-DE",
+      potentialAction: {
+        "@type":        "SearchAction",
+        target:         `${BASE_URL}/katalog?q={search_term_string}`,
+        "query-input":  "required name=search_term_string",
+      },
+    },
+  ],
+};
+
+// ── Styles ────────────────────────────────────────────────────────────────────
 const S: Record<string, React.CSSProperties> = {
   label: { fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "#154194", marginBottom: 10, display: "block" },
   h2:    { fontSize: 34, fontWeight: 300, color: "#1a1a1a", lineHeight: 1.2, margin: 0 },
@@ -18,10 +67,32 @@ const S: Record<string, React.CSSProperties> = {
 };
 
 export default function HomePage() {
-  const { t } = useI18n();
+  const t = tServer;
 
   return (
     <div style={{ fontFamily: "'IBM Plex Sans', Arial, sans-serif", backgroundColor: "#fff", color: "#1a1a1a" }}>
+
+      {/* JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+      />
+
+      {/* Hover-Klassen für interaktive Elemente ohne JS */}
+      <style>{`
+        .hp-cta-primary { background-color: #fff; transition: background .15s; }
+        .hp-cta-primary:hover { background-color: #f0f4ff; }
+        .hp-cta-ghost { background-color: transparent; transition: background .15s; }
+        .hp-cta-ghost:hover { background-color: rgba(255,255,255,.07); }
+        .hp-cta-dark { background-color: #fff; transition: background .15s; }
+        .hp-cta-dark:hover { background-color: #f0f4ff; }
+        .hp-cta-outline { background-color: transparent; transition: background .15s; }
+        .hp-cta-outline:hover { background-color: rgba(255,255,255,.06); }
+        .hp-market-card { background-color: #fff; transition: background .15s; }
+        .hp-market-card:hover { background-color: #f0f4fb; }
+        .hp-footer-link { color: #555; text-decoration: none; display: block; font-size: 13px; margin-bottom: 10px; transition: color .15s; }
+        .hp-footer-link:hover { color: #fff; }
+      `}</style>
 
       <SiteNav rootPage />
 
@@ -51,26 +122,22 @@ export default function HomePage() {
           <p className="r-hero-sub">{t("hero_sub")}</p>
 
           <div className="flex flex-wrap gap-4">
-            <Link href="/register"
-              style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, color: "#154194", backgroundColor: "#fff", padding: "13px 28px", textDecoration: "none", transition: "background .15s" }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor="#f0f4ff")}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor="#fff")}>
+            <Link href="/register" className="hp-cta-primary"
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, color: "#154194", padding: "13px 28px", textDecoration: "none" }}>
               {t("hero_cta_portal")} <ArrowRight size={15} />
             </Link>
-            <a href="#wie-es-funktioniert"
-              style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,.8)", border: "1px solid rgba(255,255,255,.2)", padding: "13px 28px", textDecoration: "none", transition: "background .15s" }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor="rgba(255,255,255,.07)")}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor="transparent")}>
+            <a href="#wie-es-funktioniert" className="hp-cta-ghost"
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,.8)", border: "1px solid rgba(255,255,255,.2)", padding: "13px 28px", textDecoration: "none" }}>
               {t("hero_cta_more")}
             </a>
           </div>
 
           <div className="flex flex-wrap gap-6" style={{ marginTop: 48, paddingTop: 36, borderTop: "1px solid rgba(255,255,255,.08)" }}>
             {([
-              { icon: Package2,    key: "hero_bafin" as const },
-              { icon: Lock,        key: "hero_eu"    as const },
-              { icon: UserCheck,   key: "hero_iso"   as const },
-              { icon: FileText,    key: "hero_dsgvo" as const },
+              { icon: Package2,  key: "hero_bafin" as const },
+              { icon: Lock,      key: "hero_eu"    as const },
+              { icon: UserCheck, key: "hero_iso"   as const },
+              { icon: FileText,  key: "hero_dsgvo" as const },
             ]).map(({ icon: Icon, key }) => (
               <div key={key} className="flex items-center gap-2" style={{ fontSize: 13, color: "rgba(255,255,255,.35)" }}>
                 <Icon size={14} /> {t(key)}
@@ -110,11 +177,10 @@ export default function HomePage() {
             <p style={{ ...S.body, maxWidth: 420, margin: 0 }}>{t("section_markets_sub")}</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 1, backgroundColor: "#e0e0e0" }}>
-            {/* ── METALLE - klickbar ── */}
+
+            {/* Metalle */}
             <Link href="/katalog" style={{ textDecoration: "none" }}>
-              <div style={{ backgroundColor: "#fff", padding: "32px 28px", cursor: "pointer", height: "100%" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#f0f4fb"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#fff"; }}>
+              <div className="hp-market-card" style={{ padding: "32px 28px", cursor: "pointer", height: "100%" }}>
                 <div style={{ borderLeft: "3px solid #154194", paddingLeft: 12, marginBottom: 20, display: "inline-block" }}>
                   <TrendingUp size={20} style={{ color: "#154194", display: "block" }} />
                 </div>
@@ -135,30 +201,27 @@ export default function HomePage() {
               </div>
             </Link>
 
-            {/* ── DÜNGER ── */}
+            {/* Dünger */}
             <Link href="/duenger" style={{ textDecoration: "none" }}>
-            <div style={{ backgroundColor: "#fff", padding: "32px 28px", cursor: "pointer", transition: "background .15s" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#f0f4fb"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#fff"; }}
-            >
-              <div style={{ borderLeft: "3px solid #154194", paddingLeft: 12, marginBottom: 20, display: "inline-block" }}>
-                <FlaskConical size={20} style={{ color: "#154194", display: "block" }} />
+              <div className="hp-market-card" style={{ padding: "32px 28px", cursor: "pointer" }}>
+                <div style={{ borderLeft: "3px solid #154194", paddingLeft: 12, marginBottom: 20, display: "inline-block" }}>
+                  <FlaskConical size={20} style={{ color: "#154194", display: "block" }} />
+                </div>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#154194", marginBottom: 8 }}>{t("sector_duenger")}</div>
+                <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>{t("duenger_title")}</div>
+                <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>{t("duenger_home_sub")}</div>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                  {[t("duenger_li_1"), t("duenger_li_2"), t("duenger_li_3"), t("duenger_li_4")].map(item => (
+                    <li key={item} style={{ fontSize: 13, color: "#444", padding: "7px 0", borderBottom: "1px solid #f0f0f0", display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ width: 4, height: 4, backgroundColor: "#154194", display: "inline-block", flexShrink: 0 }} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <div style={{ marginTop: 20, fontSize: 13, color: "#154194", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                  {t("btn_catalog_open")}
+                </div>
               </div>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#154194", marginBottom: 8 }}>{t("sector_duenger")}</div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>{t("duenger_title")}</div>
-              <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>{t("duenger_home_sub")}</div>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                {[t("duenger_li_1"), t("duenger_li_2"), t("duenger_li_3"), t("duenger_li_4")].map(item => (
-                  <li key={item} style={{ fontSize: 13, color: "#444", padding: "7px 0", borderBottom: "1px solid #f0f0f0", display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ width: 4, height: 4, backgroundColor: "#154194", display: "inline-block", flexShrink: 0 }} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <div style={{ marginTop: 20, fontSize: 13, color: "#154194", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
-                {t("btn_catalog_open")}
-              </div>
-            </div>
             </Link>
           </div>
         </div>
@@ -182,8 +245,8 @@ export default function HomePage() {
                   <Icon size={18} color="#fff" />
                 </div>
                 <div style={{ fontSize: 10, fontWeight: 700, color: "#154194", letterSpacing: "0.14em", marginBottom: 10 }}>{t("step_prefix")} {step}</div>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a", marginBottom: 10 }}>{t(`${tk}_title` as any)}</div>
-                <div style={{ fontSize: 13, color: "#505050", lineHeight: 1.7 }}>{t(`${tk}_desc` as any)}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a", marginBottom: 10 }}>{t(`${tk}_title` as Parameters<typeof t>[0])}</div>
+                <div style={{ fontSize: 13, color: "#505050", lineHeight: 1.7 }}>{t(`${tk}_desc` as Parameters<typeof t>[0])}</div>
               </div>
             ))}
           </div>
@@ -207,8 +270,8 @@ export default function HomePage() {
                 <div key={tk} className="flex items-start gap-4" style={{ borderTop: "1px solid rgba(255,255,255,.1)", paddingTop: 16, marginTop: 16 }}>
                   <Icon size={16} style={{ color: "rgba(255,255,255,.4)", marginTop: 2, flexShrink: 0 }} />
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>{t(tk as any)}</div>
-                    <div style={{ fontSize: 12, color: "rgba(255,255,255,.45)", marginTop: 3 }}>{t(`${tk}_desc` as any)}</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>{t(tk)}</div>
+                    <div style={{ fontSize: 12, color: "rgba(255,255,255,.45)", marginTop: 3 }}>{t(`${tk}_desc` as Parameters<typeof t>[0])}</div>
                   </div>
                 </div>
               ))}
@@ -234,7 +297,7 @@ export default function HomePage() {
                   ].map(({ label, color, rows }) => (
                     <div key={label}>
                       <div style={{ fontWeight: 600, color, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10, fontSize: 11 }}>{label}</div>
-                      {rows.map(([p,q]) => (
+                      {rows.map(([p, q]) => (
                         <div key={p} className="flex justify-between" style={{ padding: "5px 0", borderBottom: "1px solid #f7f7f7" }}>
                           <span style={{ color, fontFamily: "monospace", fontWeight: 500 }}>{p}</span>
                           <span style={{ color: "#aaa" }}>{q}</span>
@@ -264,8 +327,8 @@ export default function HomePage() {
                 <div style={{ width: 44, height: 44, backgroundColor: "#f0f4ff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
                   <Icon size={20} style={{ color: "#154194" }} />
                 </div>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a", marginBottom: 12, lineHeight: 1.4 }}>{t(`${tk}_title` as any)}</div>
-                <div style={{ fontSize: 13, color: "#505050", lineHeight: 1.75 }}>{t(`${tk}_desc` as any)}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a", marginBottom: 12, lineHeight: 1.4 }}>{t(`${tk}_title` as Parameters<typeof t>[0])}</div>
+                <div style={{ fontSize: 13, color: "#505050", lineHeight: 1.75 }}>{t(`${tk}_desc` as Parameters<typeof t>[0])}</div>
               </div>
             ))}
           </div>
@@ -280,16 +343,12 @@ export default function HomePage() {
             <h2 style={{ fontSize: 32, fontWeight: 300, color: "#fff", lineHeight: 1.2, margin: "0 0 20px" }}>{t("cta_h2")}</h2>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,.5)", lineHeight: 1.8, marginBottom: 36 }}>{t("cta_sub")}</p>
             <div className="flex flex-wrap gap-4">
-              <Link href="/register"
-                style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, color: "#154194", backgroundColor: "#fff", padding: "13px 28px", textDecoration: "none" }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor="#f0f4ff")}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor="#fff")}>
+              <Link href="/register" className="hp-cta-dark"
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, color: "#154194", padding: "13px 28px", textDecoration: "none" }}>
                 {t("cta_btn_register")} <ArrowRight size={14} />
               </Link>
-              <Link href="/login"
-                style={{ display: "inline-flex", alignItems: "center", fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,.75)", border: "1px solid rgba(255,255,255,.2)", padding: "13px 28px", textDecoration: "none" }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor="rgba(255,255,255,.06)")}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor="transparent")}>
+              <Link href="/login" className="hp-cta-outline"
+                style={{ display: "inline-flex", alignItems: "center", fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,.75)", border: "1px solid rgba(255,255,255,.2)", padding: "13px 28px", textDecoration: "none" }}>
                 {t("cta_btn_login")}
               </Link>
             </div>
@@ -332,11 +391,7 @@ export default function HomePage() {
               <div key={titleKey}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: "#888", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 18 }}>{t(titleKey)}</div>
                 {links.map(({ label, href }) => (
-                  <a key={label} href={href} style={{ display: "block", fontSize: 13, color: "#555", textDecoration: "none", marginBottom: 10, transition: "color .15s" }}
-                    onMouseEnter={e => (e.currentTarget.style.color="#fff")}
-                    onMouseLeave={e => (e.currentTarget.style.color="#555")}>
-                    {label}
-                  </a>
+                  <a key={label} href={href} className="hp-footer-link">{label}</a>
                 ))}
               </div>
             ))}
