@@ -12,7 +12,7 @@
  * TTL: wird auf die verbleibende Lebensdauer des Tokens gesetzt (max. 15 Minuten).
  * Nach Ablauf der TTL gilt das Token ohnehin als abgelaufen → kein Speicherleck.
  */
-import { Redis } from "@upstash/redis";
+import { Redis } from "@upstash/redis/cloudflare";
 
 const KEY_PREFIX = "eucx:bl:jti:";
 
