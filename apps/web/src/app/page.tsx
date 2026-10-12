@@ -14,7 +14,7 @@ import { BASE_URL, buildAlternateLanguages } from "@/lib/seo/metadata";
 // ── Page-spezifische Metadata ─────────────────────────────────────────────────
 export function generateMetadata(): Metadata {
   return {
-    title:       "EUCX — Europäische Rohstoffbörse für institutionellen B2B-Handel",
+    title:       "EUCX — Europäische Rohstoffbörse für B2B-Rohstoffhandel",
     description: "Regulierter B2B-Marktplatz für Metalle, Stahl, Dünger und Agrarprodukte in der EU. KYC-verifizierte Händler, transparentes Orderbuch, DSGVO-konform.",
     alternates:  buildAlternateLanguages("/"),
     openGraph: {
@@ -77,22 +77,6 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
       />
-
-      {/* Hover-Klassen für interaktive Elemente ohne JS */}
-      <style>{`
-        .hp-cta-primary { background-color: #fff; transition: background .15s; }
-        .hp-cta-primary:hover { background-color: #f0f4ff; }
-        .hp-cta-ghost { background-color: transparent; transition: background .15s; }
-        .hp-cta-ghost:hover { background-color: rgba(255,255,255,.07); }
-        .hp-cta-dark { background-color: #fff; transition: background .15s; }
-        .hp-cta-dark:hover { background-color: #f0f4ff; }
-        .hp-cta-outline { background-color: transparent; transition: background .15s; }
-        .hp-cta-outline:hover { background-color: rgba(255,255,255,.06); }
-        .hp-market-card { background-color: #fff; transition: background .15s; }
-        .hp-market-card:hover { background-color: #f0f4fb; }
-        .hp-footer-link { color: #555; text-decoration: none; display: block; font-size: 13px; margin-bottom: 10px; transition: color .15s; }
-        .hp-footer-link:hover { color: #fff; }
-      `}</style>
 
       <SiteNav rootPage />
 

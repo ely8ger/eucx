@@ -655,3 +655,17 @@ td, th {
   background-color: #eef1f7 !important;
   color: #154194 !important;
 }
+
+/* ── Homepage: Hover-Klassen (Server Component, kein JS nötig) ─────────────── */
+.hp-cta-primary  { background-color: #fff; transition: background .15s; }
+.hp-cta-primary:hover  { background-color: #f0f4ff; }
+.hp-cta-ghost    { background-color: transparent; transition: background .15s; }
+.hp-cta-ghost:hover    { background-color: rgba(255,255,255,.07); }
+.hp-cta-dark     { background-color: #fff; transition: background .15s; }
+.hp-cta-dark:hover     { background-color: #f0f4ff; }
+.hp-cta-outline  { background-color: transparent; transition: background .15s; }
+.hp-cta-outline:hover  { background-color: rgba(255,255,255,.06); }
+.hp-market-card  { background-color: #fff; transition: background .15s; }
+.hp-market-card:hover  { background-color: #f0f4fb; }
+.hp-footer-link  { color: #555; text-decoration: none; display: block; font-size: 13px; margin-bottom: 10px; transition: color .15s; }
+.hp-footer-link:hover  { color: #fff; }
