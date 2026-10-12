@@ -1,7 +1,17 @@
-"use client";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
+import { buildAlternateLanguages } from "@/lib/seo/metadata";
+
+export function generateMetadata(): Metadata {
+  return {
+    title:       "Datenschutzerklärung | EUCX",
+    description: "Datenschutzerklärung der EUCX — European Union Commodity Exchange. DSGVO-konform.",
+    alternates:  buildAlternateLanguages("/datenschutz"),
+    robots:      { index: false, follow: false },
+  };
+}
 
 const S: Record<string, React.CSSProperties> = {
   container: { maxWidth: 1180, margin: "0 auto", padding: "0 40px" },

@@ -1,19 +1,31 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { EucxLogo } from "@/components/logo/EucxLogo";
 import { FERTILIZER_CATEGORIES } from "@/lib/fertilizer/data";
-import { useI18n } from "@/lib/i18n/context";
+import { tServer } from "@/lib/i18n/server";
+import { buildAlternateLanguages, BASE_URL } from "@/lib/seo/metadata";
 
 const BLUE = "#154194";
 const F    = "'IBM Plex Sans', Arial, sans-serif";
+
+export function generateMetadata(): Metadata {
+  return {
+    title:       "Dünger kaufen — Kali, NPK, Stickstoff, Phosphor | EUCX",
+    description: "Institutioneller B2B-Düngerhandel: Kaliumdünger, NPK-Dünger, Stickstoffdünger, Phosphordünger. KYC-verifiziert, EU-konform, sofortige Abwicklung.",
+    alternates:  buildAlternateLanguages("/duenger"),
+    openGraph: {
+      title:       "EUCX Dünger — Kalium, NPK, Stickstoff, Phosphor",
+      description: "4 Dünger-Kategorien im institutionellen B2B-Orderbuch. Granulat, Prills, Kristalle. EU-Regularien konform.",
+      url:         `${BASE_URL}/duenger`,
+    },
+  };
+}
 
 // ─── Inline SVG Icons ────────────────────────────────────────────────────────
 
 function IconKalium() {
   return <svg viewBox="0 0 80 60" width={80} height={60}>
-    {/* Kristallgitter - Kaliumchlorid-Würfelstruktur */}
     <rect x={12} y={16} width={22} height={22} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
     <rect x={18} y={22} width={10} height={10} fill="#c5d0de"/>
     <rect x={36} y={16} width={22} height={22} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
@@ -27,7 +39,6 @@ function IconKalium() {
 
 function IconNPK() {
   return <svg viewBox="0 0 80 60" width={80} height={60}>
-    {/* Drei Granulat-Kugeln N P K */}
     <circle cx={20} cy={32} r={14} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
     <circle cx={20} cy={32} r={8}  fill="#c5d0de"/>
     <circle cx={40} cy={20} r={14} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
@@ -39,7 +50,6 @@ function IconNPK() {
 
 function IconStickstoff() {
   return <svg viewBox="0 0 80 60" width={80} height={60}>
-    {/* Prills - runde Granulate */}
     <circle cx={22} cy={22} r={11} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
     <circle cx={22} cy={22} r={6}  fill="#c5d0de"/>
     <circle cx={46} cy={18} r={11} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
@@ -53,7 +63,6 @@ function IconStickstoff() {
 
 function IconPhosphor() {
   return <svg viewBox="0 0 80 60" width={80} height={60}>
-    {/* Granulat - unregelmäßige Körner */}
     <polygon points="14,18 28,12 36,22 26,32 12,28" fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
     <polygon points="18,20 27,15 33,22 25,29 16,26" fill="#c5d0de"/>
     <polygon points="36,14 52,10 58,24 46,30 32,24" fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
@@ -73,7 +82,6 @@ const ICONS: Record<string, () => React.ReactElement> = {
 };
 
 export default function DuengerPage() {
-  const { t } = useI18n();
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#f4f6f9", fontFamily: F }}>
 
@@ -84,7 +92,7 @@ export default function DuengerPage() {
             <EucxLogo variant="dark" size="md" />
           </Link>
           <Link href="/trading" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>
-            {t("btn_trading_room")}
+            {tServer("btn_trading_room")}
           </Link>
         </div>
       </header>
@@ -92,9 +100,9 @@ export default function DuengerPage() {
       {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 32px 0" }}>
         <div style={{ display: "flex", gap: 6, fontSize: 12, color: "#888" }}>
-          <Link href="/"       style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_home")}</Link>
+          <Link href="/"       style={{ color: "#888", textDecoration: "none" }}>{tServer("breadcrumb_home")}</Link>
           <span>›</span>
-          <span style={{ color: "#333" }}>{t("duenger_title")}</span>
+          <span style={{ color: "#333" }}>{tServer("duenger_title")}</span>
         </div>
       </div>
 
@@ -102,14 +110,14 @@ export default function DuengerPage() {
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 32px 0" }}>
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 16, paddingBottom: 24, borderBottom: "1px solid #dde2ea" }}>
           <div>
-            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: BLUE, display: "block", marginBottom: 8 }}>{t("duenger_badge")}</span>
-            <h1 style={{ fontSize: 28, fontWeight: 300, color: "#0d1b2a", margin: 0, lineHeight: 1.2 }}>{t("duenger_katalog")}</h1>
-            <p style={{ fontSize: 14, color: "#666", marginTop: 8 }}>{t("duenger_subtitle")}</p>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: BLUE, display: "block", marginBottom: 8 }}>{tServer("duenger_badge")}</span>
+            <h1 style={{ fontSize: 28, fontWeight: 300, color: "#0d1b2a", margin: 0, lineHeight: 1.2 }}>{tServer("duenger_katalog")}</h1>
+            <p style={{ fontSize: 14, color: "#666", marginTop: 8 }}>{tServer("duenger_subtitle")}</p>
           </div>
           <div style={{ display: "flex", gap: 24, fontSize: 13, color: "#666" }}>
-            <span>{t("badge_bafin")}</span>
-            <span>{t("badge_eu_reg")}</span>
-            <span>{t("badge_sofort")}</span>
+            <span>{tServer("badge_bafin")}</span>
+            <span>{tServer("badge_eu_reg")}</span>
+            <span>{tServer("badge_sofort")}</span>
           </div>
         </div>
       </div>
@@ -128,19 +136,17 @@ export default function DuengerPage() {
             return (
               <Link key={cat.id} href={`/duenger/${cat.id}`} style={{ textDecoration: "none" }}>
                 <div
+                  className="hp-market-card"
                   style={{
-                    backgroundColor: "#fff",
                     padding: "32px 24px 24px",
                     display: "flex", flexDirection: "column", alignItems: "center", gap: 16,
-                    cursor: "pointer", transition: "background .15s",
+                    cursor: "pointer",
                   }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#f0f4fb"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#fff"; }}
                 >
                   <Icon />
                   <div style={{ textAlign: "center" }}>
-                    <span style={{ fontSize: 14, fontWeight: 500, color: "#0d1b2a", display: "block", marginBottom: 6 }}>{t(cat.labelKey as any)}</span>
-                    <span style={{ fontSize: 11, color: "#888" }}>{count} {count !== 1 ? t("lbl_produkte") : t("lbl_produkt")}</span>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: "#0d1b2a", display: "block", marginBottom: 6 }}>{tServer(cat.labelKey as Parameters<typeof tServer>[0])}</span>
+                    <span style={{ fontSize: 11, color: "#888" }}>{count} {count !== 1 ? tServer("lbl_produkte") : tServer("lbl_produkt")}</span>
                   </div>
                 </div>
               </Link>

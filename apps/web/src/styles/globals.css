@@ -669,3 +669,7 @@ td, th {
 .hp-market-card:hover  { background-color: #f0f4fb; }
 .hp-footer-link  { color: #555; text-decoration: none; display: block; font-size: 13px; margin-bottom: 10px; transition: color .15s; }
 .hp-footer-link:hover  { color: #fff; }
+
+/* ── Metalle / Dünger: Hover-Klassen ─────────────────────────────────────── */
+.eucx-trade-btn  { background-color: #154194; transition: background .15s; }
+.eucx-trade-btn:hover  { background-color: #0f3070; }

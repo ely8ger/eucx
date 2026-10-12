@@ -1,16 +1,42 @@
-"use client";
-
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import type { Metadata } from "next";
 import { EucxLogo } from "@/components/logo/EucxLogo";
 import { FERTILIZER_CATEGORIES, getFertiProduct, getFertiCategory } from "@/lib/fertilizer/data";
-import { useI18n } from "@/lib/i18n/context";
+import { tServer } from "@/lib/i18n/server";
+import { buildAlternateLanguages, BASE_URL } from "@/lib/seo/metadata";
 
 const BLUE = "#154194";
 const F    = "'IBM Plex Sans', Arial, sans-serif";
 const fill2  = "#dce3ed";
 const fill   = "#c5d0de";
 const stroke = "#9aabbc";
+
+export async function generateStaticParams() {
+  const paths: { kategorie: string; produkt: string }[] = [];
+  for (const kat of FERTILIZER_CATEGORIES) {
+    for (const p of kat.products) {
+      paths.push({ kategorie: kat.id, produkt: p.id });
+    }
+  }
+  return paths;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ kategorie: string; produkt: string }> }): Promise<Metadata> {
+  const { kategorie: katId, produkt: produktId } = await params;
+  const produkt = getFertiProduct(katId, produktId);
+  const kat     = getFertiCategory(katId);
+  if (!produkt || !kat) return { title: "Produkt | EUCX" };
+  return {
+    title:       `${produkt.name} kaufen — ${kat.label} B2B | EUCX`,
+    description: `${produkt.beschreibung} Institutioneller B2B-Handel auf EUCX. KYC-verifiziert, EU-Regularien konform.`,
+    alternates:  buildAlternateLanguages(`/duenger/${katId}/${produktId}`),
+    openGraph: {
+      title:       `EUCX — ${produkt.name} (${produkt.naehrstoffe})`,
+      description: `${produkt.beschreibung} B2B-Handel auf der europäischen Rohstoffbörse EUCX.`,
+      url:         `${BASE_URL}/duenger/${katId}/${produktId}`,
+    },
+  };
+}
 
 // ─── Produkt-Thumbnails (groß, 180×180) ──────────────────────────────────────
 
@@ -43,12 +69,12 @@ function ThumbPulverLg() {
 
 function ThumbPrillsLg() {
   return <svg width={180} height={180} viewBox="0 0 180 180">
-    {[
+    {([
       [38,30],[88,22],[138,30],
       [62,72],[112,68],[158,78],
       [30,112],[80,106],[130,112],[168,118],
       [48,152],[100,148],[152,152],
-    ].map(([cx,cy],i) => {
+    ] as [number,number][]).map(([cx,cy],i) => {
       const r = i < 3 ? 24 : i < 7 ? 22 : 20;
       return <g key={i}>
         <circle cx={cx} cy={cy} r={r} fill={fill2} stroke={stroke} strokeWidth={1.5}/>
@@ -60,19 +86,15 @@ function ThumbPrillsLg() {
 
 function ThumbKristalleIg() {
   return <svg width={180} height={180} viewBox="0 0 180 180">
-    {/* Kristall 1 */}
     <polygon points="20,30 60,20 80,52 40,62"  fill={fill2} stroke={stroke} strokeWidth={2}/>
     <polygon points="40,62 80,52 80,90 40,100" fill={fill}  stroke={stroke} strokeWidth={1.5}/>
     <polygon points="20,30 40,62 40,100 20,68"  fill={fill2} stroke={stroke} strokeWidth={1.5}/>
-    {/* Kristall 2 */}
     <polygon points="90,15 140,5  160,42 110,52" fill={fill2} stroke={stroke} strokeWidth={2}/>
     <polygon points="110,52 160,42 160,80 110,90" fill={fill}  stroke={stroke} strokeWidth={1.5}/>
     <polygon points="90,15 110,52 110,90 90,53"  fill={fill2} stroke={stroke} strokeWidth={1.5}/>
-    {/* Kristall 3 */}
     <polygon points="30,110 75,100 95,130 50,140"  fill={fill2} stroke={stroke} strokeWidth={2}/>
     <polygon points="50,140 95,130 95,165 50,175"  fill={fill}  stroke={stroke} strokeWidth={1.5}/>
     <polygon points="30,110 50,140 50,175 30,145"  fill={fill2} stroke={stroke} strokeWidth={1.5}/>
-    {/* Kristall 4 */}
     <polygon points="105,95 150,85 168,118 123,128" fill={fill2} stroke={stroke} strokeWidth={2}/>
     <polygon points="123,128 168,118 168,155 123,165" fill={fill}  stroke={stroke} strokeWidth={1.5}/>
     <polygon points="105,95 123,128 123,165 105,132"  fill={fill2} stroke={stroke} strokeWidth={1.5}/>
@@ -99,20 +121,15 @@ function ProductThumbLg({ physForm, id }: { physForm: string[]; id: string }) {
   return <ThumbGranulatLg />;
 }
 
-// ─── Seite ────────────────────────────────────────────────────────────────────
-
-export default function ProduktPage() {
-  const { t } = useI18n();
-  const params    = useParams();
-  const katId     = typeof params.kategorie === "string" ? params.kategorie : "";
-  const produktId = typeof params.produkt   === "string" ? params.produkt   : "";
+export default async function ProduktPage({ params }: { params: Promise<{ kategorie: string; produkt: string }> }) {
+  const { kategorie: katId, produkt: produktId } = await params;
   const kategorie = getFertiCategory(katId);
   const produkt   = getFertiProduct(katId, produktId);
 
   if (!produkt || !kategorie) {
     return (
       <div style={{ fontFamily: F, padding: 64, textAlign: "center", color: "#666" }}>
-        {t("lbl_no_products")} <Link href="/duenger" style={{ color: BLUE }}>Zurück zur Übersicht</Link>
+        {tServer("lbl_no_products")} <Link href="/duenger" style={{ color: BLUE }}>Zurück zur Übersicht</Link>
       </div>
     );
   }
@@ -127,7 +144,7 @@ export default function ProduktPage() {
             <EucxLogo variant="dark" size="md" />
           </Link>
           <Link href="/trading" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>
-            {t("btn_trading_room")}
+            {tServer("btn_trading_room")}
           </Link>
         </div>
       </header>
@@ -135,9 +152,9 @@ export default function ProduktPage() {
       {/* ── Breadcrumb ──────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 32px 0" }}>
         <div style={{ display: "flex", gap: 6, fontSize: 12, color: "#888", flexWrap: "wrap" }}>
-          <Link href="/"                          style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_home")}</Link>
+          <Link href="/"                          style={{ color: "#888", textDecoration: "none" }}>{tServer("breadcrumb_home")}</Link>
           <span>›</span>
-          <Link href="/duenger"                   style={{ color: "#888", textDecoration: "none" }}>{t("duenger_title")}</Link>
+          <Link href="/duenger"                   style={{ color: "#888", textDecoration: "none" }}>{tServer("duenger_title")}</Link>
           <span>›</span>
           <Link href={`/duenger/${katId}`}        style={{ color: "#888", textDecoration: "none" }}>{kategorie.label}</Link>
           <span>›</span>
@@ -160,16 +177,16 @@ export default function ProduktPage() {
             }}>
               <ProductThumbLg physForm={produkt.physForm} id={produkt.id} />
             </div>
-            {/* Handeln-Button */}
-            <Link href="/orders/new" style={{
-              display: "flex", alignItems: "center", justifyContent: "center",
-              height: 44, backgroundColor: BLUE, color: "#fff",
-              textDecoration: "none", fontSize: 14, fontWeight: 600, fontFamily: F,
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#0f3070"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = BLUE; }}
+            <Link
+              href="/orders/new"
+              className="eucx-trade-btn"
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "center",
+                height: 44, color: "#fff",
+                textDecoration: "none", fontSize: 14, fontWeight: 600, fontFamily: F,
+              }}
             >
-              {t("btn_trade_now")}
+              {tServer("btn_trade_now")}
             </Link>
           </div>
 
@@ -177,7 +194,7 @@ export default function ProduktPage() {
           <div style={{ backgroundColor: "#fff", border: "1px solid #dde2ea" }}>
             <div style={{ padding: "16px 24px", borderBottom: "1px solid #dde2ea", backgroundColor: "#f8f9fb" }}>
               <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#555" }}>
-                {t("duenger_tech_datenblatt")}
+                {tServer("duenger_tech_datenblatt")}
               </span>
             </div>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -208,7 +225,7 @@ export default function ProduktPage() {
         <div style={{ backgroundColor: "#fff", border: "1px solid #dde2ea", marginBottom: 24 }}>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #dde2ea", backgroundColor: "#f8f9fb" }}>
             <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#555" }}>
-              {t("duenger_beschreibung")}
+              {tServer("duenger_beschreibung")}
             </span>
           </div>
           <div style={{ padding: "24px" }}>
@@ -227,7 +244,7 @@ export default function ProduktPage() {
         <div style={{ backgroundColor: "#fff", border: "1px solid #dde2ea", marginBottom: 24 }}>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #dde2ea", backgroundColor: "#f8f9fb" }}>
             <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#555" }}>
-              {t("duenger_verpackung_h")}
+              {tServer("duenger_verpackung_h")}
             </span>
           </div>
           <div style={{ padding: "20px 24px", display: "flex", gap: 16, flexWrap: "wrap" }}>
@@ -251,7 +268,7 @@ export default function ProduktPage() {
         <div style={{ backgroundColor: "#fff", border: "1px solid #dde2ea", marginBottom: 40 }}>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #dde2ea", backgroundColor: "#f8f9fb" }}>
             <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#555" }}>
-              {t("duenger_normen_h")}
+              {tServer("duenger_normen_h")}
             </span>
           </div>
           <div style={{ padding: "20px 24px", display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -269,7 +286,7 @@ export default function ProduktPage() {
           fontSize: 13, color: BLUE, textDecoration: "none", fontWeight: 500,
           display: "inline-flex", alignItems: "center", gap: 6,
         }}>
-          {t("duenger_zurueck")} {kategorie.label}
+          {tServer("duenger_zurueck")} {kategorie.label}
         </Link>
       </div>
     </div>

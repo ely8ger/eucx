@@ -1,11 +1,24 @@
-"use client";
-
 import Link from "next/link";
+import type { Metadata } from "next";
 import { EucxLogo } from "@/components/logo/EucxLogo";
-import { useI18n } from "@/lib/i18n/context";
+import { tServer } from "@/lib/i18n/server";
+import { buildAlternateLanguages, BASE_URL } from "@/lib/seo/metadata";
 
 const BLUE = "#154194";
 const F    = "'IBM Plex Sans', Arial, sans-serif";
+
+export function generateMetadata(): Metadata {
+  return {
+    title:       "Metalle kaufen — Stahl, Profile, Rohre | EUCX",
+    description: "14 Stahlformen im institutionellen B2B-Orderbuch: Rund-, Vierkant-, Sechskantprofile, Träger, Rohre, Bleche. KYC-verifiziert, DSGVO-konform.",
+    alternates:  buildAlternateLanguages("/metalle"),
+    openGraph: {
+      title:       "EUCX Metalle — Stahl & Profile",
+      description: "14 Stahlformen im B2B-Handel: Vollmaterial, Hohlprofile, Träger, Bleche. Sofortige Abwicklung.",
+      url:         `${BASE_URL}/metalle`,
+    },
+  };
+}
 
 // ─── Inline SVG Icons ────────────────────────────────────────────────────────
 function IconRund()          { return <svg viewBox="0 0 80 60" width={80} height={60}><ellipse cx={40} cy={30} rx={22} ry={22} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/><ellipse cx={40} cy={30} rx={14} ry={14} fill="#c5d0de"/></svg>; }
@@ -16,13 +29,10 @@ function IconRundrohre()     { return <svg viewBox="0 0 80 60" width={80} height
 function IconVierkantrohre() { return <svg viewBox="0 0 80 60" width={80} height={60}><rect x={8}  y={5}  width={64} height={50} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/><rect x={20} y={17} width={40} height={26} fill="#fff" stroke="#9aabbc" strokeWidth={1}/></svg>; }
 function IconRohrzubehoer()  {
   return <svg viewBox="0 0 80 60" width={80} height={60}>
-    {/* vertical pipe */}
     <rect x={28} y={2}  width={14} height={32} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5} rx={2}/>
     <rect x={31} y={4}  width={8}  height={28} fill="#fff"    stroke="#9aabbc" strokeWidth={0.8}/>
-    {/* horizontal pipe */}
     <rect x={35} y={30} width={32} height={14} fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5} rx={2}/>
     <rect x={37} y={33} width={28} height={8}  fill="#fff"    stroke="#9aabbc" strokeWidth={0.8}/>
-    {/* elbow fill */}
     <rect x={28} y={30} width={14} height={14} fill="#dce3ed"/>
   </svg>;
 }
@@ -47,14 +57,12 @@ function IconTProfile()      {
 function IconTraeger()       { return <svg viewBox="0 0 80 60" width={80} height={60}><polygon points="5,5 75,5 75,18 46,18 46,42 75,42 75,55 5,55 5,42 34,42 34,18 5,18" fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/><polygon points="13,11 67,11 67,14 43,14 43,46 67,46 67,49 13,49 13,46 37,46 37,14 13,14" fill="#c5d0de"/></svg>; }
 function IconSonderprofile() {
   return <svg viewBox="0 0 80 60" width={80} height={60}>
-    {/* C-profile cross section */}
     <path d="M15,5 L55,5 L55,18 L28,18 L28,42 L55,42 L55,55 L15,55 Z" fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
     <path d="M22,11 L50,11 L50,14 L34,14 L34,46 L50,46 L50,49 L22,49 Z" fill="#c5d0de"/>
   </svg>;
 }
 function IconBleche()        {
   return <svg viewBox="0 0 80 60" width={80} height={60}>
-    {/* perspective plate */}
     <polygon points="8,40 72,40 72,52 8,52" fill="#dce3ed" stroke="#9aabbc" strokeWidth={1.5}/>
     <polygon points="8,40 20,20 84,20 72,40" fill="#c5d0de" stroke="#9aabbc" strokeWidth={1}/>
     <line x1="72" y1="40" x2="84" y2="20" stroke="#9aabbc" strokeWidth={1}/>
@@ -69,14 +77,13 @@ function IconLochbleche()    {
     <line x1="72" y1="40" x2="84" y2="20" stroke="#9aabbc" strokeWidth={1}/>
     <line x1="72" y1="52" x2="84" y2="32" stroke="#9aabbc" strokeWidth={1}/>
     <polygon points="84,20 84,32 72,52 72,40" fill="#b0bfcf" stroke="#9aabbc" strokeWidth={1}/>
-    {/* holes */}
     {[28,42,56,70].map(x => [25,33].map(y => (
       <circle key={`${x}-${y}`} cx={x} cy={y} r={3} fill="#9aabbc" opacity={0.7}/>
     )))}
   </svg>;
 }
 
-const FORM_DEFS = [
+const FORM_DEFS: { id: string; labelKey: string; Icon: () => React.ReactElement }[] = [
   { id:"rundprofile",     labelKey:"form_rund",         Icon: IconRund },
   { id:"vierkantprofile", labelKey:"form_vierkant",      Icon: IconVierkant },
   { id:"sechskantprofile",labelKey:"form_sechskant",     Icon: IconSechskant },
@@ -94,10 +101,6 @@ const FORM_DEFS = [
 ];
 
 export default function MetallePage() {
-  const { t } = useI18n();
-
-  const FORMS = FORM_DEFS.map(f => ({ ...f, label: t(f.labelKey as any) }));
-
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#f4f6f9", fontFamily: F }}>
 
@@ -108,7 +111,7 @@ export default function MetallePage() {
             <EucxLogo variant="dark" size="md" />
           </Link>
           <Link href="/trading" style={{ fontSize: 13, color: "#8aaacf", textDecoration: "none" }}>
-            {t("btn_trading_room")}
+            {tServer("btn_trading_room")}
           </Link>
         </div>
       </header>
@@ -116,9 +119,9 @@ export default function MetallePage() {
       {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 32px 0" }}>
         <div style={{ display: "flex", gap: 6, fontSize: 12, color: "#888" }}>
-          <Link href="/"        style={{ color: "#888", textDecoration: "none" }}>{t("breadcrumb_home")}</Link>
+          <Link href="/"        style={{ color: "#888", textDecoration: "none" }}>{tServer("breadcrumb_home")}</Link>
           <span>›</span>
-          <span style={{ color: "#333" }}>{t("metalle_title")}</span>
+          <span style={{ color: "#333" }}>{tServer("metalle_title")}</span>
         </div>
       </div>
 
@@ -126,14 +129,14 @@ export default function MetallePage() {
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 32px 0" }}>
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 16, paddingBottom: 24, borderBottom: "1px solid #dde2ea" }}>
           <div>
-            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: BLUE, display: "block", marginBottom: 8 }}>{t("metalle_badge")}</span>
-            <h1 style={{ fontSize: 28, fontWeight: 300, color: "#0d1b2a", margin: 0, lineHeight: 1.2 }}>{t("metalle_heading")}</h1>
-            <p style={{ fontSize: 14, color: "#666", marginTop: 8 }}>{t("metalle_subtitle")}</p>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: BLUE, display: "block", marginBottom: 8 }}>{tServer("metalle_badge")}</span>
+            <h1 style={{ fontSize: 28, fontWeight: 300, color: "#0d1b2a", margin: 0, lineHeight: 1.2 }}>{tServer("metalle_heading")}</h1>
+            <p style={{ fontSize: 14, color: "#666", marginTop: 8 }}>{tServer("metalle_subtitle")}</p>
           </div>
           <div style={{ display: "flex", gap: 24, fontSize: 13, color: "#666" }}>
-            <span>{t("badge_bafin")}</span>
-            <span>{t("badge_en_normen")}</span>
-            <span>{t("badge_sofort")}</span>
+            <span>{tServer("badge_bafin")}</span>
+            <span>{tServer("badge_en_normen")}</span>
+            <span>{tServer("badge_sofort")}</span>
           </div>
         </div>
       </div>
@@ -146,19 +149,18 @@ export default function MetallePage() {
           gap: 1,
           backgroundColor: "#dde2ea",
         }}>
-          {FORMS.map(({ id, label, Icon }) => (
+          {FORM_DEFS.map(({ id, labelKey, Icon }) => (
             <Link key={id} href={`/metalle/${id}`} style={{ textDecoration: "none" }}>
-              <div style={{
-                backgroundColor: "#fff",
-                padding: "28px 16px 20px",
-                display: "flex", flexDirection: "column", alignItems: "center", gap: 14,
-                cursor: "pointer", transition: "background .15s",
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#f0f4fb"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = "#fff"; }}
+              <div
+                className="hp-market-card"
+                style={{
+                  padding: "28px 16px 20px",
+                  display: "flex", flexDirection: "column", alignItems: "center", gap: 14,
+                  cursor: "pointer",
+                }}
               >
                 <Icon />
-                <span style={{ fontSize: 13, fontWeight: 500, color: "#0d1b2a", textAlign: "center" }}>{label}</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: "#0d1b2a", textAlign: "center" }}>{tServer(labelKey as Parameters<typeof tServer>[0])}</span>
               </div>
             </Link>
           ))}

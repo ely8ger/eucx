@@ -7,6 +7,8 @@
 import type { MetadataRoute } from "next";
 import { db }                 from "@/lib/db/client";
 import { LEXIKON, AKADEMIE_ARTIKEL } from "@/app/insights/data";
+import { STEEL_FORMS }        from "@/lib/steel/data";
+import { FERTILIZER_CATEGORIES } from "@/lib/fertilizer/data";
 
 export const revalidate = 900;
 
@@ -42,6 +44,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/datenschutz`,          lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
   ];
 
+  const metalleFormPages: MetadataRoute.Sitemap = STEEL_FORMS.map(f => ({
+    url:             `${BASE}/metalle/${f.id}`,
+    lastModified:    new Date(),
+    changeFrequency: "weekly" as const,
+    priority:        0.8,
+  }));
+
+  const duengerKatPages: MetadataRoute.Sitemap = FERTILIZER_CATEGORIES.map(c => ({
+    url:             `${BASE}/duenger/${c.id}`,
+    lastModified:    new Date(),
+    changeFrequency: "weekly" as const,
+    priority:        0.8,
+  }));
+
+  const duengerProduktPages: MetadataRoute.Sitemap = FERTILIZER_CATEGORIES.flatMap(c =>
+    c.products.map(p => ({
+      url:             `${BASE}/duenger/${c.id}/${p.id}`,
+      lastModified:    new Date(),
+      changeFrequency: "monthly" as const,
+      priority:        0.75,
+    }))
+  );
+
   const lexikonPages: MetadataRoute.Sitemap = LEXIKON.map((entry) => ({
     url:             `${BASE}/insights/lexikon/${entry.slug}`,
     lastModified:    new Date(entry.updated),
@@ -63,5 +88,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority:        0.85,
   }));
 
-  return [...staticPages, ...lexikonPages, ...akademiePages, ...productPages];
+  return [
+    ...staticPages,
+    ...metalleFormPages,
+    ...duengerKatPages,
+    ...duengerProduktPages,
+    ...lexikonPages,
+    ...akademiePages,
+    ...productPages,
+  ];
 }
