@@ -96,7 +96,7 @@ function nextWithNonce(req: NextRequest, nonce: string): NextResponse {
 // Äußere Funktion: generiert Nonce, delegiert an _route(), hängt CSP an jede Response.
 
 export async function middleware(req: NextRequest) {
-  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const nonce = btoa(crypto.randomUUID());
   const res   = await _route(req, nonce);
   res.headers.set("Content-Security-Policy", buildCsp(nonce));
   return res;
