@@ -14,6 +14,7 @@ import { db }                         from "@/lib/db/client";
 import { requireAuth }                from "@/lib/auth/jwt";
 import { audit }                      from "@/lib/audit/logger";
 import { withSerializableRetry }      from "@/lib/clearing/serializable-retry";
+import { sendAuctionMail }            from "@/lib/notifications/mailer";
 import { z }                          from "zod";
 import Decimal                        from "decimal.js";
 
@@ -99,6 +100,36 @@ export async function PATCH(
         adminNote: adminNote ?? null,
       },
     });
+
+    // E-Mail an Antragsteller
+    void (async () => {
+      try {
+        const user = await db.user.findFirst({
+          where:  { organizationId: request.organizationId },
+          select: { email: true },
+          orderBy: { createdAt: "asc" },
+        });
+        const wallet = await db.wallet.findUnique({
+          where:  { id: request.walletId },
+          select: { balance: true },
+        });
+        if (user?.email) {
+          await sendAuctionMail({
+            to:       user.email,
+            subject:  "EUCX: Ihr Auszahlungsantrag wurde abgelehnt",
+            template: "withdrawal_rejected",
+            data: {
+              amount:    new Decimal(request.amount.toString()).toFixed(2),
+              balance:   wallet ? new Decimal(wallet.balance.toString()).toFixed(2) : "-",
+              adminNote: adminNote ?? "",
+              date:      now.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }),
+            },
+          });
+        }
+      } catch (err) {
+        console.error("[Withdrawal Reject E-Mail] Fehler:", err);
+      }
+    })();
 
     return NextResponse.json({ ok: true, requestId: id, status: "REJECTED" });
   }
@@ -204,6 +235,33 @@ export async function PATCH(
       adminNote:     adminNote ?? null,
     },
   });
+
+  // E-Mail an Antragsteller
+  void (async () => {
+    try {
+      const user = await db.user.findFirst({
+        where:  { organizationId: request.organizationId },
+        select: { email: true },
+        orderBy: { createdAt: "asc" },
+      });
+      if (user?.email) {
+        await sendAuctionMail({
+          to:       user.email,
+          subject:  `EUCX: Auszahlung von ${amt.toFixed(2)} EUR genehmigt`,
+          template: "withdrawal_approved",
+          data: {
+            amount:          amt.toFixed(2),
+            beneficiaryName: request.beneficiaryName,
+            iban:            request.iban.slice(0, 6) + "****" + request.iban.slice(-4),
+            newBalance:      newBalance!,
+            date:            now.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }),
+          },
+        });
+      }
+    } catch (err) {
+      console.error("[Withdrawal Approve E-Mail] Fehler:", err);
+    }
+  })();
 
   return NextResponse.json({
     ok:            true,

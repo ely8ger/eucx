@@ -12,6 +12,7 @@ import { db }                                   from "@/lib/db/client";
 import { requireAuth }                          from "@/lib/auth/jwt";
 import { audit }                                from "@/lib/audit/logger";
 import { withSerializableRetry }               from "@/lib/clearing/serializable-retry";
+import { sendAuctionMail }                      from "@/lib/notifications/mailer";
 import { z }                                    from "zod";
 import Decimal                                  from "decimal.js";
 
@@ -131,6 +132,32 @@ export async function POST(
       ledgerEntryId: ledgerEntryId!,
     },
   });
+
+  // E-Mail an Wallet-Inhaber senden
+  void (async () => {
+    try {
+      const user = await db.user.findFirst({
+        where:  { organizationId: wallet.organizationId },
+        select: { email: true },
+        orderBy: { createdAt: "asc" },
+      });
+      if (user?.email) {
+        await sendAuctionMail({
+          to:       user.email,
+          subject:  `EUCX: Wallet aufgeladen — ${amt.toFixed(2)} EUR gutgeschrieben`,
+          template: "topup_confirmed",
+          data: {
+            amount:     amt.toFixed(2),
+            newBalance: newBalance!,
+            reference,
+            date:       new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }),
+          },
+        });
+      }
+    } catch (err) {
+      console.error("[Topup E-Mail] Fehler:", err);
+    }
+  })();
 
   return NextResponse.json({
     ok:           true,

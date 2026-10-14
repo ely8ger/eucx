@@ -433,6 +433,69 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
     </p>
   `,
 
+  // ─── Wallet-Templates ────────────────────────────────────────────────────────
+
+  topup_confirmed: (d) => `
+    <div style="background:#f0fdf4;border-left:4px solid #16a34a;padding:14px 16px;margin-bottom:20px;">
+      <p style="margin:0;font-size:13px;color:#16a34a;font-weight:600;">Ihr Guthaben wurde gutgeschrieben.</p>
+    </div>
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Wallet aufgeladen</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Sehr geehrte Damen und Herren,<br><br>
+      Ihre Überweisung wurde geprüft und Ihrem EUCX-Handelskonto gutgeschrieben.
+      Sie können ab sofort an Auktionen teilnehmen.
+    </p>
+    ${infoTable(
+      infoRow("Gutgeschriebener Betrag:", `${d.amount ?? "-"} EUR`) +
+      infoRow("Neues Guthaben:", `${d.newBalance ?? "-"} EUR`) +
+      infoRow("Referenz:", d.reference ?? "-") +
+      infoRow("Datum:", d.date ?? "-")
+    )}
+    ${primaryBtn("https://eucx.eu/dashboard/wallet", "Wallet ansehen →")}
+    <p style="margin:20px 0 0;font-size:12px;color:#9ca3af;">
+      Bei Fragen wenden Sie sich an <a href="mailto:support@eucx.eu" style="color:#154194;">support@eucx.eu</a>.
+    </p>
+  `,
+
+  withdrawal_approved: (d) => `
+    <div style="background:#f0fdf4;border-left:4px solid #16a34a;padding:14px 16px;margin-bottom:20px;">
+      <p style="margin:0;font-size:13px;color:#16a34a;font-weight:600;">Ihre Auszahlung wurde genehmigt.</p>
+    </div>
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Auszahlung bestätigt</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Sehr geehrte Damen und Herren,<br><br>
+      Ihr Auszahlungsantrag wurde genehmigt. Der Betrag wird innerhalb von 1–2 Werktagen
+      auf Ihrem Bankkonto eingehen.
+    </p>
+    ${infoTable(
+      infoRow("Betrag:", `${d.amount ?? "-"} EUR`) +
+      infoRow("Empfänger:", d.beneficiaryName ?? "-") +
+      infoRow("IBAN:", d.iban ?? "-") +
+      infoRow("Verbleibendes Guthaben:", `${d.newBalance ?? "-"} EUR`) +
+      infoRow("Datum:", d.date ?? "-")
+    )}
+    ${primaryBtn("https://eucx.eu/dashboard/wallet", "Wallet ansehen →")}
+  `,
+
+  withdrawal_rejected: (d) => `
+    ${alertBox("Ihr Auszahlungsantrag wurde abgelehnt.", "#dc2626")}
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Auszahlung abgelehnt</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Sehr geehrte Damen und Herren,<br><br>
+      Ihr Auszahlungsantrag über ${d.amount ?? "-"} EUR konnte leider nicht genehmigt werden.
+      ${d.adminNote ? `<br><br><strong>Begründung:</strong> ${d.adminNote}` : ""}
+    </p>
+    ${infoTable(
+      infoRow("Beantragter Betrag:", `${d.amount ?? "-"} EUR`) +
+      infoRow("Aktuelles Guthaben:", `${d.balance ?? "-"} EUR`) +
+      infoRow("Datum:", d.date ?? "-")
+    )}
+    ${primaryBtn("https://eucx.eu/dashboard/wallet", "Neuen Antrag stellen →")}
+    <p style="margin:20px 0 0;font-size:12px;color:#9ca3af;">
+      Bei Fragen wenden Sie sich an <a href="mailto:support@eucx.eu" style="color:#154194;">support@eucx.eu</a>.
+    </p>
+  `,
+
   inquiry_deadline_expired: (d) => `
     ${alertBox("KYC-Rückfrage-Frist abgelaufen — Eskalation erforderlich", "#dc2626")}
     <h2 style="margin:16px 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Frist abgelaufen</h2>
