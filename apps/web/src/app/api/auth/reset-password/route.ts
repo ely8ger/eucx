@@ -44,14 +44,9 @@ export async function POST(req: NextRequest) {
 
     const { token, newPassword } = parsed.data;
 
-    const pwned = await isPwnedPassword(newPassword);
-    if (pwned) {
-      return NextResponse.json(
-        { code: "VALIDATION_ERROR", message: "Dieses Passwort ist in bekannten Datenlecks aufgetaucht. Bitte wählen Sie ein anderes." },
-        { status: 422 },
-      );
-    }
-
+    // Token zuerst validieren — HIBP danach.
+    // Sonst kann ein Angreifer ohne gültigen Token beliebige Passwörter
+    // gegen HIBP testen und damit EUCX als kostenlosen HIBP-Proxy nutzen.
     const tokenHash = createHash("sha256").update(token).digest("hex");
 
     const resetToken = await db.passwordResetToken.findUnique({
@@ -63,6 +58,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { code: "INVALID_TOKEN", message: "Der Reset-Link ist ungültig oder abgelaufen. Bitte fordern Sie einen neuen an." },
         { status: 400 },
+      );
+    }
+
+    const pwned = await isPwnedPassword(newPassword);
+    if (pwned) {
+      return NextResponse.json(
+        { code: "VALIDATION_ERROR", message: "Dieses Passwort ist in bekannten Datenlecks aufgetaucht. Bitte wählen Sie ein anderes." },
+        { status: 422 },
       );
     }
 

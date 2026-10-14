@@ -85,30 +85,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Konto nicht aktiv" }, { status: 403 });
   }
 
-  // 5. Backup-Code-Hash prüfen
+  // 5. Backup-Code-Hash prüfen und atomar als verbraucht markieren
+  // updateMany statt findFirst+update verhindert Race Condition:
+  // Zwei simultane Requests würden sonst beide den Code als gültig sehen,
+  // bevor einer ihn markiert — und beide eine Session erhalten.
   const codeNormalized = parsed.data.code.toUpperCase();
   const codeHash       = createHash("sha256").update(codeNormalized).digest("hex");
 
-  const backupCode = await db.backupCode.findFirst({
-    where: {
-      userId,
-      codeHash,
-      usedAt: null,   // Noch nicht verbraucht
-    },
+  const marked = await db.backupCode.updateMany({
+    where: { userId, codeHash, usedAt: null },
+    data:  { usedAt: new Date() },
   });
 
-  if (!backupCode) {
+  if (marked.count === 0) {
     return NextResponse.json(
       { error: "Backup-Code ungültig oder bereits verwendet." },
       { status: 400 },
     );
   }
-
-  // 6. Code als verbraucht markieren (atomar)
-  await db.backupCode.update({
-    where: { id: backupCode.id },
-    data:  { usedAt: new Date() },
-  });
 
   // 7. Vollständige Login-Session ausstellen
   const expiresAt    = Date.now() + 15 * 60 * 1000;

@@ -11,6 +11,7 @@ import bcrypt                from "bcryptjs";
 import { NextRequest }       from "next/server";
 import { db }                from "@/lib/db/client";
 import { getClientIp }       from "@/lib/net/get-client-ip";
+import { audit }             from "@/lib/audit/logger";
 
 export type ApiKeyPayload = {
   keyId:          string;
@@ -28,12 +29,25 @@ export class ApiKeyError extends Error {
 }
 
 export async function validateApiKey(req: NextRequest): Promise<ApiKeyPayload> {
+  const ip     = getClientIp(req);
   const header = req.headers.get("x-api-key");
   if (!header) throw new ApiKeyError("MISSING", "X-API-Key Header fehlt");
+
+  const logFailure = (code: ApiKeyError["code"], keyId?: string) => {
+    audit({
+      action:     "ADMIN_ACTION",
+      entityType: "Organization",
+      entityId:   keyId ?? "unknown",
+      ipAddress:  ip,
+      userAgent:  req.headers.get("user-agent") ?? "",
+      meta:       { event: "API_KEY_AUTH_FAILED", reason: code },
+    }).catch(() => {});
+  };
 
   // Format: eucx_live_{prefix6}_{rest}
   const parts = header.split("_");
   if (parts.length < 4 || parts[0] !== "eucx" || parts[1] !== "live") {
+    logFailure("INVALID");
     throw new ApiKeyError("INVALID", "Ungültiges API-Key-Format");
   }
   const prefix = parts[2]!;
@@ -42,21 +56,31 @@ export async function validateApiKey(req: NextRequest): Promise<ApiKeyPayload> {
     where: { prefix },
   });
 
-  if (!key) throw new ApiKeyError("INVALID", "Ungültiger API-Key");
+  if (!key) {
+    logFailure("INVALID");
+    throw new ApiKeyError("INVALID", "Ungültiger API-Key");
+  }
 
   const valid = await bcrypt.compare(header, key.secretHash);
-  if (!valid) throw new ApiKeyError("INVALID", "Ungültiger API-Key");
+  if (!valid) {
+    logFailure("INVALID", key.id);
+    throw new ApiKeyError("INVALID", "Ungültiger API-Key");
+  }
 
-  if (!key.isActive) throw new ApiKeyError("INACTIVE", "API-Key ist deaktiviert");
+  if (!key.isActive) {
+    logFailure("INACTIVE", key.id);
+    throw new ApiKeyError("INACTIVE", "API-Key ist deaktiviert");
+  }
 
   if (key.expiresAt && key.expiresAt < new Date()) {
+    logFailure("EXPIRED", key.id);
     throw new ApiKeyError("EXPIRED", "API-Key ist abgelaufen");
   }
 
   // IP-Whitelist prüfen (leeres Array = alle IPs erlaubt)
   if (key.ipWhitelist && Array.isArray(key.ipWhitelist) && key.ipWhitelist.length > 0) {
-    const clientIp = getClientIp(req);
-    if (!key.ipWhitelist.includes(clientIp)) {
+    if (!key.ipWhitelist.includes(ip)) {
+      logFailure("IP_BLOCKED", key.id);
       throw new ApiKeyError("IP_BLOCKED", "Diese IP-Adresse ist nicht zugelassen");
     }
   }

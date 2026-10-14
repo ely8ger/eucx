@@ -21,7 +21,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
-import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
+import { requireAuth } from "@/lib/auth/jwt";
 import { validateApiKey, ApiKeyError } from "@/lib/auth/validate-api-key";
 import ExcelJS                       from "exceljs";
 
