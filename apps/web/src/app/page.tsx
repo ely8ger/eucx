@@ -10,6 +10,8 @@ import { EucxLogo }  from "@/components/logo/EucxLogo";
 import { SiteNav }   from "@/components/SiteNav";
 import { tServer }   from "@/lib/i18n/server";
 import { BASE_URL, buildAlternateLanguages } from "@/lib/seo/metadata";
+import { db }        from "@/lib/db/client";
+import Decimal       from "decimal.js";
 
 // ── Page-spezifische Metadata ─────────────────────────────────────────────────
 export function generateMetadata(): Metadata {
@@ -36,8 +38,41 @@ const S: Record<string, React.CSSProperties> = {
   body:  { fontSize: 15, color: "#505050", lineHeight: 1.7 },
 };
 
-export default function HomePage() {
-  const t = tServer;
+// ── Echtzeit-KPIs aus der DB ──────────────────────────────────────────────────
+export const revalidate = 300; // alle 5 Minuten neu berechnen
+
+async function fetchStats() {
+  try {
+    const [memberCount, contractCount, volumeAgg, concludedCount, totalCount] = await Promise.all([
+      db.organization.count({ where: { isVerified: true } }),
+      db.lotContract.count(),
+      db.lotContract.aggregate({ _sum: { totalValue: true } }),
+      db.lot.count({ where: { phase: "CONCLUSION" } }),
+      db.lot.count({ where: { isDraft: false } }),
+    ]);
+
+    const totalValue = new Decimal(volumeAgg._sum.totalValue?.toString() ?? "0");
+    const volumeStr  = totalValue.gte(1_000_000_000)
+      ? `${totalValue.div(1_000_000_000).toDecimalPlaces(1).toString()} Mrd.`
+      : totalValue.gte(1_000_000)
+      ? `${totalValue.div(1_000_000).toDecimalPlaces(1).toString()} Mio.`
+      : totalValue.gt(0)
+      ? `${totalValue.toDecimalPlaces(0).toString()} €`
+      : "—";
+
+    const execRate = totalCount > 0
+      ? `${(concludedCount / totalCount * 100).toFixed(1)} %`
+      : "—";
+
+    return { memberCount, contractCount, volumeStr, execRate };
+  } catch {
+    return { memberCount: 0, contractCount: 0, volumeStr: "—", execRate: "—" };
+  }
+}
+
+export default async function HomePage() {
+  const t     = tServer;
+  const stats = await fetchStats();
 
   return (
     <div style={{ fontFamily: "'IBM Plex Sans', Arial, sans-serif", backgroundColor: "#fff", color: "#1a1a1a" }}>
@@ -100,16 +135,16 @@ export default function HomePage() {
         <div className="r-container">
           <div className="r-grid-4">
             {([
-              { v: "stat_volume_v",  l: "stat_volume_l",  s: "stat_volume_s"  },
-              { v: "stat_members_v", l: "stat_members_l", s: "stat_members_s" },
-              { v: "stat_sectors_v", l: "stat_sectors_l", s: "stat_sectors_s" },
-              { v: "stat_exec_v",    l: "stat_exec_l",    s: "stat_exec_s"    },
-            ] as const).map(({ v, l, s }, i) => (
+              { v: stats.volumeStr,                    l: t("stat_volume_l"),  s: t("stat_volume_s")  },
+              { v: stats.memberCount > 0 ? `${stats.memberCount}` : "—", l: t("stat_members_l"), s: t("stat_members_s") },
+              { v: "2",                                l: t("stat_sectors_l"), s: t("stat_sectors_s") },
+              { v: stats.execRate,                     l: t("stat_exec_l"),    s: t("stat_exec_s")    },
+            ]).map(({ v, l, s }, i) => (
               <div key={l} className={i > 0 ? "r-stat-item" : ""}
                 style={{ padding: "36px 0", borderLeft: i > 0 ? "1px solid #e8e8e8" : "none", paddingLeft: i > 0 ? 32 : 0 }}>
-                <div style={{ fontSize: 32, fontWeight: 300, color: "#154194", lineHeight: 1 }}>{t(v)}</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a", marginTop: 8 }}>{t(l)}</div>
-                <div style={{ fontSize: 12, color: "#aaa", marginTop: 4 }}>{t(s)}</div>
+                <div style={{ fontSize: 32, fontWeight: 300, color: "#154194", lineHeight: 1 }}>{v}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a", marginTop: 8 }}>{l}</div>
+                <div style={{ fontSize: 12, color: "#aaa", marginTop: 4 }}>{s}</div>
               </div>
             ))}
           </div>
