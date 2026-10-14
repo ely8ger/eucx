@@ -7,6 +7,7 @@
  */
 import { NextResponse } from "next/server";
 import type { LiveTicker } from "@/hooks/useLiveMarketTickers";
+import { getMarketTickers } from "@/lib/market/ohlc-queries";
 
 const API_URL = process.env.NESTJS_INTERNAL_URL ?? "http://localhost:3001";
 
@@ -37,10 +38,19 @@ export async function GET() {
       { headers: { "Cache-Control": "public, s-maxage=28, stale-while-revalidate=60" } },
     );
   } catch (err) {
-    console.error("[GET /api/market/tickers] Proxy-Fehler:", err);
-    return NextResponse.json(
-      { error: "Marktdaten nicht verfügbar" },
-      { status: 503 },
-    );
+    console.warn("[GET /api/market/tickers] NestJS nicht erreichbar — DB-Fallback:", err instanceof Error ? err.message : err);
+    try {
+      const tickers = await getMarketTickers();
+      return NextResponse.json(
+        { tickers, updatedAt: Date.now(), count: tickers.length, source: "db-fallback" },
+        { headers: { "Cache-Control": "public, s-maxage=10, stale-while-revalidate=30" } },
+      );
+    } catch (dbErr) {
+      console.error("[GET /api/market/tickers] DB-Fallback fehlgeschlagen:", dbErr);
+      return NextResponse.json(
+        { error: "Marktdaten nicht verfügbar" },
+        { status: 503 },
+      );
+    }
   }
 }
