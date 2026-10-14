@@ -43,7 +43,7 @@ export async function POST(
 
     const user = await db.user.findUnique({
       where:  { id: userId },
-      select: { email: true, status: true },
+      select: { email: true, status: true, verificationStatus: true },
     });
 
     if (!user) {
@@ -74,9 +74,11 @@ export async function POST(
         return NextResponse.json({ error: "Account ist nicht gesperrt" }, { status: 409 });
       }
 
+      // Status wiederherstellen: VERIFIED → ACTIVE, sonst → PENDING
+      const restoreStatus = user.verificationStatus === "VERIFIED" ? "ACTIVE" : "PENDING";
       await db.user.update({
         where: { id: userId },
-        data:  { status: "ACTIVE" },
+        data:  { status: restoreStatus },
       });
 
       await audit({

@@ -43,11 +43,15 @@ export async function POST(
 
     const user = await db.user.findUnique({
       where:  { id: userId },
-      select: { email: true, organization: { select: { name: true } } },
+      select: { email: true, verificationStatus: true, organization: { select: { name: true } } },
     });
 
     if (!user) {
       return NextResponse.json({ error: "Nutzer nicht gefunden" }, { status: 404 });
+    }
+
+    if (user.verificationStatus === "VERIFIED") {
+      return NextResponse.json({ error: "Nutzer ist bereits verifiziert — Rückfrage nicht möglich" }, { status: 409 });
     }
 
     const deadline = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
@@ -57,7 +61,7 @@ export async function POST(
       data:  { inquiryDeadlineAt: deadline },
     });
 
-    await sendAuctionMail({
+    sendAuctionMail({
       to:       user.email,
       subject:  "EUCX — KYC-Rückfrage: Bitte antworten Sie bis zum " + deadline.toLocaleDateString("de-DE"),
       template: "kyc_inquiry",
@@ -66,7 +70,7 @@ export async function POST(
         message:      parsed.data.message,
         deadline:     deadline.toLocaleDateString("de-DE"),
       },
-    });
+    }).catch((err: unknown) => console.error("[kyc/inquiry] Mailer-Fehler:", err));
 
     await audit({
       userId:     token.userId,

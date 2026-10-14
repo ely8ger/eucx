@@ -144,6 +144,7 @@ export async function PATCH(
         email:              true,
         riskScore:          true,
         verificationStatus: true,
+        organizationId:     true,
         organization: { select: { name: true } },
       },
     });
@@ -153,6 +154,17 @@ export async function PATCH(
     }
 
     const { action, reason, forceApprove } = parsed.data;
+
+    // ── Idempotenz: bereits verarbeitete Status nicht doppelt setzen ────────
+    if (action === "approve" && user.verificationStatus === "VERIFIED") {
+      return NextResponse.json({ error: "Nutzer ist bereits verifiziert" }, { status: 409 });
+    }
+    if (action === "reject" && user.verificationStatus === "REJECTED") {
+      return NextResponse.json({ error: "Nutzer ist bereits abgelehnt" }, { status: 409 });
+    }
+    if (action === "suspend" && user.verificationStatus === "SUSPENDED") {
+      return NextResponse.json({ error: "Nutzer ist bereits gesperrt" }, { status: 409 });
+    }
 
     // ── HIGH_RISK Guard beim Genehmigen ─────────────────────────────────────
     if (action === "approve" && user.riskScore >= 70 && !forceApprove) {
@@ -176,7 +188,7 @@ export async function PATCH(
         },
       });
       await db.organization.update({
-        where: { id: (await db.user.findUnique({ where: { id: userId }, select: { organizationId: true } }))!.organizationId },
+        where: { id: user.organizationId },
         data:  { isVerified: true },
       });
 

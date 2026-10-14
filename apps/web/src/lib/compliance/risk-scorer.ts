@@ -15,6 +15,7 @@
  * Score 0–24 → LOW
  */
 import { db }                    from "@/lib/db/client";
+import { Prisma }                from "@prisma/client";
 import { EMBARGOED_COUNTRIES, FATF_GREYLIST } from "@/lib/compliance/sanctions";
 import { audit }                 from "@/lib/audit/logger";
 
@@ -120,7 +121,7 @@ export async function calculateRiskScore(userId: string): Promise<RiskScoreResul
     where: { id: userId },
     data:  {
       riskScore:    score,
-      riskFlags:    flags as unknown as Parameters<typeof db.user.update>[0]["data"]["riskFlags"],
+      riskFlags:    flags as unknown as Prisma.InputJsonValue,
       riskScoredAt: new Date(),
     },
   });
