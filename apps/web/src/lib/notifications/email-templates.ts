@@ -418,6 +418,21 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
     </p>
   `,
 
+  compliance_risk_critical: (d) => `
+    ${alertBox("Compliance-Eskalation — CRITICAL Risk-Score(s) erkannt", "#dc2626")}
+    <h2 style="margin:16px 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Automatische Risk-Score-Eskalation</h2>
+    <p style="margin:0 0 16px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Der tägliche Compliance-Scan hat <strong>${d.count ?? "0"}</strong> Nutzer mit CRITICAL Risk-Score (≥ 70) identifiziert.
+    </p>
+    <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:4px;padding:16px;margin:20px 0;">
+      <pre style="margin:0;font-size:12px;color:#7f1d1d;white-space:pre-wrap;font-family:monospace;">${d.summary ?? ""}</pre>
+    </div>
+    ${primaryBtn("https://me8.eucx.eu/admin/kyc", "KYC-Queue öffnen →")}
+    <p style="margin:20px 0 0;font-size:12px;color:#9ca3af;">
+      Automatisch generiert vom Risk-Rescore-Cron. Bitte ergreifen Sie die notwendigen Compliance-Maßnahmen.
+    </p>
+  `,
+
   inquiry_deadline_expired: (d) => `
     ${alertBox("KYC-Rückfrage-Frist abgelaufen — Eskalation erforderlich", "#dc2626")}
     <h2 style="margin:16px 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Frist abgelaufen</h2>

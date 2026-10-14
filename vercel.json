@@ -20,7 +20,8 @@
 "crons": [
     { "path": "/api/auction/cron",                  "schedule": "* * * * *"    },
     { "path": "/api/cron/market-candles",           "schedule": "* * * * *"    },
-    { "path": "/api/cron/kyc-deadline-check",       "schedule": "30 7 * * *"   }
+    { "path": "/api/cron/kyc-deadline-check",       "schedule": "30 7 * * *"   },
+    { "path": "/api/cron/risk-rescore",             "schedule": "0 2 * * *"    }
   ],
 
 "git": {

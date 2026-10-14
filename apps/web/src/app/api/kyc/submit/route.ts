@@ -8,12 +8,13 @@
  * Da das User-Modell kein direktes documents-Feld hat, wird der Status
  * auf PENDING_VERIFICATION gesetzt - Admin sieht alle solchen User im KYC-Center.
  */
-import { NextRequest, NextResponse } from "next/server";
-import { db }                        from "@/lib/db/client";
+import { NextRequest, NextResponse }  from "next/server";
+import { db }                         from "@/lib/db/client";
 import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
-import { audit }                     from "@/lib/audit/logger";
-import { sendAuctionMail }           from "@/lib/notifications/mailer";
-import { z }                         from "zod";
+import { audit }                      from "@/lib/audit/logger";
+import { sendAuctionMail }            from "@/lib/notifications/mailer";
+import { calculateRiskScore }         from "@/lib/compliance/risk-scorer";
+import { z }                          from "zod";
 
 export const dynamic = "force-dynamic";
 
@@ -77,17 +78,19 @@ export async function POST(req: NextRequest) {
 
   await audit({
     userId:     tokenPayload.userId,
-    action:     "ADMIN_ACTION",
+    action:     "KYC_SUBMITTED",
     entityType: "User",
     entityId:   tokenPayload.userId,
     ipAddress:  req.headers.get("x-forwarded-for") ?? "unknown",
     userAgent:  req.headers.get("user-agent") ?? "",
     meta:       {
-      kycAction:     "SUBMITTED",
       documentCount: parsed.data.documents.length,
       documents:     parsed.data.documents.map((d) => ({ name: d.name, type: d.type })),
     },
   });
+
+  // Risk-Score initial berechnen (fire-and-forget)
+  calculateRiskScore(tokenPayload.userId).catch(() => {});
 
   // Compliance-Admin benachrichtigen
   const complianceEmail = process.env.COMPLIANCE_EMAIL ?? "compliance@eucx.eu";
