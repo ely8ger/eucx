@@ -921,7 +921,8 @@ model Invoice {
   type          InvoiceType
   status        InvoiceStatus @default(DRAFT)
 
-  dealId        String
+  dealId        String?       // optional: Deal-basiertes Settlement
+  lotContractId String?       // optional: LotContract-basiertes Settlement
   issuerId      String        // Organization-ID (Aussteller)
   recipientId   String        // Organization-ID (Empfänger)
 
@@ -951,9 +952,11 @@ model Invoice {
 
   createdAt     DateTime      @default(now())
 
-  deal Deal @relation(fields: [dealId], references: [id])
+  deal        Deal?        @relation(fields: [dealId],        references: [id])
+  lotContract LotContract? @relation(fields: [lotContractId], references: [id])
 
   @@index([dealId])
+  @@index([lotContractId])
   @@index([status])
   @@index([issuedAt])
   @@index([invoiceNumber])
@@ -1381,6 +1384,7 @@ model LotContract {
   fees       LotFee[]
   dispute    LotDispute?
   settlement Settlement?
+  invoices   Invoice[]
 
   @@index([buyerId])
   @@index([sellerId])

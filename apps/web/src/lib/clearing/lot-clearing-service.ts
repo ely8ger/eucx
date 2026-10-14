@@ -1,48 +1,43 @@
 /**
  * EUCX Lot-Clearing-Service - 2-Phasen-Escrow für Lot-Auktionen
  *
- * Nutzt dieselbe Double-Entry-Infrastruktur wie clearing-service.ts,
- * aber ist an LotContract (Reverse-Auction-System) gebunden, nicht Deal.
- *
  * ─── Buchungsplan ────────────────────────────────────────────────────────────
  *
  * PHASE 1 - lockEscrowForLot() - aufgerufen von post-trade.ts bei CONCLUSION
  *
- *   Schritt 1a: Käufer-Wallet → Escrow (Bruttobetrag wird gesperrt)
- *     DEBIT  buyer_wallet   (Abgang; reservedBalance ↑)
- *     CREDIT ESCROW         (Eingang Treuhandkonto)
+ *   Schritt 1a: Käufer-Wallet → Escrow
+ *     DEBIT  buyer_wallet   (reservedBalance ↑)
+ *     CREDIT ESCROW
  *
- * PHASE 2 - settleEscrowForLot() - aufgerufen von delivery/route.ts bei COMPLETED
+ * PHASE 2 - settleEscrowForLot() - aufgerufen bei COMPLETED
  *
- *   Schritt 2a: EUCX-Plattformgebühr
- *     DEBIT  ESCROW         (Fee-Abzug)
- *     CREDIT EUCX_FEE_REVENUE
+ *   2a: EUCX-Gebühr
+ *     DEBIT  ESCROW → CREDIT EUCX_FEE_REVENUE
  *
- *   Schritt 2b: MwSt. (nur wenn nicht Reverse Charge)
- *     DEBIT  ESCROW
- *     CREDIT VAT_PAYABLE
+ *   2b: MwSt. (nur Inlandsgeschäft)
+ *     DEBIT  ESCROW → CREDIT VAT_PAYABLE
  *
- *   Schritt 2c: Netto an Verkäufer
- *     DEBIT  ESCROW
- *     CREDIT seller_wallet  (Zugang beim Verkäufer)
+ *   2c: Netto an Verkäufer
+ *     DEBIT  ESCROW → CREDIT seller_wallet
  *
- *   Schritt 2d: reservedBalance beim Käufer zurücksetzen
- *     → wallet.reservedBalance -= grossAmount
+ *   2d: reservedBalance Käufer auflösen
+ *
+ *   2e: Käufer-Rechnung (BUYER_INVOICE) + Verkäufer-Gutschrift (SELLER_CREDIT) erstellen
  *
  * ─── Idempotenz ──────────────────────────────────────────────────────────────
  *
  *   idempotencyKey-Format:
  *     Phase 1: "lot:{contractId}:p1:{DEBIT|CREDIT}"
  *     Phase 2: "lot:{contractId}:p2:{step}:{DEBIT|CREDIT}"
- *   → @unique auf LedgerEntry.idempotencyKey verhindert Doppelbuchung bei Retry
  *
  * ─── Atomizität ──────────────────────────────────────────────────────────────
  *
  *   Jede Phase läuft in einer einzigen Prisma-Transaktion (Serializable).
- *   Schlägt ein Schritt fehl → vollständiger Rollback der gesamten Phase.
+ *   PENDING-Record wird VOR der TX erstellt → Retry-Cron greift bei TX-Fehler.
  */
 
 import Decimal                       from "decimal.js";
+import { randomUUID }                from "crypto";
 import { db }                        from "@/lib/db/client";
 import { calculateFees }             from "./fee-calculator";
 import { validateLedgerBalance }     from "./fee-calculator";
@@ -106,7 +101,6 @@ export async function lockEscrowForLot(lotContractId: string): Promise<void> {
 
   // L2-Fix: Deckungsprüfung INNERHALB der Serializable-Transaktion —
   // verhindert TOCTOU zwischen Balance-Check und Wallet-Update.
-  // L4-Fix: withSerializableRetry fängt P2034 (Serialization Failure) ab.
   await withSerializableRetry(() =>
     db.$transaction(async (tx) => {
       const wallet  = await tx.wallet.findUniqueOrThrow({ where: { id: buyerWallet.id } });
@@ -130,11 +124,13 @@ export async function lockEscrowForLot(lotContractId: string): Promise<void> {
 // ─── Phase 2: Finale Auszahlung bei Lieferbestätigung ────────────────────────
 
 export interface LotSettlementResult {
-  platformFee:     string;
-  vatAmount:       string;
-  netToSeller:     string;
-  isReverseCharge: boolean;
+  platformFee:      string;
+  vatAmount:        string;
+  netToSeller:      string;
+  isReverseCharge:  boolean;
   ledgerEntryCount: number;
+  buyerInvoiceId:   string;
+  sellerCreditId:   string;
 }
 
 export async function settleEscrowForLot(
@@ -146,6 +142,23 @@ export async function settleEscrowForLot(
     select: { id: true },
   });
   if (existingP2) throw new Error(`Settlement für LotContract ${lotContractId} bereits abgeschlossen`);
+
+  // PENDING-Record AUSSERHALB der TX — bei TX-Fehler bleibt PENDING stehen → Retry-Cron greift
+  await db.settlement.upsert({
+    where:  { lotContractId },
+    create: {
+      lotContractId,
+      status:      "PENDING",
+      grossAmount: "0",
+      platformFee: "0",
+      vatAmount:   "0",
+      netToSeller: "0",
+      currency:    "EUR",
+    },
+    update: {
+      status: "PENDING",
+    },
+  });
 
   const contract = await db.lotContract.findUnique({
     where:  { id: lotContractId },
@@ -193,6 +206,12 @@ export async function settleEscrowForLot(
     getOrCreateWalletByUser(contract.sellerId, contract.seller.organizationId, "EUR"),
   ]);
 
+  // Rechnungsnummer UUID-basiert (keine Race Condition)
+  const year = new Date().getFullYear();
+  const uid  = () => randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase();
+  const buyerInvoiceNumber = `EUCX-INV-${year}-${uid()}`;
+  const sellerCreditNumber = `EUCX-GUT-${year}-${uid()}`;
+
   const corrFee    = `lot:${lotContractId}:fee`;
   const corrVat    = `lot:${lotContractId}:vat`;
   const corrPayout = `lot:${lotContractId}:payout`;
@@ -215,12 +234,11 @@ export async function settleEscrowForLot(
 
   // 2c: Netto-Auszahlung an Verkäufer
   entries.push(
-    { correlationId: corrPayout, walletId: null,             accountType: "ESCROW",        entryType: "DEBIT",  amount: netSeller.toFixed(8), currency: "EUR", description: `Lot-Vertrag ${lotContractId}: Auszahlung Verkäufer`,  lotContractId, idempotencyKey: `lot:${lotContractId}:p2:payout:DEBIT`  },
+    { correlationId: corrPayout, walletId: null,             accountType: "ESCROW",        entryType: "DEBIT",  amount: netSeller.toFixed(8), currency: "EUR", description: `Lot-Vertrag ${lotContractId}: Auszahlung Verkäufer`,     lotContractId, idempotencyKey: `lot:${lotContractId}:p2:payout:DEBIT`  },
     { correlationId: corrPayout, walletId: sellerWallet.id,  accountType: "TRADER_WALLET", entryType: "CREDIT", amount: netSeller.toFixed(8), currency: "EUR", description: `Lot-Vertrag ${lotContractId}: Nettogutschrift Verkäufer`, lotContractId, idempotencyKey: `lot:${lotContractId}:p2:payout:CREDIT` },
   );
 
   // L1-Fix: ESCROW-Invariante — Phase 2 muss exakt den Phase-1-Eingang verteilen.
-  // fee + vat + netSeller muss == gross sein, sonst geht ESCROW ins Minus/Plus.
   const escrowDistribution = feeAmt.plus(vatAmt).plus(netSeller);
   if (!escrowDistribution.equals(gross)) {
     throw new Error(
@@ -230,14 +248,13 @@ export async function settleEscrowForLot(
     );
   }
 
-  // Symmetrie-Prüfung: DEBIT == CREDIT pro Buchungssatz
   if (!validateLedgerBalance(entries.map((e) => ({ entryType: e.entryType as "DEBIT" | "CREDIT", amount: String(e.amount) })))) {
     throw new Error(`[LotClearing] Bilanzierungsfehler Phase 2 für ${lotContractId}`);
   }
 
-  // L4-Fix: withSerializableRetry fängt P2034 (Serialization Failure) ab.
-  await withSerializableRetry(() =>
+  const txResult = await withSerializableRetry(() =>
     db.$transaction(async (tx) => {
+      // LedgerEntries buchen
       await tx.ledgerEntry.createMany({ data: entries, skipDuplicates: true });
 
       // Verkäufer erhält Netto
@@ -254,30 +271,78 @@ export async function settleEscrowForLot(
 
       // LotFees auf PAID setzen
       await tx.lotFee.updateMany({
-        where:  { contract: { id: lotContractId } },
-        data:   { status: "PAID" },
+        where: { contract: { id: lotContractId } },
+        data:  { status: "PAID" },
       });
 
-      // Settlement-Record schreiben — Admin-Sichtbarkeit + Retry-Grundlage
-      const now = new Date();
-      await tx.settlement.upsert({
-        where:  { lotContractId },
-        create: {
-          lotContractId,
-          status:      "COMPLETED",
-          grossAmount: fees.grossAmount,
-          platformFee: fees.platformFee,
-          vatAmount:   fees.vatAmount,
-          netToSeller: fees.netToSeller,
-          currency:    "EUR",
-          processedAt: now,
-        },
-        update: {
-          status:      "COMPLETED",
-          processedAt: now,
+      // Settlement PENDING → COMPLETED
+      const now   = new Date();
+      const dueAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+      await tx.settlement.update({
+        where: { lotContractId },
+        data:  {
+          status:       "COMPLETED",
+          grossAmount:  fees.grossAmount,
+          platformFee:  fees.platformFee,
+          vatAmount:    fees.vatAmount,
+          netToSeller:  fees.netToSeller,
+          currency:     "EUR",
+          processedAt:  now,
           errorMessage: null,
         },
       });
+
+      // Käufer-Rechnung (BUYER_INVOICE) — Verkäufer stellt aus
+      const buyerInvoice = await tx.invoice.create({
+        data: {
+          invoiceNumber:   buyerInvoiceNumber,
+          type:            "BUYER_INVOICE",
+          status:          "ISSUED",
+          lotContractId,
+          issuerId:        contract.seller.organizationId,
+          recipientId:     contract.buyer.organizationId,
+          grossAmount:     fees.grossAmount,
+          platformFee:     fees.platformFee,
+          vatAmount:       fees.vatAmount,
+          vatRate:         fees.vatRate,
+          netPayable:      fees.netPayable,
+          currency:        "EUR",
+          isReverseCharge: fees.isReverseCharge,
+          buyerTaxId:      buyerOrg?.taxId    ?? null,
+          sellerTaxId:     sellerOrg?.taxId   ?? null,
+          buyerCountry:    buyerOrg?.country  ?? null,
+          sellerCountry:   sellerOrg?.country ?? null,
+          issuedAt:        now,
+          dueAt,
+        },
+      });
+
+      // Verkäufer-Gutschrift (SELLER_CREDIT) — Käufer stellt aus
+      const sellerCredit = await tx.invoice.create({
+        data: {
+          invoiceNumber:   sellerCreditNumber,
+          type:            "SELLER_CREDIT",
+          status:          "ISSUED",
+          lotContractId,
+          issuerId:        contract.buyer.organizationId,
+          recipientId:     contract.seller.organizationId,
+          grossAmount:     fees.grossAmount,
+          platformFee:     fees.platformFee,
+          vatAmount:       fees.vatAmount,
+          vatRate:         fees.vatRate,
+          netPayable:      fees.netToSeller,
+          currency:        "EUR",
+          isReverseCharge: fees.isReverseCharge,
+          buyerTaxId:      buyerOrg?.taxId    ?? null,
+          sellerTaxId:     sellerOrg?.taxId   ?? null,
+          buyerCountry:    buyerOrg?.country  ?? null,
+          sellerCountry:   sellerOrg?.country ?? null,
+          issuedAt:        now,
+        },
+      });
+
+      return { buyerInvoiceId: buyerInvoice.id, sellerCreditId: sellerCredit.id };
     }, { isolationLevel: "Serializable", maxWait: 10_000, timeout: 30_000 })
   );
 
@@ -287,6 +352,8 @@ export async function settleEscrowForLot(
     netToSeller:      fees.netToSeller,
     isReverseCharge:  fees.isReverseCharge,
     ledgerEntryCount: entries.length,
+    buyerInvoiceId:   txResult.buyerInvoiceId,
+    sellerCreditId:   txResult.sellerCreditId,
   };
 }
 
