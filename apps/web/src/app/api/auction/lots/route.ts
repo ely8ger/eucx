@@ -80,15 +80,18 @@ export async function POST(req: NextRequest) {
           hsCode, qualityGrade, deliveryPeriod, deliveryLocation, paymentTerms, vatTreatment,
           publish } = parsed.data;
 
-  // ── Produktkatalog-Validierung ────────────────────────────────────────────────
+  // ── Produktkatalog-Validierung ─────────────────────────────────────────────
+  // Akzeptiert sowohl cuid (DB-id) als auch slug ("rebar-bst500") — löst intern zu cuid auf.
+  let resolvedCatalogProductId: string | undefined;
   if (catalogProductId) {
-    const catalogProduct = await db.catalogProduct.findUnique({
-      where:  { id: catalogProductId },
-      select: { id: true, isActive: true },
+    const catalogProduct = await db.catalogProduct.findFirst({
+      where:  { OR: [{ id: catalogProductId }, { slug: catalogProductId }], isActive: true },
+      select: { id: true },
     });
-    if (!catalogProduct || !catalogProduct.isActive) {
+    if (!catalogProduct) {
       return NextResponse.json({ error: "Produkt nicht im EUCX-Katalog oder deaktiviert" }, { status: 422 });
     }
+    resolvedCatalogProductId = catalogProduct.id;
   }
 
   const buyerIp = req.headers.get("x-forwarded-for")?.split(",").at(0)?.trim()
@@ -102,7 +105,7 @@ export async function POST(req: NextRequest) {
         buyerId:         user.id,
         buyerIp,
         commodity,
-        catalogProductId,
+        catalogProductId: resolvedCatalogProductId,
         quantity:        quantity.toString(),
         unit,
         startPrice:      startPrice?.toString(),

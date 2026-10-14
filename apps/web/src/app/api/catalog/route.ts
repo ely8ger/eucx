@@ -25,10 +25,15 @@ async function _GET(req: NextRequest) {
   const sector      = VALID_SECTORS.has(sectorRaw) ? sectorRaw : "";
 
   // ── Tradeable-Produkt-Daten (unit, minLotSize, lotStep, inco, vat, hsCode) ──
+  // Gibt auch catalogProductId (DB-cuid) zurück → Lot-Formular kann direkt verwenden.
   if (tradeableId) {
     const product = TRADEABLE_PRODUCTS.find((p) => p.id === tradeableId);
     if (!product) return NextResponse.json({ error: "Nicht gefunden" }, { status: 404 });
-    return NextResponse.json({ product });
+    const dbProduct = await db.catalogProduct.findUnique({
+      where:  { slug: tradeableId },
+      select: { id: true, isActive: true },
+    });
+    return NextResponse.json({ product: { ...product, catalogProductId: dbProduct?.id ?? null } });
   }
 
   // ── Statistiken für Header ──────────────────────────────────────────

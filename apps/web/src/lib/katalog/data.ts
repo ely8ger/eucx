@@ -324,9 +324,9 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Elektrische Energie", norm: "REMIT · MiFID II · EnWG",
     hsCode: "2716 00 00", cbam: null, inco: "EPEX-Spot",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "MWH",
-    minLotSize: 1,
-    lotStep:    1,
-    desc: "Baseload-Strom Lieferzone DE/AT. EPEX-Spot Day-Ahead, stündliche Blöcke 0-24 Uhr. Preis in EUR/MWh. Abnahme physisch oder finanziell. Bilanzkreisübergabe nach §20 StromNZV. REMIT-meldepflichtig. Mindest-Lot: 1 MWh.",
+    minLotSize: 100,
+    lotStep:    100,
+    desc: "Baseload-Strom Lieferzone DE/AT. EPEX-Spot Day-Ahead, 24h-Blockkontrakt. Preis in EUR/MWh. Abnahme physisch, Bilanzkreisübergabe nach §20 StromNZV. REMIT-meldepflichtig. Mindest-Lot: 100 MWh (~100 MW × 1h).",
   },
   {
     id: "strom-peakload", katId: "strom",
@@ -334,9 +334,9 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Elektrische Energie", norm: "REMIT · MiFID II · EnWG",
     hsCode: "2716 00 00", cbam: null, inco: "EPEX-Spot",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "MWH",
-    minLotSize: 1,
-    lotStep:    1,
-    desc: "Peakload-Strom Lieferzone DE/AT, Lieferzeit Werktage Mo-Fr 08:00-20:00 Uhr. EPEX-Spot Day-Ahead. Preis in EUR/MWh. Abwicklung über Bilanzkreisvertrag §20 StromNZV. REMIT-meldepflichtig.",
+    minLotSize: 100,
+    lotStep:    100,
+    desc: "Peakload-Strom Lieferzone DE/AT, Lieferzeit Werktage Mo-Fr 08:00-20:00 Uhr. EPEX-Spot Day-Ahead. Preis in EUR/MWh. Abwicklung über Bilanzkreisvertrag §20 StromNZV. REMIT-meldepflichtig. Mindest-Lot: 100 MWh.",
   },
   // ── Energie - Kohle & Öl ─────────────────────────────────────────────────────
   {
