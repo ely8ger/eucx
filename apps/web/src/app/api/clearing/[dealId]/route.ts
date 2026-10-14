@@ -181,6 +181,6 @@ export async function GET(
     currency:      settlement.currency,
     processedAt:   settlement.processedAt,
     errorMessage:  settlement.errorMessage,
-    invoices:      settlement.deal.invoices,
+    invoices:      settlement.deal?.invoices ?? [],
   });
 }

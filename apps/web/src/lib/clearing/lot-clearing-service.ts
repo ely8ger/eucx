@@ -257,6 +257,27 @@ export async function settleEscrowForLot(
         where:  { contract: { id: lotContractId } },
         data:   { status: "PAID" },
       });
+
+      // Settlement-Record schreiben — Admin-Sichtbarkeit + Retry-Grundlage
+      const now = new Date();
+      await tx.settlement.upsert({
+        where:  { lotContractId },
+        create: {
+          lotContractId,
+          status:      "COMPLETED",
+          grossAmount: fees.grossAmount,
+          platformFee: fees.platformFee,
+          vatAmount:   fees.vatAmount,
+          netToSeller: fees.netToSeller,
+          currency:    "EUR",
+          processedAt: now,
+        },
+        update: {
+          status:      "COMPLETED",
+          processedAt: now,
+          errorMessage: null,
+        },
+      });
     }, { isolationLevel: "Serializable", maxWait: 10_000, timeout: 30_000 })
   );
 

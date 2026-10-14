@@ -961,9 +961,11 @@ model Invoice {
 }
 
 model Settlement {
-  id             String          @id @default(uuid())
-  dealId         String          @unique  // 1:1 mit Deal
-  status         SettlementStatus @default(PENDING)
+  id            String           @id @default(uuid())
+  // Genau eines von dealId / lotContractId muss gesetzt sein (Application-Code sichergestellt)
+  dealId        String?          @unique  // 1:1 mit Deal (kontinuierliches Trading)
+  lotContractId String?          @unique  // 1:1 mit LotContract (Auktions-Settlement)
+  status        SettlementStatus @default(PENDING)
 
   // ── Berechnete Werte (von ClearingService gesetzt) ────────────────────────────
   grossAmount    Decimal         @db.Decimal(18, 8)
@@ -980,7 +982,8 @@ model Settlement {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
-  deal Deal @relation(fields: [dealId], references: [id])
+  deal        Deal?        @relation(fields: [dealId],        references: [id])
+  lotContract LotContract? @relation(fields: [lotContractId], references: [id])
 
   @@index([status])
   @@map("settlements")
@@ -1375,8 +1378,9 @@ model LotContract {
   lot     Lot         @relation(fields: [lotId],    references: [id])
   buyer   User        @relation("LotContractBuyer",  fields: [buyerId],  references: [id])
   seller  User        @relation("LotContractSeller", fields: [sellerId], references: [id])
-  fees    LotFee[]
-  dispute LotDispute?
+  fees       LotFee[]
+  dispute    LotDispute?
+  settlement Settlement?
 
   @@index([buyerId])
   @@index([sellerId])
