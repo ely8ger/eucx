@@ -11,6 +11,7 @@ export interface Article {
   category:    string;
   readMin:     number;
   published:   string;
+  updated?:    string;
   sections:    Section[];
   cta?:        string;
 }

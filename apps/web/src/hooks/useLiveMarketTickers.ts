@@ -16,6 +16,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 
 export interface LiveTicker {
   productId:     string;
+  sku:           string;   // Kurzsymbol für Ticker-Strip (z.B. "REBAR-10MM")
   productName:   string;
   lastPrice:     string;
   priceChange:   string;   // z.B. "+5.23" oder "-1.10"

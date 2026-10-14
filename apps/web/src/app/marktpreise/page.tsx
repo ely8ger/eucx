@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PriceTable } from "./PriceTable";
 import { COMMODITIES } from "./data";
 import { fmtEUR } from "@/lib/fmt";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -44,12 +45,9 @@ const jsonLd = {
   description:
     "Marktpreise für Industrierohstoffe: Stahl, Schrott, Dünger, Holz. Daten der European Union Commodity Exchange, Frankfurt am Main.",
   url: "https://eucx.eu/marktpreise",
-  creator: {
-    "@type": "Organization",
-    name: "EUCX - European Union Commodity Exchange",
-    url: "https://eucx.eu",
-  },
-  temporalCoverage: "2026",
+  creator: { "@type": "Organization", "@id": "https://eucx.eu#organization" },
+  temporalCoverage: "2026-01-01/..",
+  dateModified: new Date().toISOString(),
   variableMeasured: COMMODITIES.map(c => ({
     "@type": "PropertyValue",
     name: c.name,
@@ -118,14 +116,8 @@ export default function MarktpreisePage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
+      <JsonLd data={faqJsonLd} />
 
       <div style={{ fontFamily: SANS, backgroundColor: "#fafafa", color: "#0d1b2a", minHeight: "100vh" }}>
 

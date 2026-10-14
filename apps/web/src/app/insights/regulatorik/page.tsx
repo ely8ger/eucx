@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { LEXIKON } from "@/app/insights/data";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 const BLUE = "#154194";
 const SANS = "'IBM Plex Sans', Arial, sans-serif";
@@ -520,42 +521,37 @@ export default function RegulatoriePage() {
       </section>
 
       {/* JSON-LD FAQPage */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: [
-              {
-                "@type": "Question",
-                name: "Was ist CBAM und wen betrifft es?",
-                acceptedAnswer: { "@type": "Answer", text: "CBAM (Carbon Border Adjustment Mechanism) ist ein EU-Grenzausgleichsmechanismus für CO₂-Kosten, der auf Importe von Stahl, Aluminium, Zement, Düngemitteln und Strom aus Drittstaaten erhoben wird. Betroffen sind alle in der EU ansässigen Unternehmen und Personen, die diese Waren einführen." }
-              },
-              {
-                "@type": "Question",
-                name: "Ab wann ist CBAM kostenpflichtig?",
-                acceptedAnswer: { "@type": "Answer", text: "Ab 1. Januar 2026 ist CBAM in seiner kostenpflichtigen Phase in Kraft. Importeure müssen CBAM-Zertifikate erwerben, die dem EUA-Preis des EU-ETS entsprechen. Die Übergangsphase (Oktober 2023 - Dezember 2025) umfasste nur Berichtspflichten." }
-              },
-              {
-                "@type": "Question",
-                name: "Benötige ich als Händler auf EUCX eine eigene BaFin-Lizenz?",
-                acceptedAnswer: { "@type": "Answer", text: "Nein. EUCX betreibt als zugelassener OTF-Betreiber die regulierte Handelsinfrastruktur. Für die reine Teilnahme als Käufer oder Verkäufer physischer Waren benötigen Sie keine eigene BaFin-Zulassung." }
-              },
-              {
-                "@type": "Question",
-                name: "Was ist der Unterschied zwischen MiFID II und MiFIR?",
-                acceptedAnswer: { "@type": "Answer", text: "MiFID II (Richtlinie 2014/65/EU) wird in nationales Recht umgesetzt (in Deutschland als WpHG). MiFIR (Verordnung 600/2014) gilt unmittelbar in allen Mitgliedstaaten und regelt insbesondere Pre-/Post-Trade-Transparenz und Transaktionsmeldepflichten." }
-              },
-              {
-                "@type": "Question",
-                name: "Welche ESG-Reportingpflichten habe ich als Rohstoffhändler?",
-                acceptedAnswer: { "@type": "Answer", text: "Große Unternehmen (>500 Mitarbeiter) unterliegen seit Geschäftsjahr 2024 der CSRD und müssen nach ESRS berichten. KMU folgen stufenweise ab 2026-2027. Auch ohne formelle Pflicht sollten Händler Scope-3-Emissionen erfassen, da Geschäftspartner im Rahmen ihrer CSRD-Pflichten entsprechende Daten einfordern." }
-              },
-            ],
-          }),
-        }}
-      />
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "Was ist CBAM und wen betrifft es?",
+            acceptedAnswer: { "@type": "Answer", text: "CBAM (Carbon Border Adjustment Mechanism) ist ein EU-Grenzausgleichsmechanismus für CO₂-Kosten, der auf Importe von Stahl, Aluminium, Zement, Düngemitteln und Strom aus Drittstaaten erhoben wird. Betroffen sind alle in der EU ansässigen Unternehmen und Personen, die diese Waren einführen." }
+          },
+          {
+            "@type": "Question",
+            name: "Ab wann ist CBAM kostenpflichtig?",
+            acceptedAnswer: { "@type": "Answer", text: "Ab 1. Januar 2026 ist CBAM in seiner kostenpflichtigen Phase in Kraft. Importeure müssen CBAM-Zertifikate erwerben, die dem EUA-Preis des EU-ETS entsprechen. Die Übergangsphase (Oktober 2023 - Dezember 2025) umfasste nur Berichtspflichten." }
+          },
+          {
+            "@type": "Question",
+            name: "Benötige ich als Händler auf EUCX eine eigene BaFin-Lizenz?",
+            acceptedAnswer: { "@type": "Answer", text: "Nein. EUCX betreibt als zugelassener OTF-Betreiber die regulierte Handelsinfrastruktur. Für die reine Teilnahme als Käufer oder Verkäufer physischer Waren benötigen Sie keine eigene BaFin-Zulassung." }
+          },
+          {
+            "@type": "Question",
+            name: "Was ist der Unterschied zwischen MiFID II und MiFIR?",
+            acceptedAnswer: { "@type": "Answer", text: "MiFID II (Richtlinie 2014/65/EU) wird in nationales Recht umgesetzt (in Deutschland als WpHG). MiFIR (Verordnung 600/2014) gilt unmittelbar in allen Mitgliedstaaten und regelt insbesondere Pre-/Post-Trade-Transparenz und Transaktionsmeldepflichten." }
+          },
+          {
+            "@type": "Question",
+            name: "Welche ESG-Reportingpflichten habe ich als Rohstoffhändler?",
+            acceptedAnswer: { "@type": "Answer", text: "Große Unternehmen (>500 Mitarbeiter) unterliegen seit Geschäftsjahr 2024 der CSRD und müssen nach ESRS berichten. KMU folgen stufenweise ab 2026-2027. Auch ohne formelle Pflicht sollten Händler Scope-3-Emissionen erfassen, da Geschäftspartner im Rahmen ihrer CSRD-Pflichten entsprechende Daten einfordern." }
+          },
+        ],
+      }} />
 
       <SiteFooter />
     </div>

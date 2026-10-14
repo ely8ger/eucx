@@ -1,35 +1,46 @@
 /**
  * GET /api/market/tickers
  *
- * Marktübersicht: Ticker für alle aktiven Produkte.
- * Öffentlich - kein Auth erforderlich.
- *
- * Datenquelle: market_candles ONE_DAY (letzten 2 Tage).
- * Cache-Control: s-maxage=30, stale-while-revalidate=60
- *
- * Response:
- *   { tickers: MarketTickerRow[], updatedAt: number }
+ * Dünner Proxy zum NestJS-Endpoint GET /api/v1/public/ticker.
+ * NestJS ist kanonisch: Redis-Cache (30s TTL) + Invalidierung nach Settlement.
+ * Keine eigene DB-Logik — eliminiert Divergenz zwischen beiden Implementierungen.
  */
-import { NextRequest, NextResponse } from "next/server";
-import { getMarketTickers }          from "@/lib/market/ohlc-queries";
+import { NextResponse } from "next/server";
+import type { LiveTicker } from "@/hooks/useLiveMarketTickers";
+
+const API_URL = process.env.NESTJS_INTERNAL_URL ?? "http://localhost:3001";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   try {
-    const tickers = await getMarketTickers();
-
-    return NextResponse.json({
-      tickers,
-      updatedAt: Date.now(),
-      count:     tickers.length,
-    }, {
-      headers: {
-        "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
-      },
+    const upstream = await fetch(`${API_URL}/api/v1/public/ticker`, {
+      headers: { Accept: "application/json" },
+      cache:   "no-store",  // Redis in NestJS ist zuständig — kein Next.js-Fetch-Cache
     });
+
+    if (!upstream.ok) {
+      return NextResponse.json(
+        { error: "Marktdaten vorübergehend nicht verfügbar" },
+        { status: upstream.status },
+      );
+    }
+
+    const data = await upstream.json() as {
+      tickers:     LiveTicker[];
+      count:       number;
+      generatedAt: string;
+    };
+
+    return NextResponse.json(
+      { tickers: data.tickers, updatedAt: Date.now(), count: data.count },
+      { headers: { "Cache-Control": "public, s-maxage=28, stale-while-revalidate=60" } },
+    );
   } catch (err) {
-    console.error("[GET /api/market/tickers]", err);
-    return NextResponse.json({ error: "Marktdaten nicht verfügbar" }, { status: 500 });
+    console.error("[GET /api/market/tickers] Proxy-Fehler:", err);
+    return NextResponse.json(
+      { error: "Marktdaten nicht verfügbar" },
+      { status: 503 },
+    );
   }
 }

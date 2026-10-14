@@ -20,6 +20,7 @@ import { Logger }                 from "@nestjs/common";
 import { Job }                    from "bullmq";
 import { PrismaService }          from "../../config/prisma.service";
 import { AuditService }           from "../audit/audit.service";
+import { MarketDataService }      from "../market/market.service";
 import Decimal                    from "decimal.js";
 
 export const INVOICE_GENERATION_QUEUE = "INVOICE_GENERATION";
@@ -35,8 +36,9 @@ export class ClearingProcessor extends WorkerHost {
   private readonly logger = new Logger(ClearingProcessor.name);
 
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly audit:  AuditService,
+    private readonly prisma:      PrismaService,
+    private readonly audit:       AuditService,
+    private readonly marketData:  MarketDataService,
   ) {
     super();
   }
@@ -231,6 +233,17 @@ export class ClearingProcessor extends WorkerHost {
         isReverseCharge: fees.isReverseCharge,
         processedByWorker: true,
       },
+    });
+
+    // Marktdaten sofort aktualisieren + Redis-Cache invalidieren.
+    // setImmediate: läuft nach dem aktuellen Call-Stack, Transaktion ist bereits committed.
+    // Fehler dürfen Settlement-Erfolg nicht rückgängig machen.
+    setImmediate(() => {
+      void this.marketData.refreshProduct(deal.productId).catch((err: unknown) =>
+        this.logger.warn(
+          `MarketData-Refresh nach Settlement fehlgeschlagen (Deal ${dealId}): ${err instanceof Error ? err.message : String(err)}`
+        )
+      );
     });
   }
 

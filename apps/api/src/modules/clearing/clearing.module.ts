@@ -15,6 +15,7 @@ import { BullModule }        from "@nestjs/bullmq";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { PrismaService }     from "../../config/prisma.service";
 import { AuditModule }       from "../audit/audit.module";
+import { MarketModule }      from "../market/market.module";
 import { ClearingController } from "./clearing.controller";
 import { ClearingProcessor, INVOICE_GENERATION_QUEUE } from "./clearing.processor";
 
@@ -22,6 +23,7 @@ import { ClearingProcessor, INVOICE_GENERATION_QUEUE } from "./clearing.processo
   imports: [
     ConfigModule,
     AuditModule,
+    MarketModule,   // MarketDataService.refreshProduct() nach Settlement
 
     // ── BullMQ Queue registrieren ──────────────────────────────────────────
     BullModule.forRootAsync({

@@ -236,6 +236,7 @@ export async function getCachedVolume(
 
 export interface MarketTicker {
   productId:    string;
+  sku:          string;   // Kurzsymbol für Ticker-Strip (z.B. "REBAR-10MM")
   productName:  string;
   lastPrice:    string;
   priceChange:  string;   // absolut
@@ -245,6 +246,10 @@ export interface MarketTicker {
   tradeCount24h: number;
 }
 
+/**
+ * @deprecated Nicht mehr von /api/market/tickers aufgerufen — NestJS ist kanonisch.
+ * Kann für interne Admin-Seiten genutzt werden, die keinen NestJS-Zugriff haben.
+ */
 export async function getMarketTickers(productIds?: string[]): Promise<MarketTicker[]> {
   const candles = await db.marketCandle.findMany({
     where: {
@@ -255,8 +260,9 @@ export async function getMarketTickers(productIds?: string[]): Promise<MarketTic
       },
     },
     orderBy: { periodStart: "desc" },
+    take:    1000,  // Sicherheitsnetz: max. 2 Tage × 500 Produkte
     include: {
-      product: { select: { name: true } },
+      product: { select: { sku: true, name: true } },
     },
   });
 
@@ -289,6 +295,7 @@ export async function getMarketTickers(productIds?: string[]): Promise<MarketTic
 
     return {
       productId:     pid,
+      sku:           latest.product.sku,
       productName:   latest.product.name,
       lastPrice:     lastPrice.toFixed(2),
       priceChange:   `${sign}${change.toFixed(2)}`,

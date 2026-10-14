@@ -5,6 +5,7 @@ import { LEXIKON } from "../../data";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PriceChart } from "../../components/PriceChart";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export async function generateStaticParams() {
   return LEXIKON.map(e => ({ slug: e.slug }));
@@ -55,22 +56,17 @@ export default async function LexikonEntryPage({ params }: { params: Promise<{ s
   const jsonLdArticle = {
     "@context": "https://schema.org",
     "@type": "Article",
+    "@id": `https://eucx.eu/insights/lexikon/${entry.slug}#article`,
     headline: `${entry.term} - Definition, ${entry.category} & EU-Marktpraxis`,
     description: entry.description,
     datePublished: entry.published,
     dateModified: entry.updated,
     author: {
       "@type": "Organization",
+      "@id": "https://eucx.eu#organization",
       name: "EUCX Fachredaktion",
-      url: "https://eucx.eu",
-      description: "Redaktionsteam der European Union Commodity Exchange - spezialisiert auf EU-Rohstoffrecht, Handelsregulierung und institutionellen Warenbörsenhandel.",
     },
-    publisher: {
-      "@type": "Organization",
-      name: "EUCX GmbH",
-      url: "https://eucx.eu",
-      logo: { "@type": "ImageObject", url: "https://eucx.eu/og-logo.png" },
-    },
+    publisher: { "@type": "Organization", "@id": "https://eucx.eu#organization" },
     url: `https://eucx.eu/insights/lexikon/${entry.slug}`,
     mainEntityOfPage: { "@type": "WebPage", "@id": `https://eucx.eu/insights/lexikon/${entry.slug}` },
     about: { "@type": "Thing", name: entry.term },
@@ -100,9 +96,9 @@ export default async function LexikonEntryPage({ params }: { params: Promise<{ s
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }} />
-      {jsonLdFaq && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }} />}
+      <JsonLd data={jsonLdArticle} />
+      <JsonLd data={jsonLdBreadcrumb} />
+      {jsonLdFaq && <JsonLd data={jsonLdFaq} />}
 
       <div style={{ fontFamily: SANS, backgroundColor: "#fafafa", color: "#0d1b2a", minHeight: "100vh" }}>
         <SiteNav activeHref="/insights" />

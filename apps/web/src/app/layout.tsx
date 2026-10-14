@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import "@/styles/globals.css";
 import "flag-icons/css/flag-icons.min.css";
-import { BASE_URL } from "@/lib/seo/metadata";
+import { BASE_URL, buildOrganizationJsonLd } from "@/lib/seo/metadata";
 import { I18nProvider } from "@/lib/i18n/context";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Toaster } from "sonner";
@@ -75,6 +75,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL ?? ""} />
+        {/* Organization + WebSite — global auf jeder Seite, im <head> */}
+        <script
+          type="application/ld+json"
+          nonce={nonce}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationJsonLd()).replace(/<\/script>/gi, "<\\/script>") }}
+        />
       </head>
       <body><I18nProvider>{children}</I18nProvider><CookieBanner /><Toaster richColors position="top-right" /></body>
     </html>

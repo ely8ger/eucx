@@ -1,27 +1,32 @@
-import type { Metadata } from "next";
-import { KATALOG } from "@/lib/katalog/data";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { SIDEBAR } from "@/lib/katalog/data";
+import { BASE_URL } from "@/lib/seo/metadata";
 
-export async function generateMetadata({ params }: { params: Promise<{ kategorie: string }> }): Promise<Metadata> {
+export default async function KatalogKategorieLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ kategorie: string }>;
+}) {
   const { kategorie } = await params;
-  const kat = KATALOG[kategorie];
-  const label = kat?.label ?? kategorie;
-  const desc  = kat?.description
-    ? `${kat.description} - Institutionell handeln auf EUCX.`
-    : `${label} - Stahlprodukte institutionell kaufen und verkaufen auf EUCX.`;
+  const katLabel =
+    SIDEBAR.flatMap(s => s.kategorien).find(k => k.id === kategorie)?.label ?? kategorie;
 
-  return {
-    title: `${label} kaufen | EUCX Stahlkatalog`,
-    description: desc.length > 155 ? desc.slice(0, 152) + "…" : desc,
-    alternates: {
-      canonical:  `https://eucx.eu/katalog/${kategorie}`,
-      languages: {
-        "de-DE":     `https://eucx.eu/katalog/${kategorie}`,
-        "x-default": `https://eucx.eu/katalog/${kategorie}`,
-      },
-    },
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "EUCX",    item: BASE_URL },
+      { "@type": "ListItem", position: 2, name: "Katalog", item: `${BASE_URL}/katalog` },
+      { "@type": "ListItem", position: 3, name: katLabel,  item: `${BASE_URL}/katalog/${kategorie}` },
+    ],
   };
-}
 
-export default function KatalogKategorieLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <JsonLd data={breadcrumb} />
+      {children}
+    </>
+  );
 }

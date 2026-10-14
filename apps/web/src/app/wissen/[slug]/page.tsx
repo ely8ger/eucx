@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ARTICLES } from "../articles";
 import { BASE_URL } from "@/lib/seo/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -66,25 +67,19 @@ export default async function ArticlePage({ params }: Props) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
+    "@id": `${BASE_URL}/wissen/${article.slug}#article`,
     "headline": article.title,
     "description": article.description,
     "datePublished": article.published,
-    "dateModified": article.published,
-    "author": { "@type": "Organization", "name": "EUCX GmbH" },
-    "publisher": {
-      "@type": "Organization",
-      "name": "EUCX - European Union Commodity Exchange",
-      "url": BASE_URL,
-    },
-    "mainEntityOfPage": `${BASE_URL}/wissen/${article.slug}`,
+    "dateModified": article.updated ?? article.published,
+    "author":    { "@type": "Organization", "@id": `${BASE_URL}#organization` },
+    "publisher": { "@type": "Organization", "@id": `${BASE_URL}#organization` },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": `${BASE_URL}/wissen/${article.slug}` },
   };
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       <main style={{ fontFamily: F, backgroundColor: BG, minHeight: "100vh" }}>
 

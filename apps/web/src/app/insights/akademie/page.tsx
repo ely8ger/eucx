@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AKADEMIE_ARTIKEL } from "@/app/insights/data";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata = {
   title: "Händler-Akademie | EUCX",
@@ -446,57 +447,52 @@ export default function AkademiePage() {
       </div>
 
       {/* FAQ JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: [
-              {
-                "@type": "Question",
-                name: "Wie lange dauert die KYC-Prüfung?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "1-2 Werktage bei vollständigen Unterlagen. Unvollständige Einreichungen können die Bearbeitungszeit um bis zu 3 Werktage verlängern.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "Wie hoch ist die Mindest-Margin?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "10.000 EUR für Teilnehmer mit einem zugelassenen Jahresvolumen bis 2 Mio. EUR (Margin-Satz: 5,0 %).",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "Kann ich als Einzelunternehmer handeln?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Nein, EUCX ist ausschließlich B2B (Business-to-Business). Zugelassen werden Unternehmen (GmbH, AG, KG, OHG und ausländische Gesellschaftsformen) sowie institutionelle Marktteilnehmer.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "Was ist der Unterschied zwischen English Auction und Dutch Auction?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Bei der English Auction (Aufwärtsauktion) steigt der Preis - der höchste Bieter gewinnt. Bei der Dutch Auction (Abwärtsauktion) fällt der Preis automatisch ab einem Startpreis - der erste Bieter, der den aktuellen Preis akzeptiert, gewinnt. Die Dutch Auction wird typischerweise bei großen Standardwarenmengen eingesetzt.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "Wann wird meine Margin freigegeben?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Nach vollständiger Abwicklung der Transaktion - typisch am 8. Werktag (T+8), sobald Zahlung eingegangen und physische Lieferung bestätigt ist.",
-                },
-              },
-            ],
-          }),
-        }}
-      />
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "Wie lange dauert die KYC-Prüfung?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "1-2 Werktage bei vollständigen Unterlagen. Unvollständige Einreichungen können die Bearbeitungszeit um bis zu 3 Werktage verlängern.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Wie hoch ist die Mindest-Margin?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "10.000 EUR für Teilnehmer mit einem zugelassenen Jahresvolumen bis 2 Mio. EUR (Margin-Satz: 5,0 %).",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Kann ich als Einzelunternehmer handeln?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Nein, EUCX ist ausschließlich B2B (Business-to-Business). Zugelassen werden Unternehmen (GmbH, AG, KG, OHG und ausländische Gesellschaftsformen) sowie institutionelle Marktteilnehmer.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Was ist der Unterschied zwischen English Auction und Dutch Auction?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Bei der English Auction (Aufwärtsauktion) steigt der Preis - der höchste Bieter gewinnt. Bei der Dutch Auction (Abwärtsauktion) fällt der Preis automatisch ab einem Startpreis - der erste Bieter, der den aktuellen Preis akzeptiert, gewinnt. Die Dutch Auction wird typischerweise bei großen Standardwarenmengen eingesetzt.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Wann wird meine Margin freigegeben?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Nach vollständiger Abwicklung der Transaktion - typisch am 8. Werktag (T+8), sobald Zahlung eingegangen und physische Lieferung bestätigt ist.",
+            },
+          },
+        ],
+      }} />
 
       <SiteFooter />
     </div>

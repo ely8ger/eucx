@@ -2,6 +2,7 @@ import type { Metadata }  from "next";
 import { BASE_URL }       from "@/lib/seo/metadata";
 import { EucxLogo }       from "@/components/logo/EucxLogo";
 import { SiteNav }        from "@/components/SiteNav";
+import { JsonLd }         from "@/components/seo/JsonLd";
 import {
   Landmark, ClipboardList, BarChart3, Package,
   ShieldCheck, Tag, Truck, Leaf, Server,
@@ -356,10 +357,7 @@ const BLUE = "#154194";
 export default function FaqPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       <div style={{ backgroundColor: "#f7f9fc", minHeight: "100vh", fontFamily: F }}>
 

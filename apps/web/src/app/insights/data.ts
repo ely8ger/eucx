@@ -32,6 +32,7 @@ export interface AkademieArtikel {
   description: string;
   readMin: number;
   published: string;
+  updated?: string;
   sections: LexikonSection[];
   faq?: { q: string; a: string }[];
 }

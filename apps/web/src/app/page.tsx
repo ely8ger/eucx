@@ -28,36 +28,6 @@ export function generateMetadata(): Metadata {
   };
 }
 
-// ── JSON-LD: Organization + WebSite ──────────────────────────────────────────
-const orgJsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type":        "Organization",
-      "@id":          `${BASE_URL}#organization`,
-      name:           "EUCX — European Union Commodity Exchange",
-      url:            BASE_URL,
-      logo: { "@type": "ImageObject", url: `${BASE_URL}/icon.png`, width: "512", height: "512" },
-      description:    "Regulierter B2B-Rohstoffmarktplatz der Europäischen Union für Metalle, Stahl, Dünger und Agrarprodukte.",
-      foundingDate:   "2024",
-      areaServed:     { "@type": "Place", name: "Europäische Union" },
-      address:        { "@type": "PostalAddress", addressLocality: "Frankfurt am Main", addressCountry: "DE" },
-    },
-    {
-      "@type":     "WebSite",
-      "@id":       `${BASE_URL}#website`,
-      url:         BASE_URL,
-      name:        "EUCX — European Union Commodity Exchange",
-      publisher:   { "@id": `${BASE_URL}#organization` },
-      inLanguage:  "de-DE",
-      potentialAction: {
-        "@type":        "SearchAction",
-        target:         `${BASE_URL}/katalog?q={search_term_string}`,
-        "query-input":  "required name=search_term_string",
-      },
-    },
-  ],
-};
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const S: Record<string, React.CSSProperties> = {
@@ -71,12 +41,6 @@ export default function HomePage() {
 
   return (
     <div style={{ fontFamily: "'IBM Plex Sans', Arial, sans-serif", backgroundColor: "#fff", color: "#1a1a1a" }}>
-
-      {/* JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
-      />
 
       <SiteNav rootPage />
 

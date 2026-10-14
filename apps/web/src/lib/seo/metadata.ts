@@ -60,7 +60,41 @@ export function buildOgImageUrl(params: {
   return url.toString();
 }
 
-// ── JSON-LD Builder ───────────────────────────────────────────────────────────
+// ── Globale JSON-LD Builder (layout.tsx <head>) ───────────────────────────────
+
+export function buildOrganizationJsonLd(): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type":       "Organization",
+        "@id":         `${BASE_URL}#organization`,
+        name:          "EUCX — European Union Commodity Exchange",
+        url:           BASE_URL,
+        logo:          { "@type": "ImageObject", url: `${BASE_URL}/icon.png`, width: "512", height: "512" },
+        description:   "Regulierter B2B-Rohstoffmarktplatz der Europäischen Union für Metalle, Stahl, Dünger und Agrarprodukte.",
+        foundingDate:  "2024",
+        areaServed:    { "@type": "Place", name: "Europäische Union" },
+        address:       { "@type": "PostalAddress", addressLocality: "Frankfurt am Main", addressCountry: "DE" },
+      },
+      {
+        "@type":     "WebSite",
+        "@id":       `${BASE_URL}#website`,
+        url:         BASE_URL,
+        name:        "EUCX — European Union Commodity Exchange",
+        publisher:   { "@id": `${BASE_URL}#organization` },
+        inLanguage:  "de-DE",
+        potentialAction: {
+          "@type":       "SearchAction",
+          target:        `${BASE_URL}/katalog?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      },
+    ],
+  };
+}
+
+// ── Seiten-spezifische JSON-LD Builder ────────────────────────────────────────
 
 interface FinancialProductJsonLd {
   productName:   string;

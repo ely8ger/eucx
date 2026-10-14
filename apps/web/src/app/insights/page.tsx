@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { InsightsClient } from "./InsightsClient";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
   title: "Marktwissen & Insights - Rohstoff-Lexikon, Marktanalysen | EUCX",
@@ -11,6 +12,20 @@ export const metadata: Metadata = {
   },
 };
 
+const insightsJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "EUCX Marktwissen & Insights",
+  description: "Wissenshub für professionellen Rohstoffhandel.",
+  url: "https://eucx.eu/insights",
+  publisher: { "@type": "Organization", "@id": "https://eucx.eu#organization" },
+};
+
 export default function InsightsPage() {
-  return <InsightsClient />;
+  return (
+    <>
+      <JsonLd data={insightsJsonLd} />
+      <InsightsClient />
+    </>
+  );
 }

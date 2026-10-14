@@ -27,9 +27,13 @@
  *     → Kein fehlender Eintrag bei erstem Lauf
  */
 
-import { Injectable, Logger } from "@nestjs/common";
-import { Cron, CronExpression } from "@nestjs/schedule";
-import { PrismaService } from "../../config/prisma.service";
+import { Injectable, Logger, Optional, Inject } from "@nestjs/common";
+import { Cron, CronExpression }                 from "@nestjs/schedule";
+import { PrismaService }                        from "../../config/prisma.service";
+import type { Redis }                           from "ioredis";
+
+// Cache-Keys müssen mit PublicController übereinstimmen
+const TICKER_CACHE_PREFIX = "eucx:public:ticker:";
 
 // Alle Intervalle die der Service verwaltet
 type CandleInterval = "ONE_MIN" | "FIFTEEN_MIN" | "ONE_HOUR" | "ONE_DAY";
@@ -70,7 +74,10 @@ interface RawOhlcRow {
 export class MarketDataService {
   private readonly logger = new Logger(MarketDataService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() @Inject("REDIS_CLIENT") private readonly redis?: Redis,
+  ) {}
 
   // ─── Cron-Jobs ─────────────────────────────────────────────────────────────
 
@@ -94,11 +101,26 @@ export class MarketDataService {
     await this.refreshInterval("ONE_DAY");
   }
 
-  // ─── Manueller Trigger (z.B. nach Settlement) ─────────────────────────────
+  // ─── Manueller Trigger nach Deal/Settlement ───────────────────────────────
 
   async refreshProduct(productId: string): Promise<void> {
     for (const interval of Object.keys(LOOKBACK_MS) as CandleInterval[]) {
       await this.refreshInterval(interval, productId);
+    }
+    // Redis-Cache für dieses Produkt und den All-Ticker sofort invalidieren.
+    // Nächste Anfrage an /public/ticker bekommt so frische DB-Daten statt
+    // veraltete Cache-Werte (bis zu 30s Verzögerung ohne diese Invalidierung).
+    try {
+      if (this.redis) {
+        await this.redis.del(
+          `${TICKER_CACHE_PREFIX}${productId}`,
+          `${TICKER_CACHE_PREFIX}all`,
+        );
+        this.logger.debug(`Redis-Cache invalidiert für Produkt ${productId}`);
+      }
+    } catch (err) {
+      // Redis-Fehler darf refreshProduct nicht fehlschlagen lassen
+      this.logger.warn(`Redis-Invalidierung fehlgeschlagen: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
@@ -117,10 +139,7 @@ export class MarketDataService {
       const rows = await this.queryOhlc(interval, since, productId);
       if (rows.length === 0) return;
 
-      // Batch-Upsert: alle Kerzen auf einmal schreiben
-      // Prisma hat kein native "upsertMany" — wir nutzen createMany mit skipDuplicates
-      // + separates Update für existing records
-      await this.upsertCandles(rows, interval);
+        await this.upsertCandles(rows, interval);
 
       this.logger.debug(
         `OHLC-Refresh ${interval}: ${rows.length} Kerzen upserted (${label})`
@@ -242,59 +261,49 @@ export class MarketDataService {
     rows:     RawOhlcRow[],
     interval: CandleInterval,
   ): Promise<void> {
-    // Prisma hat kein upsertMany — wir nutzen eine serielle Transaktion
-    // mit skipDuplicates=false und stattdessen einen raw UPSERT.
-    //
-    // PostgreSQL ON CONFLICT DO UPDATE ist das performanteste Muster.
-    //
-    // Für Batch-Performance: alle Rows in einem einzigen Statement.
-    // Wir bauen das via $queryRawUnsafe — values werden als Parameter übergeben.
-
     if (rows.length === 0) return;
 
-    // Jeden Row einzeln upserten (einfacher, sicherer für MVP-Größen < 1000 Rows)
-    // Für Produktion: Batch-INSERT ON CONFLICT DO UPDATE
-    for (const row of rows) {
-      // product-relation prüfen (für den Fall dass productId nicht in products existiert)
-      await this.prisma.marketCandle.upsert({
-        where: {
-          productId_interval_periodStart: {
-            productId:   row.product_id,
-            interval,
-            periodStart: row.period_start,
-          },
-        },
-        create: {
-          productId:   row.product_id,
-          interval,
-          periodStart: row.period_start,
+    // Promise.allSettled: alle Kerzen parallel upserten.
+    // Ein fehlgeschlagener Upsert stoppt nicht die übrigen.
+    const results = await Promise.allSettled(
+      rows.map(row => {
+        const tradeCount = typeof row.trade_count === "bigint"
+          ? Number(row.trade_count)
+          : row.trade_count as number;
+
+        const candleData = {
           open:        String(row.open),
           high:        String(row.high),
           low:         String(row.low),
           close:       String(row.close),
           volume:      String(row.volume),
           turnover:    String(row.turnover),
-          tradeCount:  typeof row.trade_count === "bigint"
-            ? Number(row.trade_count)
-            : row.trade_count as number,
-        },
-        update: {
-          open:       String(row.open),
-          high:       String(row.high),
-          low:        String(row.low),
-          close:      String(row.close),
-          volume:     String(row.volume),
-          turnover:   String(row.turnover),
-          tradeCount: typeof row.trade_count === "bigint"
-            ? Number(row.trade_count)
-            : row.trade_count as number,
-        },
-      }).catch((err: unknown) => {
-        // Fehler bei einzelner Kerze darf Gesamt-Refresh nicht stoppen
+          tradeCount,
+        };
+
+        return this.prisma.marketCandle.upsert({
+          where: {
+            productId_interval_periodStart: {
+              productId:   row.product_id,
+              interval,
+              periodStart: row.period_start,
+            },
+          },
+          create: { productId: row.product_id, interval, periodStart: row.period_start, ...candleData },
+          update: candleData,
+        });
+      })
+    );
+
+    // Einzelne Fehlschläge loggen, Gesamt-Refresh läuft weiter
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i]!;
+      if (result.status === "rejected") {
+        const row = rows[i]!;
         this.logger.warn(
-          `Upsert fehlgeschlagen für ${row.product_id}/${interval}/${row.period_start}: ${err instanceof Error ? err.message : String(err)}`
+          `Upsert fehlgeschlagen für ${row.product_id}/${interval}/${row.period_start}: ${result.reason instanceof Error ? result.reason.message : String(result.reason)}`
         );
-      });
+      }
     }
   }
 

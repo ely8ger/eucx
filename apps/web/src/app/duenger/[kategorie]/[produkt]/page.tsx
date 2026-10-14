@@ -4,6 +4,7 @@ import { EucxLogo } from "@/components/logo/EucxLogo";
 import { FERTILIZER_CATEGORIES, getFertiProduct, getFertiCategory } from "@/lib/fertilizer/data";
 import { tServer } from "@/lib/i18n/server";
 import { buildAlternateLanguages, BASE_URL } from "@/lib/seo/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 const BLUE = "#154194";
 const F    = "'IBM Plex Sans', Arial, sans-serif";
@@ -134,7 +135,38 @@ export default async function ProduktPage({ params }: { params: Promise<{ katego
     );
   }
 
+  const jsonLdProduct = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": `${BASE_URL}/duenger/${katId}/${produktId}#product`,
+    name: produkt.name,
+    description: produkt.beschreibung,
+    identifier: `EUCX-FERTI-${katId}-${produktId}`.toUpperCase(),
+    category: kategorie.label,
+    brand: { "@type": "Brand", name: "EUCX" },
+    offers: {
+      "@type": "Offer",
+      availability: "https://schema.org/InStock",
+      priceCurrency: "EUR",
+      seller: { "@type": "Organization", "@id": `${BASE_URL}#organization` },
+    },
+  };
+
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "EUCX",          item: BASE_URL },
+      { "@type": "ListItem", position: 2, name: "Düngemittel",    item: `${BASE_URL}/duenger` },
+      { "@type": "ListItem", position: 3, name: kategorie.label,  item: `${BASE_URL}/duenger/${katId}` },
+      { "@type": "ListItem", position: 4, name: produkt.name,     item: `${BASE_URL}/duenger/${katId}/${produktId}` },
+    ],
+  };
+
   return (
+    <>
+      <JsonLd data={jsonLdProduct} />
+      <JsonLd data={jsonLdBreadcrumb} />
     <div style={{ minHeight: "100vh", backgroundColor: "#f4f6f9", fontFamily: F }}>
 
       {/* ── Header ──────────────────────────────────────────────────────── */}
@@ -290,5 +322,6 @@ export default async function ProduktPage({ params }: { params: Promise<{ katego
         </Link>
       </div>
     </div>
+    </>
   );
 }

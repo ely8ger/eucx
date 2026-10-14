@@ -237,18 +237,6 @@ function StatsBar() {
 export function InsightsClient() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          name: "EUCX Marktwissen & Insights",
-          description: "Wissenshub für professionellen Rohstoffhandel.",
-          url: "https://eucx.eu/insights",
-          publisher: { "@type": "Organization", name: "EUCX", url: "https://eucx.eu" },
-        })}}
-      />
-
       <div style={{ fontFamily: SANS, backgroundColor: "#fafafa", color: DARK, minHeight: "100vh" }}>
         <SiteNav activeHref="/insights" />
         <LiveTicker />

@@ -62,7 +62,7 @@ export class PublicController {
     const cached = await this.tryCache(cacheKey);
     if (cached) {
       return res
-        .set(this.cacheHeaders())
+        .set(this.cacheHeaders(true))
         .json(JSON.parse(cached));
     }
 
@@ -73,15 +73,16 @@ export class PublicController {
         periodStart: { gte: new Date(Date.now() - 2 * 86_400_000) },
       },
       orderBy: { periodStart: "desc" },
+      take:    1000,  // Sicherheitsnetz: max. 2 Tage × 500 Produkte
       include: {
         product: {
-          select: { id: true, name: true, unit: true,
+          select: { id: true, sku: true, name: true, unit: true,
             category: { select: { slug: true, label: true } } },
         },
       },
     });
 
-    // Neueste Kerze pro Produkt + Vortags-Open für Change-Berechnung
+    // Neueste Kerze pro Produkt + Vortags-Open für Change-Berechnung (max. 100 Produkte)
     const latestMap  = new Map<string, typeof candles[0]>();
     const prevMap    = new Map<string, typeof candles[0]>();
     for (const c of candles) {
@@ -97,22 +98,23 @@ export class PublicController {
       const changePct = open24h > 0 ? ((change / open24h) * 100) : 0;
 
       return {
-        productId:    pid,
-        name:         latest.product.name,
-        category:     latest.product.category.slug,
+        productId:     pid,
+        sku:           latest.product.sku,
+        productName:   latest.product.name,
+        category:      latest.product.category.slug,
         categoryLabel: latest.product.category.label,
-        unit:         latest.product.unit,
-        last:         last.toFixed(2),
-        open:         parseFloat(latest.open.toString()).toFixed(2),
-        high:         parseFloat(latest.high.toString()).toFixed(2),
-        low:          parseFloat(latest.low.toString()).toFixed(2),
-        change:       `${change >= 0 ? "+" : ""}${change.toFixed(2)}`,
-        changePct:    `${changePct >= 0 ? "+" : ""}${changePct.toFixed(2)}%`,
-        isUp:         change >= 0,
-        volume:       parseFloat(latest.volume.toString()).toFixed(3),
-        turnover:     parseFloat(latest.turnover.toString()).toFixed(2),
-        tradeCount:   latest.tradeCount,
-        updatedAt:    latest.updatedAt.toISOString(),
+        unit:          latest.product.unit,
+        lastPrice:     last.toFixed(2),
+        open:          parseFloat(latest.open.toString()).toFixed(2),
+        high:          parseFloat(latest.high.toString()).toFixed(2),
+        low:           parseFloat(latest.low.toString()).toFixed(2),
+        priceChange:   `${change >= 0 ? "+" : ""}${change.toFixed(2)}`,
+        changePct:     `${changePct >= 0 ? "+" : ""}${changePct.toFixed(2)}%`,
+        isUp:          change >= 0,
+        volume24h:     parseFloat(latest.volume.toString()).toFixed(3),
+        turnover24h:   parseFloat(latest.turnover.toString()).toFixed(2),
+        tradeCount24h: latest.tradeCount,
+        updatedAt:     latest.updatedAt.toISOString(),
       };
     });
 
@@ -138,7 +140,7 @@ export class PublicController {
 
     const cached = await this.tryCache(cacheKey);
     if (cached) {
-      return res.set(this.cacheHeaders()).json(JSON.parse(cached));
+      return res.set(this.cacheHeaders(true)).json(JSON.parse(cached));
     }
 
     const [latest, prev] = await Promise.all([
@@ -165,6 +167,7 @@ export class PublicController {
 
     const ticker = {
       productId,
+      sku:           latest.product.sku,
       name:          latest.product.name,
       category:      latest.product.category.slug,
       categoryLabel: latest.product.category.label,
@@ -250,10 +253,10 @@ export class PublicController {
     }
   }
 
-  private cacheHeaders() {
+  private cacheHeaders(hit = false) {
     return {
       "Cache-Control": `public, s-maxage=${CACHE_TTL_SEC}, stale-while-revalidate=${CACHE_TTL_SEC * 2}`,
-      "X-Cache":       "MISS",
+      "X-Cache":       hit ? "HIT" : "MISS",
     };
   }
 }

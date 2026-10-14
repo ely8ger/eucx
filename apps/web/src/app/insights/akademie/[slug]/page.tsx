@@ -4,6 +4,7 @@ import Link from "next/link";
 import { AKADEMIE_ARTIKEL } from "../../data";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export async function generateStaticParams() {
   return AKADEMIE_ARTIKEL.map(a => ({ slug: a.slug }));
@@ -32,11 +33,14 @@ export default async function AkademieArtikelPage({ params }: { params: Promise<
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
+    "@id": `https://eucx.eu/insights/akademie/${artikel.slug}#article`,
     headline: artikel.title,
     description: artikel.description,
     datePublished: artikel.published,
-    author: { "@type": "Organization", name: "EUCX", url: "https://eucx.eu" },
-    publisher: { "@type": "Organization", name: "EUCX", url: "https://eucx.eu" },
+    dateModified: artikel.updated ?? artikel.published,
+    author:    { "@type": "Organization", "@id": "https://eucx.eu#organization" },
+    publisher: { "@type": "Organization", "@id": "https://eucx.eu#organization" },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `https://eucx.eu/insights/akademie/${artikel.slug}` },
   };
 
   const faqJsonLd = artikel.faq ? {
@@ -53,8 +57,8 @@ export default async function AkademieArtikelPage({ params }: { params: Promise<
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
+      <JsonLd data={jsonLd} />
+      {faqJsonLd && <JsonLd data={faqJsonLd} />}
 
       <div style={{ fontFamily: SANS, backgroundColor: "#fafafa", color: "#0d1b2a", minHeight: "100vh" }}>
         <SiteNav activeHref="/insights" />

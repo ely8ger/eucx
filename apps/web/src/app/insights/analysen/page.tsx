@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata = {
   title: "Marktanalysen - Wöchentliche Rohstoffpreisberichte | EUCX",
@@ -24,11 +25,7 @@ const webPageSchema = {
       description:
         "Aktuelle Preisentwicklungen für Betonstahl, Walzdraht, Kupfer, Aluminium, Weizen und Energie. Wöchentliche Marktkommentare für institutionelle Händler auf EUCX.",
       inLanguage: "de-DE",
-      publisher: {
-        "@type": "Organization",
-        name: "EUCX - European Union Commodity Exchange",
-        url: "https://eucx.eu",
-      },
+      publisher: { "@type": "Organization", "@id": "https://eucx.eu#organization" },
       dateModified: "2026-03-21",
     },
     {
@@ -128,10 +125,7 @@ const archiv = [
 export default function AnalysenPage() {
   return (
     <div style={{ fontFamily: SANS, backgroundColor: "#fafafa", minHeight: "100vh" }}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
-      />
+      <JsonLd data={webPageSchema} />
 
       <SiteNav activeHref="/insights/analysen" />
 
