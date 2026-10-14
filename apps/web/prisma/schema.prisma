@@ -277,9 +277,10 @@ model Organization {
   dealsAsSeller Deal[]    @relation("SellerOrg")
   dealsAsBuyer  Deal[]    @relation("BuyerOrg")
   assets        Asset[]
-  wallet        Wallet?
-  apiKeys       ApiKey[]
-  webhooks      WebhookEndpoint[]
+  wallet              Wallet?
+  apiKeys             ApiKey[]
+  webhooks            WebhookEndpoint[]
+  withdrawalRequests  WithdrawalRequest[]
 
   @@map("organizations")
 }
@@ -867,8 +868,9 @@ model Wallet {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  organization  Organization  @relation(fields: [organizationId], references: [id])
-  ledgerEntries LedgerEntry[]
+  organization        Organization        @relation(fields: [organizationId], references: [id])
+  ledgerEntries       LedgerEntry[]
+  withdrawalRequests  WithdrawalRequest[]
 
   @@index([organizationId])
   @@map("wallets")
@@ -1610,6 +1612,41 @@ model TradingHalt {
 
   @@index([liftedAt])
   @@map("trading_halts")
+}
+
+// ─── WithdrawalRequest — Auszahlungsantrag eines Wallet-Inhabers
+// Workflow: PENDING → Admin prüft → COMPLETED (Überweisung + Wallet-Debit) oder REJECTED
+
+enum WithdrawalStatus {
+  PENDING     // Eingereicht, wartet auf Admin-Bearbeitung
+  PROCESSING  // Admin bearbeitet aktiv
+  COMPLETED   // Überweisung ausgeführt, Wallet debitiert
+  REJECTED    // Abgelehnt (z.B. unzureichendes Guthaben, Compliance)
+}
+
+model WithdrawalRequest {
+  id              String           @id @default(uuid())
+  organizationId  String
+  walletId        String
+  amount          Decimal          @db.Decimal(18, 8)
+  currency        Currency         @default(EUR)
+  iban            String
+  bic             String
+  beneficiaryName String
+  reference       String?          // optionale interne Referenz
+  status          WithdrawalStatus @default(PENDING)
+  adminNote       String?          // Ablehnungsgrund oder Admin-Kommentar
+  processedBy     String?          // userId des bearbeitenden Admins
+  processedAt     DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  wallet       Wallet       @relation(fields: [walletId], references: [id])
+
+  @@index([organizationId])
+  @@index([status])
+  @@map("withdrawal_requests")
 }
 
 // ─── NotificationPreference — Nutzer-Präferenzen für E-Mail-Benachrichtigungen
