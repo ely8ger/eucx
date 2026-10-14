@@ -55,7 +55,13 @@ async function _POST(req: NextRequest) {
   }
 
   // ── Dateiname bereinigen ──────────────────────────────────────────────────
-  const safeName  = file.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 120);
+  const safeName  = (
+    file.name
+      .replace(/\.\./g, "_")                    // Path-Traversal-Sequenzen
+      .replace(/[^a-zA-Z0-9._\-()[\]]/g, "_")  // nur sichere Zeichen
+      .replace(/^[._]+/, "")                    // keine führenden Punkte/Unterstriche
+      .slice(0, 255)
+  ) || "dokument";
   const timestamp = Date.now();
   const blobPath  = `kyc/${token.userId}/${docType}/${timestamp}-${safeName}`;
 
