@@ -1499,17 +1499,20 @@ model Notification {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 model CatalogProduct {
-  id      String        @id @default(cuid())
-  nr      Int           @unique                   // Original-Nummer von 23met.ru
-  slug    String        @unique                   // URL-Kürzel (z.B. "provoloka")
-  nameDe  String?                                 // Deutscher Handelsname (Suchindex)
-  nameEn  String                                  // Englischer Handelsname (Primäranzeige)
-  nameRu  String                                  // Russischer Name (Lieferantenkommunikation)
-  norm    String?                                 // EU-Norm (z.B. "DIN EN 10218")
-  sizes   ProductSize[]
+  id       String        @id @default(cuid())
+  nr       Int           @unique                   // Original-Nummer von 23met.ru
+  slug     String        @unique                   // URL-Kürzel (z.B. "provoloka")
+  nameDe   String?                                 // Deutscher Handelsname (Suchindex)
+  nameEn   String                                  // Englischer Handelsname (Primäranzeige)
+  nameRu   String                                  // Russischer Name (Lieferantenkommunikation)
+  norm     String?                                 // EU-Norm (z.B. "DIN EN 10218")
+  sector   String        @default("STEEL")         // Sektor: STEEL|ENERGY|AGRAR|CHEMICALS|FERTILIZER|SCRAP|NON_FERROUS
+  isActive Boolean       @default(true)            // Soft-Delete für Admin-Verwaltung
+  sizes    ProductSize[]
 
   @@index([nameEn])
   @@index([nameDe])
+  @@index([sector])
   @@map("catalog_products")
 }
 

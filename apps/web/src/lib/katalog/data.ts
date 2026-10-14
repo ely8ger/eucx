@@ -245,6 +245,173 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
     desc: "NPK-Komplexdünger 8-20-30. Phosphor- und kaliumbetontes Verhältnis für Herbst-Grunddüngung. Lieferung in Big Bag 1.000 kg oder Schüttgut. EU-VO 2019/1009 konform.",
   },
+  // ── Energie - Gas ────────────────────────────────────────────────────────────
+  {
+    id: "erdgas-ttf", katId: "erdgas",
+    name: "Erdgas TTF / NCG (Natural Gas)",
+    werkstoff: "Methan CH₄ ≥ 95 %", norm: "EN ISO 6976 · DVGW G 260",
+    hsCode: "2711 21 00", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
+    desc: "Erdgas Qualität H (High Caloric), Lieferpunkt TTF (Title Transfer Facility) / NCG. Heizwert (Hi) ≥ 8,4 kWh/m³. Lieferung in MWh. Abwicklung über Bilanzkreisvertrag nach GasNZV. Gasbeschaffenheit nach DVGW G 260.",
+  },
+  {
+    id: "lng-spot", katId: "erdgas",
+    name: "LNG (Liquefied Natural Gas) — Spot",
+    werkstoff: "Methan CH₄ verflüssigt", norm: "EN ISO 16903 · ISO 8217",
+    hsCode: "2711 11 00", cbam: null, inco: "CIF",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
+    desc: "Verflüssigtes Erdgas (LNG) für Tanker-Lieferung. Spezifikation: CH₄-Anteil ≥ 90 %, Wobbe-Index 46-56 MJ/m³. Lieferung in MMBtu oder MWh. Tanker-Nomination 72h vor ETA. Herkunftszertifikat (CoO) erforderlich.",
+  },
+  // ── Energie - Strom ───────────────────────────────────────────────────────────
+  {
+    id: "strom-baseload", katId: "strom",
+    name: "Baseload Strom DE/AT (Day-Ahead EPEX)",
+    werkstoff: "Elektrische Energie", norm: "REMIT · MiFID II · EnWG",
+    hsCode: "2716 00 00", cbam: null, inco: "EXW",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
+    desc: "Baseload-Strom Lieferzone DE/AT. EPEX-Spot Day-Ahead, stündliche Blöcke 0-24 Uhr. Lieferung in MWh, Abnahme physisch oder finanziell. Bilanzkreisübergabe nach §20 StromNZV. REMIT-meldepflichtig. Mindest-Lot: 1 MW/h.",
+  },
+  {
+    id: "strom-peakload", katId: "strom",
+    name: "Peakload Strom DE/AT (Mo-Fr 08-20 Uhr)",
+    werkstoff: "Elektrische Energie", norm: "REMIT · MiFID II · EnWG",
+    hsCode: "2716 00 00", cbam: null, inco: "EXW",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
+    desc: "Peakload-Strom Lieferzone DE/AT, Lieferzeit Werktage Mo-Fr 08:00-20:00 Uhr. EPEX-Spot Day-Ahead. Abwicklung über Bilanzkreisvertrag §20 StromNZV. REMIT-meldepflichtig. Preis in EUR/MWh.",
+  },
+  // ── Energie - Kohle & Öl ─────────────────────────────────────────────────────
+  {
+    id: "steinkohle-steam", katId: "kohle",
+    name: "Kesselkohle API 2 (Steam Coal CIF ARA)",
+    werkstoff: "Kesselkohle / Dampfkohle", norm: "ASTM D3173 · ISO 11722",
+    hsCode: "2701 12 10", cbam: null, inco: "CIF",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
+    desc: "Thermische Kohle (Steam Coal) API 2-Index-Qualität. Heizwert NAR ≥ 6.000 kcal/kg (25,1 GJ/t). Aschegehalt ≤ 15 %, Schwefel ≤ 1 %. Lieferung CIF ARA-Häfen (Amsterdam, Rotterdam, Antwerpen). Panamax-Ladung min. 50.000 t.",
+  },
+  {
+    id: "rohoel-brent", katId: "rohol",
+    name: "Rohöl Brent Crude (ICE Dated Brent)",
+    werkstoff: "Leichtes Nordseeöl", norm: "ASTM D4294 · ISO 3171",
+    hsCode: "2709 00 10", cbam: null, inco: "FOB",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
+    desc: "Brent Crude Oil, Nordsee-Qualität. API-Dichte ≥ 38° API, Schwefelgehalt ≤ 0,37 % (Sweet Crude). Preis in USD/bbl, Lot min. 1.000 bbl. Lieferung FOB Sullom Voe oder Hound Point. ICE Dated Brent-Referenz. ISDA-Master-Agreement erforderlich.",
+  },
+  {
+    id: "lpg-propan", katId: "lpg",
+    name: "LPG Propan HD5 / Butan (Autogas)",
+    werkstoff: "Propan C₃H₈ ≥ 95 %", norm: "EN 589 · ASTM 1835",
+    hsCode: "2711 12 91", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
+    desc: "Flüssiggas Propan HD5 (≥ 95 % C₃H₈) für Industrie und Heizung. Feuchtegehalt: trocken nach EN 589. Lieferung in Tankwagen (20 t) oder per Pipeline-Einspeisung. Preis in EUR/t. Lagerung unter Druck (8 bar bei 20°C).",
+  },
+  // ── Agrar - Getreide ─────────────────────────────────────────────────────────
+  {
+    id: "weizen-brotweizen", katId: "weizen",
+    name: "Brotweizen Qualität A (Mahl-Weizen EU)",
+    werkstoff: "Triticum aestivum L.", norm: "EU-VO 1272/2009 · DIN 10355",
+    hsCode: "1001 99 00", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)",
+    desc: "Brotweizen Qualität A. Feuchte ≤ 14,5 %, Fallzahl ≥ 220 s, Protein ≥ 12,5 %, Feuchtkleber ≥ 23 %, Sedimentationswert (Zeleniy) ≥ 22 ml. Frei von Mutterkorn (< 0,05 %). Phytosanitäres Zeugnis + HK-Bescheinigung. MATIF-Notierung Paris.",
+  },
+  {
+    id: "weizen-futterweizen", katId: "weizen",
+    name: "Futterweizen E-Qualität (Feed Wheat)",
+    werkstoff: "Triticum aestivum L.", norm: "EU-VO 1272/2009",
+    hsCode: "1001 99 00", cbam: null, inco: "EXW",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)",
+    desc: "Futterweizen Standardqualität. Feuchte ≤ 15,5 %, Fallzahl ≥ 120 s, Besatz ≤ 2 %. Lieferung in Bulk (Lkw 24 t oder Bahn 60 t). Abnahme-Inspektion nach SGS/Bureau Veritas. MATIF-Preisorientierung.",
+  },
+  {
+    id: "gerste-futtergerste", katId: "gerste",
+    name: "Futtergerste (Feed Barley)",
+    werkstoff: "Hordeum vulgare L.", norm: "EU-VO 1272/2009",
+    hsCode: "1003 90 00", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)",
+    desc: "Futtergerste, Standardqualität EU. Feuchte ≤ 14,5 %, Besatz ≤ 2 %, Hektolitergewicht ≥ 62 kg/hl. Lieferung in Bulk, min. 500 t. Phytosanitäres Zeugnis für Export. Preis in EUR/t CIF Nordseehafen.",
+  },
+  {
+    id: "mais-koernermais", katId: "mais",
+    name: "Körnermais (Corn / Maize EU)",
+    werkstoff: "Zea mays L.", norm: "EU-VO 1272/2009 · ISTA",
+    hsCode: "1005 90 00", cbam: null, inco: "CIF",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)",
+    desc: "Körnermais, Standardqualität. Feuchte ≤ 14 %, Besatz ≤ 2 %, Bruchkorn ≤ 3 %. GMO-Status angabe (GVO-frei oder zugelassene GVO). CBOT-Chicago-Referenzpreis. Lieferung CIF Rotterdam/Hamburg. Phytosanitäres Zeugnis.",
+  },
+  {
+    id: "sojabohnen-eu", katId: "soja",
+    name: "Sojabohnen (Soybeans EU-Qualität)",
+    werkstoff: "Glycine max (L.) Merr.", norm: "EU-VO 767/2009 · ISO 659",
+    hsCode: "1201 90 00", cbam: null, inco: "CIF",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)",
+    desc: "Sojabohnen, Futtermittelqualität. Feuchte ≤ 13 %, Protein ≥ 36 % (TM), Rohfett ≥ 18 % (TM), Ureasen 0,05-0,2 mg N/g·min. GVO-Zulassung nach EU-VO 1829/2003 anzugeben. CBOT-Referenz. Lieferung CIF Rotterdam.",
+  },
+  {
+    id: "raps-rapssamen", katId: "raps",
+    name: "Rapssamen (Rapeseed / Canola EU)",
+    werkstoff: "Brassica napus L.", norm: "EU-VO 1272/2009 · EN ISO 658",
+    hsCode: "1205 10 90", cbam: null, inco: "EXW",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)",
+    desc: "Rapssamen Standardqualität. Feuchte ≤ 9 %, Erucasäure ≤ 2 %, Glucosinolate ≤ 25 µmol/g (TM). EURONEXT-Paris-Notierung (Matif Colza). Lieferung in Bulk ab Lager oder CIF Nordseehäfen. Nachhaltigkeitszertifikat (ISCC) auf Anfrage.",
+  },
+  // ── Agrar - Ölsaaten / Zucker ───────────────────────────────────────────────
+  {
+    id: "sonnenblumenoel-roh", katId: "sonnenblume",
+    name: "Rohes Sonnenblumenöl (Sunflower Oil — Crude)",
+    werkstoff: "Helianthus annuus L.", norm: "Codex Alimentarius Stan 23 · EU-VO 1308/2013",
+    hsCode: "1512 11 91", cbam: null, inco: "CIF",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)",
+    desc: "Rohes Sonnenblumenöl, höh-ölsäurehaltig (High-Oleic ≥ 82 % oder Standard). Säurezahl ≤ 2,5 mg KOH/g, Feuchte ≤ 0,1 %. Lieferung in ISO-Tank oder Flexi-Tank. Herkunft UA/RO/MD. Zertifiziertes Analysenlabor (SGS/Intertek).",
+  },
+  // ── Chemie - Alkohole ────────────────────────────────────────────────────────
+  {
+    id: "methanol-tech", katId: "methanol",
+    name: "Methanol technisch (CH₃OH ≥ 99,85 %)",
+    werkstoff: "Methanol CH₃OH", norm: "EN 15989 · ASTM D1152",
+    hsCode: "2905 11 00", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
+    desc: "Technisches Methanol Reinheit ≥ 99,85 % (Spezifikation nach EN 15989, Grad AA). Wasser ≤ 100 ppm, Acetongehalt ≤ 30 ppm. Lieferung in ISO-Tank 20 ft oder Kesselwagen. ADR-Klasse 3, UN 1230. Sicherheitsdatenblatt (SDS) beigestellt.",
+  },
+  {
+    id: "ethanol-99", katId: "ethanol",
+    name: "Ethanol technisch 99,5 % (Bioethanol)",
+    werkstoff: "Ethanol C₂H₅OH", norm: "EN 15376 · DIN 51627-2",
+    hsCode: "2207 10 00", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
+    desc: "Bioethanol Reinheit ≥ 99,5 % Vol., konform mit EN 15376 (Kraftstoffzusatz) und DIN 51627-2. Wassergehalt ≤ 0,3 %. Lieferung in ISO-Tank oder Tankwagen. ADR Klasse 3, UN 1170. Herkunftsdokument (ISCC oder RED II) für Nachhaltigkeitsnachweis.",
+  },
+  // ── Chemie - Anorganik ───────────────────────────────────────────────────────
+  {
+    id: "schwefelsaeure-96", katId: "saeuren",
+    name: "Schwefelsäure 96-98 % (H₂SO₄ — Industriequalität)",
+    werkstoff: "Schwefelsäure H₂SO₄", norm: "EN ISO 2469 · DIN 19522",
+    hsCode: "2807 00 10", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
+    desc: "Technische Schwefelsäure Konzentration 96-98 %. Fe-Gehalt ≤ 50 mg/kg, Chloride ≤ 5 mg/kg. Lieferung in säurebeständigen Tankwagen (25-30 t) oder ISO-Tank. ADR-Klasse 8, UN 1830. Vorbefüllung nach Kundenspezifikation. REACH-Registrierung.",
+  },
+  {
+    id: "natronlauge-50", katId: "laugen",
+    name: "Natronlauge 50 % (NaOH — Chloralkali-Elektrolyse)",
+    werkstoff: "Natriumhydroxid NaOH", norm: "EN 896 · ISO 792",
+    hsCode: "2815 12 00", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
+    desc: "Natronlauge (Ätznatron) 50 % NaOH. NaCl ≤ 100 mg/kg, Fe ≤ 5 mg/kg. Chloralkali-Elektrolyse-Qualität. Lieferung in Tankwagen (20-30 t) oder ISO-Tank. ADR-Klasse 8, UN 1824. Rückkaufvereinbarung leere Tanker nach Absprache.",
+  },
+  {
+    id: "salzsaeure-32", katId: "saeuren",
+    name: "Salzsäure 32-35 % (HCl — synthetisch)",
+    werkstoff: "Chlorwasserstoff HCl", norm: "EN 939 · ISO 756",
+    hsCode: "2806 10 00", cbam: null, inco: "EXW",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
+    desc: "Synthetische Salzsäure 32-35 % HCl. Eisengehalt ≤ 2 mg/kg, Schwefelsäure ≤ 5 mg/kg. Einsatz: Beizereien, Lebensmittelverarbeitung, Wasseraufbereitung. Lieferung in 25/1000 L-IBC oder Tankwagen. ADR-Klasse 8, UN 1789. SDS vorhanden.",
+  },
+  {
+    id: "ammoniak-anhydrous", katId: "ammoniak",
+    name: "Ammoniak wasserfreies (NH₃ — Anhydrous Ammonia)",
+    werkstoff: "Ammoniak NH₃ ≥ 99,5 %", norm: "EN 1385 · ASTM E228",
+    hsCode: "2814 10 00", cbam: null, inco: "CIF",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)",
+    desc: "Wasserfreies Ammoniak (Anhydrous Ammonia), Reinheit ≥ 99,5 %. Wassergehalt ≤ 0,2 %, Öl ≤ 5 mg/kg. Lieferung in Drucktank-Schiffen (5.000-30.000 t) oder Drucktankwagen. ADR-Klasse 2.3, UN 1005. Seefrachtroute: Baltic/Black Sea/ARA.",
+  },
 ];
 
 // ─── Sidebar Struktur ─────────────────────────────────────────────────────────
@@ -298,6 +465,37 @@ export const SIDEBAR: SidebarSektion[] = [
       { id: "dap",       label: "Phosphordünger (DAP)",     key: "kat_dap"       },
       { id: "mop",       label: "Kaliumdünger (MOP)",       key: "kat_mop"       },
       { id: "npk",       label: "NPK-Komplexdünger",        key: "kat_npk"       },
+    ],
+  },
+  {
+    label: "Energie", key: "sidebar_energie",
+    kategorien: [
+      { id: "erdgas", label: "Erdgas / LNG",          key: "kat_erdgas" },
+      { id: "strom",  label: "Strom (Baseload/Peak)", key: "kat_strom"  },
+      { id: "kohle",  label: "Kesselkohle (API 2)",   key: "kat_kohle"  },
+      { id: "rohol",  label: "Rohöl (Brent)",         key: "kat_rohol"  },
+      { id: "lpg",    label: "LPG / Autogas",         key: "kat_lpg"    },
+    ],
+  },
+  {
+    label: "Agrar", key: "sidebar_agrar",
+    kategorien: [
+      { id: "weizen",       label: "Weizen",            key: "kat_weizen"       },
+      { id: "gerste",       label: "Gerste",            key: "kat_gerste"       },
+      { id: "mais",         label: "Mais",              key: "kat_mais"         },
+      { id: "soja",         label: "Sojabohnen",        key: "kat_soja"         },
+      { id: "raps",         label: "Rapssamen",         key: "kat_raps"         },
+      { id: "sonnenblume",  label: "Sonnenblumenöl",    key: "kat_sonnenblume"  },
+    ],
+  },
+  {
+    label: "Chemikalien", key: "sidebar_chemie",
+    kategorien: [
+      { id: "methanol",  label: "Methanol",       key: "kat_methanol"  },
+      { id: "ethanol",   label: "Ethanol",        key: "kat_ethanol"   },
+      { id: "saeuren",   label: "Säuren (H₂SO₄/HCl)", key: "kat_saeuren" },
+      { id: "laugen",    label: "Laugen (NaOH)",  key: "kat_laugen"    },
+      { id: "ammoniak",  label: "Ammoniak (NH₃)", key: "kat_ammoniak"  },
     ],
   },
 ];
@@ -474,6 +672,89 @@ const NPK: KatalogProdukt[] = [
   p("NPK 8-20-30 Granulat","N-P₂O₅-K₂O","EU-VO 2019/1009","Granulat",0,0,0.44),
 ];
 
+const ERDGAS: KatalogProdukt[] = [
+  p("Erdgas H-Gas (TTF)", "CH₄ ≥ 95 %", "DVGW G 260", "Gasförmig", 0, 0, 0.032),
+  p("LNG Spot-Lieferung", "CH₄ verflüssigt", "EN ISO 16903", "Kryogen", 0, 0, 0.038),
+];
+
+const STROM: KatalogProdukt[] = [
+  p("Baseload DE/AT (0-24 Uhr)", "Elektrische Energie", "REMIT · EnWG", "Physisch", 0, 0, 0.072),
+  p("Peakload DE/AT (8-20 Uhr)", "Elektrische Energie", "REMIT · EnWG", "Physisch", 0, 0, 0.085),
+];
+
+const KOHLE: KatalogProdukt[] = [
+  p("Kesselkohle API 2 CIF ARA", "Dampfkohle NAR 6000", "ASTM D3173", "Bulk", 0, 0, 0.128),
+  p("Kokskohle Premium Hard (HCC)", "Kokskohle CSR ≥ 68", "ISO 18283", "Bulk", 0, 0, 0.245),
+];
+
+const ROHOL: KatalogProdukt[] = [
+  p("Rohöl Brent Crude FOB", "API ≥ 38°, S ≤ 0,37 %", "ASTM D4294", "Tankschiff", 0, 0, 0.560),
+  p("Rohöl Urals (ESPO) CIF", "API 31-33°, S 1,7 %", "GOST 51858", "Tankschiff", 0, 0, 0.520),
+];
+
+const LPG: KatalogProdukt[] = [
+  p("Propan HD5 (≥ 95 % C₃H₈)", "C₃H₈ ≥ 95 %", "EN 589", "Drucktank", 0, 0, 0.620),
+  p("Butan (n-Butan C₄H₁₀)", "C₄H₁₀ ≥ 97 %", "EN 589", "Drucktank", 0, 0, 0.600),
+];
+
+const WEIZEN: KatalogProdukt[] = [
+  p("Brotweizen A-Qualität (Ø)", "Triticum aestivum", "EU-VO 1272/2009", "Bulk", 0, 0, 0.248),
+  p("Futterweizen E-Qualität", "Triticum aestivum", "EU-VO 1272/2009", "Bulk", 0, 0, 0.218),
+  p("Durumweizen (Hartweizen)", "Triticum durum", "Codex Stan 178", "Bulk", 0, 0, 0.310),
+];
+
+const GERSTE: KatalogProdukt[] = [
+  p("Futtergerste Standardqualität", "Hordeum vulgare", "EU-VO 1272/2009", "Bulk", 0, 0, 0.205),
+  p("Braugerste (Sommergerste)", "Hordeum distichon", "MEBAK · EBC", "Bulk", 0, 0, 0.265),
+];
+
+const MAIS: KatalogProdukt[] = [
+  p("Körnermais (GMO-frei Zertif.)", "Zea mays L.", "EU-VO 1272/2009", "Bulk", 0, 0, 0.225),
+  p("Körnermais (zugelassene GVO)", "Zea mays L.", "EU-VO 1272/2009", "Bulk", 0, 0, 0.212),
+];
+
+const SOJA: KatalogProdukt[] = [
+  p("Sojabohnen (GMO-frei Zertif.)", "Glycine max L.", "ISO 659", "Bulk", 0, 0, 0.492),
+  p("Sojaschrot 44 % Protein (Toasted)", "Sojaextraktionsschrot", "EU-VO 767/2009", "Bulk", 0, 0, 0.410),
+];
+
+const RAPS: KatalogProdukt[] = [
+  p("Rapssamen (000-Qualität)", "Brassica napus L.", "EN ISO 658", "Bulk", 0, 0, 0.488),
+  p("Rapsöl (Rohöl, Crude)", "Rapsöl", "Codex Stan 123", "Bulk", 0, 0, 1.050),
+];
+
+const SONNENBLUME: KatalogProdukt[] = [
+  p("Rohes Sonnenblumenöl", "Helianthus annuus", "Codex Stan 23", "ISO-Tank", 0, 0, 0.978),
+  p("Raffiniertes Sonnenblumenöl", "Helianthus annuus", "Codex Stan 23", "ISO-Tank", 0, 0, 1.150),
+];
+
+const METHANOL: KatalogProdukt[] = [
+  p("Methanol Grade AA (≥ 99,85 %)", "CH₃OH", "EN 15989", "ISO-Tank", 0, 0, 0.385),
+  p("Methanol tech. Grade (≥ 99,5 %)", "CH₃OH", "ASTM D1152", "Tankwagen", 0, 0, 0.365),
+];
+
+const ETHANOL: KatalogProdukt[] = [
+  p("Bioethanol 99,5 % (EN 15376)", "C₂H₅OH", "EN 15376", "ISO-Tank", 0, 0, 0.680),
+  p("Ethanol 96 % (Lebensmittelgrade)", "C₂H₅OH", "EU-VO 178/2002", "IBC", 0, 0, 0.720),
+];
+
+const SAEUREN: KatalogProdukt[] = [
+  p("Schwefelsäure 96-98 %", "H₂SO₄", "EN ISO 2469", "Säuretank", 0, 0, 0.095),
+  p("Schwefelsäure 98 % (Oleum)", "H₂SO₄ + SO₃", "EN ISO 2469", "Säuretank", 0, 0, 0.110),
+  p("Salzsäure 32-35 %", "HCl", "EN 939", "IBC/Tankwagen", 0, 0, 0.140),
+];
+
+const LAUGEN: KatalogProdukt[] = [
+  p("Natronlauge 50 % (Chloralkali)", "NaOH", "EN 896", "Tankwagen", 0, 0, 0.235),
+  p("Natronlauge 32 % (techn.)", "NaOH", "EN 896", "IBC", 0, 0, 0.195),
+  p("Kalilauge 45-50 % (KOH)", "KOH", "ISO 7108", "Tankwagen", 0, 0, 0.480),
+];
+
+const AMMONIAK: KatalogProdukt[] = [
+  p("Ammoniak wasserfreies (99,5 %)", "NH₃", "EN 1385", "Drucktank", 0, 0, 0.310),
+  p("Ammoniaklösung 25 % (tech.)", "NH₃ · H₂O", "EN 939", "IBC/Tankwagen", 0, 0, 0.165),
+];
+
 // ─── Katalog-Map ──────────────────────────────────────────────────────────────
 
 export const KATALOG: Record<string, KatalogKategorie> = {
@@ -492,6 +773,22 @@ export const KATALOG: Record<string, KatalogKategorie> = {
   "dap":             { id: "dap",             label: "Phosphordünger DAP",     dimLabel: "Form",    dimUnit: "",      description: "Diammoniumphosphat DAP 18-46 in Granulat. Phosphor-Stickstoff-Kombidünger. EU-VO 2019/1009 konform.", produkte: DAP },
   "mop":             { id: "mop",             label: "Kaliumdünger MOP/NOP",   dimLabel: "Form",    dimUnit: "",      description: "Kaliumchlorid MOP 60 % K₂O und Kaliumnitrat NOP 13-0-46. EU-Düngemittelverordnung 2019/1009 konform.", produkte: MOP },
   "npk":             { id: "npk",             label: "NPK-Komplexdünger",      dimLabel: "Formel",  dimUnit: "",      description: "NPK-Komplexdünger 15-15-15, 20-10-10, 8-20-30 in Granulat. Gleichmäßige Nährstoffverteilung. EU-VO 2019/1009 konform.", produkte: NPK },
+  "erdgas":          { id: "erdgas",          label: "Erdgas / LNG",           dimLabel: "Form",    dimUnit: "",      description: "Erdgas TTF/NCG H-Gas und LNG Spot-Lieferung. Qualität nach DVGW G 260 und EN ISO 16903. Preis in EUR/MWh.", produkte: ERDGAS },
+  "strom":           { id: "strom",           label: "Strom Baseload/Peakload", dimLabel: "Profil", dimUnit: "",      description: "Baseload- und Peakload-Strom Lieferzone DE/AT. EPEX-Spot Day-Ahead. Physische Lieferung nach StromNZV. REMIT-meldepflichtig.", produkte: STROM },
+  "kohle":           { id: "kohle",           label: "Kesselkohle / Kokskohle", dimLabel: "Sorte",  dimUnit: "",      description: "Thermische Kohle (API 2 CIF ARA) und Kokskohle Hard Coking Quality. Lieferung in Bulk, Panamax-Lots.", produkte: KOHLE },
+  "rohol":           { id: "rohol",           label: "Rohöl (Brent / Urals)",  dimLabel: "Sorte",   dimUnit: "",      description: "Rohöl Brent Crude (ICE Dated Brent) und Urals. Lieferung FOB / CIF. Preis in USD/bbl.", produkte: ROHOL },
+  "lpg":             { id: "lpg",             label: "LPG / Flüssiggas",       dimLabel: "Güte",    dimUnit: "",      description: "Flüssiggas Propan HD5 und Butan in Drucktanklieferung. Spezifikation nach EN 589.", produkte: LPG },
+  "weizen":          { id: "weizen",          label: "Weizen",                 dimLabel: "Qualität", dimUnit: "",     description: "Brot- und Futterweizen EU-Standardqualität nach EU-VO 1272/2009. Preis in EUR/t. MATIF-Referenznotierung Paris.", produkte: WEIZEN },
+  "gerste":          { id: "gerste",          label: "Gerste",                 dimLabel: "Qualität", dimUnit: "",     description: "Futter- und Braugerste EU-Qualität. Lieferung in Bulk. EURONEXT Paris Matif-Referenz.", produkte: GERSTE },
+  "mais":            { id: "mais",            label: "Mais / Körnermais",      dimLabel: "Qualität", dimUnit: "",     description: "Körnermais (GMO-frei oder zugelassene GVO) EU-Standardqualität. CBOT Chicago-Referenz. Lieferung CIF Nordseehäfen.", produkte: MAIS },
+  "soja":            { id: "soja",            label: "Sojabohnen / Sojaschrot", dimLabel: "Qualität", dimUnit: "",    description: "Sojabohnen und Sojaextraktionsschrot 44 % Protein. CBOT-Referenz. Phytosanitäres Zeugnis + GVO-Nachweis.", produkte: SOJA },
+  "raps":            { id: "raps",            label: "Rapssamen / Rapsöl",     dimLabel: "Qualität", dimUnit: "",     description: "Rapssamen 000-Qualität (niedrige Erucasäure) und Rohöl. EURONEXT Matif Colza-Referenz. ISCC-Nachhaltigkeitszertifikat.", produkte: RAPS },
+  "sonnenblume":     { id: "sonnenblume",     label: "Sonnenblumenöl",         dimLabel: "Güte",    dimUnit: "",      description: "Rohes und raffiniertes Sonnenblumenöl (High-Oleic). Lieferung in ISO-Tank. Herkunft UA/RO/MD. Analysenzertifikat SGS.", produkte: SONNENBLUME },
+  "methanol":        { id: "methanol",        label: "Methanol",               dimLabel: "Güte",    dimUnit: "",      description: "Technisches Methanol Grade AA (≥ 99,85 %) nach EN 15989. ISO-Tank oder Tankwagen. ADR Klasse 3.", produkte: METHANOL },
+  "ethanol":         { id: "ethanol",         label: "Ethanol / Bioethanol",   dimLabel: "Güte",    dimUnit: "",      description: "Bioethanol 99,5 % (EN 15376) und Lebensmittelgrade 96 %. Nachhaltigkeitsnachweis RED II / ISCC möglich.", produkte: ETHANOL },
+  "saeuren":         { id: "saeuren",         label: "Säuren (H₂SO₄/HCl)",    dimLabel: "Konz.",   dimUnit: "%",     description: "Schwefelsäure 96-98 % (EN ISO 2469) und Salzsäure 32-35 % (EN 939). ADR-Klasse 8. Lieferung in Säuretankwagen.", produkte: SAEUREN },
+  "laugen":          { id: "laugen",          label: "Laugen (NaOH/KOH)",     dimLabel: "Konz.",   dimUnit: "%",     description: "Natronlauge 50 % und 32 % (EN 896) sowie Kalilauge 45-50 % (ISO 7108). Chloralkali-Elektrolyse-Qualität.", produkte: LAUGEN },
+  "ammoniak":        { id: "ammoniak",        label: "Ammoniak (NH₃)",         dimLabel: "Güte",    dimUnit: "",      description: "Wasserfreies Ammoniak 99,5 % (EN 1385) und Ammoniaklösung 25 % tech. ADR 2.3. Tankschiff oder Drucktankwagen.", produkte: AMMONIAK },
 };
 
 // ─── Hilfsfunktionen ──────────────────────────────────────────────────────────

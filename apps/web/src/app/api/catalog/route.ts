@@ -10,13 +10,14 @@ import { apiRoute } from "@/lib/api/route-handler";
 
 export const dynamic = "force-dynamic";
 
-const SELECT = { id: true, nr: true, slug: true, nameDe: true, nameEn: true, nameRu: true, norm: true, _count: { select: { sizes: true } } } as const;
+const SELECT = { id: true, nr: true, slug: true, nameDe: true, nameEn: true, nameRu: true, norm: true, sector: true, _count: { select: { sizes: true } } } as const;
 
 async function _GET(req: NextRequest) {
   const q      = req.nextUrl.searchParams.get("q")?.trim() ?? "";
   const slug   = req.nextUrl.searchParams.get("slug")?.trim() ?? "";
   const browse = req.nextUrl.searchParams.get("browse") === "1";
   const stats  = req.nextUrl.searchParams.get("stats") === "1";
+  const sector = req.nextUrl.searchParams.get("sector")?.trim().toUpperCase() ?? "";
 
   // ── Statistiken für Header ──────────────────────────────────────────
   if (stats) {
@@ -45,6 +46,7 @@ async function _GET(req: NextRequest) {
   // ── Browse-Modus: Alle Produkte (Dropdown-Pfeil ohne Sucheingabe) ───
   if (browse) {
     const products = await db.catalogProduct.findMany({
+      where: { isActive: true, ...(sector ? { sector } : {}) },
       select: SELECT,
       orderBy: { nr: "asc" },
     });
@@ -56,6 +58,8 @@ async function _GET(req: NextRequest) {
 
   const products = await db.catalogProduct.findMany({
     where: {
+      isActive: true,
+      ...(sector ? { sector } : {}),
       OR: [
         { nameDe: { contains: q, mode: "insensitive" } },
         { nameEn: { contains: q, mode: "insensitive" } },
