@@ -29,6 +29,7 @@ export type AuditAction =
   // Käufer-Funnel
   | "LOT_CREATED"
   | "LOT_PUBLISHED"
+  | "LOT_AUTO_STARTED"
   // Verkäufer-Funnel
   | "INVENTORY_CHARGE_CREATED"
   | "BID_SUBMITTED"

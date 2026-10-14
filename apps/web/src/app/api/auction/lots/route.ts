@@ -41,6 +41,7 @@ const createLotSchema = z.object({
   paymentTerms:     z.string().min(1, "Zahlungsbedingungen sind erforderlich").max(120),
   vatTreatment:     z.string().min(1, "USt.-Behandlung ist erforderlich").max(120),
   publish:          z.boolean().optional(), // true = sofort veröffentlichen (isDraft=false)
+  scheduledStart:   z.string().datetime().optional(), // ISO-8601: geplanter Auto-Start (Cron)
 });
 
 export async function POST(req: NextRequest) {
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
   const { commodity, catalogProductId, quantity, unit, startPrice, description,
           cbamCategory, co2PerTonne, countryOfOrigin, productionSiteId, incoterms, greenSteel,
           hsCode, qualityGrade, deliveryPeriod, deliveryLocation, paymentTerms, vatTreatment,
-          publish } = parsed.data;
+          publish, scheduledStart } = parsed.data;
 
   // ── Produktkatalog-Validierung ─────────────────────────────────────────────
   // Akzeptiert sowohl cuid (DB-id) als auch slug ("rebar-bst500") — löst intern zu cuid auf.
@@ -123,6 +124,7 @@ export async function POST(req: NextRequest) {
         vatTreatment,
         greenSteel:      greenSteel ?? false,
         isDraft:         publish === true ? false : true,
+        scheduledStart:  scheduledStart ? new Date(scheduledStart) : undefined,
       },
     });
   } catch (err) {

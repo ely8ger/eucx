@@ -337,6 +337,7 @@ model User {
   sellerCharges             SellerCharge[]           @relation("SellerCharges")
   lotDisputesRaised         LotDispute[]             @relation("LotDisputeRaiser")
   lotDisputesReviewed       LotDispute[]             @relation("LotDisputeReviewer")
+  lotDocuments              LotDocument[]
 
   @@index([organizationId])
   @@index([verificationStatus])   // KYC-Queue: alle PENDING_VERIFICATION schnell abrufen
@@ -1219,6 +1220,11 @@ model Lot {
   // ── Produktkatalog-Verknüpfung ────────────────────────────────────────────────
   catalogProductId String?                       // FK → CatalogProduct.id (optional — validiert handelbare Ware)
 
+  // ── Geplanter Auktionsstart ───────────────────────────────────────────────────
+  // Wenn gesetzt: Cron (/api/cron/lot-phase-auto-start, alle 5 min) startet
+  // die Auktion automatisch sobald scheduledStart <= now && phase=COLLECTION && isDraft=false.
+  scheduledStart  DateTime?                      // Optionaler geplanter Starttermin
+
   buyer          User              @relation("LotBuyer",  fields: [buyerId],   references: [id])
   winner         User?             @relation("LotWinner", fields: [winnerId],   references: [id])
   catalogProduct CatalogProduct?   @relation(fields: [catalogProductId], references: [id])
@@ -1226,11 +1232,13 @@ model Lot {
   registrations  LotRegistration[]
   lotContract    LotContract?
   charges        SellerCharge[]   @relation("ChargeReservation")
+  documents      LotDocument[]
 
   @@index([buyerId])
   @@index([phase])               // Offene Auktionen schnell abrufen
   @@index([auctionEnd, phase])   // AuctionTimer: fällige Übergänge finden
   @@index([catalogProductId])
+  @@index([scheduledStart, phase]) // Auto-Start Cron: fällige Lots finden
   @@map("lots")
 }
 
@@ -1249,6 +1257,37 @@ model LotRegistration {
   @@unique([lotId, sellerId])   // Jeder Verkäufer nur einmal pro Lot
   @@index([sellerId])
   @@map("lot_registrations")
+}
+
+// ─── LotDocument — Spezifikationen, Zertifikate, Zeichnungen zum Lot ─────────
+// Käufer lädt Ausschreibungsunterlagen hoch (SPECIFICATION, DRAWING).
+// Registrierte Verkäufer laden Qualitätszertifikate hoch (CERTIFICATE, QUALITY_REPORT).
+// Dateien werden im Vercel Blob Store gespeichert (url = öffentliche Blob-URL).
+enum LotDocType {
+  SPECIFICATION    // Technische Spezifikation / Ausschreibungstext
+  CERTIFICATE      // Qualitätszertifikat (Verkäufer-Dokument)
+  DRAWING          // Technische Zeichnung
+  QUALITY_REPORT   // Prüfbericht, Analyse, Messbericht
+  OTHER
+}
+
+model LotDocument {
+  id         String      @id @default(cuid())
+  lotId      String
+  uploaderId String
+  docType    LotDocType  @default(OTHER)
+  url        String                        // Vercel Blob URL
+  name       String                        // Originaler Dateiname (bereinigt)
+  sizeBytes  Int
+  mimeType   String
+  createdAt  DateTime    @default(now())
+
+  lot      Lot  @relation(fields: [lotId],      references: [id], onDelete: Cascade)
+  uploader User @relation(fields: [uploaderId], references: [id])
+
+  @@index([lotId])
+  @@index([uploaderId])
+  @@map("lot_documents")
 }
 
 // ─── Bid — Gebot eines Verkäufers ────────────────────────────────────────────
