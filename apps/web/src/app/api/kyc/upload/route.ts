@@ -77,7 +77,7 @@ async function _POST(req: NextRequest) {
 
   return NextResponse.json({
     url:    blob.url,
-    name:   file.name,
+    name:   safeName,
     sizeMb: parseFloat((file.size / 1024 / 1024).toFixed(2)),
   });
 }
