@@ -159,18 +159,28 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const phase   = searchParams.get("phase");
   const mine    = searchParams.get("mine") === "true";
+  const search  = searchParams.get("search")?.trim() ?? "";
 
   // Fällige Auktionen on-demand abschließen (Backup für Cron-Ausfälle)
   runAuctionTimer().catch((err) => console.error("[AuctionTimer on-demand]", err));
 
+  // Volltextsuche über Commodity, Beschreibung, Qualitätsnorm, Lieferort, HS-Code
+  const searchFilter = search.length >= 1 ? {
+    OR: [
+      { commodity:        { contains: search, mode: "insensitive" as const } },
+      { description:      { contains: search, mode: "insensitive" as const } },
+      { qualityGrade:     { contains: search, mode: "insensitive" as const } },
+      { deliveryLocation: { contains: search, mode: "insensitive" as const } },
+      { hsCode:           { contains: search, mode: "insensitive" as const } },
+    ],
+  } : {};
+
   const lots = await db.lot.findMany({
     where: mine
-      // Käufer sieht alle eigenen Lots inkl. Entwürfe und CONCLUSION
-      ? { buyerId: userId, ...(phase ? { phase: phase as never } : {}) }
-      // Verkäufer sehen nur veröffentlichte Lots (isDraft=false)
+      ? { buyerId: userId, ...(phase ? { phase: phase as never } : {}), ...searchFilter }
       : phase
-        ? { phase: phase as never, isDraft: false }
-        : { phase: { in: ["COLLECTION", "PROPOSAL", "REDUCTION"] }, isDraft: false },
+        ? { phase: phase as never, isDraft: false, ...searchFilter }
+        : { phase: { in: ["COLLECTION", "PROPOSAL", "REDUCTION"] }, isDraft: false, ...searchFilter },
     orderBy: { createdAt: "desc" },
     take:    100,
     select: {

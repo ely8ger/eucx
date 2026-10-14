@@ -95,6 +95,9 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   const [priceKey,    setPriceKey]    = useState(0);
   const [shake,       setShake]       = useState(false);
   const [cbamOpen,    setCbamOpen]    = useState(false);
+  const [docs,        setDocs]        = useState<Array<{ id: string; docType: string; url: string; name: string; sizeBytes: number; createdAt: string }>>([]);
+  const [docUploading,setDocUploading]= useState(false);
+  const docInputRef = useRef<HTMLInputElement>(null);
   const [cbamData,    setCbamData]    = useState<CbamData>({
     cbamCountryOfOrigin: "", cbamCountryOfExport: "", cbamProductionSiteId: "",
     cbamCo2DirectPerTonne: "", cbamCo2IndirectPerTonne: "",
@@ -162,6 +165,34 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   }, [lot.id]);
 
   useEffect(() => { if (token) loadBids(token); }, [token, loadBids]);
+
+  // ── Lot-Dokumente laden ───────────────────────────────────────────
+  const loadDocs = useCallback(async () => {
+    try {
+      const r = await fetch(`/api/auction/lots/${lot.id}/documents`, { headers: { } });
+      if (!r.ok) return;
+      const d = await r.json();
+      setDocs(d.documents ?? []);
+    } catch { /* ignore */ }
+  }, [lot.id]);
+
+  useEffect(() => { loadDocs(); }, [loadDocs]);
+
+  const uploadDoc = async (file: File) => {
+    if (docUploading) return;
+    setDocUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("docType", "CERTIFICATE");
+      const r = await fetch(`/api/auction/lots/${lot.id}/documents`, { method: "POST", body: fd });
+      const d = await r.json();
+      if (!r.ok) { toast.error(d.error ?? "Upload fehlgeschlagen"); return; }
+      toast.success("Dokument hochgeladen");
+      await loadDocs();
+    } catch { toast.error("Netzwerkfehler beim Upload"); }
+    finally { setDocUploading(false); if (docInputRef.current) docInputRef.current.value = ""; }
+  };
 
   // SSE-Trigger: Preis geändert → Bids neu laden + Preis-Animation
   useEffect(() => {
@@ -921,6 +952,36 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
                       ))}
                     </tbody>
                   </table>
+                )}
+              </div>
+
+              {/* Lot-Dokumente */}
+              <div className="sa-card" style={{ padding: "16px 20px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#374151" }}>
+                    Ausschreibungsunterlagen
+                  </div>
+                  {livePhase !== "CONCLUSION" && (
+                    <label style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#154194", color: "#fff", fontSize: 11, fontWeight: 600, cursor: docUploading ? "wait" : "pointer", letterSpacing: "0.04em" }}>
+                      <input ref={docInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx" style={{ display: "none" }} disabled={docUploading}
+                        onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadDoc(f); }} />
+                      {docUploading ? "Lädt…" : "+ Zertifikat hochladen"}
+                    </label>
+                  )}
+                </div>
+                {docs.length === 0 ? (
+                  <div style={{ fontSize: 12, color: "#9ca3af", padding: "8px 0" }}>Noch keine Dokumente hochgeladen.</div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {docs.map((doc) => (
+                      <a key={doc.id} href={doc.url} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 10px", background: "#f9fafb", border: "1px solid #e5e7eb", textDecoration: "none", color: "#154194" }}>
+                        <span style={{ fontSize: 16 }}>📄</span>
+                        <span style={{ flex: 1, fontSize: 12, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{doc.name}</span>
+                        <span style={{ fontSize: 10, color: "#9ca3af", whiteSpace: "nowrap" }}>{doc.docType} · {(doc.sizeBytes / 1024).toFixed(0)} KB</span>
+                      </a>
+                    ))}
+                  </div>
                 )}
               </div>
 

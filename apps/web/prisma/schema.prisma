@@ -1359,7 +1359,8 @@ model LotContract {
   // ── Lieferstatus-Tracking ──────────────────────────────────────────────────
   deliveryStatus DeliveryStatus @default(MATCHED)
   pickupCode     String?        // 6-stelliger PIN — generiert bei READY_FOR_PICKUP
-  cmrDocument    String?        @db.Text  // Base64-codiertes CMR-Dokument
+  cmrDocument    String?        @db.Text  // Legacy: Base64-codiertes CMR (nur für Altdaten)
+  cmrUrl         String?                  // Vercel Blob URL (aktuell)
   cmrUploadedAt  DateTime?
   paymentSentAt  DateTime?      // Zeitpunkt: Käufer meldet Zahlung angewiesen
   deliveredAt    DateTime?
