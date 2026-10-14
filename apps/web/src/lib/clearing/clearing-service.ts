@@ -1,42 +1,34 @@
 /**
- * EUCX ClearingService - Double-Entry Buchführung & Financial Settlement
+ * EUCX ClearingService - Settlement & EUCX-interne Gebührenbuchung
  *
  * Wird aufgerufen wenn ein Deal STATUS = CONTRACT_SIGNED erreicht.
  *
- * ─── Buchungsplan (4 Buchungssätze, 8 LedgerEntries) ────────────────────────
+ * EUCX hält KEINE Kundengelder (ZAG-Lizenz nicht erforderlich).
+ * Käufer und Verkäufer zahlen/empfangen direkt per Banküberweisung.
+ * Clearing = Vertragsabschluss + EUCX-Gebührenerfassung für eigene Bücher.
  *
- *   Schritt 1: Käufer überweist Bruttobetrag
- *     DEBIT  buyer_wallet   (Abgang beim Käufer)
- *     CREDIT escrow         (Treuhandkonto empfängt)
+ * ─── Buchungsplan (EUCX-interne Buchführung) ────────────────────────────────
  *
- *   Schritt 2: EUCX zieht Plattformgebühr
- *     DEBIT  escrow         (Fee-Abzug)
- *     CREDIT eucx_revenue   (EUCX-Konto empfängt)
+ *   Schritt 1: EUCX-Plattformgebühr erfassen
+ *     CREDIT eucx_fee_revenue  (Gebühreneinnahme EUCX)
  *
- *   Schritt 3: MwSt. wird abgeführt (nur bei Inland, sonst 0 → kein Eintrag)
- *     DEBIT  escrow         (MwSt.-Abzug)
- *     CREDIT vat_payable    (Finanzamt-Verbindlichkeit)
- *
- *   Schritt 4: Verkäufer erhält Nettoerlös
- *     DEBIT  escrow         (Auszahlung)
- *     CREDIT seller_wallet  (Zugang beim Verkäufer)
+ *   Schritt 2: MwSt.-Verbindlichkeit (nur Inland, sonst Reverse Charge)
+ *     CREDIT vat_payable       (Finanzamt-Verbindlichkeit)
  *
  * ─── Idempotenz-Schutz ──────────────────────────────────────────────────────
  *
- *   Jeder LedgerEntry bekommt einen eindeutigen idempotencyKey:
- *     "deal:{dealId}:{schritt}:{DEBIT|CREDIT}"
- *   → @unique in DB garantiert: kein Retry erzeugt Doppelbuchung
+ *   idempotencyKey-Format: "deal:{dealId}:{schritt}"
+ *   → @unique in DB → kein Retry erzeugt Doppelbuchung
  *
  * ─── Atomizität ─────────────────────────────────────────────────────────────
  *
- *   Gesamter Settlement in EINER Prisma-Transaktion (serializable isolation).
- *   Schlägt irgendein Schritt fehl → vollständiger Rollback.
+ *   Settlement in EINER Prisma-Transaktion (Serializable Isolation).
  */
 
 import Decimal    from "decimal.js";
 import { randomUUID } from "crypto";
 import { db } from "@/lib/db/client";
-import { calculateFees, validateLedgerBalance } from "./fee-calculator";
+import { calculateFees } from "./fee-calculator";
 import { withSerializableRetry }               from "./serializable-retry";
 import { audit }                               from "@/lib/audit/logger";
 import type { FeeCalculationResult } from "./fee-calculator";
@@ -115,13 +107,7 @@ async function _runSettlement(dealId: string): Promise<SettlementResult> {
     sellerTaxId:   deal.sellerOrg.taxId,
   });
 
-  // ── Wallets holen / erstellen ──────────────────────────────────────────────
-  const [buyerWallet, sellerWallet] = await Promise.all([
-    getOrCreateWallet(deal.buyerOrgId,  deal.currency),
-    getOrCreateWallet(deal.sellerOrgId, deal.currency),
-  ]);
-
-  // ── Rechnungsnummer generieren (A8 — UUID-basiert, keine Race Condition) ───
+  // ── Rechnungsnummer generieren (UUID-basiert, keine Race Condition) ─────────
   const year = new Date().getFullYear();
   const uid  = () => randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase();
   const buyerInvoiceNumber  = `EUCX-INV-${year}-${uid()}`;
@@ -156,51 +142,11 @@ async function _runSettlement(dealId: string): Promise<SettlementResult> {
       data:  { status: "PROCESSING" },
     });
 
-    // 2. LedgerEntries - 4 Buchungssätze (8 Einträge)
-    const entries = buildLedgerEntries(
-      dealId,
-      pendingSettlement.id,
-      fees,
-      deal.currency,
-      buyerWallet.id,
-      sellerWallet.id,
-    );
+    // 2. EUCX-interne Gebührenbuchung (kein Kundengeldhaltung)
+    const feeEntries = buildFeeEntries(dealId, fees, deal.currency);
+    await tx.ledgerEntry.createMany({ data: feeEntries, skipDuplicates: true });
 
-    await tx.ledgerEntry.createMany({
-      data:          entries,
-      skipDuplicates: true,  // Idempotenz: @unique(idempotencyKey) schlägt fehlt, skip
-    });
-
-    // Bilanzprüfung - DEBIT == CREDIT Invariante
-    const balance = validateLedgerBalance(entries.map((e) => ({
-      entryType: e.entryType,
-      amount:    e.amount,
-    })));
-    if (!balance) {
-      throw new Error("Bilanzierungsfehler: DEBIT ≠ CREDIT - Transaktion abgebrochen");
-    }
-
-    // 3. Wallet-Salden aktualisieren
-    const grossDec = new Decimal(fees.grossAmount);
-    const feeDec   = new Decimal(fees.platformFee);
-    const netDec   = new Decimal(fees.netToSeller);
-
-    // L3-Fix: Atomare Balance-Prüfung — WHERE balance >= gross verhindert negative Salden.
-    // updateMany gibt count === 0 zurück wenn Saldo nicht ausreicht (statt silent Underflow).
-    const buyerUpdate = await tx.wallet.updateMany({
-      where: { id: buyerWallet.id, balance: { gte: grossDec.toFixed(8) } },
-      data:  { balance: { decrement: grossDec.toFixed(8) } },
-    });
-    if (buyerUpdate.count === 0) {
-      throw new Error(`Unzureichendes Wallet-Guthaben für Deal ${dealId} (Käufer ${deal.buyerOrgId})`);
-    }
-
-    await tx.wallet.update({
-      where: { id: sellerWallet.id },
-      data:  { balance: { increment: netDec.toFixed(8) } },
-    });
-
-    // 4. Käufer-Rechnung erstellen (BUYER_INVOICE)
+    // 3. Käufer-Rechnung erstellen (BUYER_INVOICE)
     const now      = new Date();
     const dueAt    = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);  // +30 Tage
 
@@ -271,7 +217,7 @@ async function _runSettlement(dealId: string): Promise<SettlementResult> {
       settlementId:     pendingSettlement.id,
       buyerInvoiceId:   buyerInvoice.id,
       sellerCreditId:   sellerCredit.id,
-      ledgerEntryCount: entries.length,
+      ledgerEntryCount: feeEntries.length,
     };
   }, {
     // SERIALIZABLE: verhindert Phantom Reads bei parallelen Settlement-Jobs
@@ -296,45 +242,15 @@ async function _runSettlement(dealId: string): Promise<SettlementResult> {
 
 // ─── Hilfsfunktionen ──────────────────────────────────────────────────────────
 
-async function getOrCreateWallet(organizationId: string, currency: Currency) {
-  return db.wallet.upsert({
-    where:  { organizationId },
-    create: { organizationId, currency, balance: "0", reservedBalance: "0" },
-    update: {},
-  });
-}
-
-/**
- * Erstellt alle 8 LedgerEntries für einen Settlement-Zyklus.
- *
- * Buchungssatz-Struktur:
- *   correlationId = shared UUID pro Buchungssatz (DEBIT + CREDIT teilen sich eine)
- *   idempotencyKey = eindeutig pro Entry → @unique verhindert Doppelbuchung
- */
-function buildLedgerEntries(
-  dealId:       string,
-  settlementId: string,
-  fees:         FeeCalculationResult,
-  currency:     Currency,
-  buyerWalletId:  string,
-  sellerWalletId: string,
-) {
-  const { grossAmount, platformFee, vatAmount, netToSeller } = fees;
-
-  // Korrelations-IDs für die 4 Buchungssätze
-  const corrBuyer   = `${dealId}:buyer-payment`;
-  const corrFee     = `${dealId}:platform-fee`;
-  const corrVat     = `${dealId}:vat`;
-  const corrSeller  = `${dealId}:seller-payout`;
-
-  const vatDec = new Decimal(vatAmount);
-  const hasVat = vatDec.gt(0);
+function buildFeeEntries(dealId: string, fees: FeeCalculationResult, currency: Currency) {
+  const { platformFee, vatAmount } = fees;
+  const hasVat = new Decimal(vatAmount).gt(0);
 
   const entries: Array<{
     correlationId:  string;
-    walletId:       string | null;
-    accountType:    "TRADER_WALLET" | "ESCROW" | "EUCX_FEE_REVENUE" | "VAT_PAYABLE";
-    entryType:      "DEBIT" | "CREDIT";
+    walletId:       null;
+    accountType:    "EUCX_FEE_REVENUE" | "VAT_PAYABLE";
+    entryType:      "CREDIT";
     amount:         string;
     currency:       Currency;
     description:    string;
@@ -342,69 +258,21 @@ function buildLedgerEntries(
     idempotencyKey: string;
   }> = [];
 
-  // ── Schritt 1: Käufer zahlt Brutto ────────────────────────────────────────
   entries.push({
-    correlationId:  corrBuyer,
-    walletId:       buyerWalletId,
-    accountType:    "TRADER_WALLET",
-    entryType:      "DEBIT",
-    amount:         grossAmount,
-    currency,
-    description:    `Deal ${dealId}: Bruttobetrag Käufer`,
-    dealId,
-    idempotencyKey: `deal:${dealId}:buyer-payment:DEBIT`,
-  });
-  entries.push({
-    correlationId:  corrBuyer,
-    walletId:       null,
-    accountType:    "ESCROW",
-    entryType:      "CREDIT",
-    amount:         grossAmount,
-    currency,
-    description:    `Deal ${dealId}: Eingang Treuhandkonto`,
-    dealId,
-    idempotencyKey: `deal:${dealId}:buyer-payment:CREDIT`,
-  });
-
-  // ── Schritt 2: EUCX-Plattformgebühr ───────────────────────────────────────
-  entries.push({
-    correlationId:  corrFee,
-    walletId:       null,
-    accountType:    "ESCROW",
-    entryType:      "DEBIT",
-    amount:         platformFee,
-    currency,
-    description:    `Deal ${dealId}: EUCX-Gebühr ${fees.feeRatePct}`,
-    dealId,
-    idempotencyKey: `deal:${dealId}:platform-fee:DEBIT`,
-  });
-  entries.push({
-    correlationId:  corrFee,
+    correlationId:  `${dealId}:platform-fee`,
     walletId:       null,
     accountType:    "EUCX_FEE_REVENUE",
     entryType:      "CREDIT",
     amount:         platformFee,
     currency,
-    description:    `Deal ${dealId}: EUCX-Gebührenkonto`,
+    description:    `Deal ${dealId}: EUCX-Gebühr ${fees.feeRatePct}`,
     dealId,
     idempotencyKey: `deal:${dealId}:platform-fee:CREDIT`,
   });
 
-  // ── Schritt 3: MwSt. (nur wenn nicht Reverse Charge) ──────────────────────
   if (hasVat) {
     entries.push({
-      correlationId:  corrVat,
-      walletId:       null,
-      accountType:    "ESCROW",
-      entryType:      "DEBIT",
-      amount:         vatAmount,
-      currency,
-      description:    `Deal ${dealId}: MwSt. ${fees.vatRate}%`,
-      dealId,
-      idempotencyKey: `deal:${dealId}:vat:DEBIT`,
-    });
-    entries.push({
-      correlationId:  corrVat,
+      correlationId:  `${dealId}:vat`,
       walletId:       null,
       accountType:    "VAT_PAYABLE",
       entryType:      "CREDIT",
@@ -415,30 +283,6 @@ function buildLedgerEntries(
       idempotencyKey: `deal:${dealId}:vat:CREDIT`,
     });
   }
-
-  // ── Schritt 4: Verkäufer erhält Nettobetrag ────────────────────────────────
-  entries.push({
-    correlationId:  corrSeller,
-    walletId:       null,
-    accountType:    "ESCROW",
-    entryType:      "DEBIT",
-    amount:         netToSeller,
-    currency,
-    description:    `Deal ${dealId}: Auszahlung an Verkäufer`,
-    dealId,
-    idempotencyKey: `deal:${dealId}:seller-payout:DEBIT`,
-  });
-  entries.push({
-    correlationId:  corrSeller,
-    walletId:       sellerWalletId,
-    accountType:    "TRADER_WALLET",
-    entryType:      "CREDIT",
-    amount:         netToSeller,
-    currency,
-    description:    `Deal ${dealId}: Nettogutschrift Verkäufer`,
-    dealId,
-    idempotencyKey: `deal:${dealId}:seller-payout:CREDIT`,
-  });
 
   return entries;
 }

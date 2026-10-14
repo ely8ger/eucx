@@ -53,9 +53,7 @@ export async function GET(req: NextRequest) {
           cbamAccountNumber:   true,
           memberId:            true,
           memberSeq:           true,
-          wallet: {
-            select: { balance: true, reservedBalance: true },
-          },
+          wallet: { select: { id: true } },
         },
       },
     },
@@ -97,7 +95,6 @@ export async function GET(req: NextRequest) {
       memberId:            user.organization.memberId ?? null,
       memberSeq:           user.organization.memberSeq,
     },
-    walletBalance:  user.organization.wallet?.balance?.toString()         ?? "0",
-    walletReserved: user.organization.wallet?.reservedBalance?.toString() ?? "0",
+    hasWallet: !!user.organization.wallet,
   });
 }

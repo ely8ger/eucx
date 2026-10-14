@@ -153,57 +153,7 @@ export async function PATCH(
       });
 
     } else if (status === "CANCELLED") {
-      // Escrow zurück an Käufer: Wallet-Gutschrift
-      const refund = refundAmount
-        ? new Decimal(refundAmount)
-        : new Decimal(contract.totalValue.toString());
-
-      if (refund.gt(0) && contract.buyer.organizationId) {
-        const buyerWallet = await tx.wallet.findUnique({
-          where:  { organizationId: contract.buyer.organizationId },
-          select: { id: true, reservedBalance: true },
-        });
-        if (buyerWallet) {
-          // Balance erhöhen + reservedBalance um Rückerstattung reduzieren
-          await tx.wallet.update({
-            where: { id: buyerWallet.id },
-            data:  {
-              balance:         { increment: refund.toFixed(8) },
-              reservedBalance: { decrement: refund.toFixed(8) },
-            },
-          });
-
-          // LedgerEntry für Rückbuchung
-          const corrId = `lot:${contract.id}:dispute-cancel`;
-          await tx.ledgerEntry.createMany({
-            skipDuplicates: true,
-            data: [
-              {
-                correlationId:  corrId,
-                walletId:       null,
-                accountType:    "ESCROW",
-                entryType:      "DEBIT",
-                amount:         refund.toFixed(8),
-                currency:       "EUR",
-                description:    `Streitfall-Rückbuchung Lot ${lotId}`,
-                lotContractId:  contract.id,
-                idempotencyKey: `lot:${contract.id}:dispute-cancel:DEBIT`,
-              },
-              {
-                correlationId:  corrId,
-                walletId:       buyerWallet.id,
-                accountType:    "TRADER_WALLET",
-                entryType:      "CREDIT",
-                amount:         refund.toFixed(8),
-                currency:       "EUR",
-                description:    `Streitfall-Rückbuchung Lot ${lotId} an Käufer`,
-                lotContractId:  contract.id,
-                idempotencyKey: `lot:${contract.id}:dispute-cancel:CREDIT`,
-              },
-            ],
-          });
-        }
-      }
+      // ZAG: keine Wallet-Rückbuchung — Rückerstattung direkt per Banküberweisung
 
       // LotContract auf DEFAULTED setzen
       await tx.lotContract.update({

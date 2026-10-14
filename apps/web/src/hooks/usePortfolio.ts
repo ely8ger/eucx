@@ -30,11 +30,8 @@ import { useAuthStore } from "@/store/authStore";
 // ─── Typen ────────────────────────────────────────────────────────────────────
 
 export interface WalletBalance {
-  currency:        string;
-  balance:         string;   // verfügbar
-  reservedBalance: string;   // für offene Orders blockiert
-  total:           string;   // balance + reserved
-  lastUpdated:     string | null;
+  currency:    string;
+  lastUpdated: string | null;
 }
 
 export interface BalanceResponse {
@@ -188,7 +185,6 @@ export function useCancelOrder(): UseMutationResult<void, Error, string> {
       }
     },
 
-    // Nach Erfolg: Balance ebenfalls invalidieren (reservedBalance ändert sich)
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.orders("active") });
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.balance() });

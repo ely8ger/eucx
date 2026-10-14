@@ -1,10 +1,8 @@
 "use client";
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-import Decimal from "decimal.js";
 import { useBalanceQuery } from "@/hooks/usePortfolio";
 import { useI18n }         from "@/lib/i18n/context";
-import { fmtEUR }          from "@/lib/fmt";
 
 const BLUE   = "#154194";
 const AMBER  = "#d97706";
@@ -23,7 +21,7 @@ function CustomTooltip({ active, payload }: TooltipProps) {
     <div style={{ backgroundColor: "#fff", border: "1px solid #e8e8e8", padding: "8px 12px", fontFamily: SANS, boxShadow: "0 4px 12px rgba(0,0,0,.1)" }}>
       <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: "#888", textTransform: "uppercase", letterSpacing: "0.08em" }}>{p.name}</p>
       <p style={{ margin: "4px 0 0", fontSize: 14, fontWeight: 600, color: "#0d1b2a", fontFamily: MONO }}>
-        {fmtEUR(p.value)} €
+        {p.value} %
       </p>
       <p style={{ margin: "2px 0 0", fontSize: 11, color: "#aaa", fontFamily: MONO }}>{p.payload.pct} %</p>
     </div>
@@ -43,23 +41,11 @@ export function PortfolioAllocationChart() {
     );
   }
 
-  const wallet = data?.wallets[0];
-  if (!wallet) return null;
+  if (!data?.wallets?.length) return null;
 
-  const available = new Decimal(wallet.balance);
-  const reserved  = new Decimal(wallet.reservedBalance);
-  const total     = new Decimal(wallet.total);
-
-  if (total.isZero()) return null;
-
-  const fmt = (d: InstanceType<typeof Decimal>) => fmtEUR(d.toNumber());
-
-  const availPct   = available.div(total).times(100).toDecimalPlaces(1).toNumber();
-  const reservePct = reserved.div(total).times(100).toDecimalPlaces(1).toNumber();
-
+  // Wallet-Konten vorhanden aber kein Saldo (ZAG: keine Kundengeldhaltung)
   const chartData = [
-    { name: t("portfolio_available"), value: available.toNumber(), pct: availPct,   color: BLUE  },
-    { name: t("portfolio_reserved"),  value: reserved.toNumber(),  pct: reservePct, color: AMBER },
+    { name: t("portfolio_available"), value: 1, pct: 100, color: BLUE },
   ];
 
   return (
@@ -92,11 +78,11 @@ export function PortfolioAllocationChart() {
           transform: "translate(-50%, -50%)",
           textAlign: "center", pointerEvents: "none",
         }}>
-          <p style={{ fontSize: 10, color: "#aaa", margin: 0, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>{t("portfolio_total")}</p>
+          <p style={{ fontSize: 10, color: "#aaa", margin: 0, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>Konten</p>
           <p style={{ fontSize: 16, fontWeight: 600, color: "#0d1b2a", margin: "4px 0 0", fontFamily: MONO, lineHeight: 1 }}>
-            {fmt(total)}
+            {data?.wallets?.length ?? 0}
           </p>
-          <p style={{ fontSize: 10, color: "#aaa", margin: "3px 0 0" }}>EUR</p>
+          <p style={{ fontSize: 10, color: "#aaa", margin: "3px 0 0" }}>aktiv</p>
         </div>
       </div>
 
@@ -110,7 +96,7 @@ export function PortfolioAllocationChart() {
             </div>
             <div style={{ textAlign: "right" }}>
               <span style={{ fontSize: 12, fontWeight: 600, color: "#0d1b2a", fontFamily: MONO }}>
-                {fmtEUR(d.value)} €
+                {d.pct} %
               </span>
               <span style={{ fontSize: 11, color: "#aaa", marginLeft: 6, fontFamily: MONO }}>{d.pct} %</span>
             </div>
@@ -121,7 +107,7 @@ export function PortfolioAllocationChart() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span style={{ fontSize: 11, color: "#aaa", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("portfolio_total")}</span>
           <span style={{ fontSize: 13, fontWeight: 700, color: BLUE, fontFamily: MONO }}>
-            {fmt(total)} €
+            {data?.wallets?.length ?? 0} Konto(en)
           </span>
         </div>
       </div>

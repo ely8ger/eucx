@@ -1,11 +1,8 @@
 import type { WalletBalance, PortfolioOrder } from "@/hooks/usePortfolio";
 
 export const DEMO_WALLET: WalletBalance = {
-  currency:        "EUR",
-  balance:         "125000.00",
-  reservedBalance: "18500.00",
-  total:           "143500.00",
-  lastUpdated:     new Date().toISOString(),
+  currency:    "EUR",
+  lastUpdated: new Date().toISOString(),
 };
 
 const O = (o: Omit<PortfolioOrder, "currency" | "remainingQty">): PortfolioOrder => ({

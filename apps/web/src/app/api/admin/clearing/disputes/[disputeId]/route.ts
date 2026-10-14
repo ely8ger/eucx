@@ -16,8 +16,6 @@ import { db }                         from "@/lib/db/client";
 import { requireAuth }                from "@/lib/auth/jwt";
 import { audit }                      from "@/lib/audit/logger";
 import { z }                          from "zod";
-import Decimal                        from "decimal.js";
-
 export const dynamic = "force-dynamic";
 
 const ADMIN_ROLES = ["ADMIN", "SUPER_ADMIN", "COMPLIANCE_OFFICER"] as const;
@@ -119,7 +117,6 @@ export async function PATCH(
           totalValue: true,
           currency:   true,
           buyOrder: { select: { userId: true } },
-          buyerOrg: { select: { id: true } },
           settlement: { select: { id: true, status: true } },
         },
       },
@@ -167,6 +164,7 @@ export async function PATCH(
 
     } else if (resolution === "TRADE_REVERSED") {
       // Storno — Deal CANCELLED, Settlement FAILED (kein weiterer Retry)
+      // ZAG: keine Wallet-Rückbuchung — Käufer/Verkäufer regeln direkt per Banküberweisung
       await tx.deal.update({
         where: { id: dealId },
         data:  { status: "CANCELLED" },
@@ -177,89 +175,10 @@ export async function PATCH(
           data:  { status: "FAILED", errorMessage: "Streitfall-Storno durch Admin" },
         });
       }
-      // Wallet-Rückbuchung: Käufer erhält Bruttobetrag zurück (sofern noch im Escrow)
-      const buyerOrg = dispute.deal.buyerOrg;
-      if (buyerOrg) {
-        const wallet = await tx.wallet.findUnique({ where: { organizationId: buyerOrg.id } });
-        if (wallet) {
-          const gross = new Decimal(dispute.deal.totalValue.toString());
-          const corrId = `deal:${dealId}:trade-reversed`;
-          await tx.ledgerEntry.createMany({
-            skipDuplicates: true,
-            data: [
-              {
-                correlationId:  corrId,
-                walletId:       null,
-                accountType:    "ESCROW",
-                entryType:      "DEBIT",
-                amount:         gross.toFixed(8),
-                currency:       dispute.deal.currency,
-                description:    `Streitfall-Storno Deal ${dealId}`,
-                dealId,
-                idempotencyKey: `deal:${dealId}:reversed:DEBIT`,
-              },
-              {
-                correlationId:  corrId,
-                walletId:       wallet.id,
-                accountType:    "TRADER_WALLET",
-                entryType:      "CREDIT",
-                amount:         gross.toFixed(8),
-                currency:       dispute.deal.currency,
-                description:    `Streitfall-Rückbuchung Deal ${dealId} an Käufer`,
-                dealId,
-                idempotencyKey: `deal:${dealId}:reversed:CREDIT`,
-              },
-            ],
-          });
-          await tx.wallet.update({
-            where: { id: wallet.id },
-            data:  { balance: { increment: gross.toFixed(8) } },
-          });
-        }
-      }
 
     } else if (resolution === "PARTIAL_REFUND" && refundAmount) {
-      // Teilrückerstattung — refundAmount an Käufer
-      const buyerOrg = dispute.deal.buyerOrg;
-      if (buyerOrg) {
-        const wallet = await tx.wallet.findUnique({ where: { organizationId: buyerOrg.id } });
-        if (wallet) {
-          const refund = new Decimal(refundAmount);
-          const corrId = `deal:${dealId}:partial-refund`;
-          await tx.ledgerEntry.createMany({
-            skipDuplicates: true,
-            data: [
-              {
-                correlationId:  corrId,
-                walletId:       null,
-                accountType:    "ESCROW",
-                entryType:      "DEBIT",
-                amount:         refund.toFixed(8),
-                currency:       dispute.deal.currency,
-                description:    `Teilrückerstattung Streitfall Deal ${dealId}`,
-                dealId,
-                idempotencyKey: `deal:${dealId}:partial-refund:DEBIT`,
-              },
-              {
-                correlationId:  corrId,
-                walletId:       wallet.id,
-                accountType:    "TRADER_WALLET",
-                entryType:      "CREDIT",
-                amount:         refund.toFixed(8),
-                currency:       dispute.deal.currency,
-                description:    `Teilrückerstattung Deal ${dealId} an Käufer`,
-                dealId,
-                idempotencyKey: `deal:${dealId}:partial-refund:CREDIT`,
-              },
-            ],
-          });
-          await tx.wallet.update({
-            where: { id: wallet.id },
-            data:  { balance: { increment: refund.toFixed(8) } },
-          });
-        }
-      }
-      // Deal bleibt CONTRACT_SIGNED (Trade gilt als abgeschlossen mit Teilrückerstattung)
+      // Teilrückerstattung — Deal als abgeschlossen markieren
+      // ZAG: keine Wallet-Rückbuchung — Rückerstattung erfolgt direkt per Banküberweisung
       await tx.deal.update({ where: { id: dealId }, data: { status: "SETTLEMENT_COMPLETE" } });
     }
   });
