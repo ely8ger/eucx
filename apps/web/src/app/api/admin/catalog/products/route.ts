@@ -32,14 +32,18 @@ export async function GET(req: NextRequest) {
     }
 
     const sp = req.nextUrl.searchParams;
-    const sector  = sp.get("sector")?.toUpperCase() as Sector | undefined;
-    const q       = sp.get("q")?.trim() ?? "";
-    const page    = Math.max(1, parseInt(sp.get("page") ?? "1", 10));
-    const limit   = 50;
-    const skip    = (page - 1) * limit;
+    const sectorRaw = sp.get("sector")?.toUpperCase();
+    const sector    = sectorRaw && VALID_SECTORS.includes(sectorRaw as Sector) ? (sectorRaw as Sector) : undefined;
+    const q         = sp.get("q")?.trim() ?? "";
+    const page      = Math.max(1, parseInt(sp.get("page") ?? "1", 10));
+    const limit     = 50;
+    const skip      = (page - 1) * limit;
+    const activeRaw = sp.get("active");
+    const activeFilter = activeRaw === "true" ? true : activeRaw === "false" ? false : undefined;
 
     const where = {
-      ...(sector && VALID_SECTORS.includes(sector) ? { sector } : {}),
+      ...(sector ? { sector } : {}),
+      ...(activeFilter !== undefined ? { isActive: activeFilter } : {}),
       ...(q.length >= 1 ? {
         OR: [
           { nameEn: { contains: q, mode: "insensitive" as const } },

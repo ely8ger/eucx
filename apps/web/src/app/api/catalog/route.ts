@@ -12,26 +12,31 @@ export const dynamic = "force-dynamic";
 
 const SELECT = { id: true, nr: true, slug: true, nameDe: true, nameEn: true, nameRu: true, norm: true, sector: true, _count: { select: { sizes: true } } } as const;
 
+const VALID_SECTORS = new Set(["STEEL", "ENERGY", "AGRAR", "CHEMICALS", "FERTILIZER", "SCRAP", "NON_FERROUS"]);
+
 async function _GET(req: NextRequest) {
   const q      = req.nextUrl.searchParams.get("q")?.trim() ?? "";
   const slug   = req.nextUrl.searchParams.get("slug")?.trim() ?? "";
   const browse = req.nextUrl.searchParams.get("browse") === "1";
   const stats  = req.nextUrl.searchParams.get("stats") === "1";
-  const sector = req.nextUrl.searchParams.get("sector")?.trim().toUpperCase() ?? "";
+  const sectorRaw = req.nextUrl.searchParams.get("sector")?.trim().toUpperCase() ?? "";
+  const sector    = VALID_SECTORS.has(sectorRaw) ? sectorRaw : "";
 
   // ── Statistiken für Header ──────────────────────────────────────────
   if (stats) {
     const [products, sizes] = await Promise.all([
-      db.catalogProduct.count(),
-      db.productSize.count(),
+      db.catalogProduct.count({ where: { isActive: true } }),
+      db.productSize.count({
+        where: { product: { isActive: true } },
+      }),
     ]);
     return NextResponse.json({ products, sizes });
   }
 
   // ── Einzelprodukt mit Größen ────────────────────────────────────────
   if (slug) {
-    const product = await db.catalogProduct.findUnique({
-      where: { slug },
+    const product = await db.catalogProduct.findFirst({
+      where: { slug, isActive: true },
       include: {
         sizes: {
           select: { value: true },
