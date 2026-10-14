@@ -11,6 +11,7 @@ import { verifySync }                from "otplib";
 import { db }                        from "@/lib/db/client";
 import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { z }                         from "zod";
+import { checkRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,15 @@ export async function POST(req: NextRequest) {
   let tokenPayload;
   try { tokenPayload = await requireAuth(req); }
   catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
+
+  // Rate-Limit: 5 Versuche/Minute — verhindert Brute-Force beim 2FA-Setup-Verify
+  const rl = await checkRateLimit(`2fa:setup:${tokenPayload.userId}`, "auth");
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Zu viele Versuche. Bitte versuchen Sie es in einer Minute erneut." },
+      { status: 429, headers: rateLimitHeaders(rl) },
+    );
+  }
 
   let body: unknown;
   try { body = await req.json(); } catch {

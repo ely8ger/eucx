@@ -10,11 +10,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHash, randomBytes }   from "crypto";
 import { db }                        from "@/lib/db/client";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
+import { checkRateLimit }            from "@/lib/rate-limit";
+import { getClientIp }               from "@/lib/net/get-client-ip";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+
+    // IP-Rate-Limit: verhindert Brute-Force-Enumeration über viele Accounts
+    const rl = await checkRateLimit(ip, "auth");
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { code: "RATE_LIMITED", message: "Zu viele Anfragen. Bitte versuchen Sie es später erneut." },
+        { status: 429 },
+      );
+    }
+
     const body = await req.json() as { email?: string };
     if (!body.email || typeof body.email !== "string") {
       return NextResponse.json(

@@ -9,6 +9,7 @@ import { verify as totpVerify }      from "otplib";
 import { db }                        from "@/lib/db/client";
 import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
+import { checkRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,15 @@ export async function POST(req: NextRequest) {
   let tokenPayload;
   try { tokenPayload = await requireAuth(req); }
   catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
+
+  // Rate-Limit: 5 Versuche/Minute — verhindert Brute-Force auf 2FA-Deaktivierung
+  const rl = await checkRateLimit(`2fa:setup:${tokenPayload.userId}`, "auth");
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Zu viele Versuche. Bitte versuchen Sie es in einer Minute erneut." },
+      { status: 429, headers: rateLimitHeaders(rl) },
+    );
+  }
 
   // TOTP-Code prüfen
   let body: { code?: string } = {};

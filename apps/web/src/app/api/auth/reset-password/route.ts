@@ -8,32 +8,51 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { createHash }                from "crypto";
+import { z }                         from "zod";
 import { db }                        from "@/lib/db/client";
 import { hashPassword }              from "@/lib/auth/password";
+import { isPwnedPassword }           from "@/lib/auth/pwned-password";
 
 export const dynamic = "force-dynamic";
 
-const MIN_PASSWORD_LENGTH = 8;
+const bodySchema = z.object({
+  token:       z.string().min(1, "Token erforderlich"),
+  newPassword: z.string()
+    .min(10, "Mindestens 10 Zeichen erforderlich")
+    .regex(/[A-Z]/, "Mindestens ein Großbuchstabe erforderlich")
+    .regex(/[0-9]/, "Mindestens eine Zahl erforderlich")
+    .regex(/[^A-Za-z0-9]/, "Mindestens ein Sonderzeichen erforderlich"),
+});
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json() as { token?: string; newPassword?: string };
-
-    if (!body.token || !body.newPassword) {
+    let rawBody: unknown;
+    try { rawBody = await req.json(); } catch {
       return NextResponse.json(
-        { code: "VALIDATION_ERROR", message: "Token und neues Passwort sind erforderlich." },
+        { code: "VALIDATION_ERROR", message: "Ungültiger Body." },
         { status: 400 },
       );
     }
 
-    if (body.newPassword.length < MIN_PASSWORD_LENGTH) {
+    const parsed = bodySchema.safeParse(rawBody);
+    if (!parsed.success) {
       return NextResponse.json(
-        { code: "VALIDATION_ERROR", message: `Das Passwort muss mindestens ${MIN_PASSWORD_LENGTH} Zeichen lang sein.` },
-        { status: 400 },
+        { code: "VALIDATION_ERROR", message: parsed.error.issues[0]?.message ?? "Ungültige Eingabe." },
+        { status: 422 },
       );
     }
 
-    const tokenHash = createHash("sha256").update(body.token).digest("hex");
+    const { token, newPassword } = parsed.data;
+
+    const pwned = await isPwnedPassword(newPassword);
+    if (pwned) {
+      return NextResponse.json(
+        { code: "VALIDATION_ERROR", message: "Dieses Passwort ist in bekannten Datenlecks aufgetaucht. Bitte wählen Sie ein anderes." },
+        { status: 422 },
+      );
+    }
+
+    const tokenHash = createHash("sha256").update(token).digest("hex");
 
     const resetToken = await db.passwordResetToken.findUnique({
       where: { tokenHash },
@@ -47,7 +66,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const newPasswordHash = await hashPassword(body.newPassword);
+    const newPasswordHash = await hashPassword(newPassword);
 
     await db.$transaction([
       // Token verbrauchen

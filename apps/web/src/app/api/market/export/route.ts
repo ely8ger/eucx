@@ -22,6 +22,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
 import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
+import { validateApiKey, ApiKeyError } from "@/lib/auth/validate-api-key";
 import ExcelJS                       from "exceljs";
 
 export const dynamic = "force-dynamic";
@@ -47,18 +48,43 @@ const HEADERS = [
 ];
 
 export async function GET(req: NextRequest) {
-  // ── Auth ──────────────────────────────────────────────────────────────────
-  let tokenPayload;
-  try { tokenPayload = await requireAuth(req); }
-  catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
+  // ── Auth: Session-Cookie ODER API-Key (Scope: market:read) ───────────────
+  let organizationId: string;
 
-  // ── User + Org laden ──────────────────────────────────────────────────────
-  const user = await db.user.findUnique({
-    where:  { id: tokenPayload.userId },
-    select: { organizationId: true, organization: { select: { name: true } } },
+  const apiKeyHeader = req.headers.get("x-api-key");
+  if (apiKeyHeader) {
+    // Programmatischer Zugang via API-Key
+    let apiKeyPayload;
+    try { apiKeyPayload = await validateApiKey(req); }
+    catch (e) {
+      const msg = e instanceof ApiKeyError ? e.message : "Ungültiger API-Key";
+      return NextResponse.json({ error: msg }, { status: 401 });
+    }
+    if (!apiKeyPayload.scopes.includes("market:read")) {
+      return NextResponse.json({ error: "API-Key benötigt Scope: market:read" }, { status: 403 });
+    }
+    organizationId = apiKeyPayload.organizationId;
+  } else {
+    // Browser-Session via JWT-Cookie
+    let tokenPayload;
+    try { tokenPayload = await requireAuth(req); }
+    catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
+
+    const user = await db.user.findUnique({
+      where:  { id: tokenPayload.userId },
+      select: { organizationId: true },
+    });
+    if (!user) return NextResponse.json({ error: "User nicht gefunden" }, { status: 404 });
+    organizationId = user.organizationId;
+  }
+
+  // ── Org-Name für Datei-Header ─────────────────────────────────────────────
+  const org = await db.organization.findUnique({
+    where:  { id: organizationId },
+    select: { name: true },
   });
-  if (!user) {
-    return NextResponse.json({ error: "User nicht gefunden" }, { status: 404 });
+  if (!org) {
+    return NextResponse.json({ error: "Organisation nicht gefunden" }, { status: 404 });
   }
 
   const params    = req.nextUrl.searchParams;
@@ -90,8 +116,8 @@ export async function GET(req: NextRequest) {
   const deals = await db.deal.findMany({
     where: {
       OR: [
-        { sellerOrgId: user.organizationId },
-        { buyerOrgId:  user.organizationId },
+        { sellerOrgId: organizationId },
+        { buyerOrgId:  organizationId },
       ],
       status:    { notIn: ["CANCELLED", "DISPUTED"] },
       productId,
@@ -107,8 +133,8 @@ export async function GET(req: NextRequest) {
       invoices: {
         where: {
           OR: [
-            { issuerId:    user.organizationId },
-            { recipientId: user.organizationId },
+            { issuerId:    organizationId },
+            { recipientId: organizationId },
           ],
         },
         select: {
@@ -132,7 +158,7 @@ export async function GET(req: NextRequest) {
   }
 
   // ── Daten aufbereiten ─────────────────────────────────────────────────────
-  const myOrgId = user.organizationId;
+  const myOrgId = organizationId;
 
   const rows = deals.map((deal) => {
     const isSeller     = deal.sellerOrgId === myOrgId;
@@ -159,7 +185,7 @@ export async function GET(req: NextRequest) {
     ];
   });
 
-  const filename = `eucx-trades-${user.organization.name.replace(/\s/g, "-")}-${new Date().toISOString().slice(0, 10)}`;
+  const filename = `eucx-trades-${org.name.replace(/\s/g, "-")}-${new Date().toISOString().slice(0, 10)}`;
 
   // ── CSV-Format ────────────────────────────────────────────────────────────
   if (format === "csv") {
@@ -226,7 +252,7 @@ export async function GET(req: NextRequest) {
     const meta = wb.addWorksheet("Export-Info");
     meta.addRows([
       ["Export erstellt am:", new Date().toLocaleString("de-DE")],
-      ["Organisation:",       user.organization.name],
+      ["Organisation:",       org.name],
       ["Zeitraum von:",       fromDate?.toLocaleDateString("de-DE") ?? "-"],
       ["Zeitraum bis:",       toDate?.toLocaleDateString("de-DE")   ?? "-"],
       ["Anzahl Trades:",      deals.length],
