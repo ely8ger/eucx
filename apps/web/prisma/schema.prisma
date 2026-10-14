@@ -1216,16 +1216,21 @@ model Lot {
   deliveryLocation String?                       // Lieferort (vollständige Adresse des Lieferziels)
   buyerIp          String?                       // IP des Käufers bei Lot-Erstellung (Betrugsschutz)
 
-  buyer         User              @relation("LotBuyer",  fields: [buyerId],   references: [id])
-  winner        User?             @relation("LotWinner", fields: [winnerId],   references: [id])
-  bids          Bid[]
-  registrations LotRegistration[]
-  lotContract   LotContract?
-  charges       SellerCharge[]   @relation("ChargeReservation")
+  // ── Produktkatalog-Verknüpfung ────────────────────────────────────────────────
+  catalogProductId String?                       // FK → CatalogProduct.id (optional — validiert handelbare Ware)
+
+  buyer          User              @relation("LotBuyer",  fields: [buyerId],   references: [id])
+  winner         User?             @relation("LotWinner", fields: [winnerId],   references: [id])
+  catalogProduct CatalogProduct?   @relation(fields: [catalogProductId], references: [id])
+  bids           Bid[]
+  registrations  LotRegistration[]
+  lotContract    LotContract?
+  charges        SellerCharge[]   @relation("ChargeReservation")
 
   @@index([buyerId])
   @@index([phase])               // Offene Auktionen schnell abrufen
   @@index([auctionEnd, phase])   // AuctionTimer: fällige Übergänge finden
+  @@index([catalogProductId])
   @@map("lots")
 }
 
@@ -1509,6 +1514,7 @@ model CatalogProduct {
   sector   String        @default("STEEL")         // Sektor: STEEL|ENERGY|AGRAR|CHEMICALS|FERTILIZER|SCRAP|NON_FERROUS
   isActive Boolean       @default(true)            // Soft-Delete für Admin-Verwaltung
   sizes    ProductSize[]
+  lots     Lot[]
 
   @@index([nameEn])
   @@index([nameDe])

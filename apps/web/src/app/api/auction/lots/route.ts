@@ -20,7 +20,8 @@ const INCOTERMS_VALUES = ["EXW", "FCA", "FAS", "FOB", "CFR", "CIF", "CPT", "CIP"
 const CBAM_CATEGORY_VALUES = Object.values(CbamCategory) as [CbamCategory, ...CbamCategory[]];
 
 const createLotSchema = z.object({
-  commodity:        z.string().min(3).max(120),
+  commodity:           z.string().min(3).max(120),
+  catalogProductId:    z.string().optional(),  // FK → catalog_products.id (validiert handelbare Ware)
   quantity:         z.number().positive(),
   unit:             z.enum(["TON", "KG", "CBM", "LITER", "PIECE", "SQM", "MWH"]),
   startPrice:       z.number().positive().optional(),
@@ -74,10 +75,21 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Lot anlegen ───────────────────────────────────────────────────
-  const { commodity, quantity, unit, startPrice, description,
+  const { commodity, catalogProductId, quantity, unit, startPrice, description,
           cbamCategory, co2PerTonne, countryOfOrigin, productionSiteId, incoterms, greenSteel,
           hsCode, qualityGrade, deliveryPeriod, deliveryLocation, paymentTerms, vatTreatment,
           publish } = parsed.data;
+
+  // ── Produktkatalog-Validierung ────────────────────────────────────────────────
+  if (catalogProductId) {
+    const catalogProduct = await db.catalogProduct.findUnique({
+      where:  { id: catalogProductId },
+      select: { id: true, isActive: true },
+    });
+    if (!catalogProduct || !catalogProduct.isActive) {
+      return NextResponse.json({ error: "Produkt nicht im EUCX-Katalog oder deaktiviert" }, { status: 422 });
+    }
+  }
 
   const buyerIp = req.headers.get("x-forwarded-for")?.split(",").at(0)?.trim()
                ?? req.headers.get("x-real-ip")
@@ -90,6 +102,7 @@ export async function POST(req: NextRequest) {
         buyerId:         user.id,
         buyerIp,
         commodity,
+        catalogProductId,
         quantity:        quantity.toString(),
         unit,
         startPrice:      startPrice?.toString(),

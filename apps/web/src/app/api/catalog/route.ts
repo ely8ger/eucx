@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { apiRoute } from "@/lib/api/route-handler";
+import { TRADEABLE_PRODUCTS } from "@/lib/katalog/data";
 
 export const dynamic = "force-dynamic";
 
@@ -15,12 +16,20 @@ const SELECT = { id: true, nr: true, slug: true, nameDe: true, nameEn: true, nam
 const VALID_SECTORS = new Set(["STEEL", "ENERGY", "AGRAR", "CHEMICALS", "FERTILIZER", "SCRAP", "NON_FERROUS"]);
 
 async function _GET(req: NextRequest) {
-  const q      = req.nextUrl.searchParams.get("q")?.trim() ?? "";
-  const slug   = req.nextUrl.searchParams.get("slug")?.trim() ?? "";
-  const browse = req.nextUrl.searchParams.get("browse") === "1";
-  const stats  = req.nextUrl.searchParams.get("stats") === "1";
-  const sectorRaw = req.nextUrl.searchParams.get("sector")?.trim().toUpperCase() ?? "";
-  const sector    = VALID_SECTORS.has(sectorRaw) ? sectorRaw : "";
+  const q           = req.nextUrl.searchParams.get("q")?.trim() ?? "";
+  const slug        = req.nextUrl.searchParams.get("slug")?.trim() ?? "";
+  const browse      = req.nextUrl.searchParams.get("browse") === "1";
+  const stats       = req.nextUrl.searchParams.get("stats") === "1";
+  const tradeableId = req.nextUrl.searchParams.get("tradeable")?.trim() ?? "";
+  const sectorRaw   = req.nextUrl.searchParams.get("sector")?.trim().toUpperCase() ?? "";
+  const sector      = VALID_SECTORS.has(sectorRaw) ? sectorRaw : "";
+
+  // ── Tradeable-Produkt-Daten (unit, minLotSize, lotStep, inco, vat, hsCode) ──
+  if (tradeableId) {
+    const product = TRADEABLE_PRODUCTS.find((p) => p.id === tradeableId);
+    if (!product) return NextResponse.json({ error: "Nicht gefunden" }, { status: 404 });
+    return NextResponse.json({ product });
+  }
 
   // ── Statistiken für Header ──────────────────────────────────────────
   if (stats) {

@@ -51,6 +51,8 @@ export interface TradeableProduct {
   vat:       string;        // USt-Behandlung
   desc:      string;        // Beschreibung für Lot-Formular
   unit:      TradeUnit;     // Handelseinheit für Lot-Formular (TON | MWH | KG | LITER | BBL)
+  minLotSize: number;      // Mindest-Losgröße in unit (branchenüblich)
+  lotStep:    number;      // Schrittgröße für Mengen-Eingabe
 }
 
 export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
@@ -61,6 +63,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "BST 500 / B500B", norm: "EN 10080 · DIN 488",
     hsCode: "7214 20 00", cbam: "STEEL_PROCESSED", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 25,
+    lotStep:    25,
     desc: "Gerippter Betonstahl BST 500 / B500B, Ø 6-40 mm. Lieferung in Stäben 6 m oder 12 m. 3.1-Werkzeugnis nach EN 10204 erforderlich. Anwendung: Stahlbetonkonstruktionen, Hoch- und Tiefbau.",
   },
   {
@@ -69,6 +73,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "SAE 1008 / DD11", norm: "EN 10016-2",
     hsCode: "7213 91 10", cbam: "STEEL_PROCESSED", inco: "EXW",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 25,
+    lotStep:    25,
     desc: "Walzdraht unlegiert, niedriggekohlter Stahl SAE 1008 / DD11. Coil, Ø 5,5-16 mm. Schmelzanalyse 3.1 nach EN 10204 erforderlich. Anwendung: Zieherei, Betonstahlproduktion, Netzherstellung.",
   },
   // ── Stahl - Flachprodukte ────────────────────────────────────────────────────
@@ -78,6 +84,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "S235JR", norm: "EN 10025-2 · EN 10051",
     hsCode: "7208 51 20", cbam: "STEEL_PRIMARY", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 20,
+    lotStep:    10,
     desc: "Warmgewalzte Bleche / Coils S235JR. Breite 600-2000 mm, Dicke 2-25 mm. 3.1-Zeugnis nach EN 10204 beizufügen. Anwendung: Konstruktionsstahl, Maschinenbau.",
   },
   {
@@ -86,6 +94,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "S355JR / S355J2", norm: "EN 10025-2",
     hsCode: "7208 51 91", cbam: "STEEL_PRIMARY", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 20,
+    lotStep:    10,
     desc: "Warmgewalzte Feinkornbaustahl-Bleche S355JR / J2. Dicke 3-80 mm, Breite bis 3000 mm. 3.1-Werkzeugnis nach EN 10204. Anwendung: Brückenbau, Schweißkonstruktionen, Druckbehälter.",
   },
   {
@@ -94,6 +104,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "DC01 / DC04", norm: "EN 10130",
     hsCode: "7209 15 00", cbam: "STEEL_PRIMARY", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 10,
+    lotStep:    5,
     desc: "Kaltgewalzte Bleche / Coils DC01-DC04. Breite 600-1850 mm, Dicke 0,5-3 mm. Oberfläche A (geölt) oder B (blank). 3.1-Zeugnis nach EN 10204. Anwendung: Automobilindustrie, Haushaltsgeräte.",
   },
   {
@@ -102,6 +114,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "DX51D+Z / DX53D", norm: "EN 10346",
     hsCode: "7210 49 00", cbam: "STEEL_PRIMARY", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 10,
+    lotStep:    5,
     desc: "Feuerverzinkte Bleche / Coils DX51D+Z oder DX53D. Zinkauflage Z100-Z275 g/m². Breite 600-1500 mm, Dicke 0,4-3 mm. 3.1-Zeugnis EN 10204. Anwendung: Bau, Lüftung, Trapezblechproduktion.",
   },
   // ── Stahl - Träger & Profile ─────────────────────────────────────────────────
@@ -111,6 +125,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "S235JR / S355JR", norm: "EN 10365 · EN 10025-2",
     hsCode: "7216 33 10", cbam: "STEEL_PROCESSED", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 25,
+    lotStep:    25,
     desc: "Breitflanschträger HEA/HEB nach EN 10365, S235JR oder S355JR. Größen HEA 100-900, HEB 100-1000. 3.1-Werkzeugnis nach EN 10204. Anwendung: Stahlbau, Hallenkonstruktionen, Brückenbau.",
   },
   {
@@ -119,6 +135,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "S235JR / S355JR", norm: "EN 10365 · EN 10025-2",
     hsCode: "7216 31 10", cbam: "STEEL_PROCESSED", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 25,
+    lotStep:    25,
     desc: "I-Träger schmaler Flansch (IPE) nach EN 10365. Größen IPE 80-600, S235JR oder S355JR. 3.1-Zeugnis nach EN 10204. Anwendung: Hochbau, Kranbahnen, Industrie- und Lagerhallen.",
   },
   {
@@ -127,6 +145,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "S235JRH / S355J2H", norm: "EN 10219 · EN 10210",
     hsCode: "7306 61 10", cbam: "STEEL_PROCESSED", inco: "EXW",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 25,
+    lotStep:    25,
     desc: "Quadrat- (SHS), Rechteck- (RHS) und Rundhohlprofile (CHS), kalt- oder warmgefertigt. Wandstärke 2-16 mm. Normen: EN 10219, EN 10210. Anwendung: Stahlbau, Konstruktionsprofile, Maschinenbau.",
   },
   // ── Stahl - Rohre ────────────────────────────────────────────────────────────
@@ -136,6 +156,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "P235GH / P265GH", norm: "EN 10216-2",
     hsCode: "7304 31 80", cbam: "STEEL_PROCESSED", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 10,
+    lotStep:    5,
     desc: "Nahtlos gezogene Stahlrohre für Druckbehälter, P235GH / P265GH. Außendurchmesser 21,3-610 mm, Wandstärke 2-50 mm. Normen: EN 10216-2. 3.1-Prüfzeugnis nach EN 10204. Anwendung: Kraftwerke, Chemie, Energietechnik.",
   },
   {
@@ -144,6 +166,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "S355J2H / St52", norm: "EN 10210-1",
     hsCode: "7304 39 51", cbam: "STEEL_PROCESSED", inco: "DAP",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 10,
+    lotStep:    5,
     desc: "Nahtlose Konstruktionsrohre S355J2H warm gefertigt. Außendurchmesser 33,7-610 mm. Normen: EN 10210-1. 3.1-Zeugnis nach EN 10204. Anwendung: Hochbau, Brückenbau, Maschinenbau.",
   },
   // ── Schrott ──────────────────────────────────────────────────────────────────
@@ -153,6 +177,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "HMS 1/2", norm: "ISRI 200-212",
     hsCode: "7204 10 00", cbam: null, inco: "FOB",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 100,
+    lotStep:    50,
     desc: "Schwerer Stahlschrott HMS 1/2 nach ISRI-Spezifikation 200 / 210. Max. Abmessung 1500×500 mm. Feuchtigkeitsgehalt max. 1 %. Analyse: C ≤ 0,4 %, S ≤ 0,05 %. Sichtkontrolle bei Übernahme. Keine radioaktiven oder gefährlichen Materialien.",
   },
   {
@@ -161,6 +187,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Schredder / ISRI 210", norm: "ISRI 210",
     hsCode: "7204 49 10", cbam: null, inco: "FOB",
     vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 100,
+    lotStep:    50,
     desc: "Aufbereiteter Schredder-Schrott ISRI 210. Schüttdichte mind. 1,0 t/m³. Kupfer ≤ 0,25 %, Chrom ≤ 0,25 %, Nickel ≤ 0,25 %. Analyse-Zertifikat beizufügen. Lieferung per Schiff, LKW oder Waggon.",
   },
   // ── NE-Metalle ───────────────────────────────────────────────────────────────
@@ -170,6 +198,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Cu-CATH-1 · min. 99,99 % Cu", norm: "EN 1978 Grade A",
     hsCode: "7403 11 00", cbam: null, inco: "CIF",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 5,
+    lotStep:    1,
     desc: "Elektrolyt-Kupferkathoden EN 1978 Grade A, Reinheit min. 99,99 % Cu. Standardkathode ca. 110-130 kg/Stück, palettiert. LME-konforme Qualität. Analysezertifikat und Ursprungsnachweis erforderlich.",
   },
   {
@@ -178,6 +208,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "EN AW-1050A · Al min. 99,5 %", norm: "EN 573-3 · LME P1020",
     hsCode: "7601 10 00", cbam: "ALUMINIUM_UNWROUGHT", inco: "CIF",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 20,
+    lotStep:    5,
     desc: "Primär-Aluminiumbarren EN AW-1050A (Al 99,5 %), T-Barren oder Masseln, LME-Spezifikation P1020. Analysezertifikat und Ursprungsnachweis erforderlich. CBAM-deklarationspflichtig ab 2026.",
   },
   // ── Dünger - Stickstoff ──────────────────────────────────────────────────────
@@ -187,6 +219,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "CO(NH₂)₂ · 46 % N", norm: "EN 13654-1 · EU-VO 2019/1009",
     hsCode: "3102 10 10", cbam: null, inco: "CIF",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500,
+    lotStep:    250,
     desc: "Harnstoff 46 % N in Prill- oder Granulat-Form. N-Gehalt min. 46 %. Biuret max. 1,2 %. Feuchtigkeitsgehalt max. 0,5 %. Lieferung in Big Bag (500/1000 kg) oder Schüttgut. Konformität mit EU-Düngemittelverordnung 2019/1009.",
   },
   {
@@ -195,6 +229,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "NH₄NO₃ · 34,4 % N", norm: "EN 13463 · EU-VO 2019/1009",
     hsCode: "3102 30 90", cbam: null, inco: "EXW",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500,
+    lotStep:    250,
     desc: "Ammoniumnitrat-Dünger 34,4 % N, granuliert. Detonationssicherheitsprüfung nach Anhang III der Verordnung (EG) 2003/2003 erforderlich. Lieferung in Big Bag oder Schüttgut. ADR-Kennzeichnung. EU-VO 2019/1009 konform.",
   },
   // ── Dünger - Phosphor ────────────────────────────────────────────────────────
@@ -204,6 +240,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "(NH₄)₂HPO₄ · 18 % N · 46 % P₂O₅", norm: "EN 13639 · EU-VO 2019/1009",
     hsCode: "3105 30 00", cbam: null, inco: "CIF",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500,
+    lotStep:    250,
     desc: "Diammoniumphosphat DAP 18-46. N-Gehalt 18 %, P₂O₅ 46 %. Granulat, Körnung 2-5 mm. Schüttdichte ca. 0,9 t/m³. Lieferung in Big Bag 1.000 kg oder Schüttgut. EU-VO 2019/1009 konform, Herkunftsnachweis.",
   },
   // ── Dünger - Kalium ──────────────────────────────────────────────────────────
@@ -213,6 +251,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "KCl · 60 % K₂O", norm: "EN 13647 · EU-VO 2019/1009",
     hsCode: "3104 20 50", cbam: null, inco: "CIF",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500,
+    lotStep:    250,
     desc: "Kaliumchlorid (MOP) mit 60 % K₂O. Granulat oder Körnung. Feuchtigkeitsgehalt max. 0,5 %. Lieferung in Big Bag (500/1000 kg) oder Schüttgut. EU-VO 2019/1009 konform. Nicht geeignet für chloridempfindliche Kulturen.",
   },
   {
@@ -221,6 +261,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "KNO₃ · 13 % N · 46 % K₂O", norm: "EN 13647 · EU-VO 2019/1009",
     hsCode: "3104 20 90", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 100,
+    lotStep:    50,
     desc: "Kaliumnitrat (NOP) 13-0-46. Chloridfreier Dünger für empfindliche Kulturen. Löslichkeit: 316 g/l bei 20 °C (geeignet für Fertigationsanlagen). Lieferung in 25 kg-Sack oder Big Bag. EU-VO 2019/1009 konform.",
   },
   // ── Dünger - NPK ────────────────────────────────────────────────────────────
@@ -230,6 +272,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "N-P₂O₅-K₂O 15-15-15", norm: "EN 14677 · EU-VO 2019/1009",
     hsCode: "3105 20 10", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500,
+    lotStep:    250,
     desc: "NPK-Komplexdünger 15-15-15. Granulat, Körnung 2-5 mm. Gleichmäßige Nährstoffverteilung im Granulat. Schüttdichte ca. 1,0 t/m³. Lieferung in Big Bag 500/1000 kg oder Schüttgut. EU-VO 2019/1009 konform.",
   },
   {
@@ -238,6 +282,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "N-P₂O₅-K₂O 20-10-10", norm: "EN 14677 · EU-VO 2019/1009",
     hsCode: "3105 20 10", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500,
+    lotStep:    250,
     desc: "NPK-Komplexdünger 20-10-10. Stickstoffbetont für Getreide und Grünland. Granulat, Körnung 2-5 mm. Lieferung in Big Bag 1.000 kg oder Schüttgut. EU-VO 2019/1009 konform.",
   },
   {
@@ -246,6 +292,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "N-P₂O₅-K₂O 8-20-30", norm: "EN 14677 · EU-VO 2019/1009",
     hsCode: "3105 20 10", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500,
+    lotStep:    250,
     desc: "NPK-Komplexdünger 8-20-30. Phosphor- und kaliumbetontes Verhältnis für Herbst-Grunddüngung. Lieferung in Big Bag 1.000 kg oder Schüttgut. EU-VO 2019/1009 konform.",
   },
   // ── Energie - Gas ────────────────────────────────────────────────────────────
@@ -255,6 +303,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Methan CH₄ ≥ 95 %", norm: "EN ISO 6976 · DVGW G 260",
     hsCode: "2711 21 00", cbam: null, inco: "TTF-Hub",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "MWH",
+    minLotSize: 10000,
+    lotStep:    1000,
     desc: "Erdgas Qualität H (High Caloric), Lieferpunkt TTF (Title Transfer Facility) / NCG. Heizwert (Hi) ≥ 8,4 kWh/m³. Preis in EUR/MWh. Abwicklung über Bilanzkreisvertrag nach GasNZV. Gasbeschaffenheit nach DVGW G 260.",
   },
   {
@@ -263,6 +313,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Methan CH₄ verflüssigt", norm: "EN ISO 16903 · ISO 8217",
     hsCode: "2711 11 00", cbam: null, inco: "CIF",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "MWH",
+    minLotSize: 50000,
+    lotStep:    10000,
     desc: "Verflüssigtes Erdgas (LNG) für Tanker-Lieferung. CH₄-Anteil ≥ 90 %, Wobbe-Index 46-56 MJ/m³. Preis in EUR/MWh. Tanker-Nomination 72h vor ETA. Herkunftszertifikat (CoO) erforderlich.",
   },
   // ── Energie - Strom ───────────────────────────────────────────────────────────
@@ -272,6 +324,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Elektrische Energie", norm: "REMIT · MiFID II · EnWG",
     hsCode: "2716 00 00", cbam: null, inco: "EPEX-Spot",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "MWH",
+    minLotSize: 1,
+    lotStep:    1,
     desc: "Baseload-Strom Lieferzone DE/AT. EPEX-Spot Day-Ahead, stündliche Blöcke 0-24 Uhr. Preis in EUR/MWh. Abnahme physisch oder finanziell. Bilanzkreisübergabe nach §20 StromNZV. REMIT-meldepflichtig. Mindest-Lot: 1 MWh.",
   },
   {
@@ -280,6 +334,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Elektrische Energie", norm: "REMIT · MiFID II · EnWG",
     hsCode: "2716 00 00", cbam: null, inco: "EPEX-Spot",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "MWH",
+    minLotSize: 1,
+    lotStep:    1,
     desc: "Peakload-Strom Lieferzone DE/AT, Lieferzeit Werktage Mo-Fr 08:00-20:00 Uhr. EPEX-Spot Day-Ahead. Preis in EUR/MWh. Abwicklung über Bilanzkreisvertrag §20 StromNZV. REMIT-meldepflichtig.",
   },
   // ── Energie - Kohle & Öl ─────────────────────────────────────────────────────
@@ -289,6 +345,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Kesselkohle / Dampfkohle", norm: "ASTM D3173 · ISO 11722",
     hsCode: "2701 12 10", cbam: null, inco: "CIF",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 50000,
+    lotStep:    25000,
     desc: "Thermische Kohle (Steam Coal) API 2-Index-Qualität. Heizwert NAR ≥ 6.000 kcal/kg (25,1 GJ/t). Aschegehalt ≤ 15 %, Schwefel ≤ 1 %. Lieferung CIF ARA-Häfen (Amsterdam, Rotterdam, Antwerpen). Panamax-Ladung min. 50.000 t.",
   },
   {
@@ -297,6 +355,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Leichtes Nordseeöl", norm: "ASTM D4294 · ISO 3171",
     hsCode: "2709 00 10", cbam: null, inco: "FOB",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "BBL",
+    minLotSize: 1000,
+    lotStep:    500,
     desc: "Brent Crude Oil, Nordsee-Qualität. API-Dichte ≥ 38° API, Schwefelgehalt ≤ 0,37 % (Sweet Crude). Preis in USD/bbl, Lot min. 1.000 bbl. Lieferung FOB Sullom Voe oder Hound Point. ICE Dated Brent-Referenz. ISDA-Master-Agreement erforderlich.",
   },
   {
@@ -305,6 +365,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Propan C₃H₈ ≥ 95 %", norm: "EN 589 · ASTM 1835",
     hsCode: "2711 12 91", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500,
+    lotStep:    250,
     desc: "Flüssiggas Propan HD5 (≥ 95 % C₃H₈) für Industrie und Heizung. Feuchtegehalt: trocken nach EN 589. Lieferung in Tankwagen (20 t) oder per Pipeline-Einspeisung. Preis in EUR/t. Lagerung unter Druck (8 bar bei 20°C).",
   },
   // ── Agrar - Getreide ─────────────────────────────────────────────────────────
@@ -314,6 +376,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Triticum aestivum L.", norm: "EU-VO 1272/2009 · DIN 10355",
     hsCode: "1001 99 00", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 25,
+    lotStep:    25,
     desc: "Brotweizen Qualität A. Feuchte ≤ 14,5 %, Fallzahl ≥ 220 s, Protein ≥ 12,5 %, Feuchtkleber ≥ 23 %, Sedimentationswert (Zeleniy) ≥ 22 ml. Frei von Mutterkorn (< 0,05 %). Phytosanitäres Zeugnis + HK-Bescheinigung. MATIF-Notierung Paris.",
   },
   {
@@ -322,6 +386,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Triticum aestivum L.", norm: "EU-VO 1272/2009",
     hsCode: "1001 99 00", cbam: null, inco: "EXW",
     vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 25,
+    lotStep:    25,
     desc: "Futterweizen Standardqualität. Feuchte ≤ 15,5 %, Fallzahl ≥ 120 s, Besatz ≤ 2 %. Lieferung in Bulk (Lkw 24 t oder Bahn 60 t). Abnahme-Inspektion nach SGS/Bureau Veritas. MATIF-Preisorientierung.",
   },
   {
@@ -330,6 +396,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Hordeum vulgare L.", norm: "EU-VO 1272/2009",
     hsCode: "1003 90 00", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 25,
+    lotStep:    25,
     desc: "Futtergerste, Standardqualität EU. Feuchte ≤ 14,5 %, Besatz ≤ 2 %, Hektolitergewicht ≥ 62 kg/hl. Lieferung in Bulk, min. 500 t. Phytosanitäres Zeugnis für Export. Preis in EUR/t CIF Nordseehafen.",
   },
   {
@@ -338,6 +406,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Zea mays L.", norm: "EU-VO 1272/2009 · ISTA",
     hsCode: "1005 90 00", cbam: null, inco: "CIF",
     vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 25,
+    lotStep:    25,
     desc: "Körnermais, Standardqualität. Feuchte ≤ 14 %, Besatz ≤ 2 %, Bruchkorn ≤ 3 %. GMO-Status angabe (GVO-frei oder zugelassene GVO). CBOT-Chicago-Referenzpreis. Lieferung CIF Rotterdam/Hamburg. Phytosanitäres Zeugnis.",
   },
   {
@@ -346,6 +416,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Glycine max (L.) Merr.", norm: "EU-VO 767/2009 · ISO 659",
     hsCode: "1201 90 00", cbam: null, inco: "CIF",
     vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 25,
+    lotStep:    25,
     desc: "Sojabohnen, Futtermittelqualität. Feuchte ≤ 13 %, Protein ≥ 36 % (TM), Rohfett ≥ 18 % (TM), Ureasen 0,05-0,2 mg N/g·min. GVO-Zulassung nach EU-VO 1829/2003 anzugeben. CBOT-Referenz. Lieferung CIF Rotterdam.",
   },
   {
@@ -354,6 +426,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Brassica napus L.", norm: "EU-VO 1272/2009 · EN ISO 658",
     hsCode: "1205 10 90", cbam: null, inco: "EXW",
     vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 25,
+    lotStep:    25,
     desc: "Rapssamen Standardqualität. Feuchte ≤ 9 %, Erucasäure ≤ 2 %, Glucosinolate ≤ 25 µmol/g (TM). EURONEXT-Paris-Notierung (Matif Colza). Lieferung in Bulk ab Lager oder CIF Nordseehäfen. Nachhaltigkeitszertifikat (ISCC) auf Anfrage.",
   },
   // ── Agrar - Ölsaaten / Zucker ───────────────────────────────────────────────
@@ -363,6 +437,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Helianthus annuus L.", norm: "Codex Alimentarius Stan 23 · EU-VO 1308/2013",
     hsCode: "1512 11 91", cbam: null, inco: "CIF",
     vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 20,
+    lotStep:    10,
     desc: "Rohes Sonnenblumenöl, hoch-ölsäurehaltig (High-Oleic ≥ 82 % oder Standard). Säurezahl ≤ 2,5 mg KOH/g, Feuchte ≤ 0,1 %. Lieferung in ISO-Tank oder Flexi-Tank. Herkunft UA/RO/MD. Zertifiziertes Analysenlabor (SGS/Intertek).",
   },
   // ── Chemie - Alkohole ────────────────────────────────────────────────────────
@@ -372,6 +448,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Methanol CH₃OH", norm: "EN 15989 · ASTM D1152",
     hsCode: "2905 11 00", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 20,
+    lotStep:    10,
     desc: "Technisches Methanol Reinheit ≥ 99,85 % (Spezifikation nach EN 15989, Grad AA). Wasser ≤ 100 ppm, Acetongehalt ≤ 30 ppm. Lieferung in ISO-Tank 20 ft oder Kesselwagen. ADR-Klasse 3, UN 1230. Sicherheitsdatenblatt (SDS) beigestellt.",
   },
   {
@@ -380,6 +458,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Ethanol C₂H₅OH", norm: "EN 15376 · DIN 51627-2",
     hsCode: "2207 10 00", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 20,
+    lotStep:    10,
     desc: "Bioethanol Reinheit ≥ 99,5 % Vol., konform mit EN 15376 (Kraftstoffzusatz) und DIN 51627-2. Wassergehalt ≤ 0,3 %. Lieferung in ISO-Tank oder Tankwagen. ADR Klasse 3, UN 1170. Herkunftsdokument (ISCC oder RED II) für Nachhaltigkeitsnachweis.",
   },
   // ── Chemie - Anorganik ───────────────────────────────────────────────────────
@@ -389,6 +469,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Schwefelsäure H₂SO₄", norm: "EN ISO 2469 · DIN 19522",
     hsCode: "2807 00 10", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 20,
+    lotStep:    10,
     desc: "Technische Schwefelsäure Konzentration 96-98 %. Fe-Gehalt ≤ 50 mg/kg, Chloride ≤ 5 mg/kg. Lieferung in säurebeständigen Tankwagen (25-30 t) oder ISO-Tank. ADR-Klasse 8, UN 1830. Vorbefüllung nach Kundenspezifikation. REACH-Registrierung.",
   },
   {
@@ -397,6 +479,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Natriumhydroxid NaOH", norm: "EN 896 · ISO 792",
     hsCode: "2815 12 00", cbam: null, inco: "DAP",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 20,
+    lotStep:    10,
     desc: "Natronlauge (Ätznatron) 50 % NaOH. NaCl ≤ 100 mg/kg, Fe ≤ 5 mg/kg. Chloralkali-Elektrolyse-Qualität. Lieferung in Tankwagen (20-30 t) oder ISO-Tank. ADR-Klasse 8, UN 1824. Rückkaufvereinbarung leere Tanker nach Absprache.",
   },
   {
@@ -405,6 +489,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Chlorwasserstoff HCl", norm: "EN 939 · ISO 756",
     hsCode: "2806 10 00", cbam: null, inco: "EXW",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 20,
+    lotStep:    10,
     desc: "Synthetische Salzsäure 32-35 % HCl. Eisengehalt ≤ 2 mg/kg, Schwefelsäure ≤ 5 mg/kg. Einsatz: Beizereien, Lebensmittelverarbeitung, Wasseraufbereitung. Lieferung in 25/1000 L-IBC oder Tankwagen. ADR-Klasse 8, UN 1789. SDS vorhanden.",
   },
   {
@@ -413,6 +499,8 @@ export const TRADEABLE_PRODUCTS: TradeableProduct[] = [
     werkstoff: "Ammoniak NH₃ ≥ 99,5 %", norm: "EN 1385 · ASTM E228",
     hsCode: "2814 10 00", cbam: null, inco: "CIF",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 10,
+    lotStep:    5,
     desc: "Wasserfreies Ammoniak (Anhydrous Ammonia), Reinheit ≥ 99,5 %. Wassergehalt ≤ 0,2 %, Öl ≤ 5 mg/kg. Lieferung in Drucktank-Schiffen (5.000-30.000 t) oder Drucktankwagen. ADR-Klasse 2.3, UN 1005. Seefrachtroute: Baltic/Black Sea/ARA.",
   },
 ];
