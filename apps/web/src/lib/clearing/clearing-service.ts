@@ -127,30 +127,39 @@ async function _runSettlement(dealId: string): Promise<SettlementResult> {
   const buyerInvoiceNumber  = `EUCX-INV-${year}-${uid()}`;
   const sellerCreditNumber  = `EUCX-GUT-${year}-${uid()}`;
 
+  // ── PENDING-Record AUSSERHALB der TX ──────────────────────────────────────
+  // Schlägt die TX fehl, bleibt dieser Record stehen → settlement-retry-Cron greift.
+  // Der COMPLETED-Check oben stellt sicher, dass kein gültiger Record überschrieben wird.
+  const pendingSettlement = await db.settlement.upsert({
+    where:  { dealId },
+    create: {
+      dealId,
+      status:      "PENDING",
+      grossAmount: fees.grossAmount,
+      platformFee: fees.platformFee,
+      vatAmount:   fees.vatAmount,
+      netToSeller: fees.netToSeller,
+      currency:    deal.currency,
+    },
+    update: {
+      status: "PENDING",
+    },
+    select: { id: true },
+  });
+
   // ── Atomare Transaktion ────────────────────────────────────────────────────
   // L4-Fix: withSerializableRetry fängt P2034 (Serialization Failure) ab.
   const result = await withSerializableRetry(() => db.$transaction(async (tx) => {
-    // 1. Settlement-Datensatz anlegen / auf PROCESSING setzen
-    const settlement = await tx.settlement.upsert({
-      where:  { dealId },
-      create: {
-        dealId,
-        status:       "PROCESSING",
-        grossAmount:  fees.grossAmount,
-        platformFee:  fees.platformFee,
-        vatAmount:    fees.vatAmount,
-        netToSeller:  fees.netToSeller,
-        currency:     deal.currency,
-      },
-      update: {
-        status: "PROCESSING",
-      },
+    // 1. Settlement auf PROCESSING setzen (Record existiert bereits als PENDING)
+    await tx.settlement.update({
+      where: { id: pendingSettlement.id },
+      data:  { status: "PROCESSING" },
     });
 
     // 2. LedgerEntries - 4 Buchungssätze (8 Einträge)
     const entries = buildLedgerEntries(
       dealId,
-      settlement.id,
+      pendingSettlement.id,
       fees,
       deal.currency,
       buyerWallet.id,
@@ -245,7 +254,7 @@ async function _runSettlement(dealId: string): Promise<SettlementResult> {
 
     // 6. Settlement abschließen
     await tx.settlement.update({
-      where: { id: settlement.id },
+      where: { id: pendingSettlement.id },
       data:  {
         status:      "COMPLETED",
         processedAt: now,
@@ -259,7 +268,7 @@ async function _runSettlement(dealId: string): Promise<SettlementResult> {
     });
 
     return {
-      settlementId:     settlement.id,
+      settlementId:     pendingSettlement.id,
       buyerInvoiceId:   buyerInvoice.id,
       sellerCreditId:   sellerCredit.id,
       ledgerEntryCount: entries.length,
