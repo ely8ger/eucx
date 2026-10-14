@@ -391,6 +391,51 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
     ${primaryBtn("https://eucx.eu/dashboard", "Zum Dashboard →")}
   `,
 
+  kyc_inquiry: (d) => `
+    ${alertBox("EUCX Compliance — Rückfrage zu Ihren KYC-Unterlagen", "#d97706")}
+    <h2 style="margin:16px 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Rückfrage zu Ihrer Verifizierung</h2>
+    <p style="margin:0 0 16px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Sehr geehrte Damen und Herren der <strong>${d.orgName ?? "Ihrer Organisation"}</strong>,
+    </p>
+    <p style="margin:0 0 16px;font-size:14px;color:#4b5563;line-height:1.6;">
+      unser Compliance-Team hat Ihre eingereichten KYC-Unterlagen geprüft und benötigt
+      weitere Informationen, bevor die Verifizierung abgeschlossen werden kann.
+    </p>
+    <div style="background:#fef3c7;border-left:4px solid #d97706;padding:16px 20px;margin:20px 0;border-radius:0 4px 4px 0;">
+      <p style="margin:0;font-size:14px;color:#92400e;line-height:1.6;">${d.message ?? ""}</p>
+    </div>
+    ${infoTable([
+      infoRow("Antwortfrist:", d.deadline ?? "—"),
+    ].join(""))}
+    <p style="margin:20px 0;font-size:14px;color:#4b5563;line-height:1.6;">
+      Bitte antworten Sie auf diese E-Mail oder laden Sie die angeforderten Dokumente
+      in Ihrem EUCX-Konto hoch.
+    </p>
+    ${primaryBtn("https://eucx.eu/dashboard/kyc", "KYC-Dokumente hochladen →")}
+    <p style="margin:20px 0 0;font-size:13px;color:#9ca3af;">
+      Bei Fragen wenden Sie sich bitte an
+      <a href="mailto:compliance@eucx.eu" style="color:#154194;">compliance@eucx.eu</a>.
+    </p>
+  `,
+
+  inquiry_deadline_expired: (d) => `
+    ${alertBox("KYC-Rückfrage-Frist abgelaufen — Eskalation erforderlich", "#dc2626")}
+    <h2 style="margin:16px 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Frist abgelaufen</h2>
+    <p style="margin:0 0 16px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Ein Nutzer hat die 14-Tage-Frist zur Beantwortung einer KYC-Rückfrage nicht eingehalten.
+    </p>
+    ${infoTable([
+      infoRow("Organisation:", d.orgName ?? "—"),
+      infoRow("Member-ID:",   d.memberId ?? "—"),
+      infoRow("E-Mail:",      d.email ?? "—"),
+      infoRow("Frist war:",   d.deadline ?? "—"),
+    ].join(""))}
+    ${primaryBtn("https://me8.eucx.eu/admin/kyc", "KYC-Queue öffnen →")}
+    <p style="margin:20px 0 0;font-size:12px;color:#9ca3af;">
+      Diese Nachricht wurde automatisch generiert. Bitte ergreifen Sie die notwendigen Maßnahmen.
+    </p>
+  `,
+
 };
 
 function fallback(template: string, data: Record<string, string>): string {

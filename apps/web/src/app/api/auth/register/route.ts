@@ -7,6 +7,8 @@ import { generateEucxMemberId }      from "@/lib/members/eucx-id";
 import { isPwnedPassword }           from "@/lib/auth/pwned-password";
 import { checkRateLimit }            from "@/lib/rate-limit";
 import { getClientIp }               from "@/lib/net/get-client-ip";
+import { checkSanctions }            from "@/lib/compliance/sanctions";
+import { audit }                     from "@/lib/audit/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +45,21 @@ export async function POST(req: NextRequest) {
 
     const { email, password, organizationName, taxId, lei, country, city, street, postalCode, phone, hrb, legalForm, foundedAt, naceCode, role, contactName, contactPosition, isGeschaeftsfuehrer } = parsed.data;
     const now = new Date();
+
+    // Sanktionsscreening — Embargo-Länder blockiert (EU/OFAC/UN)
+    const sanctionResult = checkSanctions(country);
+    if (sanctionResult.blocked) {
+      await audit({
+        action:     "SANCTIONS_HIT",
+        entityType: "Organization",
+        ipAddress:  ip,
+        meta:       { country, reason: sanctionResult.reason, email },
+      });
+      return NextResponse.json(
+        { code: "SANCTIONS_BLOCKED", message: sanctionResult.reason },
+        { status: 403 },
+      );
+    }
 
     // HaveIBeenPwned - Passwort gegen bekannte Leaks prüfen
     const pwned = await isPwnedPassword(password);

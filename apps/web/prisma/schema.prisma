@@ -294,6 +294,10 @@ model User {
   verificationStatus  VerificationStatus @default(GUEST)
   isYoungCompany      Boolean            @default(false)   // < 2 Jahre alt → 5%-Depot-Pflicht
   companyFoundedAt    DateTime?                            // Gründungsdatum (aus Handelsregister)
+  riskScore           Int                @default(0)       // Compliance Risk Score 0–100 (auto-berechnet)
+  riskFlags           Json?                                // Array von RiskFlag-Strings
+  riskScoredAt        DateTime?                            // Letzter Score-Berechnungszeitpunkt
+  inquiryDeadlineAt   DateTime?                            // Frist für Rückfragen-Beantwortung
   totpSecret          String?
   totpEnabled         Boolean            @default(false)
   emailVerified       Boolean            @default(false)   // E-Mail-Adresse bestätigt

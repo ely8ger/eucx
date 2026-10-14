@@ -11,9 +11,21 @@ export type AuditAction =
   | "USER_LOGIN_FAILED"
   | "USER_REGISTER"
   | "USER_LOGOUT"
-  // KYC
+  // KYC — User-Level
   | "KYC_STEP_COMPLETED"
   | "KYC_SUBMITTED"
+  | "KYC_APPROVED"
+  | "KYC_REJECTED"
+  | "KYC_SUSPENDED"
+  | "KYC_INQUIRY_SENT"
+  // KYC — Dokument-Level
+  | "KYC_DOCUMENT_APPROVED"
+  | "KYC_DOCUMENT_REJECTED"
+  // Compliance
+  | "SANCTIONS_HIT"
+  | "RISK_SCORE_CALCULATED"
+  | "ACCOUNT_FROZEN"
+  | "ACCOUNT_UNFROZEN"
   // Käufer-Funnel
   | "LOT_CREATED"
   | "LOT_PUBLISHED"
@@ -51,7 +63,8 @@ export type AuditEntityType =
   | "Settlement"
   | "TradingSession"
   | "SteelProduct"
-  | "Organization";
+  | "Organization"
+  | "KycDocument";
 
 interface AuditParams {
   userId?:    string;
