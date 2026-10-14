@@ -17,6 +17,11 @@
     }
   ],
 
+"crons": [
+    { "path": "/api/auction/cron",        "schedule": "* * * * *" },
+    { "path": "/api/cron/market-candles", "schedule": "* * * * *" }
+  ],
+
 "git": {
     "deploymentEnabled": {
       "main": true
