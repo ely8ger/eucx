@@ -1,88 +1,548 @@
 /**
- * Seeds CatalogProduct-Tabelle mit allen 43 EUCX TRADEABLE_PRODUCTS.
+ * Seeds CatalogProduct-Tabelle mit allen 43 EUCX-Handelswaren.
+ * DB ist einzige Quelle der Wahrheit — kein data.ts-Import zur Laufzeit.
  * Ausführung: npx tsx prisma/seed.products.ts
- * Idempotent: upsert by slug → sicher mehrfach ausführbar.
+ * Idempotent: upsert by slug.
  */
 import { PrismaClient } from "@prisma/client";
-import { TRADEABLE_PRODUCTS } from "../src/lib/katalog/data";
 
 const db = new PrismaClient();
 
-const SECTOR_MAP: Record<string, string> = {
-  betonstahl:       "STEEL",
-  walzdraht:        "STEEL",
-  "blech-warmgewalzt": "STEEL",
-  "blech-kaltgewalzt": "STEEL",
-  "blech-verzinkt":    "STEEL",
-  traeger:          "STEEL",
-  hohlprofile:      "STEEL",
-  nahtlosrohr:      "STEEL",
-  schrott:          "SCRAP",
-  kupfer:           "NON_FERROUS",
-  aluminium:        "NON_FERROUS",
-  harnstoff:        "FERTILIZER",
-  dap:              "FERTILIZER",
-  mop:              "FERTILIZER",
-  npk:              "FERTILIZER",
-  erdgas:           "ENERGY",
-  strom:            "ENERGY",
-  kohle:            "ENERGY",
-  rohol:            "ENERGY",
-  lpg:              "ENERGY",
-  weizen:           "AGRAR",
-  gerste:           "AGRAR",
-  mais:             "AGRAR",
-  soja:             "AGRAR",
-  raps:             "AGRAR",
-  sonnenblume:      "AGRAR",
-  methanol:         "CHEMICALS",
-  ethanol:          "CHEMICALS",
-  saeuren:          "CHEMICALS",
-  laugen:           "CHEMICALS",
-  ammoniak:         "CHEMICALS",
+type Product = {
+  slug: string; nameEn: string; nameDe: string; nameRu: string;
+  norm: string; sector: string; katId: string; werkstoff: string;
+  unit: string; minLotSize: number; lotStep: number;
+  inco: string; vat: string; hsCode: string; cbam: string | null; tradeDesc: string;
 };
 
+const PRODUCTS: Product[] = [
+  // ── STAHL — Langprodukte ──────────────────────────────────────────────────────
+  {
+    slug: "rebar-bst500", sector: "STEEL", katId: "betonstahl",
+    nameEn: "Betonstahl BST 500 / B500B (Rebar)",
+    nameDe: "Betonstahl BST 500 / B500B",
+    nameRu: "Арматура BST 500 / B500B",
+    werkstoff: "BST 500S · B500B", norm: "EN 10080 · DIN 488 · BS 4449",
+    hsCode: "7214 20 00", cbam: "STEEL", inco: "DAP",
+    vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 25, lotStep: 25,
+    tradeDesc: "Gerippter Bewehrungsstahl BSt 500S und B500B. Stabstahl 6–32 mm Ø, Ringlängen 6–12 m. Zugfestigkeit ≥ 550 N/mm². CBAM-deklarationspflichtig ab 2026. Preis EUR/t.",
+  },
+  {
+    slug: "walzdraht-sae1008", sector: "STEEL", katId: "walzdraht",
+    nameEn: "Walzdraht SAE 1008 / DD11 (Wire Rod)",
+    nameDe: "Walzdraht SAE 1008 / DD11",
+    nameRu: "Катанка SAE 1008 / DD11",
+    werkstoff: "SAE 1008 · DD11", norm: "EN 10016-2 · SAE J403 · ASTM A510",
+    hsCode: "7213 91 10", cbam: "STEEL", inco: "DAP",
+    vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 25, lotStep: 25,
+    tradeDesc: "Walzdraht SAE 1008 / DD11 in Coil. Ø 5,5–16 mm. Ausgangsmaterial für Zieherei, Netzherstellung und Betonstahlproduktion. Preis EUR/t.",
+  },
+  {
+    slug: "blech-s235", sector: "STEEL", katId: "blech-warmgewalzt",
+    nameEn: "Warmgewalztes Blech S235JR",
+    nameDe: "Warmgewalztes Blech S235JR",
+    nameRu: "Горячекатаный лист S235JR",
+    werkstoff: "S235JR", norm: "EN 10025-2 · EN 10051",
+    hsCode: "7208 51 20", cbam: "STEEL", inco: "DAP",
+    vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 20, lotStep: 10,
+    tradeDesc: "Warmgewalzte Bleche S235JR, Dicke 3–150 mm. Für Konstruktionsstahl, Maschinenbau, Schweißkonstruktionen. Preis EUR/t.",
+  },
+  {
+    slug: "blech-s355", sector: "STEEL", katId: "blech-warmgewalzt",
+    nameEn: "Feinkornbaustahl S355JR / S355J2 (Blech)",
+    nameDe: "Feinkornbaustahl S355JR / S355J2",
+    nameRu: "Мелкозернистая сталь S355JR / S355J2 (лист)",
+    werkstoff: "S355JR · S355J2", norm: "EN 10025-2",
+    hsCode: "7208 51 91", cbam: "STEEL", inco: "DAP",
+    vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 20, lotStep: 10,
+    tradeDesc: "Warmgewalzte Bleche S355JR / S355J2+N. Hochfester Baustahl 355 N/mm². Für Brücken, Kranbau, Offshore. Preis EUR/t.",
+  },
+  {
+    slug: "blech-kalt-dc01", sector: "STEEL", katId: "blech-kaltgewalzt",
+    nameEn: "Kaltgewalztes Blech DC01 / DC04",
+    nameDe: "Kaltgewalztes Blech DC01 / DC04",
+    nameRu: "Холоднокатаный лист DC01 / DC04",
+    werkstoff: "DC01 · DC04", norm: "EN 10130",
+    hsCode: "7209 16 90", cbam: "STEEL", inco: "DAP",
+    vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 10, lotStep: 5,
+    tradeDesc: "Kaltgewalzte Bleche DC01–DC04, Dicke 0,5–3 mm. Für Automobilindustrie, Haushaltsgeräte. Preis EUR/t.",
+  },
+  {
+    slug: "blech-verzinkt-dx51d", sector: "STEEL", katId: "blech-verzinkt",
+    nameEn: "Feuerverzinktes Blech DX51D+Z / DX53D",
+    nameDe: "Feuerverzinktes Blech DX51D+Z",
+    nameRu: "Оцинкованный лист DX51D+Z / DX53D",
+    werkstoff: "DX51D+Z · DX53D", norm: "EN 10346",
+    hsCode: "7210 49 00", cbam: "STEEL", inco: "DAP",
+    vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 10, lotStep: 5,
+    tradeDesc: "Feuerverzinkte Bleche DX51D+Z / DX53D, Dicke 0,4–3 mm. Für Bau, Lüftung, Trapezblech. Preis EUR/t.",
+  },
+  {
+    slug: "hea-heb-traeger", sector: "STEEL", katId: "traeger",
+    nameEn: "Breitflanschträger HEA / HEB S235JR",
+    nameDe: "Breitflanschträger HEA / HEB S235JR",
+    nameRu: "Балка широкополочная HEA / HEB S235JR",
+    werkstoff: "S235JR · S355JR", norm: "EN 10365 · EN 10025-2",
+    hsCode: "7216 33 10", cbam: "STEEL", inco: "DAP",
+    vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 25, lotStep: 25,
+    tradeDesc: "Breitflanschträger HEA (leicht), HEB (mittel) in S235JR / S355JR. Höhe 100–1000 mm. Für Stahlbau und Hallenkonstruktionen. Preis EUR/t.",
+  },
+  {
+    slug: "ipe-traeger", sector: "STEEL", katId: "traeger",
+    nameEn: "IPE-Träger S235JR / S355JR",
+    nameDe: "IPE-Träger S235JR / S355JR",
+    nameRu: "Балка IPE S235JR / S355JR",
+    werkstoff: "S235JR · S355JR", norm: "EN 10365 · EN 10034",
+    hsCode: "7216 32 11", cbam: "STEEL", inco: "DAP",
+    vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 25, lotStep: 25,
+    tradeDesc: "IPE-Träger (I-Träger schmalflanschi), S235JR / S355JR. Höhe 80–600 mm. Für Hochbau, Industriehallen. Preis EUR/t.",
+  },
+  {
+    slug: "hohlprofile-s235jrh", sector: "STEEL", katId: "hohlprofile",
+    nameEn: "Hohlprofile S235JRH - SHS / RHS / CHS",
+    nameDe: "Hohlprofile S235JRH SHS/RHS/CHS",
+    nameRu: "Профиль замкнутый S235JRH — SHS/RHS/CHS",
+    werkstoff: "S235JRH · S355J2H", norm: "EN 10219 · EN 10210",
+    hsCode: "7306 61 92", cbam: "STEEL", inco: "DAP",
+    vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 25, lotStep: 25,
+    tradeDesc: "Quadrat- (SHS), Rechteck- (RHS) und Rundhohlprofile (CHS). S235JRH / S355J2H. Für Maschinenbau und Stahlbau. Preis EUR/t.",
+  },
+  {
+    slug: "nahtlosrohr-p235gh", sector: "STEEL", katId: "nahtlosrohr",
+    nameEn: "Nahtlosrohr P235GH / P265GH (Druckbehälter)",
+    nameDe: "Nahtlosrohr P235GH / P265GH",
+    nameRu: "Труба бесшовная P235GH / P265GH (сосуды давления)",
+    werkstoff: "P235GH · P265GH", norm: "EN 10216-2",
+    hsCode: "7304 31 20", cbam: "STEEL", inco: "DAP",
+    vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 10, lotStep: 5,
+    tradeDesc: "Nahtlose Rohre P235GH / P265GH für Druckbehälter und Dampfleitungen. Außendurchmesser 21,3–406,4 mm. Werkszertifikat 3.1 nach EN 10204. Preis EUR/t.",
+  },
+  {
+    slug: "nahtlosrohr-s355", sector: "STEEL", katId: "nahtlosrohr",
+    nameEn: "Nahtlosrohr S355 / St52 (Konstruktion)",
+    nameDe: "Nahtlosrohr S355 / St52 Konstruktion",
+    nameRu: "Труба бесшовная S355 / St52 (конструкционная)",
+    werkstoff: "S355J2H · St52.4", norm: "EN 10210 · DIN 2448",
+    hsCode: "7304 31 80", cbam: "STEEL", inco: "DAP",
+    vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 10, lotStep: 5,
+    tradeDesc: "Nahtlose Konstruktionsrohre S355J2H / St52.4. Außendurchmesser 21,3–508 mm. Für Hydraulik, Maschinenbau, Baukonstruktion. Preis EUR/t.",
+  },
+  // ── SCHROTT ───────────────────────────────────────────────────────────────────
+  {
+    slug: "schrott-hms12", sector: "SCRAP", katId: "schrott",
+    nameEn: "Stahlschrott HMS 1/2 (Heavy Melting Scrap)",
+    nameDe: "Stahlschrott HMS 1/2",
+    nameRu: "Металлолом HMS 1/2 (тяжёлый лом)",
+    werkstoff: "HMS 1 (80%) + HMS 2 (20%)", norm: "ISRI Spec. 200/201",
+    hsCode: "7204 10 00", cbam: null, inco: "DAP",
+    vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 100, lotStep: 50,
+    tradeDesc: "Stahlschrott HMS 1/2. Maximale Stückgröße 1500×500 mm. Für Elektrostahlwerke. Analyse auf Anfrage (Cu, Cr, Ni, Mo). Preis EUR/t ab Lager.",
+  },
+  {
+    slug: "schrott-schredder", sector: "SCRAP", katId: "schrott",
+    nameEn: "Schredder-Schrott (Shredded Scrap)",
+    nameDe: "Schredder-Schrott",
+    nameRu: "Шредерный лом",
+    werkstoff: "Shredded Steel ≥ 96% Fe", norm: "ISRI Spec. 211",
+    hsCode: "7204 10 00", cbam: null, inco: "DAP",
+    vat: "Steuerschuldumkehr §13b UStG (Reverse Charge)", unit: "TON",
+    minLotSize: 100, lotStep: 50,
+    tradeDesc: "Schredder-Schrott aus Autowracks und Haushaltsgeräten. Stückgröße 50–300 mm. Analysenzertifikat beigefügt. Preis EUR/t ab Werk.",
+  },
+  // ── NE-METALLE ────────────────────────────────────────────────────────────────
+  {
+    slug: "kupfer-kathoden", sector: "NON_FERROUS", katId: "kupfer",
+    nameEn: "Kupferkathoden Grade A (Cu-CATH-1)",
+    nameDe: "Kupferkathoden Grade A",
+    nameRu: "Медь катодная Grade A (Cu-CATH-1)",
+    werkstoff: "Cu ≥ 99,9935 %", norm: "EN 1978 · LME Spec.",
+    hsCode: "7403 11 00", cbam: null, inco: "CIF",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 5, lotStep: 1,
+    tradeDesc: "Elektrolyt-Kupferkathoden Grade A (Cu-CATH-1), Min. 99,9935 % Cu. LME-registrierte Qualität. Bündel à 50-150 kg. Preis EUR/t, LME-Basis.",
+  },
+  {
+    slug: "aluminium-p1020", sector: "NON_FERROUS", katId: "aluminium",
+    nameEn: "Aluminiumbarren Primär EN AW-1050A (P1020)",
+    nameDe: "Aluminiumbarren Primär P1020",
+    nameRu: "Алюминий первичный EN AW-1050A (P1020)",
+    werkstoff: "Al ≥ 99,5 % (EN AW-1050A)", norm: "EN 573-3 · LME Spec.",
+    hsCode: "7601 10 00", cbam: null, inco: "CIF",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 20, lotStep: 5,
+    tradeDesc: "Primär-Aluminiumbarren EN AW-1050A (P1020), Min. 99,5 % Al. LME-Spezifikation. CBAM-deklarationspflichtig ab 2026. Preis EUR/t, LME-Basis.",
+  },
+  // ── DÜNGEMITTEL ───────────────────────────────────────────────────────────────
+  {
+    slug: "harnstoff-46", sector: "FERTILIZER", katId: "harnstoff",
+    nameEn: "Harnstoff 46 % N (Urea Prilled / Granular)",
+    nameDe: "Harnstoff 46 % N Granulat/Prill",
+    nameRu: "Карбамид 46 % N (гранулят / приллы)",
+    werkstoff: "CO(NH₂)₂ ≥ 46 % N", norm: "EU-VO 2019/1009 · EN 13265",
+    hsCode: "3102 10 10", cbam: null, inco: "CFR",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500, lotStep: 250,
+    tradeDesc: "Harnstoff 46 % N in Granulat oder Prill-Form. Bulk oder Big-Bag 600 kg. Analysenzertifikat SGS. Konform EU-VO 2019/1009. Preis EUR/t CFR.",
+  },
+  {
+    slug: "ammoniumnitrat-34", sector: "FERTILIZER", katId: "harnstoff",
+    nameEn: "Ammoniumnitrat 34,4 % N (AN Granular)",
+    nameDe: "Ammoniumnitrat 34,4 % N",
+    nameRu: "Аммиачная селитра 34,4 % N (гранулят)",
+    werkstoff: "NH₄NO₃ ≥ 34,4 % N", norm: "EU-VO 2019/1009 · EN 13269",
+    hsCode: "3102 30 10", cbam: null, inco: "CFR",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500, lotStep: 250,
+    tradeDesc: "Ammoniumnitrat 34,4 % N in Granulat. Stickstoffdünger. UN 2067 (ADR Klasse 5.1). Preis EUR/t CFR Nordseehäfen.",
+  },
+  {
+    slug: "dap-18-46", sector: "FERTILIZER", katId: "dap",
+    nameEn: "DAP 18-46 (Diammoniumphosphat)",
+    nameDe: "DAP 18-46 Diammoniumphosphat",
+    nameRu: "ДАФ 18-46 (диаммонийфосфат)",
+    werkstoff: "(NH₄)₂HPO₄ — 18% N, 46% P₂O₅", norm: "EU-VO 2019/1009",
+    hsCode: "3105 30 00", cbam: null, inco: "CFR",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500, lotStep: 250,
+    tradeDesc: "Diammoniumphosphat DAP 18-46 in Granulat. P/N-Kombidünger. Analysenzertifikat SGS. EU-VO 2019/1009 konform. Preis EUR/t CFR.",
+  },
+  {
+    slug: "mop-60", sector: "FERTILIZER", katId: "mop",
+    nameEn: "MOP / Kaliumchlorid 60 % K₂O (Muriate of Potash)",
+    nameDe: "Kaliumchlorid MOP 60 % K₂O",
+    nameRu: "МКК / Хлорид калия 60 % K₂O (MOP)",
+    werkstoff: "KCl ≥ 60 % K₂O", norm: "EU-VO 2019/1009 · EN 1235",
+    hsCode: "3104 20 50", cbam: null, inco: "CFR",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500, lotStep: 250,
+    tradeDesc: "Kaliumchlorid MOP 60 % K₂O in Granulat oder Standard-Körnung. Bulk-Lieferung. Analysenzertifikat. Preis EUR/t CFR.",
+  },
+  {
+    slug: "kaliumnitrat-nop", sector: "FERTILIZER", katId: "mop",
+    nameEn: "Kaliumnitrat 13-0-46 (NOP - Nitrate of Potash)",
+    nameDe: "Kaliumnitrat 13-0-46 (NOP)",
+    nameRu: "Калиевая селитра 13-0-46 (NOP)",
+    werkstoff: "KNO₃ — 13% N, 46% K₂O", norm: "EU-VO 2019/1009",
+    hsCode: "3104 30 00", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 100, lotStep: 50,
+    tradeDesc: "Kaliumnitrat 13-0-46, chloridfrei. Für Gemüse, Kartoffeln, Obst (chloridempfindliche Kulturen). In Big-Bag oder 25-kg-Säcken. Preis EUR/t.",
+  },
+  {
+    slug: "npk-15-15-15", sector: "FERTILIZER", katId: "npk",
+    nameEn: "NPK 15-15-15 Komplexdünger",
+    nameDe: "NPK 15-15-15 Komplexdünger",
+    nameRu: "NPK 15-15-15 комплексное удобрение",
+    werkstoff: "N 15% · P₂O₅ 15% · K₂O 15%", norm: "EU-VO 2019/1009",
+    hsCode: "3105 20 10", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500, lotStep: 250,
+    tradeDesc: "NPK 15-15-15 Komplexdünger in Granulat. Ausgewogene Grunddüngung für Ackerbau. Bulk oder Big-Bag. EU-VO 2019/1009 konform. Preis EUR/t.",
+  },
+  {
+    slug: "npk-20-10-10", sector: "FERTILIZER", katId: "npk",
+    nameEn: "NPK 20-10-10 Komplexdünger",
+    nameDe: "NPK 20-10-10 Komplexdünger",
+    nameRu: "NPK 20-10-10 комплексное удобрение",
+    werkstoff: "N 20% · P₂O₅ 10% · K₂O 10%", norm: "EU-VO 2019/1009",
+    hsCode: "3105 20 10", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500, lotStep: 250,
+    tradeDesc: "NPK 20-10-10, stickstoffbetont. Für Getreide, Raps und Mais im Frühjahr. Bulk oder Big-Bag. EU-VO 2019/1009 konform. Preis EUR/t.",
+  },
+  {
+    slug: "npk-8-20-30", sector: "FERTILIZER", katId: "npk",
+    nameEn: "NPK 8-20-30 Komplexdünger",
+    nameDe: "NPK 8-20-30 Komplexdünger",
+    nameRu: "NPK 8-20-30 комплексное удобрение",
+    werkstoff: "N 8% · P₂O₅ 20% · K₂O 30%", norm: "EU-VO 2019/1009",
+    hsCode: "3105 20 10", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500, lotStep: 250,
+    tradeDesc: "NPK 8-20-30, kalium- und phosphorbetont. Für Kartoffeln, Rüben, Obst. Bulk oder Big-Bag. EU-VO 2019/1009 konform. Preis EUR/t.",
+  },
+  // ── ENERGIE ──────────────────────────────────────────────────────────────────
+  {
+    slug: "erdgas-ttf", sector: "ENERGY", katId: "erdgas",
+    nameEn: "Erdgas TTF / NCG (Natural Gas)",
+    nameDe: "Erdgas TTF / NCG Naturgas",
+    nameRu: "Природный газ TTF / NCG",
+    werkstoff: "Methan CH₄ ≥ 95 %", norm: "EN ISO 6976 · DVGW G 260",
+    hsCode: "2711 21 00", cbam: null, inco: "TTF-Hub",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "MWH",
+    minLotSize: 10000, lotStep: 1000,
+    tradeDesc: "Erdgas H-Gas (Hoch) an TTF (Title Transfer Facility NL) oder NCG (Net Connect Germany). Preis EUR/MWh. Abwicklung über Bilanzkreisvertrag nach GasNZV. REMIT-meldepflichtig.",
+  },
+  {
+    slug: "lng-spot", sector: "ENERGY", katId: "erdgas",
+    nameEn: "LNG (Liquefied Natural Gas) — Spot",
+    nameDe: "LNG Flüssigerdgas Spot",
+    nameRu: "СПГ (сжиженный природный газ) — спот",
+    werkstoff: "Methan ≥ 95 % (verflüssigt)", norm: "EN ISO 16903 · GPA 2166",
+    hsCode: "2711 11 00", cbam: null, inco: "CIF",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "MWH",
+    minLotSize: 50000, lotStep: 10000,
+    tradeDesc: "LNG (Liquefied Natural Gas) Spot-Lieferung CIF Regasifizierungsanlage. Standard-Cargo 140.000–174.000 m³ LNG = ~840.000 MWh. Analysenzertifikat SGS. GIIGNL-Spezifikation.",
+  },
+  {
+    slug: "strom-baseload", sector: "ENERGY", katId: "strom",
+    nameEn: "Baseload Strom DE/AT (Day-Ahead EPEX)",
+    nameDe: "Baseload Strom DE/AT Day-Ahead",
+    nameRu: "Электроэнергия базовая DE/AT (Day-Ahead EPEX)",
+    werkstoff: "Elektrische Energie", norm: "REMIT · MiFID II · EnWG",
+    hsCode: "2716 00 00", cbam: null, inco: "EPEX-Spot",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "MWH",
+    minLotSize: 100, lotStep: 100,
+    tradeDesc: "Baseload-Strom Lieferzone DE/AT. EPEX-Spot Day-Ahead, 24h-Block 0–24 Uhr. Preis EUR/MWh. Abnahme physisch, Bilanzkreisübergabe nach §20 StromNZV. REMIT-meldepflichtig.",
+  },
+  {
+    slug: "strom-peakload", sector: "ENERGY", katId: "strom",
+    nameEn: "Peakload Strom DE/AT (Mo-Fr 08-20 Uhr)",
+    nameDe: "Peakload Strom DE/AT Werktage 08-20",
+    nameRu: "Электроэнергия пиковая DE/AT (Пн–Пт 08–20)",
+    werkstoff: "Elektrische Energie", norm: "REMIT · MiFID II · EnWG",
+    hsCode: "2716 00 00", cbam: null, inco: "EPEX-Spot",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "MWH",
+    minLotSize: 100, lotStep: 100,
+    tradeDesc: "Peakload-Strom Lieferzone DE/AT, Werktage Mo–Fr 08:00–20:00 Uhr (12h-Block). EPEX-Spot Day-Ahead. Preis EUR/MWh. Bilanzkreisvertrag §20 StromNZV. REMIT-meldepflichtig.",
+  },
+  {
+    slug: "steinkohle-steam", sector: "ENERGY", katId: "kohle",
+    nameEn: "Kesselkohle API 2 (Steam Coal CIF ARA)",
+    nameDe: "Kesselkohle API 2 CIF ARA",
+    nameRu: "Энергетический уголь API 2 (CIF ARA)",
+    werkstoff: "Thermische Kohle ≥ 6.000 kcal/kg NAR", norm: "ASTM D3173 · ISO 11722 · ISO 562",
+    hsCode: "2701 12 10", cbam: null, inco: "CIF",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 50000, lotStep: 25000,
+    tradeDesc: "Thermische Kohle (Kesselkohle) API 2-Standard, CIF ARA (Amsterdam-Rotterdam-Antwerpen). Kalorienwert ≥ 6.000 kcal/kg NAR. Schwefelgehalt ≤ 1 %. Panamax-Bulk-Lieferung 50.000–80.000 t. Preis USD/t.",
+  },
+  {
+    slug: "rohoel-brent", sector: "ENERGY", katId: "rohol",
+    nameEn: "Rohöl Brent Crude (ICE Dated Brent)",
+    nameDe: "Rohöl Brent Crude ICE Dated",
+    nameRu: "Нефть сырая Brent Crude (ICE Dated Brent)",
+    werkstoff: "Brent Blend — API 38,3 · Schwefel 0,37 %", norm: "IP 143 · ASTM D4294",
+    hsCode: "2709 00 10", cbam: null, inco: "FOB",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "BBL",
+    minLotSize: 1000, lotStep: 500,
+    tradeDesc: "Rohöl Brent Crude, ICE Dated Brent Referenz. API 38,3°, Schwefel 0,37 %. FOB Sullom Voe (Shetland). Preis USD/bbl. Tanker-Lieferung 600.000–2.000.000 bbl.",
+  },
+  {
+    slug: "lpg-propan", sector: "ENERGY", katId: "lpg",
+    nameEn: "LPG Propan HD5 / Butan (Autogas)",
+    nameDe: "LPG Propan HD5 / Butan Autogas",
+    nameRu: "СУГ пропан HD5 / бутан (автогаз)",
+    werkstoff: "Propan C₃H₈ ≥ 95 % (HD5)", norm: "EN 589 · GPA 2140",
+    hsCode: "2711 12 91", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 500, lotStep: 250,
+    tradeDesc: "Flüssiggas Propan HD5 (≥ 95 % C₃H₈) und Butan. Drucktanklieferung oder Schiff. Spezifikation nach EN 589. Preis EUR/t. Einsatz Autogas, Industrie, Heizung.",
+  },
+  // ── AGRAR ─────────────────────────────────────────────────────────────────────
+  {
+    slug: "weizen-brotweizen", sector: "AGRAR", katId: "weizen",
+    nameEn: "Brotweizen Qualität A (Mahl-Weizen EU)",
+    nameDe: "Brotweizen Qualität A EU Mahlweizen",
+    nameRu: "Пшеница продовольственная кач. A (мукомольная EU)",
+    werkstoff: "Triticum aestivum — Protein ≥ 12 %, Fallzahl ≥ 220 s", norm: "EU-VO 1272/2009",
+    hsCode: "1001 99 00", cbam: null, inco: "CPT",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 25, lotStep: 25,
+    tradeDesc: "Brotweizen Qualität A, Protein ≥ 12 %, Fallzahl ≥ 220 s, Feuchte ≤ 14 %. MATIF Paris-Referenz. Analysenzertifikat SGS. Preis EUR/t CPT Nordseehafen.",
+  },
+  {
+    slug: "weizen-futterweizen", sector: "AGRAR", katId: "weizen",
+    nameEn: "Futterweizen E-Qualität (Feed Wheat)",
+    nameDe: "Futterweizen E-Qualität",
+    nameRu: "Пшеница фуражная E-качество",
+    werkstoff: "Triticum aestivum — Feuchte ≤ 14 %, Rohprotein ≥ 10,5 %", norm: "EU-VO 1272/2009",
+    hsCode: "1001 99 00", cbam: null, inco: "CPT",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 25, lotStep: 25,
+    tradeDesc: "Futterweizen E-Qualität, Feuchte ≤ 14 %, Rohprotein ≥ 10,5 %. Für Geflügel- und Schweinefutter. Analysenzertifikat. Preis EUR/t CPT.",
+  },
+  {
+    slug: "gerste-futtergerste", sector: "AGRAR", katId: "gerste",
+    nameEn: "Futtergerste (Feed Barley)",
+    nameDe: "Futtergerste EU-Qualität",
+    nameRu: "Ячмень фуражный (Feed Barley)",
+    werkstoff: "Hordeum vulgare — Feuchte ≤ 14,5 %, Rohprotein ≥ 10 %", norm: "EU-VO 1272/2009",
+    hsCode: "1003 90 00", cbam: null, inco: "CPT",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 25, lotStep: 25,
+    tradeDesc: "Futtergerste EU-Standardqualität. Feuchte ≤ 14,5 %, Rohprotein ≥ 10 %. EURONEXT Paris Matif-Referenz. Analysenzertifikat SGS. Preis EUR/t.",
+  },
+  {
+    slug: "mais-koernermais", sector: "AGRAR", katId: "mais",
+    nameEn: "Körnermais (Corn / Maize EU)",
+    nameDe: "Körnermais EU-Qualität",
+    nameRu: "Кукуруза зерновая (Maize EU)",
+    werkstoff: "Zea mays — Feuchte ≤ 14 %, Aflatoxin B1 ≤ 5 ppb", norm: "EU-VO 1272/2009 · VO 1881/2006",
+    hsCode: "1005 90 00", cbam: null, inco: "CPT",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 25, lotStep: 25,
+    tradeDesc: "Körnermais EU-Standardqualität. Feuchte ≤ 14 %, Aflatoxin B1 ≤ 5 ppb. CBOT Chicago-Referenz. Analysenzertifikat. Preis EUR/t CIF Nordseehäfen.",
+  },
+  {
+    slug: "sojabohnen-eu", sector: "AGRAR", katId: "soja",
+    nameEn: "Sojabohnen (Soybeans EU-Qualität)",
+    nameDe: "Sojabohnen EU-Qualität",
+    nameRu: "Соевые бобы (EU качество)",
+    werkstoff: "Glycine max — Protein ≥ 34 %, Feuchte ≤ 14 %", norm: "EU-VO 1272/2009",
+    hsCode: "1201 90 00", cbam: null, inco: "CIF",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 25, lotStep: 25,
+    tradeDesc: "Sojabohnen EU-Qualität, Protein ≥ 34 %, Feuchte ≤ 14 %. Phytosanitäres Zeugnis + GVO-Nachweis (IP oder GVO-tolerant). CBOT-Referenz. Preis EUR/t CIF.",
+  },
+  {
+    slug: "raps-rapssamen", sector: "AGRAR", katId: "raps",
+    nameEn: "Rapssamen (Rapeseed / Canola EU)",
+    nameDe: "Rapssamen 000-Qualität EU",
+    nameRu: "Рапс семена (Rapeseed EU)",
+    werkstoff: "Brassica napus — Ölgehalt ≥ 40 %, Feuchte ≤ 9 %", norm: "EU-VO 1272/2009 · ISCC",
+    hsCode: "1205 10 90", cbam: null, inco: "CPT",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 25, lotStep: 25,
+    tradeDesc: "Rapssamen 000-Qualität (niedrige Erucasäure), Ölgehalt ≥ 40 %, Feuchte ≤ 9 %. EURONEXT Matif Colza-Referenz. ISCC-Nachhaltigkeitszertifikat möglich. Preis EUR/t.",
+  },
+  {
+    slug: "sonnenblumenoel-roh", sector: "AGRAR", katId: "sonnenblume",
+    nameEn: "Rohes Sonnenblumenöl (Sunflower Oil — Crude)",
+    nameDe: "Rohes Sonnenblumenöl High-Oleic",
+    nameRu: "Масло подсолнечное сырое (High-Oleic)",
+    werkstoff: "Helianthus annuus — FFS ≤ 2 %, Feuchte ≤ 0,2 %", norm: "EN ISO 660 · EN ISO 662",
+    hsCode: "1512 11 10", cbam: null, inco: "CIF",
+    vat: "Umsatzsteuer 7 % (Nahrungsmittel)", unit: "TON",
+    minLotSize: 20, lotStep: 10,
+    tradeDesc: "Rohes Sonnenblumenöl (Crude Sunflower Oil), FFS ≤ 2 %, Feuchte ≤ 0,2 %. Lieferung ISO-Tank oder Tankschiff. Herkunft UA/RO/MD. Analysenzertifikat SGS. Preis EUR/t CIF.",
+  },
+  // ── CHEMIKALIEN ───────────────────────────────────────────────────────────────
+  {
+    slug: "methanol-tech", sector: "CHEMICALS", katId: "methanol",
+    nameEn: "Methanol technisch (CH₃OH ≥ 99,85 %)",
+    nameDe: "Methanol technisch Grade AA",
+    nameRu: "Метанол технический (CH₃OH ≥ 99,85 %)",
+    werkstoff: "CH₃OH ≥ 99,85 % (IMPCA Grade AA)", norm: "EN 15989 · IMPCA",
+    hsCode: "2905 11 00", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 20, lotStep: 10,
+    tradeDesc: "Methanol technisch Grade AA (≥ 99,85 % CH₃OH) nach EN 15989 / IMPCA-Spezifikation. ISO-Tank oder Tankwagen. ADR Klasse 3 UN 1230. Analysenzertifikat. Preis EUR/t.",
+  },
+  {
+    slug: "ethanol-99", sector: "CHEMICALS", katId: "ethanol",
+    nameEn: "Ethanol technisch 99,5 % (Bioethanol)",
+    nameDe: "Bioethanol technisch 99,5 %",
+    nameRu: "Этанол технический 99,5 % (биоэтанол)",
+    werkstoff: "C₂H₅OH ≥ 99,5 %", norm: "EN 15376 · RED II",
+    hsCode: "2207 10 00", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 20, lotStep: 10,
+    tradeDesc: "Bioethanol 99,5 % (EN 15376), Nachhaltigkeitsnachweis RED II / ISCC möglich. ISO-Tank oder Tankwagen. ADR Klasse 3 UN 1170. Preis EUR/t.",
+  },
+  {
+    slug: "schwefelsaeure-96", sector: "CHEMICALS", katId: "saeuren",
+    nameEn: "Schwefelsäure 96-98 % (H₂SO₄ — Industriequalität)",
+    nameDe: "Schwefelsäure 96-98 % Industriequalität",
+    nameRu: "Серная кислота 96–98 % (H₂SO₄, промышленная)",
+    werkstoff: "H₂SO₄ ≥ 96 %", norm: "EN ISO 2469 · EN 12791",
+    hsCode: "2807 00 10", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 20, lotStep: 10,
+    tradeDesc: "Schwefelsäure 96–98 % Industriequalität. ADR Klasse 8 UN 1830. Säuretankwagen oder ISO-Tank. Analysenzertifikat. Preis EUR/t ab Werk.",
+  },
+  {
+    slug: "natronlauge-50", sector: "CHEMICALS", katId: "laugen",
+    nameEn: "Natronlauge 50 % (NaOH — Chloralkali-Elektrolyse)",
+    nameDe: "Natronlauge 50 % Chloralkali-Elektrolyse",
+    nameRu: "Каустическая сода 50 % (NaOH — хлорщелочной электролиз)",
+    werkstoff: "NaOH ≥ 50 %", norm: "EN 896 · ISO 4199",
+    hsCode: "2815 11 00", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 20, lotStep: 10,
+    tradeDesc: "Natronlauge 50 % Chloralkali-Elektrolyse-Qualität nach EN 896. ADR Klasse 8 UN 1824. Tankwagen oder ISO-Tank. Preis EUR/t (als 100% NaOH berechnet).",
+  },
+  {
+    slug: "salzsaeure-32", sector: "CHEMICALS", katId: "saeuren",
+    nameEn: "Salzsäure 32-35 % (HCl — synthetisch)",
+    nameDe: "Salzsäure 32-35 % synthetisch",
+    nameRu: "Соляная кислота 32–35 % (HCl — синтетическая)",
+    werkstoff: "HCl ≥ 32 %", norm: "EN 939 · ISO 7383",
+    hsCode: "2806 10 00", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 20, lotStep: 10,
+    tradeDesc: "Salzsäure 32–35 % HCl synthetisch nach EN 939. ADR Klasse 8 UN 1789. Säuretankwagen. Analysenzertifikat. Preis EUR/t (als 100% HCl berechnet).",
+  },
+  {
+    slug: "ammoniak-anhydrous", sector: "CHEMICALS", katId: "ammoniak",
+    nameEn: "Ammoniak wasserfreies (NH₃ — Anhydrous Ammonia)",
+    nameDe: "Ammoniak wasserfreies NH₃",
+    nameRu: "Аммиак безводный (NH₃ — Anhydrous Ammonia)",
+    werkstoff: "NH₃ ≥ 99,5 %", norm: "EN 1385 · ISO 7401",
+    hsCode: "2814 10 00", cbam: null, inco: "DAP",
+    vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
+    minLotSize: 10, lotStep: 5,
+    tradeDesc: "Wasserfreies Ammoniak 99,5 % nach EN 1385. ADR Klasse 2.3 UN 1005. Drucktankwagen oder Tankschiff. Analysenzertifikat. Preis EUR/t.",
+  },
+];
+
 async function main() {
-  console.log("Seeding CatalogProducts …");
+  console.log("Seeding CatalogProducts (DB-only, alle Handelsdaten) …\n");
 
-  const existing = await db.catalogProduct.findMany({ select: { nr: true }, orderBy: { nr: "desc" }, take: 1 });
-  let nextNr = (existing[0]?.nr ?? 0) + 1;
-
-  // Pre-assign nrs: upsert überschreibt nicht nr, deshalb erst prüfen
-  const slugToNr = new Map<string, number>();
+  const existingMap = new Map<string, number>();
   for (const p of await db.catalogProduct.findMany({ select: { slug: true, nr: true } })) {
-    slugToNr.set(p.slug, p.nr);
+    existingMap.set(p.slug, p.nr);
   }
+
+  const maxNr = Math.max(0, ...existingMap.values());
+  let nextNr = maxNr + 1;
 
   let created = 0;
   let updated = 0;
 
-  for (const p of TRADEABLE_PRODUCTS) {
-    const sector = SECTOR_MAP[p.katId] ?? "STEEL";
-    const nameDe = p.name;
-    const nameEn = p.name;
-    const norm   = p.norm;
-    const slug   = p.id;
+  for (const p of PRODUCTS) {
+    const nr = existingMap.get(p.slug) ?? nextNr++;
 
-    const nr = slugToNr.get(slug) ?? nextNr++;
-
-    const result = await db.catalogProduct.upsert({
-      where:  { slug },
-      update: { nameDe, nameEn, norm, sector, isActive: true },
-      create: { nr, slug, nameDe, nameEn, nameRu: "", norm, sector, isActive: true },
+    await db.catalogProduct.upsert({
+      where:  { slug: p.slug },
+      update: {
+        nameDe: p.nameDe, nameEn: p.nameEn, nameRu: p.nameRu,
+        norm:   p.norm,   sector: p.sector,  isActive: true,
+        katId:  p.katId,  werkstoff: p.werkstoff,
+        unit:   p.unit,   minLotSize: p.minLotSize, lotStep: p.lotStep,
+        inco:   p.inco,   vat: p.vat, hsCode: p.hsCode,
+        cbam:   p.cbam ?? null, tradeDesc: p.tradeDesc,
+      },
+      create: {
+        nr, slug: p.slug,
+        nameDe: p.nameDe, nameEn: p.nameEn, nameRu: p.nameRu,
+        norm:   p.norm,   sector: p.sector,  isActive: true,
+        katId:  p.katId,  werkstoff: p.werkstoff,
+        unit:   p.unit,   minLotSize: p.minLotSize, lotStep: p.lotStep,
+        inco:   p.inco,   vat: p.vat, hsCode: p.hsCode,
+        cbam:   p.cbam ?? null, tradeDesc: p.tradeDesc,
+      },
     });
 
-    if (slugToNr.has(slug)) {
-      updated++;
-    } else {
-      created++;
-    }
-
-    console.log(`  ${slugToNr.has(slug) ? "↺" : "✓"} [${sector}] ${slug}`);
+    const isNew = !existingMap.has(p.slug);
+    console.log(`  ${isNew ? "✓" : "↺"} [${p.sector}] ${p.slug} — ${p.nameRu.slice(0,45)}`);
+    if (isNew) created++; else updated++;
   }
 
-  const total = await db.catalogProduct.count({ where: { isActive: true } });
-  console.log(`\nFertig: ${created} erstellt, ${updated} aktualisiert → ${total} aktive Produkte in DB`);
+  const total = await db.catalogProduct.count({ where: { isActive: true, unit: { not: null } } });
+  console.log(`\nFertig: ${created} erstellt, ${updated} aktualisiert → ${total} handelbare Produkte in DB`);
 }
 
 main()

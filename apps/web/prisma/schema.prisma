@@ -1513,12 +1513,26 @@ model CatalogProduct {
   norm     String?                                 // EU-Norm (z.B. "DIN EN 10218")
   sector   String        @default("STEEL")         // Sektor: STEEL|ENERGY|AGRAR|CHEMICALS|FERTILIZER|SCRAP|NON_FERROUS
   isActive Boolean       @default(true)            // Soft-Delete für Admin-Verwaltung
-  sizes    ProductSize[]
-  lots     Lot[]
+
+  // ── Handelsdaten — DB ist einzige Quelle, kein data.ts zur Laufzeit ──────────
+  katId      String?                               // Verbindet mit visuellem KATALOG (Dimensionen)
+  werkstoff  String?                               // Güte / Material
+  unit       String?                               // Handelseinheit: TON|MWH|KG|LITER|BBL
+  minLotSize Float?                                // Mindest-Losgröße in unit (branchenüblich)
+  lotStep    Float?                                // Schrittgröße für Mengen-Eingabe
+  inco       String?                               // Standard-Incoterms / Lieferpunkt
+  vat        String?                               // USt.-Behandlung (z.B. §13b UStG)
+  hsCode     String?                               // EU-Zollposition (8-stellig)
+  cbam       String?                               // CBAM-Gruppe (Anhang I VO 2023/956)
+  tradeDesc  String?       @db.Text               // Beschreibung für Lot-Formular
+
+  sizes ProductSize[]
+  lots  Lot[]
 
   @@index([nameEn])
   @@index([nameDe])
   @@index([sector])
+  @@index([unit])
   @@map("catalog_products")
 }
 

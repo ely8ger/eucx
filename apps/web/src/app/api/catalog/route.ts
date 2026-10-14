@@ -7,7 +7,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { apiRoute } from "@/lib/api/route-handler";
-import { TRADEABLE_PRODUCTS } from "@/lib/katalog/data";
 
 export const dynamic = "force-dynamic";
 
@@ -25,15 +24,20 @@ async function _GET(req: NextRequest) {
   const sector      = VALID_SECTORS.has(sectorRaw) ? sectorRaw : "";
 
   // ── Tradeable-Produkt-Daten (unit, minLotSize, lotStep, inco, vat, hsCode) ──
-  // Gibt auch catalogProductId (DB-cuid) zurück → Lot-Formular kann direkt verwenden.
+  // DB ist einzige Quelle — kein statisches Array mehr. catalogProductId = DB-cuid.
   if (tradeableId) {
-    const product = TRADEABLE_PRODUCTS.find((p) => p.id === tradeableId);
-    if (!product) return NextResponse.json({ error: "Nicht gefunden" }, { status: 404 });
-    const dbProduct = await db.catalogProduct.findUnique({
+    const product = await db.catalogProduct.findUnique({
       where:  { slug: tradeableId },
-      select: { id: true, isActive: true },
+      select: {
+        id: true, slug: true, nameEn: true, nameDe: true, nameRu: true,
+        norm: true, sector: true, katId: true, werkstoff: true,
+        unit: true, minLotSize: true, lotStep: true,
+        inco: true, vat: true, hsCode: true, cbam: true, tradeDesc: true,
+        isActive: true,
+      },
     });
-    return NextResponse.json({ product: { ...product, catalogProductId: dbProduct?.id ?? null } });
+    if (!product || !product.isActive) return NextResponse.json({ error: "Nicht gefunden" }, { status: 404 });
+    return NextResponse.json({ product: { ...product, catalogProductId: product.id } });
   }
 
   // ── Statistiken für Header ──────────────────────────────────────────
