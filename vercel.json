@@ -21,6 +21,8 @@
     { "path": "/api/auction/cron",                  "schedule": "* * * * *"    },
     { "path": "/api/cron/market-candles",           "schedule": "* * * * *"    },
     { "path": "/api/cron/lot-phase-auto-start",     "schedule": "*/5 * * * *"  },
+    { "path": "/api/cron/circuit-breaker-check",    "schedule": "*/5 * * * *"  },
+    { "path": "/api/cron/ohlc-eod-close",           "schedule": "5 0 * * *"    },
     { "path": "/api/cron/kyc-deadline-check",       "schedule": "30 7 * * *"   },
     { "path": "/api/cron/risk-rescore",             "schedule": "0 2 * * *"    }
   ],
