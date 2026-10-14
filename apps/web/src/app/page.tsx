@@ -175,6 +175,78 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Dual Value Prop ── */}
+      <section className="r-section-lg" style={{ backgroundColor: "#fff", borderTop: "1px solid #e8e8e8" }}>
+        <div className="r-container">
+          <span style={S.label}>Für wen ist EUCX?</span>
+          <h2 style={{ ...S.h2, marginBottom: 48 }}>Zwei Seiten. Eine Plattform.</h2>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, backgroundColor: "#e0e0e0" }}>
+
+            {/* Käufer */}
+            <div style={{ backgroundColor: "#fff", padding: "44px 40px" }}>
+              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase" as const, color: "#154194", marginBottom: 6, display: "block" }}>Für Käufer</span>
+              <h3 style={{ fontSize: 20, fontWeight: 600, color: "#1a1a1a", lineHeight: 1.3, margin: "0 0 8px" }}>Sie kaufen Rohstoffe im B2B-Markt.</h3>
+              <p style={{ fontSize: 13, color: "#505050", lineHeight: 1.65, margin: "0 0 32px", paddingBottom: 28, borderBottom: "1px solid #e0e0e0" }}>
+                <strong style={{ fontWeight: 600, color: "#1a1a1a" }}>Das Problem:</strong> Intransparente Preise, unbekannte Lieferanten, manuelle Vertragsabwicklung — jeder Einkauf ist ein Risiko.
+              </p>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 36px", display: "flex", flexDirection: "column" as const }}>
+                {([
+                  { title: "Echtzeit-Preistransparenz",      desc: "Reguliertes Orderbuch — Bid/Ask jederzeit einsehbar, keine versteckten Margen." },
+                  { title: "KYC-verifizierte Lieferanten",   desc: "Alle Gegenparteien durchlaufen vollständige Identitäts- und Compliance-Prüfung." },
+                  { title: "Strukturierter Handelsabschluss",desc: "Jede Transaktion läuft über das regulierte EUCX-Framework — verbindlich und rechtssicher." },
+                  { title: "Digitale Vertragsdokumentation", desc: "Alle Handelsdokumente automatisch erstellt, archiviert und DSGVO-konform gespeichert." },
+                ]).map(({ title, desc }) => (
+                  <li key={title} style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "14px 0", borderBottom: "1px solid #f0f0f0" }}>
+                    <div style={{ width: 32, height: 32, flexShrink: 0, backgroundColor: "#eef2fb", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#154194" strokeWidth="1.5"><polyline points="1,7 5,11 13,3"/></svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a", marginBottom: 2 }}>{title}</div>
+                      <div style={{ fontSize: 12, color: "#888", lineHeight: 1.6 }}>{desc}</div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/register?role=buyer" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, color: "#fff", backgroundColor: "#154194", padding: "12px 24px", textDecoration: "none" }}>
+                Als Käufer registrieren <ArrowRight size={13} />
+              </Link>
+            </div>
+
+            {/* Verkäufer */}
+            <div style={{ backgroundColor: "#0b1e36", padding: "44px 40px" }}>
+              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase" as const, color: "rgba(255,255,255,.35)", marginBottom: 6, display: "block" }}>Für Verkäufer</span>
+              <h3 style={{ fontSize: 20, fontWeight: 600, color: "#fff", lineHeight: 1.3, margin: "0 0 8px" }}>Sie verkaufen Rohstoffe in die EU.</h3>
+              <p style={{ fontSize: 13, color: "rgba(255,255,255,.45)", lineHeight: 1.65, margin: "0 0 32px", paddingBottom: 28, borderBottom: "1px solid rgba(255,255,255,.1)" }}>
+                <strong style={{ fontWeight: 600, color: "rgba(255,255,255,.85)" }}>Das Problem:</strong> Käufer finden, Zahlungsausfälle abfedern, Compliance-Anforderungen erfüllen — auf eigene Kosten und eigenes Risiko.
+              </p>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 36px", display: "flex", flexDirection: "column" as const }}>
+                {([
+                  { title: "EU-weites Käufernetz",          desc: "Sofortiger Zugang zu KYC-verifizierten institutionellen Käufern aus der gesamten EU." },
+                  { title: "Nur verifizierte Gegenparteien",desc: "Alle Käufer durchlaufen KYC und Bonitätsprüfung — kein Handel mit unbekannten Parteien." },
+                  { title: "Compliance out-of-the-box",     desc: "MiFID II, BaFin-Regulierung, DSGVO — die Plattform trägt den regulatorischen Aufwand." },
+                  { title: "Digitale Vertragsabwicklung",   desc: "Automatische Rechnungsstellung und Handelsdokumentation auf einer Plattform." },
+                ]).map(({ title, desc }) => (
+                  <li key={title} style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "14px 0", borderBottom: "1px solid rgba(255,255,255,.08)" }}>
+                    <div style={{ width: 32, height: 32, flexShrink: 0, backgroundColor: "rgba(255,255,255,.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,.7)" strokeWidth="1.5"><polyline points="1,7 5,11 13,3"/></svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 2 }}>{title}</div>
+                      <div style={{ fontSize: 12, color: "rgba(255,255,255,.4)", lineHeight: 1.6 }}>{desc}</div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/register?role=seller" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, color: "#154194", backgroundColor: "#fff", padding: "12px 24px", textDecoration: "none" }}>
+                Als Verkäufer starten <ArrowRight size={13} />
+              </Link>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* ── Prozess ── */}
       <section id="wie-es-funktioniert" className="r-section-lg" style={{ backgroundColor: "#fff" }}>
         <div className="r-container">
