@@ -1,19 +1,19 @@
--- Sprint: Invoice-Erweiterung für LotContract-basierte Settlements
--- dealId wird optional, neues lotContractId-Feld + Relation zu lot_contracts
+-- Invoice-Erweiterung für LotContract-basierte Settlements
+-- HINWEIS: Prisma nutzt @map nicht → Spaltennamen sind camelCase in der DB
 
--- 1. dealId nullable machen (idempotent)
+-- 1. dealId nullable machen
 DO $$ BEGIN
-  ALTER TABLE "invoices" ALTER COLUMN "deal_id" DROP NOT NULL;
+  ALTER TABLE "invoices" ALTER COLUMN "dealId" DROP NOT NULL;
 EXCEPTION WHEN others THEN NULL; END $$;
 
--- 2. Neues lotContractId-Feld hinzufügen (idempotent)
-ALTER TABLE "invoices" ADD COLUMN IF NOT EXISTS "lot_contract_id" TEXT;
+-- 2. Neues lotContractId-Feld (IF NOT EXISTS für Idempotenz)
+ALTER TABLE "invoices" ADD COLUMN IF NOT EXISTS "lotContractId" TEXT;
 
 -- 3. Index auf lotContractId
-CREATE INDEX IF NOT EXISTS "invoices_lot_contract_id_idx" ON "invoices"("lot_contract_id");
+CREATE INDEX IF NOT EXISTS "invoices_lotContractId_idx" ON "invoices"("lotContractId");
 
--- 4. Foreign Key von invoices zu lot_contracts (idempotent)
+-- 4. Foreign Key von invoices zu lot_contracts
 DO $$ BEGIN
-  ALTER TABLE "invoices" ADD CONSTRAINT "invoices_lot_contract_id_fkey"
-    FOREIGN KEY ("lot_contract_id") REFERENCES "lot_contracts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+  ALTER TABLE "invoices" ADD CONSTRAINT "invoices_lotContractId_fkey"
+    FOREIGN KEY ("lotContractId") REFERENCES "lot_contracts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
