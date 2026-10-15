@@ -63,9 +63,12 @@ export type AuditEntityType =
   | "Contract"
   | "Settlement"
   | "TradingSession"
+  | "TradingHalt"
   | "SteelProduct"
   | "Organization"
-  | "KycDocument";
+  | "KycDocument"
+  | "AuditLog"
+  | "LotFee";
 
 interface AuditParams {
   userId?:    string;
