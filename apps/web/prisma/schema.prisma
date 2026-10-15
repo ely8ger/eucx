@@ -338,11 +338,47 @@ model User {
   lotDisputesRaised         LotDispute[]             @relation("LotDisputeRaiser")
   lotDisputesReviewed       LotDispute[]             @relation("LotDisputeReviewer")
   lotDocuments              LotDocument[]
+  feeOverride               FeeOverride?
 
   @@index([organizationId])
   @@index([verificationStatus])   // KYC-Queue: alle PENDING_VERIFICATION schnell abrufen
   @@index([status])               // Registrierungs-Queue
   @@map("users")
+}
+
+// ─── FeeTier — Konfigurierbare globale Gebühren-Staffeln ─────────────────────
+// Wird von der fee-engine gelesen. Initialer Seed: STANDARD + HIGH_VOLUME.
+model FeeTier {
+  id              String   @id @default(cuid())
+  name            String   @unique  // "STANDARD" | "HIGH_VOLUME"
+  sellerRate      Decimal  @db.Decimal(6, 4)  // z.B. 0.0080 = 0.80%
+  buyerRate       Decimal  @db.Decimal(6, 4)  // z.B. 0.0030 = 0.30%
+  volumeThreshold Decimal? @db.Decimal(18, 2) // null = immer aktiv (STANDARD)
+  description     String   @default("")
+  updatedBy       String?  // Admin-userId
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("fee_tiers")
+}
+
+// ─── FeeOverride — Individuelle Gebühren je User ─────────────────────────────
+// Überschreibt FeeTier für spezifische User (VIP, Partner, Testkunden etc.)
+model FeeOverride {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  sellerRate Decimal?  @db.Decimal(6, 4)  // null = Standard verwenden
+  buyerRate  Decimal?  @db.Decimal(6, 4)  // null = Standard verwenden
+  reason     String
+  createdBy  String    // Admin-userId
+  expiresAt  DateTime? // null = unbegrenzt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("fee_overrides")
 }
 
 // ─── AdminNote — interne Notizen zu Usern ────────────────────────────────────
