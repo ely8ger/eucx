@@ -18,6 +18,7 @@ import { db }                    from "@/lib/db/client";
 import { Prisma }                from "@prisma/client";
 import { EMBARGOED_COUNTRIES, FATF_GREYLIST } from "@/lib/compliance/sanctions";
 import { audit }                 from "@/lib/audit/logger";
+import { checkOpenSanctions }    from "@/lib/sanctions/opensanctions";
 
 export type RiskLevel = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
@@ -112,6 +113,22 @@ export async function calculateRiskScore(userId: string): Promise<RiskScoreResul
   }
   if (!user.emailVerified) {
     add("EMAIL_UNVERIFIED", "E-Mail-Adresse nicht bestätigt", 10, "identity");
+  }
+
+  // ─── OpenSanctions — Firmenname / Entity-Matching
+  if (user.organization?.name && user.organization?.country) {
+    const sanctionsCheck = await checkOpenSanctions(
+      user.organization.name,
+      user.organization.country,
+    );
+    if (sanctionsCheck.hit) {
+      add(
+        "SANCTIONS_HIT",
+        `Möglicher OpenSanctions-Treffer: ${sanctionsCheck.entity ?? "unbekannt"} (Score ${sanctionsCheck.score.toFixed(2)})`,
+        50,
+        "identity",
+      );
+    }
   }
 
   const result: RiskScoreResult = { score, level: riskLevel(score), flags };

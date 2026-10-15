@@ -13,6 +13,7 @@ import { sendAuctionMail }           from "@/lib/notifications/mailer";
 import { calculateRiskScore }        from "@/lib/compliance/risk-scorer";
 import { notifyKycApproved, notifyKycRejected } from "@/lib/notifications/notification-service";
 import { checkVatId }                from "@/lib/vies/checker";
+import { checkOpenSanctions }        from "@/lib/sanctions/opensanctions";
 
 export const dynamic = "force-dynamic";
 
@@ -190,6 +191,22 @@ export async function PATCH(
             {
               code:    "VIES_INVALID",
               message: `USt-IdNr. ${org.taxId} konnte nicht bei VIES verifiziert werden. Bitte manuell prüfen oder mit forceApprove: true übergehen.`,
+            },
+            { status: 422 },
+          );
+        }
+      }
+
+      // OpenSanctions — Firmenname vor Genehmigung prüfen
+      if (org?.name && org?.country && !forceApprove) {
+        const sanctionsResult = await checkOpenSanctions(org.name, org.country);
+        if (sanctionsResult.hit) {
+          return NextResponse.json(
+            {
+              code:    "SANCTIONS_HIT",
+              message: `OpenSanctions-Treffer: ${sanctionsResult.entity ?? "unbekannt"} (Score ${sanctionsResult.score.toFixed(2)}). KYC kann nicht ohne explizite Bestätigung genehmigt werden. Bitte mit forceApprove: true wiederholen.`,
+              score:   sanctionsResult.score,
+              entity:  sanctionsResult.entity,
             },
             { status: 422 },
           );
