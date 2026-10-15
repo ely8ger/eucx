@@ -9,6 +9,7 @@ import { checkRateLimit }            from "@/lib/rate-limit";
 import { getClientIp }               from "@/lib/net/get-client-ip";
 import { checkSanctions }            from "@/lib/compliance/sanctions";
 import { audit }                     from "@/lib/audit/logger";
+import { checkVatId }                from "@/lib/vies/checker";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +60,17 @@ export async function POST(req: NextRequest) {
         { code: "SANCTIONS_BLOCKED", message: sanctionResult.reason },
         { status: 403 },
       );
+    }
+
+    // VIES-Validierung: EU-USt-IdNr. prüfen (nur wenn gesetzt, EU-Land)
+    if (taxId) {
+      const viesResult = await checkVatId(country, taxId);
+      if (!viesResult.valid && !viesResult.unchecked) {
+        return NextResponse.json(
+          { code: "INVALID_VAT_ID", message: "Die angegebene USt-IdNr. konnte nicht bei VIES (EU-Kommission) verifiziert werden. Bitte prüfen Sie Ihre Angabe." },
+          { status: 422 },
+        );
+      }
     }
 
     // HaveIBeenPwned - Passwort gegen bekannte Leaks prüfen

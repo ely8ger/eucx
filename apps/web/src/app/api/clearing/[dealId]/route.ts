@@ -17,6 +17,7 @@ import { db }                        from "@/lib/db/client";
 import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
 import { runSettlement }             from "@/lib/clearing/clearing-service";
+import { requireSettlement, SettlementDisabledError } from "@/lib/feature-flags";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,15 @@ export async function POST(
   context: { params: Promise<{ dealId: string }> }
 ) {
   const { dealId } = await context.params;
+
+  // ── Feature-Flag ─────────────────────────────────────────────────────────
+  try { requireSettlement(); }
+  catch (e) {
+    if (e instanceof SettlementDisabledError) {
+      return NextResponse.json({ error: e.message }, { status: e.status });
+    }
+    throw e;
+  }
 
   // ── Auth ──────────────────────────────────────────────────────────────────
   let tokenPayload;

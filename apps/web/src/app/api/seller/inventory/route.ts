@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
-import { ChargeStatus } from "@prisma/client";
+import { ChargeStatus, IncoTerm } from "@prisma/client";
 import { z } from "zod";
 import { audit } from "@/lib/audit/logger";
 
@@ -21,7 +21,7 @@ const createSchema = z.object({
   co2PerTonne:       z.number().nonnegative().optional(),
   countryOfOrigin:   z.string().max(100).optional(),
   productionSiteId:  z.string().max(100).optional(),
-  incoterms:         z.string().max(10).optional(),
+  incoterms:         z.nativeEnum(IncoTerm).optional(),
   certificate31:     z.string().optional(),
   cbamCertificate:   z.string().optional(),
   notes:             z.string().max(2000).optional(),

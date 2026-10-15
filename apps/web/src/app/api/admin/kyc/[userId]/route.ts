@@ -12,6 +12,7 @@ import { audit }                     from "@/lib/audit/logger";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
 import { calculateRiskScore }        from "@/lib/compliance/risk-scorer";
 import { notifyKycApproved, notifyKycRejected } from "@/lib/notifications/notification-service";
+import { checkVatId }                from "@/lib/vies/checker";
 
 export const dynamic = "force-dynamic";
 
@@ -146,7 +147,7 @@ export async function PATCH(
         riskScore:          true,
         verificationStatus: true,
         organizationId:     true,
-        organization: { select: { name: true } },
+        organization: { select: { name: true, taxId: true, country: true } },
       },
     });
 
@@ -180,6 +181,21 @@ export async function PATCH(
     }
 
     if (action === "approve") {
+      // VIES-Prüfung bei Genehmigung (EU-USt-IdNr. erneut verifizieren)
+      const org = user.organization;
+      if (org?.taxId && org?.country && !forceApprove) {
+        const viesResult = await checkVatId(org.country, org.taxId);
+        if (!viesResult.valid && !viesResult.unchecked) {
+          return NextResponse.json(
+            {
+              code:    "VIES_INVALID",
+              message: `USt-IdNr. ${org.taxId} konnte nicht bei VIES verifiziert werden. Bitte manuell prüfen oder mit forceApprove: true übergehen.`,
+            },
+            { status: 422 },
+          );
+        }
+      }
+
       await db.user.update({
         where: { id: userId },
         data:  {

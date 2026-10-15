@@ -151,6 +151,24 @@ enum DeliveryStatus {
 
 // CBAM-Warengruppen nach Anhang I EU-VO 2023/956 (aggregierte Global-Default-Values)
 // Faktoren: tCO₂-Äq. pro Tonne Ware (EU-Standardwert für den CBAM-Übergangszeitraum)
+// INCOTERMS® 2020 — ICC-Standard für internationale Handelsklauseln
+// Alle 11 Regeln aus INCOTERMS 2020 (ICC-Publikation Nr. 723)
+enum IncoTerm {
+  EXW  // Ex Works
+  FCA  // Free Carrier
+  CPT  // Carriage Paid To
+  CIP  // Carriage and Insurance Paid To
+  DAP  // Delivered At Place
+  DPU  // Delivered at Place Unloaded
+  DDP  // Delivered Duty Paid
+  FAS  // Free Alongside Ship
+  FOB  // Free On Board
+  CFR  // Cost and Freight
+  CIF  // Cost, Insurance and Freight
+
+  @@map("inco_term")
+}
+
 enum CbamCategory {
   STEEL_PRIMARY        // Rohstahl / Eisenprimärprodukte      KN 7206–7212   → 2,03 t CO₂/t
   STEEL_PROCESSED      // Weiterverarbeitete Stahlerzeugnisse KN 7213–7326   → 1,93 t CO₂/t
@@ -1237,7 +1255,7 @@ model Lot {
   co2PerTonne      Decimal? @db.Decimal(12, 4)   // kg CO₂-Äq./t (EU-Default oder Werkswert)
   countryOfOrigin  String?                        // ISO 3166-1 alpha-2
   productionSiteId String?                        // CBAM-Registry-ID der Produktionsstätte
-  incoterms        String?  @default("DAP")       // INCOTERMS® 2020
+  incoterms        IncoTerm?  @default(DAP)          // INCOTERMS® 2020 (typisiert)
 
   // ── Ergänzende CBAM-Felder (Käufer-Schätzung, Ausfuhrland) ──────────────────
   countryOfExport     String?                       // Ausfuhrland ISO 3166-1 (≠ Herstellungsland möglich)
@@ -1257,6 +1275,13 @@ model Lot {
 
   // ── Produktkatalog-Verknüpfung ────────────────────────────────────────────────
   catalogProductId String?                       // FK → CatalogProduct.id (optional — validiert handelbare Ware)
+
+  // ── Anti-Sniping — Automatische Verlängerung bei Last-Minute-Geboten ────────
+  // Wenn ein Gebot < extensionMinutes vor auctionEnd eingeht, wird die Auktion
+  // um extensionMinutes verlängert (max. maxExtensions Verlängerungen total).
+  extendedCount    Int       @default(0)           // Bisherige Verlängerungen
+  maxExtensions    Int       @default(3)           // Max. erlaubte Verlängerungen
+  extensionMinutes Int       @default(3)           // Verlängerung in Minuten pro Trigger
 
   // ── Geplanter Auktionsstart ───────────────────────────────────────────────────
   // Wenn gesetzt: Cron (/api/cron/lot-phase-auto-start, alle 5 min) startet
@@ -1413,14 +1438,37 @@ model LotContract {
   lot     Lot         @relation(fields: [lotId],    references: [id])
   buyer   User        @relation("LotContractBuyer",  fields: [buyerId],  references: [id])
   seller  User        @relation("LotContractSeller", fields: [sellerId], references: [id])
-  fees       LotFee[]
-  dispute    LotDispute?
-  settlement Settlement?
-  invoices   Invoice[]
+  fees           LotFee[]
+  dispute        LotDispute?
+  settlement     Settlement?
+  invoices       Invoice[]
+  contactRelease ContactRelease?
 
   @@index([buyerId])
   @@index([sellerId])
   @@map("lot_contracts")
+}
+
+// ─── ContactRelease — Kontaktfreigabe nach Vertragsabschluss ────────────────
+// Käufer und Verkäufer erhalten nach CONCLUSION gegenseitig Kontaktdaten.
+// Wird automatisch beim Lot-Abschluss (post-trade) angelegt.
+// Beide Parteien können den Zugriff widerrufen — Widerruf löscht NOT die Daten
+// (Revoke = logische Sperre für neue Anfragen; Altdaten bleiben für Compliance).
+model ContactRelease {
+  id          String   @id @default(cuid())
+  contractId  String   @unique
+  buyerName   String
+  buyerEmail  String
+  buyerPhone  String?
+  sellerName  String
+  sellerEmail String
+  sellerPhone String?
+  releasedAt  DateTime @default(now())
+  revokedAt   DateTime?  // Wenn gesetzt: Kontaktaustausch gesperrt
+
+  contract LotContract @relation(fields: [contractId], references: [id])
+
+  @@map("contact_releases")
 }
 
 model LotFee {
@@ -1485,7 +1533,7 @@ model SellerCharge {
   co2PerTonne       Decimal?     @db.Decimal(10, 4)  // kg CO₂-Äq. pro Einheit
   countryOfOrigin   String?      @db.VarChar(100)    // ISO 3166-1 oder freier Ländertext
   productionSiteId  String?      // EU-CBAM-Registry-ID der Produktionsstätte
-  incoterms         String?      @default("DAP")     // INCOTERMS® 2020
+  incoterms         IncoTerm?    @default(DAP)         // INCOTERMS® 2020 (typisiert)
   status            ChargeStatus @default(AVAILABLE)
   certificate31     String?      @db.Text  // EN 10204 3.1 Werkszeugnis (Base64)
   cbamCertificate   String?      @db.Text  // CBAM-Registrierungsdokument (Base64)

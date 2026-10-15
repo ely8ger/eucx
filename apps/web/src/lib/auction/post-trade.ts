@@ -186,6 +186,19 @@ export async function processLotConclusion(lotId: string): Promise<void> {
       ],
     });
 
+    // ContactRelease — Kontaktdaten beider Parteien für gegenseitigen Austausch
+    await tx.contactRelease.create({
+      data: {
+        contractId:  contract.id,
+        buyerName:   lot.buyer.organization?.name    ?? lot.buyer.email,
+        buyerEmail:  lot.buyer.email,
+        buyerPhone:  undefined,
+        sellerName:  lot.winner!.organization?.name  ?? lot.winner!.email,
+        sellerEmail: lot.winner!.email,
+        sellerPhone: undefined,
+      },
+    });
+
     // AuditLog
     await tx.auditLog.create({
       data: {

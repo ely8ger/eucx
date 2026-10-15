@@ -102,11 +102,15 @@ async function _handlePost(
   const lot = await db.lot.findUnique({
     where:  { id: lotId },
     select: {
-      quantity:     true,
-      co2PerTonne:  true,
-      phase:        true,
-      buyerId:      true,
-      buyer:        { select: { organizationId: true } },
+      quantity:         true,
+      co2PerTonne:      true,
+      phase:            true,
+      buyerId:          true,
+      buyer:            { select: { organizationId: true } },
+      auctionEnd:       true,
+      extendedCount:    true,
+      maxExtensions:    true,
+      extensionMinutes: true,
     },
   });
   if (!lot) return NextResponse.json({ error: "Lot nicht gefunden" }, { status: 404 });
@@ -178,6 +182,47 @@ async function _handlePost(
 
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: result.code });
+  }
+
+  // ── Anti-Sniping: Last-Minute-Gebot → Auktion verlängern ─────────
+  // Wenn Gebot < extensionMinutes vor auctionEnd eingeht UND maxExtensions noch nicht erreicht:
+  // auctionEnd um extensionMinutes verlängern (verhindert Sniping in den letzten Sekunden).
+  try {
+    const ANTI_SNIPING_TRIGGER_SEC = lot.extensionMinutes * 60;
+    const now = Date.now();
+
+    if (
+      lot.auctionEnd &&
+      lot.phase === "PROPOSAL" &&
+      lot.extendedCount < lot.maxExtensions
+    ) {
+      const secsToEnd = (lot.auctionEnd.getTime() - now) / 1000;
+      if (secsToEnd > 0 && secsToEnd <= ANTI_SNIPING_TRIGGER_SEC) {
+        const newEnd = new Date(lot.auctionEnd.getTime() + lot.extensionMinutes * 60 * 1000);
+        await db.lot.update({
+          where: { id: lotId },
+          data: {
+            auctionEnd:    newEnd,
+            extendedCount: { increment: 1 },
+          },
+        });
+        void audit({
+          userId:     token.userId,
+          action:     "BID_SUBMITTED",
+          entityType: "Lot",
+          entityId:   lotId,
+          meta: {
+            event:        "ANTI_SNIPING_EXTENSION",
+            extendedCount: lot.extendedCount + 1,
+            newAuctionEnd: newEnd.toISOString(),
+            extensionMinutes: lot.extensionMinutes,
+          },
+        });
+      }
+    }
+  } catch (err) {
+    // Anti-Sniping-Fehler darf Gebot nicht blockieren
+    console.error("[bids/route] Anti-Sniping Fehler:", err);
   }
 
   // ── Notifications (fire-and-forget) ──────────────────────────────

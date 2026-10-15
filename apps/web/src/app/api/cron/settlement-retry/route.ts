@@ -16,6 +16,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
 import { runSettlement }             from "@/lib/clearing/clearing-service";
 import { settleEscrowForLot }        from "@/lib/clearing/lot-clearing-service";
+import { SETTLEMENT_ENABLED }        from "@/lib/feature-flags";
 
 export const dynamic     = "force-dynamic";
 export const runtime     = "nodejs";
@@ -32,6 +33,10 @@ export async function GET(req: NextRequest) {
   }
 
   const start = Date.now();
+
+  if (!SETTLEMENT_ENABLED) {
+    return NextResponse.json({ ok: true, processed: 0, skipped: "settlement_disabled", durationMs: 0 });
+  }
 
   const pending = await db.settlement.findMany({
     where: {
