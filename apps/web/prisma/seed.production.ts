@@ -162,15 +162,13 @@ async function main() {
   });
   console.log(`Admin: ${adminUser.email} (Passwort: ${adminPassword === "CHANGE_ME_before_golive_2026!" ? "⚠ STANDARD — JETZT ÄNDERN!" : "gesetzt"})`);
 
-  // 4. Operator-Wallet
+  // 4. Operator-Wallet (kein Balance — ZAG: keine Kundengeldhaltung)
   await db.wallet.upsert({
     where:  { organizationId: operatorOrg.id },
     update: {},
     create: {
       organizationId: operatorOrg.id,
       currency:       "EUR",
-      balance:        0,
-      reservedBalance: 0,
     },
   });
 

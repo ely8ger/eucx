@@ -45,10 +45,8 @@ async function main() {
     where:  { organizationId: operatorOrg.id },
     update: {},
     create: {
-      organizationId:  operatorOrg.id,
-      currency:        "EUR",
-      balance:         0,
-      reservedBalance: 0,
+      organizationId: operatorOrg.id,
+      currency:       "EUR",
     },
   });
 

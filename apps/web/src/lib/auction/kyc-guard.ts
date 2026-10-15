@@ -53,29 +53,7 @@ export async function checkBidEligibility(userId: string, lotId: string): Promis
   if (user.isYoungCompany && lot) {
     const pricePerUnit = lot.currentBest ?? lot.startPrice;
 
-    if (pricePerUnit) {
-      const lotValue       = new Decimal(lot.quantity.toString()).times(pricePerUnit.toString());
-      const requiredDeposit = lotValue.times("0.05").toDecimalPlaces(2);
-
-      // Wallet über Organisation laden
-      const wallet = await db.wallet.findUnique({
-        where:  { organizationId: user.organizationId },
-        select: { balance: true },
-      });
-
-      const walletBalance = new Decimal(wallet?.balance?.toString() ?? "0");
-
-      if (walletBalance.lt(requiredDeposit)) {
-        const missing = requiredDeposit.minus(walletBalance).toFixed(2);
-        return {
-          ok:               false,
-          error:            `Sicherheitsleistung von 5% (${requiredDeposit.toFixed(2)} €) erforderlich. Aktuelles Depot: ${walletBalance.toFixed(2)} €. Fehlend: ${missing} €.`,
-          code:             403,
-          depositRequired:  true,
-          missingAmount:    missing,
-        };
-      }
-    }
+    // ZAG: kein Wallet-Balance-Check — Käufer zahlen direkt per Banküberweisung
   }
 
   return { ok: true };
