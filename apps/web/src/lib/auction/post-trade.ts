@@ -17,7 +17,8 @@ import { db } from "@/lib/db/client";
 import { calcSellerFee, calcBuyerFee } from "./fee-engine";
 import { generateLotContract } from "./lot-contract-generator";
 import { lockEscrowForLot } from "@/lib/clearing/lot-clearing-service";
-import { sendAuctionMail } from "@/lib/notifications/mailer";
+import { sendAuctionMail }          from "@/lib/notifications/mailer";
+import { notifyContractGenerated }  from "@/lib/notifications/notification-service";
 
 // ─── Kontrakt-Nummer Generator ────────────────────────────────────────────────
 
@@ -241,30 +242,16 @@ export async function processLotConclusion(lotId: string): Promise<void> {
     });
   }
 
-  // E-Mails via Resend (fire-and-forget - Haupt-Flow nicht blockieren)
+  // In-App-Notifications + E-Mails (fire-and-forget — Haupt-Flow nicht blockieren)
   const tv = totalValue.toNumber().toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  sendAuctionMail({
-    to:       lot.buyer.email,
-    subject:  `Kaufvertrag ${contractNumber} - EUCX`,
-    template: "contract_buyer",
-    data: {
-      contractNumber,
-      commodity:  lot.commodity,
-      totalValue: tv,
-      feeAmount:  buyerFee.amount.toFixed(2),
-    },
-  }).catch(console.error);
-
-  sendAuctionMail({
-    to:       lot.winner.email,
-    subject:  `Kaufvertrag ${contractNumber} - EUCX`,
-    template: "contract_seller",
-    data: {
-      contractNumber,
-      commodity:  lot.commodity,
-      totalValue: tv,
-      feeAmount:  sellerFee.amount.toFixed(2),
-    },
-  }).catch(console.error);
+  notifyContractGenerated(
+    lot.buyer.id,
+    lot.winner!.id,
+    contractNumber,
+    lot.commodity,
+    tv,
+    buyerFee.amount.toFixed(2),
+    lotId,
+  ).catch(console.error);
 }

@@ -467,6 +467,21 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
     </p>
   `,
 
+  email_bounce_alert: (d) => `
+    ${alertBox("E-Mail-Bounce erkannt — Zustellung fehlgeschlagen", "#dc2626")}
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Bounce-Meldung von Resend</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Eine E-Mail konnte nicht zugestellt werden. Bitte prüfen Sie die E-Mail-Adresse des Nutzers.
+    </p>
+    ${infoTable([
+      infoRow("Empfänger:", d.recipient ?? "—"),
+      infoRow("Betreff:", d.subject ?? "—"),
+      infoRow("Bounce-Grund:", d.bounceMsg ?? "—"),
+      infoRow("Resend E-Mail-ID:", d.emailId ?? "—"),
+    ].join(""))}
+    ${primaryBtn("https://me8.eucx.eu/admin/kyc", "Nutzerverwaltung öffnen →")}
+  `,
+
 };
 
 function fallback(template: string, data: Record<string, string>): string {
