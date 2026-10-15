@@ -7,7 +7,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
-import { sendAuctionMail } from "@/lib/notifications/mailer";
+import { sendAuctionMail }        from "@/lib/notifications/mailer";
+import { notifyDeliveryConfirmed } from "@/lib/notifications/notification-service";
 
 export const dynamic = "force-dynamic";
 
@@ -77,6 +78,14 @@ export async function POST(
       },
     }).catch((err: unknown) => console.error("[buyer-delivery] Mailer-Fehler:", err));
   }
+
+  // In-App-Notification für Verkäufer
+  notifyDeliveryConfirmed(
+    contract.sellerId,
+    contract.contractNumber ?? contract.id,
+    lotId,
+    new Date().toISOString(),
+  ).catch(console.error);
 
   return NextResponse.json({
     deliveryStatus: updated.deliveryStatus,

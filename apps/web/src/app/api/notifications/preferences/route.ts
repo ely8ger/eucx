@@ -8,6 +8,9 @@
  *   emailOnOutbid:       boolean  (E-Mail bei Überbietung)
  *   emailOnAuctionEnd:   boolean  (E-Mail bei Auktionsabschluss + Siegerbenachrichtigung)
  *   emailOnAuctionStart: boolean  (E-Mail wenn Auktion für registrierte Verkäufer startet)
+ *   emailOnContract:     boolean  (E-Mail bei Kaufvertragserstellung)
+ *   emailOnKyc:          boolean  (E-Mail bei KYC-Statusänderung)
+ *   emailOnDispute:      boolean  (E-Mail bei Streitfalleröffnung)
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -32,6 +35,9 @@ export async function GET(req: NextRequest) {
       emailOnOutbid:       true,
       emailOnAuctionEnd:   true,
       emailOnAuctionStart: true,
+      emailOnContract:     true,
+      emailOnKyc:          true,
+      emailOnDispute:      true,
     },
   });
 
@@ -50,6 +56,9 @@ export async function PATCH(req: NextRequest) {
     emailOnOutbid?:       boolean;
     emailOnAuctionEnd?:   boolean;
     emailOnAuctionStart?: boolean;
+    emailOnContract?:     boolean;
+    emailOnKyc?:          boolean;
+    emailOnDispute?:      boolean;
   };
 
   const pref = await db.notificationPreference.upsert({
@@ -59,16 +68,25 @@ export async function PATCH(req: NextRequest) {
       emailOnOutbid:       body.emailOnOutbid       ?? true,
       emailOnAuctionEnd:   body.emailOnAuctionEnd   ?? true,
       emailOnAuctionStart: body.emailOnAuctionStart ?? true,
+      emailOnContract:     body.emailOnContract     ?? true,
+      emailOnKyc:          body.emailOnKyc          ?? true,
+      emailOnDispute:      body.emailOnDispute       ?? true,
     },
     update: {
       ...(typeof body.emailOnOutbid       === "boolean" && { emailOnOutbid:       body.emailOnOutbid }),
       ...(typeof body.emailOnAuctionEnd   === "boolean" && { emailOnAuctionEnd:   body.emailOnAuctionEnd }),
       ...(typeof body.emailOnAuctionStart === "boolean" && { emailOnAuctionStart: body.emailOnAuctionStart }),
+      ...(typeof body.emailOnContract     === "boolean" && { emailOnContract:     body.emailOnContract }),
+      ...(typeof body.emailOnKyc          === "boolean" && { emailOnKyc:          body.emailOnKyc }),
+      ...(typeof body.emailOnDispute      === "boolean" && { emailOnDispute:      body.emailOnDispute }),
     },
     select: {
       emailOnOutbid:       true,
       emailOnAuctionEnd:   true,
       emailOnAuctionStart: true,
+      emailOnContract:     true,
+      emailOnKyc:          true,
+      emailOnDispute:      true,
     },
   });
 

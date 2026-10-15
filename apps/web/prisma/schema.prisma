@@ -1520,8 +1520,15 @@ enum NotifType {
   WON
   LOST
   CLOSED_BUYER
-  DEPOSIT_WARN
+  DEPOSIT_WARN       // deprecated — kein Wallet-Balance mehr (ZAG); bleibt für DB-Kompatibilität
   KYC_INQUIRY
+  KYC_APPROVED
+  KYC_REJECTED
+  CONTRACT_GENERATED
+  DISPUTE_OPENED
+  PAYMENT_REPORTED
+  DELIVERY_CONFIRMED
+  AUCTION_START      // Angebotsphase geöffnet (registrierte Verkäufer)
 }
 
 model Notification {
@@ -1616,6 +1623,9 @@ model NotificationPreference {
   emailOnOutbid       Boolean @default(true)
   emailOnAuctionEnd   Boolean @default(true)
   emailOnAuctionStart Boolean @default(true)
+  emailOnContract     Boolean @default(true)  // Kaufvertrag erstellt
+  emailOnKyc          Boolean @default(true)  // KYC-Status geändert (Inquiry, Approved, Rejected)
+  emailOnDispute      Boolean @default(true)  // Streitfall eröffnet
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

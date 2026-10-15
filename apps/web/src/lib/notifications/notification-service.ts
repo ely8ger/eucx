@@ -5,8 +5,14 @@
  * E-Mail-Versand aus (abhängig von NotificationPreference des Users).
  *
  * Aufrufpunkte:
- *   • bids/route.ts     → notifyOutbid, notifyLeading, notifyDepositWarn
- *   • auction-timer.ts  → notifyUrgency10m, notifyUrgency5m, notifyAuctionClosed
+ *   • bids/route.ts          → notifyOutbid, notifyLeading
+ *   • auction-timer.ts       → notifyUrgency10m, notifyUrgency5m, notifyAuctionClosed
+ *   • lot-phase-auto-start   → notifyAuctionStart
+ *   • post-trade.ts          → notifyContractGenerated
+ *   • admin/kyc/[userId]     → notifyKycInquiry, notifyKycApproved, notifyKycRejected
+ *   • auction/lots/dispute   → notifyDisputeOpened
+ *   • auction/payment-sent   → notifyPaymentReported
+ *   • auction/buyer-delivery → notifyDeliveryConfirmed
  */
 
 import { db } from "@/lib/db/client";
@@ -61,28 +67,15 @@ export async function notifyLeading(sellerId: string, lotId: string, price: stri
 }
 
 /**
- * Depot-Warnung: Wallet-Saldo unter 110% der 5%-Schwelle.
+ * @deprecated ZAG: kein Wallet-Balance mehr — Funktion ist no-op
  */
 export async function notifyDepositWarn(
-  sellerId:       string,
-  lotId:          string,
-  currentBalance: string,
-  required:       string,
+  _sellerId:       string,
+  _lotId:          string,
+  _currentBalance: string,
+  _required:       string,
 ): Promise<void> {
-  // Dedup: Max 1 Warnung pro Lot pro Seller
-  const existing = await db.notification.findFirst({
-    where: { userId: sellerId, lotId, type: "DEPOSIT_WARN" },
-    select: { id: true },
-  });
-  if (existing) return;
-
-  await createNotification({
-    userId:  sellerId,
-    lotId,
-    type:    "DEPOSIT_WARN",
-    title:   "Depot-Warnung",
-    message: `Ihr Guthaben (${formatEur(currentBalance)}) nähert sich der erforderlichen 5%-Sicherheitsleistung von ${formatEur(required)}.`,
-  });
+  // ZAG-Compliance: EUCX hält keine Kundengelder mehr → keine Depot-Warnung
 }
 
 /**
@@ -158,6 +151,220 @@ export async function notifyAuctionClosed(
   }).catch(console.error);
 }
 
+/**
+ * Angebotsphase geöffnet — alle registrierten Verkäufer benachrichtigen.
+ */
+export async function notifyAuctionStart(
+  lotId:     string,
+  commodity: string,
+  startPrice: string,
+  auctionEndIso: string,
+): Promise<void> {
+  const registrations = await db.lotRegistration.findMany({
+    where:  { lotId },
+    select: { sellerId: true },
+  });
+
+  for (const { sellerId } of registrations) {
+    const existing = await db.notification.findFirst({
+      where: { userId: sellerId, lotId, type: "AUCTION_START" },
+      select: { id: true },
+    });
+    if (existing) continue;
+
+    await createNotification({
+      userId:  sellerId,
+      lotId,
+      type:    "AUCTION_START",
+      title:   `Angebotsphase geöffnet: ${commodity}`,
+      message: `Startpreis: ${formatEur(startPrice)}. Geben Sie Ihr Angebot bis ${new Date(auctionEndIso).toLocaleString("de-DE")} ab.`,
+    });
+
+    sendMailIfEnabled(sellerId, "emailOnAuctionStart", {
+      subject:  `Angebotsphase geöffnet: ${commodity} - EUCX`,
+      template: "auction_start",
+      data:     { commodity, startPrice, auctionEnd: auctionEndIso, lotId },
+    }).catch(console.error);
+  }
+}
+
+/**
+ * Kaufvertrag erstellt — Käufer und Verkäufer benachrichtigen.
+ */
+export async function notifyContractGenerated(
+  buyerUserId:    string,
+  sellerUserId:   string,
+  contractNumber: string,
+  commodity:      string,
+  totalValue:     string,
+  feeAmount:      string,
+  lotId:          string,
+): Promise<void> {
+  await createNotification({
+    userId:  buyerUserId,
+    lotId,
+    type:    "CONTRACT_GENERATED",
+    title:   `Kaufvertrag ${contractNumber} erstellt`,
+    message: `Ihr Kaufvertrag für ${commodity} (Gesamtwert: ${formatEur(totalValue)}) steht zum Download bereit.`,
+  });
+
+  await createNotification({
+    userId:  sellerUserId,
+    lotId,
+    type:    "CONTRACT_GENERATED",
+    title:   `Kaufvertrag ${contractNumber} erstellt`,
+    message: `Ihr Verkaufsvertrag für ${commodity} (Gesamtwert: ${formatEur(totalValue)}) steht zum Download bereit.`,
+  });
+
+  sendMailIfEnabled(buyerUserId, "emailOnContract", {
+    subject:  `Kaufvertrag ${contractNumber} - EUCX`,
+    template: "contract_buyer",
+    data:     { contractNumber, commodity, totalValue, feeAmount, lotId },
+  }).catch(console.error);
+
+  sendMailIfEnabled(sellerUserId, "emailOnContract", {
+    subject:  `Kaufvertrag ${contractNumber} - EUCX`,
+    template: "contract_seller",
+    data:     { contractNumber, commodity, totalValue, feeAmount, lotId },
+  }).catch(console.error);
+}
+
+/**
+ * KYC-Rückfrage — Nutzer in-app benachrichtigen (E-Mail läuft separat in admin route).
+ */
+export async function notifyKycInquiry(
+  userId:  string,
+  orgName: string,
+  message: string,
+): Promise<void> {
+  const existing = await db.notification.findFirst({
+    where: { userId, type: "KYC_INQUIRY" },
+    select: { id: true },
+  });
+  if (existing) {
+    await db.notification.update({ where: { id: existing.id }, data: { isRead: false, message } });
+    return;
+  }
+
+  await createNotification({
+    userId,
+    type:    "KYC_INQUIRY",
+    title:   "KYC-Rückfrage",
+    message: `Compliance hat eine Rückfrage zu den Unterlagen von ${orgName}.`,
+  });
+}
+
+/**
+ * KYC genehmigt.
+ */
+export async function notifyKycApproved(userId: string, orgName: string): Promise<void> {
+  await createNotification({
+    userId,
+    type:    "KYC_APPROVED",
+    title:   "KYC genehmigt",
+    message: `Die Verifizierung für ${orgName} wurde erfolgreich abgeschlossen. Sie haben vollen Handelszugang.`,
+  });
+
+  sendMailIfEnabled(userId, "emailOnKyc", {
+    subject:  "KYC genehmigt - EUCX",
+    template: "registration_approved",
+    data:     { orgName, email: "", role: "Teilnehmer" },
+  }).catch(console.error);
+}
+
+/**
+ * KYC abgelehnt.
+ */
+export async function notifyKycRejected(userId: string, orgName: string, reason: string): Promise<void> {
+  await createNotification({
+    userId,
+    type:    "KYC_REJECTED",
+    title:   "KYC abgelehnt",
+    message: `Die Verifizierung für ${orgName} wurde abgelehnt. Bitte wenden Sie sich an support@eucx.eu.`,
+  });
+
+  sendMailIfEnabled(userId, "emailOnKyc", {
+    subject:  "KYC-Entscheidung - EUCX",
+    template: "registration_rejected",
+    data:     { orgName, reason },
+  }).catch(console.error);
+}
+
+/**
+ * Streitfall eröffnet — beide Parteien benachrichtigen.
+ */
+export async function notifyDisputeOpened(
+  buyerUserId:  string,
+  sellerUserId: string,
+  disputeId:    string,
+  contractId:   string,
+  lotId:        string,
+  reason:       string,
+  raisedByRole: string,
+): Promise<void> {
+  const msg = `Streitfall zu Kontrakt ${contractId.slice(0, 8).toUpperCase()} eröffnet: ${reason.slice(0, 80)}`;
+
+  await createNotification({
+    userId:  buyerUserId,
+    lotId,
+    type:    "DISPUTE_OPENED",
+    title:   "Streitfall eröffnet",
+    message: msg,
+  });
+
+  await createNotification({
+    userId:  sellerUserId,
+    lotId,
+    type:    "DISPUTE_OPENED",
+    title:   "Streitfall eröffnet",
+    message: msg,
+  });
+
+  const notifyParty = raisedByRole === "BUYER" ? sellerUserId : buyerUserId;
+  sendMailIfEnabled(notifyParty, "emailOnDispute", {
+    subject:  `Streitfall eröffnet - Kontrakt ${contractId.slice(0, 8).toUpperCase()} - EUCX`,
+    template: "dispute_opened_admin",
+    data:     { disputeId, contractId, lotId, reason, raisedByRole, openedAt: new Date().toISOString() },
+  }).catch(console.error);
+}
+
+/**
+ * Zahlung gemeldet — Verkäufer in-app + E-Mail.
+ */
+export async function notifyPaymentReported(
+  sellerUserId:   string,
+  contractNumber: string,
+  lotId:          string,
+  totalValue:     string,
+  reportedAt:     string,
+): Promise<void> {
+  await createNotification({
+    userId:  sellerUserId,
+    lotId,
+    type:    "PAYMENT_REPORTED",
+    title:   "Zahlung gemeldet",
+    message: `Käufer hat Zahlung für Kontrakt ${contractNumber} (${formatEur(totalValue)}) als angewiesen gemeldet.`,
+  });
+}
+
+/**
+ * Wareneingang bestätigt — Verkäufer in-app.
+ */
+export async function notifyDeliveryConfirmed(
+  sellerUserId:   string,
+  contractNumber: string,
+  lotId:          string,
+  deliveredAt:    string,
+): Promise<void> {
+  await createNotification({
+    userId:  sellerUserId,
+    lotId,
+    type:    "DELIVERY_CONFIRMED",
+    title:   "Wareneingang bestätigt",
+    message: `Käufer hat Wareneingang für Kontrakt ${contractNumber} bestätigt (${new Date(deliveredAt).toLocaleDateString("de-DE")}).`,
+  });
+}
+
 // ─── Interne Hilfsfunktionen ──────────────────────────────────────────────────
 
 async function notifyUrgency(
@@ -221,7 +428,7 @@ interface MailParams {
 
 async function sendMailIfEnabled(
   userId:   string,
-  prefKey:  "emailOnOutbid" | "emailOnAuctionEnd" | "emailOnAuctionStart",
+  prefKey:  "emailOnOutbid" | "emailOnAuctionEnd" | "emailOnAuctionStart" | "emailOnContract" | "emailOnKyc" | "emailOnDispute",
   mail:     MailParams,
 ): Promise<void> {
   const [user, pref] = await Promise.all([

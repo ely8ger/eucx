@@ -107,6 +107,22 @@ function alertBox(text: string, color = "#dc2626"): string {
 
 const TEMPLATES: Record<string, (data: Record<string, string>) => string> = {
 
+  auction_start: (d) => `
+    <div style="background:#eff6ff;border-left:4px solid #154194;padding:14px 16px;margin-bottom:20px;">
+      <p style="margin:0;font-size:13px;color:#154194;font-weight:600;">Angebotsphase ist jetzt geöffnet.</p>
+    </div>
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Jetzt Angebot abgeben</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.6;">
+      Eine Auktion, für die Sie registriert sind, hat die Angebotsphase begonnen. Geben Sie jetzt Ihr niedrigstes Angebot ab.
+    </p>
+    ${infoTable(
+      infoRow("Ware:", d.commodity ?? "-") +
+      infoRow("Startpreis:", d.startPrice ?? "-") +
+      infoRow("Abgabe bis:", d.auctionEnd ? new Date(d.auctionEnd).toLocaleString("de-DE", { timeZone: "Europe/Berlin" }) : "-")
+    )}
+    ${primaryBtn(`https://eucx.eu/dashboard/seller/auction/${d.lotId ?? ""}`, "Jetzt Angebot abgeben →")}
+  `,
+
   outbid: (d) => `
     ${alertBox("Sie wurden überboten - Handeln Sie jetzt!")}
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a1a1a;">Neues Bestgebot</h2>

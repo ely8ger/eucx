@@ -11,6 +11,7 @@ import { requireAuth, ApiError }     from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
 import { calculateRiskScore }        from "@/lib/compliance/risk-scorer";
+import { notifyKycApproved, notifyKycRejected } from "@/lib/notifications/notification-service";
 
 export const dynamic = "force-dynamic";
 
@@ -210,6 +211,8 @@ export async function PATCH(
         data:     { orgName: user.organization?.name ?? "" },
       }).catch(() => {});
 
+      notifyKycApproved(userId, user.organization?.name ?? "").catch(console.error);
+
     } else if (action === "reject") {
       await db.user.update({
         where: { id: userId },
@@ -233,6 +236,8 @@ export async function PATCH(
         template: "registration_rejected",
         data:     { rejectionReason: reason ?? "Keine Begründung angegeben." },
       }).catch(() => {});
+
+      notifyKycRejected(userId, user.organization?.name ?? "", reason ?? "Keine Begründung angegeben.").catch(console.error);
 
     } else {
       // suspend

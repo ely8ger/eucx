@@ -10,7 +10,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { apiRoute } from "@/lib/api/route-handler";
-import { sendAuctionMail } from "@/lib/notifications/mailer";
+import { sendAuctionMail }      from "@/lib/notifications/mailer";
+import { notifyPaymentReported } from "@/lib/notifications/notification-service";
 
 export const dynamic = "force-dynamic";
 
@@ -72,6 +73,15 @@ async function _POST(
       },
     }).catch((err: unknown) => console.error("[payment-sent] Mailer-Fehler:", err));
   }
+
+  // In-App-Notification für Verkäufer
+  notifyPaymentReported(
+    updated.sellerId,
+    updated.contractNumber ?? updated.id,
+    lotId,
+    updated.totalValue?.toString() ?? "0",
+    new Date().toISOString(),
+  ).catch(console.error);
 
   return NextResponse.json(updated);
 }

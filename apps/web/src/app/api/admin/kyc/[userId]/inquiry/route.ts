@@ -13,6 +13,7 @@ import { db }                        from "@/lib/db/client";
 import { requireAuth, ApiError }     from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
+import { notifyKycInquiry }          from "@/lib/notifications/notification-service";
 
 export const dynamic = "force-dynamic";
 
@@ -71,6 +72,8 @@ export async function POST(
         deadline:     deadline.toLocaleDateString("de-DE"),
       },
     }).catch((err: unknown) => console.error("[kyc/inquiry] Mailer-Fehler:", err));
+
+    notifyKycInquiry(userId, user.organization.name, parsed.data.message).catch(console.error);
 
     await audit({
       userId:     token.userId,

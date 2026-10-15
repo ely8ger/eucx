@@ -18,6 +18,7 @@ import { db }                        from "@/lib/db/client";
 import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { audit }                     from "@/lib/audit/logger";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
+import { notifyDisputeOpened }       from "@/lib/notifications/notification-service";
 import { DeliveryStatus }            from "@prisma/client";
 import { z }                         from "zod";
 
@@ -118,8 +119,20 @@ export async function POST(
     meta:       { lotId, reason: reason.slice(0, 100), evidenceCount: evidenceUrls.length },
   });
 
+  // In-App-Benachrichtigungen für beide Parteien
+  const raisedByRole = token.userId === contract.buyerId ? "BUYER" : "SELLER";
+  notifyDisputeOpened(
+    contract.buyerId,
+    contract.sellerId,
+    dispute.id,
+    contract.id,
+    lotId,
+    reason,
+    raisedByRole,
+  ).catch(console.error);
+
   // Compliance-Team per E-Mail informieren
-  const raisedByRole = token.userId === contract.buyerId ? "Käufer" : "Verkäufer";
+  const raisedByRoleLabel = raisedByRole === "BUYER" ? "Käufer" : "Verkäufer";
   const complianceEmail = process.env.COMPLIANCE_EMAIL ?? "compliance@eucx.eu";
   sendAuctionMail({
     to:       complianceEmail,
@@ -129,7 +142,7 @@ export async function POST(
       disputeId:   dispute.id,
       contractId:  contract.id,
       lotId,
-      raisedByRole,
+      raisedByRole: raisedByRoleLabel,
       reason:      reason.slice(0, 300),
       openedAt:    now.toLocaleString("de-DE", { timeZone: "Europe/Berlin" }),
     },

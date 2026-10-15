@@ -3,7 +3,8 @@
 /**
  * NotificationBell - Glocken-Icon mit rotem Badge + Dropdown
  *
- * Polling: alle 30s via /api/notifications?limit=10
+ * Primär: SSE-Stream via /api/notifications/stream (Cookie-Auth, kein Token in URL)
+ * Fallback: 30s-Polling wenn SSE nicht verfügbar
  * Badge: rote Zahl für ungelesene Benachrichtigungen
  * Dropdown: letzte 10 Events mit Klick → als gelesen markieren
  *
@@ -56,13 +57,13 @@ export function NotificationBell({ token }: Props) {
   const [items,       setItems]       = useState<NotifItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const sseRef      = useRef<EventSource | null>(null);
 
   // ── Notifications laden ──────────────────────────────────────────
   const load = useCallback(async () => {
     if (!token) return;
     try {
-      const r = await fetch("/api/notifications?limit=10", {
-        headers: { } });
+      const r = await fetch("/api/notifications?limit=10");
       if (!r.ok) return;
       const d = await r.json() as { notifications: NotifItem[]; unreadCount: number };
       setItems(d.notifications);
@@ -70,11 +71,49 @@ export function NotificationBell({ token }: Props) {
     } catch { /* ignore */ }
   }, [token]);
 
+  // ── SSE-Stream für Echtzeit-Updates ─────────────────────────────
   useEffect(() => {
-    load();
-    const id = setInterval(load, 30_000);
-    return () => clearInterval(id);
-  }, [load]);
+    if (!token) return;
+
+    load(); // initialer Load
+
+    // SSE verbinden (Cookie-Auth — kein Token in URL)
+    let es: EventSource | null = null;
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
+
+    try {
+      es = new EventSource("/api/notifications/stream");
+      sseRef.current = es;
+
+      es.addEventListener("notification", () => { load(); });
+      es.addEventListener("kyc_approved",       () => { load(); });
+      es.addEventListener("kyc_rejected",        () => { load(); });
+      es.addEventListener("kyc_inquiry",         () => { load(); });
+      es.addEventListener("contract_generated",  () => { load(); });
+      es.addEventListener("dispute_opened",      () => { load(); });
+      es.addEventListener("payment_reported",    () => { load(); });
+      es.addEventListener("delivery_confirmed",  () => { load(); });
+      es.addEventListener("order_filled",        () => { load(); });
+      es.addEventListener("lot_phase_changed",   () => { load(); });
+
+      es.onerror = () => {
+        // SSE-Fehler: auf 30s-Polling-Fallback wechseln
+        es?.close();
+        if (!pollTimer) {
+          pollTimer = setInterval(load, 30_000);
+        }
+      };
+    } catch {
+      // SSE nicht unterstützt (ältere Browser): Polling
+      pollTimer = setInterval(load, 30_000);
+    }
+
+    return () => {
+      es?.close();
+      sseRef.current = null;
+      if (pollTimer) clearInterval(pollTimer);
+    };
+  }, [load, token]);
 
   // ── Klick außerhalb schließt Dropdown ────────────────────────────
   useEffect(() => {

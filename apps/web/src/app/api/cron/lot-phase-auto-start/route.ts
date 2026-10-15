@@ -18,6 +18,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { audit } from "@/lib/audit/logger";
+import { notifyAuctionStart } from "@/lib/notifications/notification-service";
 
 export const dynamic = "force-dynamic";
 
@@ -74,7 +75,7 @@ export async function GET(req: NextRequest) {
       scheduledStart: { lte: now },
       lockedAt:       null,
     },
-    select: { id: true, buyerId: true, commodity: true },
+    select: { id: true, buyerId: true, commodity: true, startPrice: true },
     take: 50, // max 50 pro Cron-Lauf (verhindert Timeout)
   });
 
@@ -101,6 +102,12 @@ export async function GET(req: NextRequest) {
         entityId:   lot.id,
         meta:       { commodity: lot.commodity, auctionEnd: auctionEnd.toISOString() },
       });
+      notifyAuctionStart(
+        lot.id,
+        lot.commodity,
+        lot.startPrice?.toString() ?? "0",
+        auctionEnd.toISOString(),
+      ).catch(console.error);
     }
   }
 

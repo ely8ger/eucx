@@ -9,6 +9,9 @@ interface Prefs {
   emailOnOutbid:       boolean;
   emailOnAuctionEnd:   boolean;
   emailOnAuctionStart: boolean;
+  emailOnContract:     boolean;
+  emailOnKyc:          boolean;
+  emailOnDispute:      boolean;
 }
 
 const BLUE = "#154194";
@@ -26,6 +29,11 @@ const IN_APP_TYPES = [
     desc:  "Bestätigung: Sie halten aktuell das niedrigste Angebot und führen die Auktion.",
     moment: "Nach erfolgreicher Gebotsannahme" },
   {
+    code: "AUCTION_START",
+    label: "Angebotsphase geöffnet",
+    desc:  "Erinnerung für registrierte Verkäufer, wenn die Angebotsphase eines Lots beginnt.",
+    moment: "Beim Phasenübergang COLLECTION → PROPOSAL" },
+  {
     code: "URGENCY_10M",
     label: "10-Minuten-Warnung",
     desc:  "Erinnerung, wenn die Angebotsphase noch 10 Minuten läuft und Sie registriert sind.",
@@ -33,12 +41,12 @@ const IN_APP_TYPES = [
   {
     code: "URGENCY_5M",
     label: "5-Minuten-Alarm",
-    desc:  "Kritische Warnung (rot) bei 5 Minuten Restlaufzeit. Mit Vibration auf Mobilgeräten.",
+    desc:  "Kritische Warnung (rot) bei 5 Minuten Restlaufzeit.",
     moment: "Automatisch T−5 min vor Angebotsschluss" },
   {
     code: "WON",
     label: "Auktion gewonnen",
-    desc:  "Bestätigung des Zuschlags, Vertragsnummer und Link zum unterzeichneten PDF-Dokument.",
+    desc:  "Bestätigung des Zuschlags, Vertragsnummer und Link zum Kaufvertrag.",
     moment: "Sofort nach Auktionsabschluss" },
   {
     code: "LOST",
@@ -46,10 +54,40 @@ const IN_APP_TYPES = [
     desc:  "Benachrichtigung, dass ein anderer Bieter den Zuschlag erhalten hat.",
     moment: "Sofort nach Auktionsabschluss" },
   {
-    code: "DEPOSIT_WARN",
-    label: "Kaution niedrig",
-    desc:  "Warnung, wenn Ihre Sicherheitsleistung unter den Mindestbetrag für laufende Positionen sinkt.",
-    moment: "Wenn Kontostand unter Schwellwert fällt" },
+    code: "CONTRACT_GENERATED",
+    label: "Kaufvertrag erstellt",
+    desc:  "Kaufvertrag automatisch generiert — steht im Dashboard zum Download bereit.",
+    moment: "Sofort nach Auktionsabschluss" },
+  {
+    code: "KYC_INQUIRY",
+    label: "KYC-Rückfrage",
+    desc:  "Compliance hat eine Rückfrage zu Ihren Verifizierungsunterlagen.",
+    moment: "Wenn Admin eine Rückfrage sendet" },
+  {
+    code: "KYC_APPROVED",
+    label: "KYC genehmigt",
+    desc:  "Ihre Verifizierung wurde erfolgreich abgeschlossen. Voller Handelszugang.",
+    moment: "Nach Admin-Genehmigung" },
+  {
+    code: "KYC_REJECTED",
+    label: "KYC abgelehnt",
+    desc:  "Ihre Verifizierung wurde abgelehnt. Details in der E-Mail.",
+    moment: "Nach Admin-Ablehnung" },
+  {
+    code: "DISPUTE_OPENED",
+    label: "Streitfall eröffnet",
+    desc:  "Ein Streitfall wurde für einen Ihrer Kontrakte eröffnet.",
+    moment: "Bei Streitfall-Eröffnung durch Käufer oder Verkäufer" },
+  {
+    code: "PAYMENT_REPORTED",
+    label: "Zahlung gemeldet",
+    desc:  "Käufer hat Zahlung für Ihren Kontrakt als angewiesen gemeldet.",
+    moment: "Wenn Käufer Zahlung meldet" },
+  {
+    code: "DELIVERY_CONFIRMED",
+    label: "Wareneingang bestätigt",
+    desc:  "Käufer hat den Wareneingang für Ihren Kontrakt bestätigt.",
+    moment: "Wenn Käufer Wareneingang bestätigt" },
 ];
 
 export function NotificationsSettingsClient() {
@@ -221,6 +259,66 @@ export function NotificationsSettingsClient() {
                   <label className="nn-toggle" style={{ marginTop: 2 }}>
                     <input type="checkbox" checked={prefs.emailOnAuctionStart} disabled={saving}
                       onChange={(e) => save({ emailOnAuctionStart: e.target.checked })} />
+                    <span className="nn-slider" />
+                  </label>
+                </div>
+
+                {/* Kaufvertrag */}
+                <div className="nn-row">
+                  <div style={{ flex: 1 }}>
+                    <div className="nn-row-label">Kaufvertrag erstellt</div>
+                    <div className="nn-row-desc">
+                      E-Mail, wenn ein Kaufvertrag für eine abgeschlossene Auktion automatisch
+                      generiert wurde - mit Vertragsnummer und Link zum PDF.
+                    </div>
+                    <div className="nn-row-when">
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="#d1d5db" strokeWidth="1.2"/><path d="M5 3v2.5l1.5 1" stroke="#d1d5db" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                      Auslöser: Vertragsautomatik nach Auktionsabschluss
+                    </div>
+                  </div>
+                  <label className="nn-toggle" style={{ marginTop: 2 }}>
+                    <input type="checkbox" checked={prefs.emailOnContract} disabled={saving}
+                      onChange={(e) => save({ emailOnContract: e.target.checked })} />
+                    <span className="nn-slider" />
+                  </label>
+                </div>
+
+                {/* KYC */}
+                <div className="nn-row">
+                  <div style={{ flex: 1 }}>
+                    <div className="nn-row-label">KYC-Statusänderung</div>
+                    <div className="nn-row-desc">
+                      E-Mail bei Rückfragen, Genehmigung oder Ablehnung Ihrer KYC-Verifizierung
+                      durch das Compliance-Team.
+                    </div>
+                    <div className="nn-row-when">
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="#d1d5db" strokeWidth="1.2"/><path d="M5 3v2.5l1.5 1" stroke="#d1d5db" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                      Auslöser: Compliance-Entscheidung
+                    </div>
+                  </div>
+                  <label className="nn-toggle" style={{ marginTop: 2 }}>
+                    <input type="checkbox" checked={prefs.emailOnKyc} disabled={saving}
+                      onChange={(e) => save({ emailOnKyc: e.target.checked })} />
+                    <span className="nn-slider" />
+                  </label>
+                </div>
+
+                {/* Streitfall */}
+                <div className="nn-row">
+                  <div style={{ flex: 1 }}>
+                    <div className="nn-row-label">Streitfall eröffnet</div>
+                    <div className="nn-row-desc">
+                      E-Mail, wenn ein Streitfall für einen Ihrer laufenden Kontrakte
+                      eröffnet wurde. Erfordert zeitnahe Reaktion.
+                    </div>
+                    <div className="nn-row-when">
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="#d1d5db" strokeWidth="1.2"/><path d="M5 3v2.5l1.5 1" stroke="#d1d5db" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                      Auslöser: Streitfall-Eröffnung durch Vertragspartei
+                    </div>
+                  </div>
+                  <label className="nn-toggle" style={{ marginTop: 2 }}>
+                    <input type="checkbox" checked={prefs.emailOnDispute} disabled={saving}
+                      onChange={(e) => save({ emailOnDispute: e.target.checked })} />
                     <span className="nn-slider" />
                   </label>
                 </div>

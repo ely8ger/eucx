@@ -33,11 +33,20 @@ const HEARTBEAT_MS  = 25_000;
 
 // Mapping event-bus Typen → SSE event names
 const EVENT_NAME_MAP: Record<string, string> = {
-  "order:filled":           "order_filled",
-  "order:partially_filled": "order_partially_filled",
-  "order:cancelled":        "order_cancelled",
-  "balance:update":         "balance_updated",
-  "deal:matched":           "deal_matched",
+  "order:filled":             "order_filled",
+  "order:partially_filled":   "order_partially_filled",
+  "order:cancelled":          "order_cancelled",
+  "balance:update":           "balance_updated",
+  "deal:matched":             "deal_matched",
+  "lot:phase_changed":        "lot_phase_changed",
+  "kyc:approved":             "kyc_approved",
+  "kyc:rejected":             "kyc_rejected",
+  "kyc:inquiry":              "kyc_inquiry",
+  "contract:generated":       "contract_generated",
+  "dispute:opened":           "dispute_opened",
+  "payment:reported":         "payment_reported",
+  "delivery:confirmed":       "delivery_confirmed",
+  "notification:new":         "notification",
 };
 
 export async function GET(req: NextRequest) {
