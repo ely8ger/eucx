@@ -45,7 +45,8 @@ const PUBLIC_PREFIXES = [
   "/duenger",
   "/katalog",
   "/trading",
-  "/api/market",
+  "/api/market/stats",
+  "/api/public/",
   // Öffentliches Regelwerk
   "/regelwerk",
   // Cookie-Richtlinie
