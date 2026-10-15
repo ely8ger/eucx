@@ -33,8 +33,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS "fee_overrides_userId_key" ON "fee_overrides"(
 CREATE INDEX        IF NOT EXISTS "fee_overrides_userId_idx" ON "fee_overrides"("userId");
 
 -- Initial-Seed: Standard-Gebühren (entsprechen den hardcodierten Werten der fee-engine)
-INSERT INTO "fee_tiers" ("id","name","sellerRate","buyerRate","volumeThreshold","description")
+INSERT INTO "fee_tiers" ("id","name","sellerRate","buyerRate","volumeThreshold","description","updatedAt")
 VALUES
-  (gen_random_uuid()::text, 'STANDARD',    0.0080, 0.0030, NULL,       'Standard-Tarif für alle Nutzer'),
-  (gen_random_uuid()::text, 'HIGH_VOLUME', 0.0050, 0.0015, 500000.00, 'Rabatt bei > 500.000 € Jahresumsatz')
+  (gen_random_uuid()::text, 'STANDARD',    0.0080, 0.0030, NULL,       'Standard-Tarif für alle Nutzer',              NOW()),
+  (gen_random_uuid()::text, 'HIGH_VOLUME', 0.0050, 0.0015, 500000.00, 'Rabatt bei > 500.000 € Jahresumsatz', NOW())
 ON CONFLICT ("name") DO NOTHING;
