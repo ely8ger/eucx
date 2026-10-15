@@ -5,15 +5,25 @@
  * NestJS ist kanonisch: Redis-Cache (30s TTL) + Invalidierung nach Settlement.
  * Keine eigene DB-Logik — eliminiert Divergenz zwischen beiden Implementierungen.
  */
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import type { LiveTicker } from "@/hooks/useLiveMarketTickers";
 import { getMarketTickers } from "@/lib/market/ohlc-queries";
+import { requireAuth, ApiError } from "@/lib/auth/jwt";
 
 const API_URL = process.env.NESTJS_INTERNAL_URL ?? "http://localhost:3001";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // Preise nur für authentifizierte Nutzer — kein öffentlicher Preiszugang
+  try {
+    await requireAuth(req);
+  } catch (err) {
+    if (err instanceof ApiError) {
+      return NextResponse.json({ error: err.message }, { status: err.status });
+    }
+    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
+  }
   try {
     const upstream = await fetch(`${API_URL}/api/v1/public/ticker`, {
       headers: { Accept: "application/json" },

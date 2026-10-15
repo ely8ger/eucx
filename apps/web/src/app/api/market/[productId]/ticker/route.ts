@@ -8,13 +8,24 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { apiRoute }                  from "@/lib/api/route-handler";
+import { requireAuth, ApiError }     from "@/lib/auth/jwt";
 
 const API_URL = process.env.NESTJS_INTERNAL_URL ?? "http://localhost:3001";
 
 async function _GET(
-  _req:    NextRequest,
+  req:     NextRequest,
   context: { params: Promise<{ productId: string }> },
 ) {
+  // Preise nur für authentifizierte Nutzer
+  try {
+    await requireAuth(req);
+  } catch (err) {
+    if (err instanceof ApiError) {
+      return NextResponse.json({ error: err.message }, { status: err.status });
+    }
+    return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
+  }
+
   const { productId } = await context.params;
 
   const upstream = await fetch(

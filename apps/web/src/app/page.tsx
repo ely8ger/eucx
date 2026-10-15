@@ -4,7 +4,7 @@ import {
   ShieldCheck, TrendingUp, FileText, Users,
   ArrowRight, BarChart3, Layers, Lock,
   Globe, Building2, FlaskConical,
-  Package2, UserCheck,
+  Package2, UserCheck, Activity, Gavel,
 } from "lucide-react";
 import { EucxLogo }  from "@/components/logo/EucxLogo";
 import { SiteNav }   from "@/components/SiteNav";
@@ -70,9 +70,51 @@ async function fetchStats() {
   }
 }
 
+async function fetchMarketActivity() {
+  try {
+    const since7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const today0  = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+
+    const [activeAuctions, tradeCount7d, volumeAgg7d, completedToday, activeLots] = await Promise.all([
+      db.lot.count({ where: { phase: "PROPOSAL", isDraft: false } }),
+      db.lotContract.count({ where: { createdAt: { gte: since7d } } }),
+      db.lotContract.aggregate({ _sum: { totalValue: true }, where: { createdAt: { gte: since7d } } }),
+      db.lot.count({ where: { phase: "CONCLUSION", lockedAt: { gte: today0 } } }),
+      db.lot.findMany({
+        where:  { phase: "PROPOSAL", isDraft: false },
+        select: { cbamCategory: true },
+      }),
+    ]);
+
+    const totalValue7d = new Decimal(volumeAgg7d._sum.totalValue?.toString() ?? "0");
+    const volume7dStr  = totalValue7d.gte(1_000_000)
+      ? `${totalValue7d.div(1_000_000).toDecimalPlaces(1)} Mio. €`
+      : totalValue7d.gt(0)
+      ? `${totalValue7d.toDecimalPlaces(0)} €`
+      : "0 €";
+
+    const categoryActivity: Record<string, number> = {};
+    for (const lot of activeLots) {
+      const cat = lot.cbamCategory ?? null;
+      const label = cat?.startsWith("STEEL_")      ? "Metalle & Stahl"
+                  : cat?.startsWith("ALUMINIUM_")  ? "Aluminium"
+                  : cat?.startsWith("FERTILIZER_") ? "Dünger"
+                  : cat?.startsWith("CEMENT_")     ? "Zement"
+                  : cat === "HYDROGEN"              ? "Wasserstoff"
+                  : "Sonstige";
+      categoryActivity[label] = (categoryActivity[label] ?? 0) + 1;
+    }
+
+    return { activeAuctions, tradeCount7d, volume7dStr, completedToday, categoryActivity };
+  } catch {
+    return { activeAuctions: 0, tradeCount7d: 0, volume7dStr: "—", completedToday: 0, categoryActivity: {} };
+  }
+}
+
 export default async function HomePage() {
-  const t     = tServer;
-  const stats = await fetchStats();
+  const t        = tServer;
+  const stats    = await fetchStats();
+  const market   = await fetchMarketActivity();
 
   return (
     <div style={{ fontFamily: "'IBM Plex Sans', Arial, sans-serif", backgroundColor: "#fff", color: "#1a1a1a" }}>
@@ -148,6 +190,66 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── Marktaktivität ── */}
+      <section style={{ backgroundColor: "#fff", borderBottom: "1px solid #e8e8e8" }}>
+        <div className="r-container" style={{ paddingTop: 40, paddingBottom: 40 }}>
+          <div className="flex items-center gap-3" style={{ marginBottom: 28 }}>
+            <Activity size={16} style={{ color: "#154194" }} />
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "#154194" }}>Marktaktivität</span>
+            <span style={{ flex: 1, height: 1, backgroundColor: "#e8e8e8" }} />
+            <span style={{ fontSize: 11, color: "#aaa" }}>letzte 7 Tage</span>
+          </div>
+          <div className="r-grid-3" style={{ gap: 0 }}>
+            {([
+              {
+                icon: <Gavel size={20} style={{ color: "#154194" }} />,
+                value: market.activeAuctions > 0 ? `${market.activeAuctions}` : "—",
+                label: "Aktive Ausschreibungen",
+                sub:   "Gebote jetzt möglich",
+              },
+              {
+                icon: <BarChart3 size={20} style={{ color: "#154194" }} />,
+                value: market.tradeCount7d > 0 ? `${market.tradeCount7d}` : "—",
+                label: "Abgeschlossene Transaktionen",
+                sub:   "Letzte 7 Tage",
+              },
+              {
+                icon: <TrendingUp size={20} style={{ color: "#154194" }} />,
+                value: market.volume7dStr,
+                label: "Handelsvolumen",
+                sub:   "Gesamtwert, letzte 7 Tage",
+              },
+            ]).map(({ icon, value, label, sub }, i) => (
+              <div key={label} style={{
+                padding: "28px 32px",
+                borderLeft: i > 0 ? "1px solid #e8e8e8" : "none",
+              }}>
+                <div style={{ marginBottom: 14 }}>{icon}</div>
+                <div style={{ fontSize: 28, fontWeight: 300, color: "#154194", lineHeight: 1, marginBottom: 8 }}>{value}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>{label}</div>
+                <div style={{ fontSize: 12, color: "#aaa" }}>{sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {Object.keys(market.categoryActivity).length > 0 && (
+            <div className="flex flex-wrap gap-2" style={{ marginTop: 24, paddingTop: 20, borderTop: "1px solid #f0f0f0" }}>
+              <span style={{ fontSize: 11, color: "#aaa", marginRight: 4, alignSelf: "center" }}>Aktiv:</span>
+              {Object.entries(market.categoryActivity).map(([cat, count]) => (
+                <span key={cat} style={{
+                  fontSize: 12, fontWeight: 600, color: "#154194",
+                  backgroundColor: "#eef2fb", padding: "4px 12px",
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                }}>
+                  {cat}
+                  <span style={{ fontSize: 11, fontWeight: 700, backgroundColor: "#154194", color: "#fff", borderRadius: "50%", width: 18, height: 18, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{count}</span>
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
