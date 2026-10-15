@@ -1276,6 +1276,13 @@ model Lot {
   // ── Produktkatalog-Verknüpfung ────────────────────────────────────────────────
   catalogProductId String?                       // FK → CatalogProduct.id (optional — validiert handelbare Ware)
 
+  // ── Produkt-Spezifikationen (strukturierte Pflichtangaben nach CBAM-Kategorie) ──
+  // Validierung im API-Layer per JSON-Schema (Kategorie-spezifisch):
+  //   STEEL_*:   { diameter?, length?, grade, standard }
+  //   FERTILIZER_*: { nitrogen?, phosphate?, form }
+  //   ALUMINIUM_*: { alloy?, purity, form }
+  specs        Json?  @db.JsonB                 // Kategorie-spezifische technische Angaben
+
   // ── Anti-Sniping — Automatische Verlängerung bei Last-Minute-Geboten ────────
   // Wenn ein Gebot < extensionMinutes vor auctionEnd eingeht, wird die Auktion
   // um extensionMinutes verlängert (max. maxExtensions Verlängerungen total).
