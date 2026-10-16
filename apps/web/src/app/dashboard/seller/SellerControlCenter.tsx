@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
 import { toast } from "sonner";
+import { MarketTickerWidget } from "@/components/market/MarketTickerWidget";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -322,6 +323,11 @@ export function SellerControlCenter() {
         </div>
 
         <div className="scc-page">
+
+          {/* ── Marktpreise Widget ───────────────────────────────────── */}
+          <div style={{ marginBottom: 20 }}>
+            <MarketTickerWidget />
+          </div>
 
           {/* ── Live-Ticker ──────────────────────────────────────────── */}
           <div className="scc-ticker">

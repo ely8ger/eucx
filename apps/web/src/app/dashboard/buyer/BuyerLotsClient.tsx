@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
 import { toast } from "sonner";
 import { TRADEABLE_PRODUCTS, getTradeableByKat, SIDEBAR } from "@/lib/katalog/data";
+import { MarketTickerWidget } from "@/components/market/MarketTickerWidget";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -70,6 +71,7 @@ interface LotRow {
   isDraft?:           boolean;
   description?:       string | null;
   contractId?:        string | null;
+  specs?:             Record<string, string> | null;
 }
 
 interface CountryEntry { code: string; name: string }
@@ -303,6 +305,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [paymentTerms,     setPaymentTerms]     = useState("");
   const [vatTreatment,     setVatTreatment]     = useState("");
   const [selectedPreset,   setSelectedPreset]   = useState("");
+  const [specRows,         setSpecRows]         = useState<Array<{ key: string; val: string }>>([{ key: "", val: "" }]);
 
   // Katalog-Suche
   const [catalogExpanded,   setCatalogExpanded]   = useState(true);
@@ -516,6 +519,11 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       body.deliveryLocation = deliveryLocation.trim();
       body.paymentTerms     = paymentTerms.trim();
       body.vatTreatment   = vatTreatment;
+      const specsObj = Object.fromEntries(
+        specRows.filter((r) => r.key.trim() && r.val.trim())
+                .map((r) => [r.key.trim(), r.val.trim()])
+      );
+      if (Object.keys(specsObj).length > 0) body.specs = specsObj;
       if (publish) body.publish = true;
 
       const r = await fetch("/api/auction/lots", {
@@ -949,6 +957,11 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 </div>
               ));
             })()}
+          </div>
+
+          {/* Marktpreise Widget */}
+          <div style={{ marginBottom: 20 }}>
+            <MarketTickerWidget />
           </div>
 
           {/* CO₂-Widget */}
@@ -1849,6 +1862,57 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     />
                   </div>
 
+                  {/* Technische Spezifikationen (optional, Key-Value) */}
+                  <div className="bl-form-group full">
+                    <label className="bl-label">Technische Spezifikationen (optional)</label>
+                    {specRows.map((row, i) => (
+                      <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                        <input
+                          className="bl-input"
+                          type="text"
+                          placeholder="Schlüssel (z.B. Norm)"
+                          value={row.key}
+                          onChange={(e) => {
+                            const rows = [...specRows];
+                            rows[i] = { ...rows[i]!, key: e.target.value };
+                            setSpecRows(rows);
+                          }}
+                          style={{ flex: 1 }}
+                        />
+                        <input
+                          className="bl-input"
+                          type="text"
+                          placeholder="Wert (z.B. EN 10025)"
+                          value={row.val}
+                          onChange={(e) => {
+                            const rows = [...specRows];
+                            rows[i] = { ...rows[i]!, val: e.target.value };
+                            setSpecRows(rows);
+                          }}
+                          style={{ flex: 1 }}
+                        />
+                        {specRows.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => setSpecRows(specRows.filter((_, j) => j !== i))}
+                            style={{ background: "none", border: "1px solid #e5e7eb",
+                                     padding: "0 10px", cursor: "pointer", color: "#9ca3af",
+                                     fontSize: 16, flexShrink: 0 }}
+                          >×</button>
+                        )}
+                      </div>
+                    ))}
+                    {specRows.length < 10 && (
+                      <button
+                        type="button"
+                        onClick={() => setSpecRows([...specRows, { key: "", val: "" }])}
+                        style={{ background: "none", border: "1px dashed #d1d5db",
+                                 padding: "4px 12px", cursor: "pointer", fontSize: 12,
+                                 color: "#6b7280", marginTop: 2 }}
+                      >+ Zeile hinzufügen</button>
+                    )}
+                  </div>
+
                   <div className="bl-form-group">
                     <label className="bl-label">Max. Lieferzeit *</label>
                     <select
@@ -2356,6 +2420,23 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     </tbody>
                   </table>
                 </div>
+
+                {/* Technische Spezifikationen */}
+                {lot.specs && typeof lot.specs === "object" && Object.keys(lot.specs).length > 0 && (
+                  <div className="bl-pub-section">
+                    <div className="bl-pub-section-title">Technische Spezifikationen</div>
+                    <table className="bl-pub-table">
+                      <tbody>
+                        {Object.entries(lot.specs as Record<string, string>).map(([k, v]) => (
+                          <tr key={k}>
+                            <td style={{ paddingRight: 12, color: "#6b7280", fontWeight: 500, fontSize: 12 }}>{k}</td>
+                            <td style={{ fontWeight: 600, fontSize: 12 }}>{v}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
 
                 {/* Beschreibung */}
                 {lot.description && (

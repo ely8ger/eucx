@@ -130,6 +130,13 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
   const [disputeReason,  setDisputeReason]  = useState("");
   const [disputing,      setDisputing]      = useState(false);
   const [disputeDone,    setDisputeDone]    = useState(false);
+  const [contactRelease,    setContactRelease]    = useState<{
+    buyerName: string; buyerEmail: string; buyerPhone?: string;
+    sellerName: string; sellerEmail: string; sellerPhone?: string;
+    releasedAt: string;
+  } | null>(null);
+  const [contactLoading,    setContactLoading]    = useState(false);
+  const [contactError,      setContactError]      = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -284,6 +291,28 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
       a.click();
       URL.revokeObjectURL(url);
     } catch { alert("Download fehlgeschlagen."); }
+  }
+
+  async function fetchContactRelease() {
+    if (!contract) return;
+    setContactLoading(true);
+    setContactError(null);
+    try {
+      const res = await fetch(`/api/auction/contracts/${contractId}/contact`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (res.status === 410) {
+        setContactError("Kontaktfreigabe wurde widerrufen.");
+        return;
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json() as { data: typeof contactRelease };
+      setContactRelease(data.data);
+    } catch (err) {
+      setContactError(err instanceof Error ? err.message : "Ladefehler");
+    } finally {
+      setContactLoading(false);
+    }
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
@@ -799,8 +828,60 @@ export function ContractDetailClient({ contractId }: { contractId: string }) {
                       {contract.counterparty.email}
                     </a>
                   </div>
+                  {/* ContactRelease — offizielle Freigabe (Contract existiert nur nach CONCLUSION) */}
+                  <div style={{ marginTop: 16, borderTop: "1px solid #e5e7eb", paddingTop: 12 }}>
+                      <div className="cd-contact-label">OFFIZIELLE KONTAKTFREIGABE</div>
+                      {!contactRelease && !contactError && (
+                        <button
+                          onClick={() => void fetchContactRelease()}
+                          disabled={contactLoading}
+                          style={{ marginTop: 4, background: "#154194", color: "#fff",
+                                   border: "none", padding: "5px 12px", fontSize: 11,
+                                   fontWeight: 600, cursor: contactLoading ? "default" : "pointer",
+                                   opacity: contactLoading ? 0.7 : 1 }}
+                        >
+                          {contactLoading ? "Lade…" : "Kontaktdaten abrufen"}
+                        </button>
+                      )}
+                      {contactError && (
+                        <div style={{ marginTop: 4, fontSize: 12, color: "#dc2626" }}>
+                          {contactError}
+                        </div>
+                      )}
+                      {contactRelease && (
+                        <div style={{ marginTop: 8, fontSize: 12 }}>
+                          <div style={{ marginBottom: 8 }}>
+                            <div className="cd-contact-label">KÄUFER (verifiziert)</div>
+                            <div style={{ fontWeight: 600 }}>{contactRelease.buyerName}</div>
+                            <a href={`mailto:${contactRelease.buyerEmail}`}
+                               style={{ color: "#154194" }}>{contactRelease.buyerEmail}</a>
+                            {contactRelease.buyerPhone && (
+                              <div>
+                                <a href={`tel:${contactRelease.buyerPhone}`}
+                                   style={{ color: "#154194" }}>{contactRelease.buyerPhone}</a>
+                              </div>
+                            )}
+                          </div>
+                          <div style={{ marginBottom: 8 }}>
+                            <div className="cd-contact-label">VERKÄUFER (verifiziert)</div>
+                            <div style={{ fontWeight: 600 }}>{contactRelease.sellerName}</div>
+                            <a href={`mailto:${contactRelease.sellerEmail}`}
+                               style={{ color: "#154194" }}>{contactRelease.sellerEmail}</a>
+                            {contactRelease.sellerPhone && (
+                              <div>
+                                <a href={`tel:${contactRelease.sellerPhone}`}
+                                   style={{ color: "#154194" }}>{contactRelease.sellerPhone}</a>
+                              </div>
+                            )}
+                          </div>
+                          <div style={{ fontSize: 10, color: "#9ca3af" }}>
+                            Freigegeben: {new Date(contactRelease.releasedAt).toLocaleDateString("de-DE")}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
 
               {/* Finanzen */}
               <div className="cd-card">

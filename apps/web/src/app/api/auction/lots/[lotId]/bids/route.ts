@@ -18,6 +18,7 @@ import { z } from "zod";
 import Decimal from "decimal.js";
 import { audit } from "@/lib/audit/logger";
 import { checkRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
+import { publishEvent } from "@/lib/realtime/event-bus";
 
 export const dynamic = "force-dynamic";
 
@@ -217,6 +218,12 @@ async function _handlePost(
             newAuctionEnd: newEnd.toISOString(),
             extensionMinutes: lot.extensionMinutes,
           },
+        });
+        void publishEvent("lot", lotId, "lot:update", {
+          auctionEnd:       newEnd.toISOString(),
+          extendedCount:    lot.extendedCount + 1,
+          extended:         true,
+          extensionMinutes: lot.extensionMinutes,
         });
       }
     }
