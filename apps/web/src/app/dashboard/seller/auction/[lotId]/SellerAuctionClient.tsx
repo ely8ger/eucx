@@ -261,8 +261,9 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   };
 
   // ── Derived state ────────────────────────────────────────────────
-  const isExpired = (livePhase === "PROPOSAL" || livePhase === "REDUCTION") && !!liveEnd && new Date(liveEnd).getTime() < Date.now();
-  const canBid    = (livePhase === "PROPOSAL" || livePhase === "REDUCTION") && !isExpired;
+  const isExpired   = (livePhase === "PROPOSAL" || livePhase === "REDUCTION") && !!liveEnd && new Date(liveEnd).getTime() < Date.now();
+  const isKycVerified = kyc?.verificationStatus === "VERIFIED";
+  const canBid      = (livePhase === "PROPOSAL" || livePhase === "REDUCTION") && !isExpired && isKycVerified;
   const bestNum   = liveBest ? Number(liveBest) : null;
   const isLeading = myRank === 1;
 
@@ -700,6 +701,16 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
 
             {/* ── Main ── */}
             <main className="sa-main">
+
+              {/* KYC-Overlay: Verkäufer nicht verifiziert */}
+              {kyc !== null && !isKycVerified && (livePhase === "PROPOSAL" || livePhase === "REDUCTION") && (
+                <div className="sa-card" style={{ borderLeft: "3px solid #d97706", padding: "16px 20px" }}>
+                  <div style={{ fontWeight: 700, color: "#d97706", marginBottom: 4 }}>KYC-Verifizierung erforderlich</div>
+                  <div style={{ fontSize: 13, color: "#6b7280" }}>
+                    Ihr Konto ist noch nicht verifiziert ({kyc.verificationStatus}). Gebote können erst nach abgeschlossener KYC-Prüfung abgegeben werden.
+                  </div>
+                </div>
+              )}
 
               {/* Status */}
               {canBid && (

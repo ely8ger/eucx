@@ -26,10 +26,10 @@ export default function NotFound() {
             Zum Dashboard
           </Link>
           <Link
-            href="/trading"
+            href="/"
             className="px-5 py-2.5 border border-cb-gray-300 text-cb-gray-600 rounded font-medium hover:bg-cb-gray-50 transition-colors text-sm"
           >
-            Zum Handel
+            Zur Startseite
           </Link>
         </div>
       </div>

@@ -3,7 +3,7 @@
  *
  * Käufer öffnet das Auktionsfenster (COLLECTION → PROPOSAL).
  * auctionEnd wird server-seitig auf das Ende der nächsten Handelssitzung gesetzt:
- *   Mo-Fr 14:00-16:00 Europe/Berlin
+ *   Mo-Fr 13:00-15:00 Europe/Berlin
  *
  * Auth: Bearer JWT (muss Lot-Besitzer sein)
  */
@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 const SLOT_END_HOUR   = 15; // 15:00 Berlin
 const SLOT_START_HOUR = 13; // 13:00 Berlin
 
-/** UTC-Zeitpunkt für 16:00 Europe/Berlin an einem bestimmten Berliner Kalendertag */
+/** UTC-Zeitpunkt für 15:00 Europe/Berlin an einem bestimmten Berliner Kalendertag */
 function berlinSlotEnd(year: number, month: number, day: number): Date {
   // Offset: wie viele Stunden ist Berlin vor UTC (1 = CET, 2 = CEST)?
   const midnightUTC = new Date(Date.UTC(year, month, day, 0, 0, 0));

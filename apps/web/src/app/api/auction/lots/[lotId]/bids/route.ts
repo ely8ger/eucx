@@ -137,10 +137,30 @@ async function _handlePost(
     );
   }
 
-  // ── [TESTMODE-02] CBAM-Precheck - DEAKTIVIERT ────────────────────
-  // Grund: Test-Seller hat keine SellerCharge. Wieder aktivieren wenn Chargen-Flow bereit.
-  // Original: if (lot.co2PerTonne !== null) { const validCharge = ... }
-  // ──────────────────────────────────────────────────────────────────
+  // ── CBAM-Precheck: CBAM-Lots erfordern SellerCharge mit CO₂-Daten ───
+  if (lot.co2PerTonne !== null) {
+    if (!parsed.data.chargeId) {
+      return NextResponse.json(
+        { error: "CBAM-Pflicht: Bitte eine Lagercharge mit CO₂-Daten auswählen (chargeId erforderlich)." },
+        { status: 422 }
+      );
+    }
+    const validCharge = await db.sellerCharge.findFirst({
+      where: {
+        id:           parsed.data.chargeId,
+        sellerId:     token.userId,
+        co2PerTonne:  { not: null },
+        status:       { in: ["AVAILABLE", "RESERVED"] },
+      },
+      select: { id: true },
+    });
+    if (!validCharge) {
+      return NextResponse.json(
+        { error: "CBAM-Pflicht: Gewählte SellerCharge nicht gefunden, nicht Ihnen zugeordnet oder ohne CO₂-Daten." },
+        { status: 422 }
+      );
+    }
+  }
 
   // ── Plattform-Hartlimit (deal-size cap, unabhängig von Wallet) ────
   const dealValue  = new Decimal(parsed.data.price).times(lot.quantity.toString());

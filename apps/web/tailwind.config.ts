@@ -7,10 +7,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      // ─── Commerzbank Brand Colors ──────────────────────────────────────
       colors: {
         cb: {
-          // Primär-Gelb (Logo-Gelb)
+          // Primär-Gelb
           yellow:       "#FBB809",
           "yellow-light": "#FEDF33",
           "yellow-dark":  "#E5A500",
@@ -21,7 +20,7 @@ const config: Config = {
           "petrol-dark": "#002A4A",
           navy:         "#001F3F",
 
-          // Grautöne (Commerzbank-typisch)
+          // Grautöne
           "gray-50":    "#F7F7F7",
           "gray-100":   "#F0F0F0",
           "gray-200":   "#E0E0E0",
@@ -59,10 +58,7 @@ const config: Config = {
         },
       },
 
-      // ─── Commerzbank Typography ────────────────────────────────────────
       fontFamily: {
-        // Compatil Fact = Commerzbank Hausschrift
-        // Fallback: Inter (sehr ähnlich, humanistisches Sans-Serif)
         sans: [
           "Compatil Fact",
           "Inter",
@@ -95,7 +91,6 @@ const config: Config = {
         bold:     "700",
       },
 
-      // ─── Commerzbank Spacing & Sizing ──────────────────────────────────
       borderRadius: {
         none: "0",
         sm:   "2px",
@@ -104,10 +99,7 @@ const config: Config = {
         lg:   "6px",
         xl:   "8px",
         full: "9999px",
-        // Commerzbank verwendet sehr kleine Radien — klare, eckige Formen
       },
-
-      // ─── Shadows (Commerzbank-stil: subtil, professionell) ────────────
       boxShadow: {
         sm:   "0 1px 2px 0 rgba(0, 0, 0, 0.08)",
         DEFAULT: "0 2px 4px 0 rgba(0, 0, 0, 0.10)",

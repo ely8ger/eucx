@@ -37,6 +37,10 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ lotId: string }> }
 ) {
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Nicht verfügbar" }, { status: 404 });
+  }
+
   const { lotId } = await params;
 
   const authHeader = req.headers.get("authorization");

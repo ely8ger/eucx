@@ -53,7 +53,7 @@ const PUBLIC_PREFIXES = [
   "/cookie-richtlinie",
 ];
 
-const ADMIN_ROLES = ["ADMIN", "COMPLIANCE", "SUPER_ADMIN"] as const;
+const ADMIN_ROLES = ["ADMIN", "COMPLIANCE_OFFICER", "SUPER_ADMIN"] as const;
 
 // ─── Rate-Limit-Bucket pro Pfad ───────────────────────────────────────────────
 
@@ -209,6 +209,12 @@ async function _route(req: NextRequest, nonce: string): Promise<NextResponse> {
         const res = NextResponse.redirect(loginUrl);
         res.cookies.delete(COOKIE_ACCESS_TOKEN);
         return res;
+      }
+    }
+
+    if (pathname.startsWith("/dashboard/admin")) {
+      if (!ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
+        return NextResponse.redirect(new URL("/dashboard/buyer", req.url));
       }
     }
 
