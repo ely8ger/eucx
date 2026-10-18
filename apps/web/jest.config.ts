@@ -4,10 +4,10 @@ const config: Config = {
   preset:          "ts-jest",
   testEnvironment: "node",
   rootDir:         ".",
-  testMatch:       ["src/__tests__/**/*.spec.ts"],
+  testMatch:       ["**/__tests__/unit/**/*.spec.ts", "**/__tests__/integration/**/*.spec.ts"],
   moduleNameMapper: {
     "^@/(.*)$":    "<rootDir>/src/$1",
-    "^decimal.js$": "<rootDir>/node_modules/decimal.js/decimal.js",
+    "^decimal.js$": "<rootDir>/../../node_modules/decimal.js/decimal.js",
   },
   transform: {
     "^.+\\.tsx?$": ["ts-jest", {
