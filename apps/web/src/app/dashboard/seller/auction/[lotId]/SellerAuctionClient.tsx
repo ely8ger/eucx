@@ -90,7 +90,8 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
   const [myRank,      setMyRank]      = useState<number | null>(null);
   const [kyc,         setKyc]         = useState<KycInfo | null>(null);
   const [depositReq,  setDepositReq]  = useState<string | null>(null);
-  const [flash,       setFlash]       = useState<"good" | "bad" | null>(null);
+  const [flash,          setFlash]          = useState<"good" | "bad" | null>(null);
+  const [extendedBadge,  setExtendedBadge]  = useState(false);
   const [btnState,    setBtnState]    = useState<"idle"|"loading"|"success"|"error">("idle");
   const [priceKey,    setPriceKey]    = useState(0);
   const [shake,       setShake]       = useState(false);
@@ -105,6 +106,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
 
   const prevBest    = useRef<string | null>(lot.currentBest);
   const prevLeading = useRef<boolean | null>(null);
+  const prevEndRef  = useRef<string | null>(lot.auctionEnd);
 
   const token = useAuthStore(s => s.accessToken) ?? "";
 
@@ -201,6 +203,18 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
     setPriceKey(k => k + 1);
     loadBids(token);
   }, [state?.currentBest, token, loadBids]);
+
+  // Anti-Sniping Badge: auctionEnd wurde verlängert (eigenes Gebot hat Zeitfenster ausgelöst)
+  useEffect(() => {
+    if (!liveEnd || !prevEndRef.current) { prevEndRef.current = liveEnd; return; }
+    const prev = new Date(prevEndRef.current).getTime();
+    const next = new Date(liveEnd).getTime();
+    if (next > prev) {
+      setExtendedBadge(true);
+      setTimeout(() => setExtendedBadge(false), 8000);
+    }
+    prevEndRef.current = liveEnd;
+  }, [liveEnd]);
 
   // Überboten-Erkennung → Status-Karte schütteln
   useEffect(() => {
@@ -376,6 +390,8 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         @keyframes sa-glow-lead { 0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,.18)} 50%{box-shadow:0 0 20px 0 rgba(22,163,74,.1)} }
         @keyframes sa-shake     { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-8px)} 30%{transform:translateX(7px)} 45%{transform:translateX(-5px)} 60%{transform:translateX(4px)} 75%{transform:translateX(-2px)} 90%{transform:translateX(1px)} }
         @keyframes sa-btn-ok    { 0%{background:#16a34a;transform:scale(1.025)} 70%{background:#15803d;transform:scale(1.01)} 100%{background:#154194;transform:scale(1)} }
+        @keyframes bext         { 0%{opacity:0;transform:scale(.9)} 100%{opacity:1;transform:scale(1)} }
+        @keyframes bpulse       { 0%{box-shadow:0 0 0 0 rgba(249,115,22,.4)} 70%{box-shadow:0 0 0 6px rgba(249,115,22,0)} 100%{box-shadow:0 0 0 0 rgba(249,115,22,0)} }
 
         .sa-root { font-family:'IBM Plex Sans',Arial,sans-serif; background:#f5f7fb; min-height:100vh; color:#0d1b2a; }
 
@@ -657,9 +673,20 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
               </div>
 
               {/* Timer */}
-              <div className="sa-card sa-kpi">
+              <div className="sa-card sa-kpi" style={extendedBadge ? { borderColor: "#f97316" } : {}}>
                 <div className="sa-kpi-label">Verbleibend</div>
                 <div className={`sa-kpi-val${isUrgent ? " urgent" : ""}`}>{liveEnd ? countdown : "-"}</div>
+                {extendedBadge && (
+                  <div style={{
+                    display: "inline-flex", alignItems: "center", gap: 5, marginTop: 6, padding: "3px 8px",
+                    background: "#fff7ed", border: "1px solid #f97316",
+                    fontSize: 10, fontWeight: 700, letterSpacing: ".05em", color: "#c2410c", textTransform: "uppercase",
+                    animation: "bext 0.4s ease-out"
+                  }}>
+                    <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#f97316", display: "inline-block", animation: "bpulse 1.2s infinite" }} />
+                    {" "}Verlängert — Anti-Sniping
+                  </div>
+                )}
                 <div className="sa-kpi-sub">
                   {isExpired                                               && "Bieterwettbewerb beendet"}
                   {!isExpired && livePhase === "PROPOSAL"                  && "Erstgebote laufen"}

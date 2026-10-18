@@ -69,14 +69,16 @@ const PHASE_COLOR: Record<string, string> = {
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export function BuyerAuctionClient({ lot, initialBids }: Props) {
-  const [bids,       setBids]       = useState<Bid[]>(initialBids);
-  const [kyc,        setKyc]        = useState<KycInfo | null>(null);
-  const [flashBest,  setFlashBest]  = useState(false);
-  const [sidebarOpen, setSidebar]   = useState(true);
-  const [docs,       setDocs]       = useState<Array<{ id: string; docType: string; url: string; name: string; sizeBytes: number; createdAt: string }>>([]);
-  const [docUploading, setDocUploading] = useState(false);
+  const [bids,          setBids]          = useState<Bid[]>(initialBids);
+  const [kyc,           setKyc]           = useState<KycInfo | null>(null);
+  const [flashBest,     setFlashBest]     = useState(false);
+  const [extendedBadge, setExtendedBadge] = useState(false);
+  const [sidebarOpen,   setSidebar]       = useState(true);
+  const [docs,          setDocs]          = useState<Array<{ id: string; docType: string; url: string; name: string; sizeBytes: number; createdAt: string }>>([]);
+  const [docUploading,  setDocUploading]  = useState(false);
   const docInputRef = useRef<HTMLInputElement>(null);
-  const prevBest = useRef<string | null>(lot.currentBest);
+  const prevBest    = useRef<string | null>(lot.currentBest);
+  const prevEndRef  = useRef<string | null>(lot.auctionEnd);
 
   // ── Init ──────────────────────────────────────────────────────────
 
@@ -199,6 +201,18 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
     setTimeout(() => setFlashBest(false), 1400);
   }, [state?.currentBest, loadBids]);
 
+  // Anti-Sniping Badge: auctionEnd wurde verlängert
+  useEffect(() => {
+    if (!liveEnd || !prevEndRef.current) { prevEndRef.current = liveEnd; return; }
+    const prev = new Date(prevEndRef.current).getTime();
+    const next = new Date(liveEnd).getTime();
+    if (next > prev) {
+      setExtendedBadge(true);
+      setTimeout(() => setExtendedBadge(false), 8000);
+    }
+    prevEndRef.current = liveEnd;
+  }, [liveEnd]);
+
   // ── Savings berechnen ────────────────────────────────────────────
   const startNum = lot.startPrice ? Number(lot.startPrice) : null;
   const bestNum  = liveBest       ? Number(liveBest)       : null;
@@ -290,6 +304,11 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
         .b-kpi-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
         @media (max-width:640px) { .b-kpi-grid { grid-template-columns:1fr; } }
 
+        /* Anti-Sniping Badge */
+        .b-ext-badge { display:inline-flex; align-items:center; gap:5px; margin-top:6px; padding:3px 8px; background:#fff7ed; border:1px solid #f97316; font-size:10px; font-weight:700; letter-spacing:.05em; color:#c2410c; text-transform:uppercase; animation:bext 0.4s ease-out; }
+        @keyframes bext { 0%{opacity:0;transform:scale(.9)} 100%{opacity:1;transform:scale(1)} }
+        .b-ext-dot { width:7px; height:7px; border-radius:50%; background:#f97316; animation:bpulse 1.2s infinite; flex-shrink:0; }
+
         /* History log */
         .b-history { background:#fff; border:1px solid #e5e7eb; }
         .b-history-hdr { padding:14px 20px; border-bottom:1px solid #e5e7eb; display:flex; align-items:center; justify-content:space-between; }
@@ -363,6 +382,11 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
                 <div className="b-kpi-val" style={{ color: isUrgent ? "#dc2626" : "#0d1b2a" }}>
                   {liveEnd ? countdown : "-"}
                 </div>
+                {extendedBadge && (
+                  <div className="b-ext-badge">
+                    <span className="b-ext-dot" /> Verlängert — Anti-Sniping
+                  </div>
+                )}
                 <div className="b-kpi-sub">
                   {livePhase === "COLLECTION" && "Auktion noch nicht gestartet"}
                   {livePhase === "CONCLUSION" && "Auktion beendet"}
@@ -450,11 +474,16 @@ export function BuyerAuctionClient({ lot, initialBids }: Props) {
                 <div className="b-kpi-val" style={{ color: "#16a34a" }}>{fmtEur(liveBest)}</div>
                 <div className="b-kpi-sub">{lot.startPrice ? `Limit: ${fmtEur(lot.startPrice)}` : "Kein Limit"}</div>
               </div>
-              <div className="b-kpi" style={{ borderLeft: `3px solid ${isUrgent ? "#dc2626" : "#6b7280"}` }}>
+              <div className="b-kpi" style={{ borderLeft: `3px solid ${extendedBadge ? "#f97316" : isUrgent ? "#dc2626" : "#6b7280"}` }}>
                 <div className="b-kpi-label">Verbleibend</div>
                 <div className="b-kpi-val" style={{ color: isUrgent ? "#dc2626" : "#0d1b2a" }}>
                   {liveEnd ? countdown : "-"}
                 </div>
+                {extendedBadge && (
+                  <div className="b-ext-badge">
+                    <span className="b-ext-dot" /> Verlängert — Anti-Sniping
+                  </div>
+                )}
                 <div className="b-kpi-sub">
                   {livePhase === "CONCLUSION" ? "Auktion beendet" : `Phase: ${PHASE_LABEL[livePhase]}`}
                 </div>
