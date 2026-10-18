@@ -3,9 +3,11 @@ import { headers } from "next/headers";
 import "@/styles/globals.css";
 import "flag-icons/css/flag-icons.min.css";
 import { BASE_URL, buildOrganizationJsonLd } from "@/lib/seo/metadata";
-import { I18nProvider } from "@/lib/i18n/context";
-import { CookieBanner } from "@/components/CookieBanner";
-import { Toaster } from "sonner";
+import { I18nProvider }   from "@/lib/i18n/context";
+import { CookieBanner }   from "@/components/CookieBanner";
+import { Toaster }        from "sonner";
+import { Analytics }      from "@vercel/analytics/react";
+import { SpeedInsights }  from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: {
@@ -82,7 +84,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationJsonLd()).replace(/<\/script>/gi, "<\\/script>") }}
         />
       </head>
-      <body><I18nProvider>{children}</I18nProvider><CookieBanner /><Toaster richColors position="top-right" /></body>
+      <body><I18nProvider>{children}</I18nProvider><CookieBanner /><Toaster richColors position="top-right" /><Analytics /><SpeedInsights /></body>
     </html>
   );
 }
