@@ -110,7 +110,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
 
   // ── Init ──────────────────────────────────────────────────────────
   useEffect(() => {
-    const saved = localStorage.getItem(CBAM_STORAGE_KEY);
+    const saved = sessionStorage.getItem(CBAM_STORAGE_KEY);
     if (saved) { try { setCbamData(JSON.parse(saved) as CbamData); } catch { /* ignore */ } }
   }, [CBAM_STORAGE_KEY]);
 
@@ -225,7 +225,7 @@ export function SellerAuctionClient({ lot }: { lot: Lot }) {
         cbamCo2IndirectPerTonne: cbamData.cbamCo2IndirectPerTonne ? Number(cbamData.cbamCo2IndirectPerTonne) : undefined,
         cbamCarbonPricePaid:     cbamData.cbamCarbonPricePaid     ? Number(cbamData.cbamCarbonPricePaid)     : undefined,
         cbamVerificationRef:     cbamData.cbamVerificationRef     || undefined } : undefined;
-      if (cbamPayload) localStorage.setItem(CBAM_STORAGE_KEY, JSON.stringify(cbamData));
+      if (cbamPayload) sessionStorage.setItem(CBAM_STORAGE_KEY, JSON.stringify(cbamData));
       const r = await fetch(`/api/auction/lots/${lot.id}/bids`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
