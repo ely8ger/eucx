@@ -56,6 +56,7 @@ export function SiteFooter() {
                   ["Marktberichte", "/wissen"],
                   ["Preisbildung", "/wissen"],
                   ["FAQ", "/faq"],
+                  ["Kontakt", "/kontakt"],
                 ],
               },
               {
