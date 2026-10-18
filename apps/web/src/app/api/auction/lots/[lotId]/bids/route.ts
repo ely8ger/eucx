@@ -74,6 +74,16 @@ async function _handlePost(
   try { token = await requireAuth(req); }
   catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
 
+  // ── Per-User Rate Limit (zusätzlich zum IP-Limit) ─────────────────
+  // IP-Limit oben fängt anonyme Floods; User-Limit verhindert IP-Rotation-Bypass
+  const userRl = await checkRateLimit(`user:${token.userId}:bid`, "bid");
+  if (!userRl.allowed) {
+    return NextResponse.json(
+      { error: "Zu viele Gebote - bitte warten Sie einen Moment." },
+      { status: 429, headers: { ...rateLimitHeaders(userRl), "Retry-After": "60" } }
+    );
+  }
+
   // ── Validation ────────────────────────────────────────────────────
   let body: unknown;
   try { body = await req.json(); }

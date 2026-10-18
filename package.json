@@ -19,6 +19,7 @@
     "docker:logs": "docker compose logs -f"
   },
   "devDependencies": {
+    "ts-node": "^10.9.2",
     "turbo": "^2.3.3",
     "typescript": "^5.7.3"
   },

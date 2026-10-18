@@ -59,8 +59,13 @@ export async function POST(req: NextRequest) {
     userAgent:  req.headers.get("user-agent") ?? undefined,
   });
 
+  const isProd = process.env.NODE_ENV === "production";
   const res = NextResponse.json({ ok: true });
-  res.cookies.set(COOKIE_ACCESS_TOKEN,  "", { maxAge: 0, path: "/" });
-  res.cookies.set(COOKIE_REFRESH_TOKEN, "", { maxAge: 0, path: "/api/auth/refresh" });
+  res.cookies.set(COOKIE_ACCESS_TOKEN, "", {
+    httpOnly: true, secure: isProd, sameSite: "strict", maxAge: 0, path: "/",
+  });
+  res.cookies.set(COOKIE_REFRESH_TOKEN, "", {
+    httpOnly: true, secure: isProd, sameSite: "strict", maxAge: 0, path: "/api/auth/refresh",
+  });
   return res;
 }
