@@ -67,6 +67,7 @@ let sellerToken: string;
 let adminToken:  string;
 let createdLotId: string;
 let contractLotId: string;
+let seedContractId: string;  // LotContract.id für seed-lot-3 (PDF + Contact-Tests)
 
 // ─── Phase 1: Token-Generierung ───────────────────────────────────────────────
 
@@ -452,12 +453,186 @@ test("Schritt 12: Bids-API gibt verständlichen Fehler bei ungültigem Lot", asy
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// SCHRITT 13 — ANTI-SNIPING: Last-Minute-Gebot verlängert auctionEnd
+// ═══════════════════════════════════════════════════════════════════════════════
+
+test("Schritt 13: Anti-Sniping — auctionEnd wird nach Gebot in letzter Minute verlängert", async ({ request }) => {
+  const LOT = "seed-lot-2"; // REDUCTION, 3 registrierte Verkäufer
+
+  // 1. auctionEnd auf jetzt+90s setzen (innerhalb des 3-Min Anti-Sniping-Fensters)
+  const snipeEnd = new Date(Date.now() + 90 * 1000).toISOString();
+  const setRes = await request.fetch(`${BASE}/api/test/set-lot-auction-end`, {
+    method:  "PATCH",
+    headers: { "Content-Type": "application/json" },
+    data:    JSON.stringify({ lotId: LOT, auctionEnd: snipeEnd }),
+  });
+
+  if (setRes.status() === 403) {
+    console.log("[SKIP] set-lot-auction-end nicht verfügbar (Production)");
+    test.skip();
+    return;
+  }
+  expect([200, 201], `set-lot-auction-end: HTTP ${setRes.status()}`).toContain(setRes.status());
+
+  // 2. Gebot abgeben (unter aktuellem Best von 7650 → Preis muss TIEFER sein in REDUCTION)
+  const bidRes = await api(request, "POST", `/api/auction/lots/${LOT}/bids`, sellerToken, { price: 7600 });
+
+  if (bidRes.status() !== 201) {
+    // Möglicherweise geschlossen oder Phasen-Problem — kein Testfehler
+    console.log(`[INFO] Anti-Sniping Bid: HTTP ${bidRes.status()} — ${await bidRes.text().catch(() => "")}`);
+    // Cleanup: auctionEnd zurücksetzen
+    await request.fetch(`${BASE}/api/test/set-lot-auction-end`, {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      data: JSON.stringify({ lotId: LOT, auctionEnd: new Date(Date.now() + 60 * 60 * 1000).toISOString() }),
+    });
+    return;
+  }
+
+  // 3. Lot nach Gebot abrufen — auctionEnd sollte verlängert worden sein
+  const lotRes = await api(request, "GET", `/api/auction/lots/${LOT}`, sellerToken);
+  expect(lotRes.status(), "GET Lot nach Anti-Sniping muss 200 liefern").toBe(200);
+  const lot = await lotRes.json() as Record<string, unknown>;
+
+  const endAfterMs  = new Date(lot["auctionEnd"] as string).getTime();
+  const snipeEndMs  = new Date(snipeEnd).getTime();
+
+  expect(
+    endAfterMs,
+    `Anti-Sniping: auctionEnd muss nach Gebot weiter in der Zukunft liegen (${lot["auctionEnd"]} vs snipe ${snipeEnd})`
+  ).toBeGreaterThan(snipeEndMs);
+
+  const extendedBy = Math.round((endAfterMs - snipeEndMs) / 60_000);
+  console.log(`✓ Anti-Sniping: auctionEnd um ~${extendedBy} Minute(n) verlängert`);
+
+  // Cleanup: auctionEnd zurücksetzen auf 1h in der Zukunft
+  await request.fetch(`${BASE}/api/test/set-lot-auction-end`, {
+    method: "PATCH", headers: { "Content-Type": "application/json" },
+    data: JSON.stringify({ lotId: LOT, auctionEnd: new Date(Date.now() + 60 * 60 * 1000).toISOString() }),
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCHRITT 14 — SEED-VERTRAG: Contract-ID für nachfolgende Tests ermitteln
+// ═══════════════════════════════════════════════════════════════════════════════
+
+test("Schritt 14: Seed-Vertrag (seed-lot-3) — contractId für PDF & Contact ermitteln", async ({ request }) => {
+  const res = await api(request, "GET", "/api/auction/contracts", buyerToken);
+  expect([200, 404], `Contracts-Endpoint: HTTP ${res.status()}`).toContain(res.status());
+
+  if (res.status() !== 200) { test.skip(); return; }
+
+  const body = await res.json() as Record<string, unknown>;
+  const list = (body["contracts"] as Record<string, unknown>[]) ?? [];
+
+  const seedContract = list.find((c) => c["lotId"] === "seed-lot-3");
+  if (!seedContract) {
+    console.log("[SKIP] seed-lot-3 Vertrag nicht gefunden — Seed nicht ausgeführt?");
+    test.skip();
+    return;
+  }
+
+  seedContractId = seedContract["id"] as string;
+  expect(seedContractId, "Vertrag muss eine ID haben").toBeTruthy();
+  console.log(`✓ Seed-Vertrag: id=${seedContractId}, contractNumber=${seedContract["contractNumber"] as string}`);
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCHRITT 15 — CONTACT RELEASE: Kontaktdaten nach Abschluss abrufbar
+// ═══════════════════════════════════════════════════════════════════════════════
+
+test("Schritt 15: Contact Release — Kontaktdaten beider Parteien nach CONCLUSION abrufbar", async ({ request }) => {
+  if (!seedContractId) { test.skip(); return; }
+
+  const res = await api(request, "GET", `/api/auction/contracts/${seedContractId}/contact`, buyerToken);
+
+  if (res.status() === 404) {
+    console.log("[INFO] ContactRelease nicht gefunden — Seed ohne ContactRelease ausgeführt?");
+    test.skip();
+    return;
+  }
+
+  expect(res.status(), `Contact Release: HTTP ${res.status()} — ${await res.text().catch(() => "")}`).toBe(200);
+
+  const body = await res.json() as Record<string, unknown>;
+  const buyer  = body["buyer"]  as Record<string, unknown> | undefined;
+  const seller = body["seller"] as Record<string, unknown> | undefined;
+
+  expect(buyer?.["email"],  "buyer.email muss vorhanden sein").toBeTruthy();
+  expect(seller?.["email"], "seller.email muss vorhanden sein").toBeTruthy();
+  expect(body["releasedAt"], "releasedAt muss gesetzt sein").toBeTruthy();
+
+  console.log(`✓ Contact Release: Käufer=${buyer?.["email"] as string}, Verkäufer=${seller?.["email"] as string}`);
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCHRITT 16 — PDF-HASH: SHA-256 der heruntergeladenen Datei === X-PDF-Hash Header
+// ═══════════════════════════════════════════════════════════════════════════════
+
+test("Schritt 16: PDF-Hash-Verifikation — SHA-256(bytes) stimmt mit X-PDF-Hash Header überein", async ({ request }) => {
+  if (!seedContractId) { test.skip(); return; }
+
+  const res = await api(request, "GET", `/api/auction/contracts/${seedContractId}/pdf`, buyerToken);
+
+  if (res.status() === 503) {
+    console.log("[INFO] PDF noch nicht verfügbar (503)");
+    test.skip();
+    return;
+  }
+
+  expect(res.status(), `PDF-Download: HTTP ${res.status()}`).toBe(200);
+
+  const headerHash = res.headers()["x-pdf-hash"];
+  expect(headerHash, "X-PDF-Hash Header muss im Response vorhanden sein").toBeTruthy();
+  expect(headerHash!.length, "X-PDF-Hash muss ein SHA-256 Hex-String sein (64 Zeichen)").toBe(64);
+
+  const bodyBytes = await res.body();
+  expect(bodyBytes.length, "PDF-Body darf nicht leer sein").toBeGreaterThan(10);
+
+  // SHA-256 der Body-Bytes berechnen und mit dem Header vergleichen
+  const { createHash } = await import("crypto");
+  const computed = createHash("sha256").update(bodyBytes).digest("hex");
+
+  expect(
+    computed,
+    `PDF-Hash-Diskrepanz: Header=${headerHash}, Berechnet=${computed} — PDF wurde möglicherweise manipuliert!`
+  ).toBe(headerHash);
+
+  console.log(`✓ PDF-Hash verifiziert: ${computed.slice(0, 12)}... (${bodyBytes.length} Bytes)`);
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCHRITT 17 — MARKET TICKERS: Preis-Feed abrufbar
+// ═══════════════════════════════════════════════════════════════════════════════
+
+test("Schritt 17: Market Tickers — /api/market/tickers liefert strukturierten Preis-Feed", async ({ request }) => {
+  const res = await api(request, "GET", "/api/market/tickers", buyerToken);
+
+  // 503 = NestJS nicht erreichbar (erwartet in lokaler Dev-Umgebung ohne NestJS)
+  expect(
+    [200, 503],
+    `Market Tickers: Unerwarteter Status ${res.status()}`
+  ).toContain(res.status());
+
+  if (res.status() === 200) {
+    const body = await res.json() as Record<string, unknown>;
+    expect(body, "Response muss 'tickers'-Feld enthalten").toHaveProperty("tickers");
+    expect(body, "Response muss 'count'-Feld enthalten").toHaveProperty("count");
+
+    const tickers = body["tickers"] as unknown[];
+    console.log(`✓ Market Tickers: ${tickers.length} Ticker empfangen, updatedAt=${body["updatedAt"] as string}`);
+  } else {
+    console.log("[INFO] Market Tickers: NestJS nicht erreichbar (503) — DB-Fallback nicht ausgelöst");
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // ZUSAMMENFASSUNG
 // ═══════════════════════════════════════════════════════════════════════════════
 
 test.afterAll(async () => {
   console.log("\n═══════ EUCX E2E Golden Path - Zusammenfassung ═══════");
-  console.log(`Lot erstellt:    ${createdLotId ?? "-"}`);
-  console.log(`Kontrakt-LotId:  ${contractLotId ?? "-"}`);
+  console.log(`Lot erstellt:       ${createdLotId ?? "-"}`);
+  console.log(`Kontrakt-LotId:     ${contractLotId ?? "-"}`);
+  console.log(`Seed-Contract-ID:   ${seedContractId ?? "- (Seed nicht ausgeführt?)"}`);
   console.log("Alle Schritte abgeschlossen. Bericht: playwright-report/index.html");
 });

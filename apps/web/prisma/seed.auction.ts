@@ -12,6 +12,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { createHash } from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -182,6 +183,50 @@ async function main() {
   });
   console.log("  ✓ Lot 3 (CONCLUSION):", lot3.commodity, "— Gewinner: seller3");
 
+  // ── LOT 3: LotContract + ContactRelease ──────────────────────────────────
+  // Minimales aber valides PDF für Seed-Daten
+  const minPdf = Buffer.from(
+    "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj " +
+    "2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj " +
+    "3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Contents 4 0 R>>endobj " +
+    "4 0 obj<</Length 44>>\nstream\nBT /F1 12 Tf 100 700 Td (EUCX Seed Contract) Tj ET\nendstream\nendobj " +
+    "xref\n0 5\n0000000000 65535 f \n" +
+    "trailer<</Size 5/Root 1 0 R>>\nstartxref\n9\n%%EOF\n"
+  );
+  const pdfBase64    = minPdf.toString("base64");
+  const pdfHash      = createHash("sha256").update(minPdf).digest("hex");
+  const pdfSizeBytes = minPdf.length;
+
+  const contract3 = await prisma.lotContract.upsert({
+    where:  { lotId: "seed-lot-3" },
+    update: {},
+    create: {
+      lotId:          lot3.id,
+      buyerId:        buyer.id,
+      sellerId:       sellers[2]!.id,
+      contractNumber: "EUCX-SEED-2024-001",
+      finalPrice:     "2980",
+      totalValue:     "149000",
+      pdfBase64,
+      pdfHash,
+      pdfSizeBytes,
+    },
+  });
+  console.log("  ✓ LotContract:", contract3.contractNumber, "— Hash:", pdfHash.slice(0, 12) + "...");
+
+  await prisma.contactRelease.upsert({
+    where:  { contractId: contract3.id },
+    update: {},
+    create: {
+      contractId:  contract3.id,
+      buyerName:   "EUCX Test GmbH (Käufer)",
+      buyerEmail:  buyer.email,
+      sellerName:  "EUCX Test GmbH (Verkäufer 3)",
+      sellerEmail: sellers[2]!.email,
+    },
+  });
+  console.log("  ✓ ContactRelease angelegt für Vertrag:", contract3.contractNumber);
+
   console.log("\n✅ Seed abgeschlossen.");
   console.log("\nTest-Credentials:");
   console.log("  Käufer:    buyer@eucx-test.de   / Test1234!");
@@ -191,7 +236,7 @@ async function main() {
   console.log("\nLots:");
   console.log("  Lot 1 (seed-lot-1): COLLECTION — Kupferkathode 100t");
   console.log("  Lot 2 (seed-lot-2): REDUCTION  — Betonstahl 500t (Auktion läuft!)");
-  console.log("  Lot 3 (seed-lot-3): CONCLUSION — Aluminium 50t");
+  console.log("  Lot 3 (seed-lot-3): CONCLUSION — Aluminium 50t (mit Vertrag + ContactRelease)");
 }
 
 main()
