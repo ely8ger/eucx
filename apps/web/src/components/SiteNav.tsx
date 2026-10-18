@@ -47,6 +47,7 @@ export function SiteNav({ activeHref, rootPage = false }: Props) {
 
   const NAV: { label: string; href: string }[] = [
     { label: t("nav_katalog"),    href: "/katalog" },
+    { label: t("nav_preise"),     href: "/preise" },
     { label: t("nav_markets"),    href: `${prefix}#marktbereiche` },
     { label: t("nav_how"),        href: `${prefix}#wie-es-funktioniert` },
     { label: t("nav_regulation"), href: `${prefix}#regulierung` },

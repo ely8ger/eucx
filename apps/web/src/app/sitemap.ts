@@ -33,6 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/duenger`,              lastModified: new Date(), changeFrequency: "weekly",  priority: 0.85 },
     { url: `${BASE}/marktpreise`,          lastModified: new Date(), changeFrequency: "hourly",  priority: 0.9 },
     { url: `${BASE}/faq`,                  lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/preise`,               lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/wissen`,               lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8 },
     { url: `${BASE}/insights`,             lastModified: new Date(), changeFrequency: "weekly",  priority: 0.85 },
     { url: `${BASE}/insights/lexikon`,     lastModified: new Date(), changeFrequency: "weekly",  priority: 0.9  },

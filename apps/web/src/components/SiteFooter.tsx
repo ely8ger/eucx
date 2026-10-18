@@ -45,6 +45,7 @@ export function SiteFooter() {
                 links: [
                   ["Marktpreise", "/marktpreise"],
                   ["Katalog", "/katalog"],
+                  ["Preise & Gebühren", "/preise"],
                   ["Anmelden", "/login"],
                   ["Registrieren", "/register"],
                 ],
