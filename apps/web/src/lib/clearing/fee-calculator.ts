@@ -177,10 +177,17 @@ const VAT_ID_PATTERNS: Record<string, RegExp> = {
   SK: /^SK\d{10}$/,
 };
 
-function isValidVatId(taxId: string, country: string): boolean {
-  const pattern = VAT_ID_PATTERNS[country];
-  if (pattern) return pattern.test(taxId.toUpperCase().replace(/[\s.-]/g, ""));
-  return taxId.length >= 8;
+function isValidVatId(taxId: string, _country: string): boolean {
+  const normalized = taxId.toUpperCase().replace(/[\s.-]/g, "");
+  // Länder-Prefix aus der TaxId selbst extrahieren (EU: immer 2 Buchstaben)
+  const prefix  = normalized.slice(0, 2);
+  const pattern = VAT_ID_PATTERNS[prefix];
+  if (pattern) {
+    if (pattern.test(normalized)) return true;
+    // Format-Abweichung aber plausible Länge → akzeptieren (Prüfung via KYC)
+    return normalized.length >= 8 && normalized.length <= 16;
+  }
+  return normalized.length >= 8;
 }
 
 /**

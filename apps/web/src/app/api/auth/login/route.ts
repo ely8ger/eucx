@@ -152,6 +152,7 @@ export async function POST(req: NextRequest) {
 
     // 2FA erzwingen wenn aktiviert
     if (user.totpEnabled) {
+      // pending_2fa: einmaliger HttpOnly-Cookie für 2-Faktor-Verifikation
       const pending2faToken = await signPending2faToken(user.id);
       const res = NextResponse.json(
         { code: "TOTP_REQUIRED", message: "Bitte geben Sie Ihren Authenticator-Code ein." },

@@ -49,3 +49,5 @@ redis_data/
 .git_temp
 apps/api-go-backup/
 .env*
+!.env.example
+!**/.env.example

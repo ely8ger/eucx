@@ -11,10 +11,10 @@ import { NextRequest, NextResponse }         from "next/server";
 import { verifySync }                        from "otplib";
 import { createHash }                        from "crypto";
 import { db }                                from "@/lib/db/client";
+import { isTotpCodeUsed, markTotpCodeUsed }  from "@/lib/auth/totp-replay";
 import { signAccessToken, signRefreshToken, verifyPending2faToken } from "@/lib/auth/jwt";
 import { COOKIE_ACCESS_TOKEN, COOKIE_REFRESH_TOKEN, COOKIE_PENDING_2FA } from "@/lib/auth/cookie-names";
 import { checkRateLimit, rateLimitHeaders }  from "@/lib/rate-limit";
-import { isTotpCodeUsed, markTotpCodeUsed }  from "@/lib/auth/totp-replay";
 import { getClientIp }                       from "@/lib/net/get-client-ip";
 import { z }                                 from "zod";
 
