@@ -38,6 +38,13 @@ export function CookieBanner() {
 
   useEffect(() => {
     if (!localStorage.getItem(KEY)) setVisible(true);
+
+    function handleOpen() {
+      try { localStorage.removeItem(KEY); } catch { /* ignore */ }
+      setVisible(true);
+    }
+    window.addEventListener("eucx:open-cookie-banner", handleOpen);
+    return () => window.removeEventListener("eucx:open-cookie-banner", handleOpen);
   }, []);
 
   function save(p: Prefs) {

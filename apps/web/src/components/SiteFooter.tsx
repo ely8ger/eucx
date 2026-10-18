@@ -85,8 +85,7 @@ export function SiteFooter() {
                 {title === "Rechtliches" && (
                   <button
                     onClick={() => {
-                      try { localStorage.removeItem("eucx_cookie_consent"); } catch {}
-                      window.location.reload();
+                      window.dispatchEvent(new CustomEvent("eucx:open-cookie-banner"));
                     }}
                     style={{
                       display: "block", fontSize: 13, color: "#4a5568", textDecoration: "none",

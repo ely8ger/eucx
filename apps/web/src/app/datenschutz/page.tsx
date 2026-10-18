@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
+import { CookieWiderrufButton } from "@/components/CookieWiderrufButton";
 import { buildAlternateLanguages } from "@/lib/seo/metadata";
 
 export function generateMetadata(): Metadata {
@@ -175,7 +176,8 @@ export default function DatenschutzPage() {
             den Versand von Markt-Newsletter und produktbezogenen Informationen. Eine erteilte Einwilligung
             können Sie jederzeit ohne Angabe von Gründen widerrufen (Art. 7 Abs. 3 DSGVO), ohne dass
             die Rechtmäßigkeit der bis zum Widerruf erfolgten Verarbeitung berührt wird.
-            Widerruf per E-Mail an: <a href="mailto:datenschutz@eucx.eu" style={{ color: "#154194", textDecoration: "none" }}>datenschutz@eucx.eu</a>
+            Widerruf per E-Mail an: <a href="mailto:datenschutz@eucx.eu" style={{ color: "#154194", textDecoration: "none" }}>datenschutz@eucx.eu</a>{" "}
+            oder <CookieWiderrufButton />.
           </p>
 
           {/* §4 Aufbewahrungsfristen */}
