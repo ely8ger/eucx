@@ -35,7 +35,8 @@ export async function placeBid(
   lotId: string,
   sellerId: string,
   priceRaw: string | number,
-  cbam?: BidCbamData
+  cbam?: BidCbamData,
+  chargeId?: string
 ): Promise<BidResult> {
   const price = new Decimal(priceRaw);
 
@@ -127,6 +128,7 @@ export async function placeBid(
     const bid = await tx.bid.create({
       data: {
         lotId, sellerId, price: price.toFixed(2),
+        ...(chargeId ? { chargeId } : {}),
         ...(cbam ? {
           cbamCountryOfOrigin:     cbam.cbamCountryOfOrigin,
           cbamCountryOfExport:     cbam.cbamCountryOfExport,
@@ -138,6 +140,14 @@ export async function placeBid(
         } : {}),
       },
     });
+
+    // ── 6a. SellerCharge auf RESERVED setzen (Audit-Trail + Doppelnutzung verhindern) ──
+    if (chargeId) {
+      await tx.sellerCharge.update({
+        where: { id: chargeId },
+        data:  { status: "RESERVED", reservedForLotId: lotId },
+      });
+    }
 
     // ── 7. Lot aktualisieren ──────────────────────────────────────────
     const newBest = currentBest === null || price.lt(currentBest)

@@ -186,7 +186,7 @@ async function _handlePost(
 
   let result;
   try {
-    result = await placeBid(lotId, token.userId, parsed.data.price, parsed.data.cbam as BidCbamData | undefined);
+    result = await placeBid(lotId, token.userId, parsed.data.price, parsed.data.cbam as BidCbamData | undefined, parsed.data.chargeId);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[bids/route] placeBid threw:", msg.slice(0, 200));
@@ -266,7 +266,7 @@ async function _handlePost(
     action:     "BID_SUBMITTED",
     entityType: "Bid",
     entityId:   result.bidId,
-    meta:       { lotId, price: parsed.data.price, hasCbam: !!parsed.data.cbam },
+    meta:       { lotId, price: parsed.data.price, hasCbam: !!parsed.data.cbam, chargeId: parsed.data.chargeId ?? null },
   });
 
   return NextResponse.json({ bidId: result.bidId, newBest: result.newBest }, { status: 201 });

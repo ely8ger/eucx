@@ -235,6 +235,9 @@ async function _route(req: NextRequest, nonce: string): Promise<NextResponse> {
     const isOldRoute     = OLD_ROUTES.some((p) => pathname === p || pathname.startsWith(p + "/"));
 
     if (isOldDashboard || isOldRoute) {
+      if (ADMIN_ROLES.includes(payload.role as (typeof ADMIN_ROLES)[number])) {
+        return NextResponse.redirect(new URL("/dashboard/admin", req.url));
+      }
       if (payload.role === "SELLER") {
         return NextResponse.redirect(new URL("/dashboard/seller", req.url));
       }
