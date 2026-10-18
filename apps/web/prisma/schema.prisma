@@ -1309,6 +1309,7 @@ model Lot {
   @@index([auctionEnd, phase])   // AuctionTimer: fällige Übergänge finden
   @@index([catalogProductId])
   @@index([scheduledStart, phase]) // Auto-Start Cron: fällige Lots finden
+  @@index([createdAt])           // Zeitlich sortierte Listing-Queries
   @@map("lots")
 }
 
@@ -1394,6 +1395,7 @@ model Bid {
 
   @@index([lotId, price])       // Bestes Gebot schnell ermitteln
   @@index([lotId, sellerId])    // Gebote eines Verkäufers für ein Lot
+  @@index([lotId, createdAt])   // Chronologische Bid-History pro Lot
   @@map("bids")
 }
 
