@@ -147,16 +147,19 @@ async function _handlePost(
     }
     const validCharge = await db.sellerCharge.findFirst({
       where: {
-        id:           parsed.data.chargeId,
-        sellerId:     token.userId,
-        co2PerTonne:  { not: null },
-        status:       { in: ["AVAILABLE", "RESERVED"] },
+        id:          parsed.data.chargeId,
+        sellerId:    token.userId,
+        co2PerTonne: { not: null },
+        OR: [
+          { status: "AVAILABLE" },
+          { status: "RESERVED", reservedForLotId: lotId },
+        ],
       },
       select: { id: true },
     });
     if (!validCharge) {
       return NextResponse.json(
-        { error: "CBAM-Pflicht: Gewählte SellerCharge nicht gefunden, nicht Ihnen zugeordnet oder ohne CO₂-Daten." },
+        { error: "CBAM-Pflicht: Gewählte SellerCharge nicht gefunden, nicht Ihnen zugeordnet, ohne CO₂-Daten oder für ein anderes Lot reserviert." },
         { status: 422 }
       );
     }

@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { apiRoute } from "@/lib/api/route-handler";
+import { isInTradingSlot, getNextTradingSlotEnd } from "@/lib/auction/trading-hours";
 
 export const dynamic = "force-dynamic";
 
@@ -77,8 +78,8 @@ async function _POST(
   const now = new Date();
   let autoStarted = false;
 
-  if (lot.phase === "COLLECTION" && isSlotActive(now)) {
-    const auctionEnd = slotEndUTC(now);
+  if (lot.phase === "COLLECTION" && isInTradingSlot(now)) {
+    const auctionEnd = getNextTradingSlotEnd(now);
     const affected = await db.lot.updateMany({
       where: { id: lotId, phase: "COLLECTION" }, // atomischer Guard gegen Race
       data:  { phase: "PROPOSAL", auctionStart: now, auctionEnd },
@@ -89,27 +90,5 @@ async function _POST(
   return NextResponse.json({ registrationId: reg.id, registered: true, autoStarted });
 }
 
-// ── Hilfsfunktionen Handelssitzung ───────────────────────────────────
-function isSlotActive(now: Date): boolean {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/Berlin", weekday: "long",
-    hour: "2-digit", minute: "2-digit", hour12: false,
-  }).formatToParts(now);
-  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
-  const wd  = get("weekday");
-  if (wd === "Saturday" || wd === "Sunday") return false;
-  const mins = parseInt(get("hour"), 10) * 60 + parseInt(get("minute"), 10);
-  return mins >= 13 * 60 && mins < 15 * 60;
-}
-
-function slotEndUTC(now: Date): Date {
-  const berlinDateStr = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Berlin",
-  }).format(now);
-  // Berlin-Offset ermitteln
-  const berlinNow    = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Berlin" }));
-  const berlinOffset = now.getTime() - berlinNow.getTime();
-  return new Date(new Date(`${berlinDateStr}T15:00:00`).getTime() + berlinOffset);
-}
 
 export const POST = apiRoute(_POST);

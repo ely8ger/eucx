@@ -19,43 +19,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { audit } from "@/lib/audit/logger";
 import { notifyAuctionStart } from "@/lib/notifications/notification-service";
-
-export const dynamic = "force-dynamic";
-
-const SLOT_END_HOUR = 15; // 15:00 Berlin
-
-function nextSlotEndUTC(now: Date): Date {
-  for (let d = 0; d < 7; d++) {
-    const candidate = new Date(now.getTime() + d * 86_400_000);
-    const fmt = new Intl.DateTimeFormat("en-GB", {
-      timeZone: "Europe/Berlin",
-      year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", hour12: false,
-      weekday: "long",
-    });
-    const parts   = fmt.formatToParts(candidate);
-    const get     = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
-    const weekday = get("weekday");
-    if (weekday === "Saturday" || weekday === "Sunday") continue;
-
-    const year      = parseInt(get("year"),  10);
-    const month     = parseInt(get("month"), 10) - 1;
-    const day       = parseInt(get("day"),   10);
-    const berlinH   = parseInt(get("hour"),  10);
-
-    if (d === 0 && berlinH >= SLOT_END_HOUR) continue;
-
-    // Berlin-Offset zur UTC-Zeit berechnen
-    const midnight     = new Date(Date.UTC(year, month, day, 0, 0, 0));
-    const berlinAtMid  = parseInt(
-      new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Berlin", hour: "2-digit", hour12: false })
-        .format(midnight), 10,
-    );
-    const slotEndUTC = new Date(Date.UTC(year, month, day, SLOT_END_HOUR - berlinAtMid, 0, 0));
-    if (slotEndUTC.getTime() > now.getTime() + 60_000) return slotEndUTC;
-  }
-  return new Date(now.getTime() + 2 * 3_600_000); // Fallback +2h
-}
+import { getNextTradingSlotEnd } from "@/lib/auction/trading-hours";
 
 export async function GET(req: NextRequest) {
   // ── CRON_SECRET Auth ──────────────────────────────────────────────
@@ -83,7 +47,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ started: 0, lotIds: [] });
   }
 
-  const auctionEnd = nextSlotEndUTC(now);
+  const auctionEnd = getNextTradingSlotEnd(now);
   const started: string[] = [];
 
   for (const lot of lots) {

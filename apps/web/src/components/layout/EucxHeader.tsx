@@ -170,11 +170,14 @@ async function handleLogout() {
 }
 
 const ROLE_META: Record<string, { label: string; color: string; bg: string }> = {
-  BUYER:       { label: "Käufer",     color: "#154194", bg: "#e8edf8" },
-  SELLER:      { label: "Verkäufer",  color: "#92400e", bg: "#fef3c7" },
-  ADMIN:       { label: "Admin",      color: "#065f46", bg: "#d1fae5" },
-  COMPLIANCE:  { label: "Compliance", color: "#6b21a8", bg: "#f3e8ff" },
-  SUPER_ADMIN: { label: "Super Admin",color: "#991b1b", bg: "#fee2e2" } };
+  BUYER:               { label: "Käufer",             color: "#154194", bg: "#e8edf8" },
+  SELLER:              { label: "Verkäufer",           color: "#92400e", bg: "#fef3c7" },
+  BROKER:              { label: "Broker",              color: "#0369a1", bg: "#e0f2fe" },
+  ADMIN:               { label: "Admin",               color: "#065f46", bg: "#d1fae5" },
+  COMPLIANCE_OFFICER:  { label: "Compliance",          color: "#6b21a8", bg: "#f3e8ff" },
+  WAREHOUSE_INSPECTOR: { label: "Lagerprüfer",         color: "#78350f", bg: "#fef3c7" },
+  OBSERVER:            { label: "Beobachter",          color: "#374151", bg: "#f3f4f6" },
+  SUPER_ADMIN:         { label: "Super Admin",         color: "#991b1b", bg: "#fee2e2" } };
 
 const KYC_META: Record<string, { label: string; color: string }> = {
   GUEST:                { label: "Nicht verifiziert", color: "#9ca3af" },
