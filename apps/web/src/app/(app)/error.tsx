@@ -41,10 +41,10 @@ export default function AppError({ error, reset }: Props) {
             Erneut versuchen
           </button>
           <a
-            href="/dashboard"
+            href="/"
             className="px-5 py-2.5 border border-cb-gray-300 text-cb-gray-600 rounded font-medium hover:bg-cb-gray-50 transition-colors text-sm"
           >
-            Dashboard
+            Zur Startseite
           </a>
         </div>
       </div>
