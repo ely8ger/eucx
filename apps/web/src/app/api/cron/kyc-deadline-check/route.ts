@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
+import { pingCronHealthcheck }       from "@/lib/monitoring/healthcheck";
 
 export const dynamic     = "force-dynamic";
 export const runtime     = "nodejs";
@@ -69,6 +70,7 @@ export async function GET(req: NextRequest) {
     escalated++;
   }
 
+  pingCronHealthcheck("kyc-deadline-check");
   return NextResponse.json({
     ok:        true,
     escalated,

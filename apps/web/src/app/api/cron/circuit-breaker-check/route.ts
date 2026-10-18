@@ -18,7 +18,8 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import Decimal from "decimal.js";
+import Decimal                    from "decimal.js";
+import { pingCronHealthcheck }   from "@/lib/monitoring/healthcheck";
 
 export const dynamic     = "force-dynamic";
 export const runtime     = "nodejs";
@@ -114,6 +115,7 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  pingCronHealthcheck("circuit-breaker-check");
   return NextResponse.json({
     ok:        true,
     checked:   lots.length,

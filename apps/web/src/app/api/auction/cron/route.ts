@@ -11,7 +11,8 @@
  * → Sonst: env-Variable CRON_SECRET setzen.
  */
 import { NextRequest, NextResponse } from "next/server";
-import { runAuctionTimer } from "@/lib/auction/auction-timer";
+import { runAuctionTimer }       from "@/lib/auction/auction-timer";
+import { pingCronHealthcheck }   from "@/lib/monitoring/healthcheck";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const result = await runAuctionTimer();
+    pingCronHealthcheck("auction-cron");
     return NextResponse.json(result);
   } catch (err) {
     console.error("[AuctionCron] Fehler:", err);

@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
 import { calculateRiskScore }        from "@/lib/compliance/risk-scorer";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
+import { pingCronHealthcheck }       from "@/lib/monitoring/healthcheck";
 
 export const dynamic     = "force-dynamic";
 export const runtime     = "nodejs";
@@ -78,6 +79,7 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  pingCronHealthcheck("risk-rescore");
   return NextResponse.json({
     ok:        true,
     processed,

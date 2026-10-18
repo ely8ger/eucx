@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs/config";
 
 const nextConfig: NextConfig = {
   eslint: { ignoreDuringBuilds: true },
@@ -77,4 +78,10 @@ const nextConfig: NextConfig = {
 
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // Source Maps werden hochgeladen — SENTRY_AUTH_TOKEN muss in Vercel hinterlegt sein
+  org:     process.env.SENTRY_ORG     ?? "eucx",
+  project: process.env.SENTRY_PROJECT ?? "eucx-web",
+  // Sentry-CLI-Telemetrie deaktivieren
+  telemetry: false,
+});

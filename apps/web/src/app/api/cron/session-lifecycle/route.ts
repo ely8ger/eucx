@@ -17,7 +17,8 @@
  * Auth: CRON_SECRET
  */
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db/client";
+import { db }                   from "@/lib/db/client";
+import { pingCronHealthcheck } from "@/lib/monitoring/healthcheck";
 
 export const dynamic     = "force-dynamic";
 export const runtime     = "nodejs";
@@ -136,6 +137,7 @@ export async function GET(req: NextRequest) {
     `geöffnet=${opened} geschlossen=${closed} vorbereitet=${prepared}`,
   );
 
+  pingCronHealthcheck("session-lifecycle");
   return NextResponse.json({
     ok:         true,
     berlinHour: hour,

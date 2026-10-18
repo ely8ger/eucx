@@ -15,6 +15,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { refreshAllCandles }         from "@/lib/market/candle-refresh";
+import { pingCronHealthcheck }       from "@/lib/monitoring/healthcheck";
 
 export const dynamic     = "force-dynamic";
 export const runtime     = "nodejs";
@@ -39,6 +40,7 @@ export async function GET(req: NextRequest) {
   try {
     const { refreshed, errors } = await refreshAllCandles();
 
+    pingCronHealthcheck("market-candles");
     return NextResponse.json({
       ok:        true,
       refreshed,

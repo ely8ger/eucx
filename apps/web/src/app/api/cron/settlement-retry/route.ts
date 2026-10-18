@@ -17,6 +17,7 @@ import { db }                        from "@/lib/db/client";
 import { runSettlement }             from "@/lib/clearing/clearing-service";
 import { settleEscrowForLot }        from "@/lib/clearing/lot-clearing-service";
 import { SETTLEMENT_ENABLED }        from "@/lib/feature-flags";
+import { pingCronHealthcheck }       from "@/lib/monitoring/healthcheck";
 
 export const dynamic     = "force-dynamic";
 export const runtime     = "nodejs";
@@ -88,6 +89,7 @@ export async function GET(req: NextRequest) {
 
   console.info(`[settlement-retry] ${succeeded} erfolgreich, ${failed} fehlgeschlagen, ${Date.now() - start}ms`);
 
+  pingCronHealthcheck("settlement-retry");
   return NextResponse.json({
     ok:         true,
     processed:  pending.length,

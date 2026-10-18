@@ -13,7 +13,8 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { computeOhlc } from "@/lib/market/ohlc-queries";
+import { computeOhlc }           from "@/lib/market/ohlc-queries";
+import { pingCronHealthcheck }   from "@/lib/monitoring/healthcheck";
 
 export const dynamic     = "force-dynamic";
 export const runtime     = "nodejs";
@@ -111,6 +112,7 @@ export async function GET(req: NextRequest) {
     `${written} Kerzen geschrieben, ${skipped} übersprungen, ${errors} Fehler`
   );
 
+  pingCronHealthcheck("ohlc-eod-close");
   return NextResponse.json({
     ok:         true,
     date:       yesterday.toISOString().slice(0, 10),

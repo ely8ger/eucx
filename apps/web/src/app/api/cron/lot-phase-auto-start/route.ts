@@ -20,6 +20,7 @@ import { db } from "@/lib/db/client";
 import { audit } from "@/lib/audit/logger";
 import { notifyAuctionStart } from "@/lib/notifications/notification-service";
 import { getNextTradingSlotEnd } from "@/lib/auction/trading-hours";
+import { pingCronHealthcheck }  from "@/lib/monitoring/healthcheck";
 
 export async function GET(req: NextRequest) {
   // ── CRON_SECRET Auth ──────────────────────────────────────────────
@@ -75,5 +76,6 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  pingCronHealthcheck("lot-phase-auto-start");
   return NextResponse.json({ started: started.length, lotIds: started });
 }
