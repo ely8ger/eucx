@@ -124,6 +124,30 @@ export async function placeBid(
       }
     }
 
+    // ── 5a. SellerCharge mit Row-Lock sichern ────────────────────────
+    if (chargeId) {
+      const charges = await tx.$queryRaw<
+        Array<{ id: string; status: string; reservedForLotId: string | null }>
+      >`
+        SELECT id, status, "reservedForLotId"
+        FROM seller_charges
+        WHERE id = ${chargeId}
+        FOR UPDATE
+      `;
+      const charge = charges[0];
+      const valid =
+        charge &&
+        (charge.status === "AVAILABLE" ||
+          (charge.status === "RESERVED" && charge.reservedForLotId === lotId));
+      if (!valid) {
+        return {
+          ok:    false,
+          error: "Lagercharge nicht mehr verfügbar — bitte eine andere Charge wählen.",
+          code:  409,
+        };
+      }
+    }
+
     // ── 6. Gebot speichern ────────────────────────────────────────────
     const bid = await tx.bid.create({
       data: {
