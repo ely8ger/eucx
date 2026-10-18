@@ -44,6 +44,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/agb`,                  lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
     { url: `${BASE}/impressum`,            lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
     { url: `${BASE}/datenschutz`,          lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE}/cookie-richtlinie`,   lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE}/regelwerk`,           lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE}/regelwerk/normative-dokumente`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE}/regelwerk/eu-rechtsrahmen`,     lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE}/regelwerk/formulare`,           lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
   ];
 
   const metalleFormPages: MetadataRoute.Sitemap = STEEL_FORMS.map(f => ({
