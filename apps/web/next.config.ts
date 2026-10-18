@@ -57,12 +57,19 @@ const nextConfig: NextConfig = {
         ],
       },
 
-      // ── API-Routes: kein Cache ───────────────────────────────────────────
+      // ── API-Routes: kein Cache + CORS-Whitelist ──────────────────────────
+      // Access-Control-Allow-Origin schränkt Cross-Origin-Zugriff auf eucx.eu ein.
+      // Öffentliche Endpunkte (/api/public/*) erlauben zusätzlich Partnerzugriff
+      // über expliziten EUCX-API-Key (in den jeweiligen Routen gehandhabt).
       {
         source: "/api/((?!og).*)",
         headers: [
-          { key: "Cache-Control", value: "no-store, no-cache, must-revalidate" },
-          { key: "Pragma",        value: "no-cache" },
+          { key: "Cache-Control",                value: "no-store, no-cache, must-revalidate" },
+          { key: "Pragma",                       value: "no-cache" },
+          { key: "Access-Control-Allow-Origin",  value: "https://eucx.eu" },
+          { key: "Access-Control-Allow-Methods", value: "GET, POST, PATCH, DELETE, OPTIONS" },
+          { key: "Access-Control-Allow-Headers", value: "Authorization, Content-Type, X-Requested-With" },
+          { key: "Access-Control-Max-Age",       value: "86400" },
         ],
       },
     ];
