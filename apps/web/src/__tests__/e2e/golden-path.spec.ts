@@ -30,7 +30,7 @@ const SECRET = "eucx-production-secret-49aaa0dfacdbc41f9ef4e2de7ae0b185cd52aa00f
 
 const USERS = {
   buyer:  { id: "seed-user-buyer",    orgId: "seed-org-eucx-test", role: "BUYER",      email: "buyer@eucx-test.de",   pw: "Test1234!" },
-  seller: { id: "seed-user-seller-1", orgId: "seed-org-eucx-test", role: "SELLER",     email: "seller1@eucx-test.de", pw: "Test1234!" },
+  seller: { id: "seed-user-seller-1", orgId: "seed-org-sellers-test", role: "SELLER",     email: "seller1@eucx-test.de", pw: "Test1234!" },
   admin:  { id: "769091c9-46e8-4f44-9c9e-3ccb505a8d8b", orgId: "seed-org-eucx-test", role: "SUPER_ADMIN", email: "admin@eucx-test.internal", pw: "" } };
 
 // ─── Hilfsfunktionen ──────────────────────────────────────────────────────────
@@ -491,7 +491,8 @@ test("Schritt 13: Anti-Sniping — auctionEnd wird nach Gebot in letzter Minute 
   // 3. Lot nach Gebot abrufen — auctionEnd sollte verlängert worden sein
   const lotRes = await api(request, "GET", `/api/auction/lots/${LOT}`, sellerToken);
   expect(lotRes.status(), "GET Lot nach Anti-Sniping muss 200 liefern").toBe(200);
-  const lot = await lotRes.json() as Record<string, unknown>;
+  const body = await lotRes.json() as Record<string, unknown>;
+  const lot  = (body["lot"] ?? body) as Record<string, unknown>;
 
   const endAfterMs  = new Date(lot["auctionEnd"] as string).getTime();
   const snipeEndMs  = new Date(snipeEnd).getTime();

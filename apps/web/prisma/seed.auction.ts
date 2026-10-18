@@ -19,7 +19,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Auction Seed startet...");
 
-  // ── Organisation ──────────────────────────────────────────────────
+  // ── Organisationen ────────────────────────────────────────────────
   const org = await prisma.organization.upsert({
     where:  { id: "seed-org-eucx-test" },
     update: {},
@@ -31,14 +31,27 @@ async function main() {
       city:    "Frankfurt am Main",
     },
   });
-  console.log("  ✓ Organisation:", org.name);
+
+  // Separate Verkäufer-Org — verhindert Same-Org-Konflikt bei Gebotsabgabe
+  const sellerOrg = await prisma.organization.upsert({
+    where:  { id: "seed-org-sellers-test" },
+    update: {},
+    create: {
+      id:      "seed-org-sellers-test",
+      name:    "EUCX Lieferanten GmbH",
+      taxId:   "DE987654321",
+      country: "DE",
+      city:    "Duisburg",
+    },
+  });
+  console.log("  ✓ Organisationen:", org.name, "+", sellerOrg.name);
 
   const pw = await bcrypt.hash("Test1234!", 10);
 
   // ── Test-User anlegen ─────────────────────────────────────────────
   const buyer = await prisma.user.upsert({
     where:  { email: "buyer@eucx-test.de" },
-    update: { totpEnabled: false, totpSecret: null, failedLoginCount: 0, lockedUntil: null },
+    update: { totpEnabled: false, totpSecret: null, failedLoginCount: 0, lockedUntil: null, emailVerified: true },
     create: {
       id:                 "seed-user-buyer",
       organizationId:     org.id,
@@ -46,6 +59,7 @@ async function main() {
       passwordHash:       pw,
       role:               "BUYER",
       status:             "ACTIVE",
+      emailVerified:      true,
       verificationStatus: "VERIFIED",
       totpEnabled:        false,
     },
@@ -55,14 +69,15 @@ async function main() {
     [1, 2, 3].map((i) =>
       prisma.user.upsert({
         where:  { email: `seller${i}@eucx-test.de` },
-        update: { totpEnabled: false, totpSecret: null, failedLoginCount: 0, lockedUntil: null },
+        update: { totpEnabled: false, totpSecret: null, failedLoginCount: 0, lockedUntil: null, emailVerified: true, organizationId: sellerOrg.id },
         create: {
           id:                 `seed-user-seller-${i}`,
-          organizationId:     org.id,
+          organizationId:     sellerOrg.id,
           email:              `seller${i}@eucx-test.de`,
           passwordHash:       pw,
           role:               "SELLER",
           status:             "ACTIVE",
+          emailVerified:      true,
           verificationStatus: "VERIFIED",
           totpEnabled:        false,
         },
