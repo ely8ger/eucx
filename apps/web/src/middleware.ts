@@ -51,6 +51,9 @@ const PUBLIC_PREFIXES = [
   "/regelwerk",
   // Cookie-Richtlinie
   "/cookie-richtlinie",
+  // Marketing-Seiten
+  "/preise",
+  "/kontakt",
 ];
 
 const ADMIN_ROLES = ["ADMIN", "COMPLIANCE_OFFICER", "SUPER_ADMIN"] as const;
@@ -75,7 +78,7 @@ function buildCsp(nonce: string): string {
     `script-src 'self' 'nonce-${nonce}'`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: blob: https:",
-    "connect-src 'self' wss://eucx.eu",
+    "connect-src 'self' https://eucx.eu wss://eucx.eu",
     "font-src 'self' data: https://fonts.gstatic.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",

@@ -12,7 +12,8 @@ import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
 import { toast } from "sonner";
 import { TRADEABLE_PRODUCTS, getTradeableByKat, SIDEBAR } from "@/lib/katalog/data";
-import { MarketTickerWidget } from "@/components/market/MarketTickerWidget";
+import { MarketTickerWidget }  from "@/components/market/MarketTickerWidget";
+import { OnboardingWidget }    from "@/components/onboarding/OnboardingWidget";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -920,6 +921,16 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         </div>
 
         <div className="bl-page">
+
+          {/* Onboarding */}
+          {kyc && (
+            <OnboardingWidget
+              role="buyer"
+              kycStatus={kyc.verificationStatus}
+              firstActionDone={lots.length > 0}
+              onStartFirstAction={() => setShowPreflight(true)}
+            />
+          )}
 
           {/* KYC-Warnung */}
           {kyc && !isVerified && (
