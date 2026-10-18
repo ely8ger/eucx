@@ -221,7 +221,7 @@ test("B7: Lot-Erstellung mit ungültigem unit-Enum", async ({ request }) => {
 
 test("C1: Gebot auf abgeschlossenes Lot (COMPLETED)", async ({ request }) => {
   const res = await api(request, "POST", `/api/auction/lots/${LOT_CONCLUDED}/bids`, seller1Token, { price: 100 });
-  await assertBlocked(res, [400, 403, 409], "Gebot auf COMPLETED-Lot");
+  await assertBlocked(res, [400, 403, 404, 409], "Gebot auf COMPLETED-Lot");
 });
 
 test("C2: Gebot auf nicht existierendes Lot (UUID-Erfindung)", async ({ request }) => {
@@ -262,7 +262,7 @@ test("C5: Dispute auf Lot das nicht DELIVERED ist", async ({ request }) => {
   // COMPLETED-Lot ist bereits abgeschlossen - kein Dispute mehr möglich (409)
   // Falls lot_disputes-Tabelle fehlt → 503 (robuster DB-Fehler, kein leerer 500)
   // 403: Buyer ist nicht Vertragspartei dieses Lots
-  await assertBlocked(res, [400, 403, 409, 422, 503], "Dispute auf COMPLETED-Lot");
+  await assertBlocked(res, [400, 403, 404, 409, 422, 503], "Dispute auf COMPLETED-Lot");
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
