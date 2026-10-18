@@ -34,29 +34,29 @@ export async function requireAuth(req: NextRequest): Promise<TokenPayload> {
   }
 }
 
-// Produktions-Guard: in NODE_ENV=production müssen beide Secrets explizit gesetzt sein.
-if (process.env.NODE_ENV === "production") {
-  if (!process.env.JWT_SECRET) {
+// Lazy getters — Validation läuft nur bei echtem Funktionsaufruf (Request-Zeit),
+// nicht beim Modul-Import. Verhindert fatal-throw während `next build`.
+function getJwtSecret(): Uint8Array {
+  if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
     throw new Error(
       "[FATAL] JWT_SECRET ist nicht gesetzt. Deployment in Produktion ohne explizites Secret ist nicht erlaubt."
     );
   }
-  if (!process.env.REFRESH_JWT_SECRET) {
+  return new TextEncoder().encode(
+    process.env.JWT_SECRET ?? "dev-secret-CHANGE-IN-PRODUCTION-min-32-chars"
+  );
+}
+
+function getRefreshJwtSecret(): Uint8Array {
+  if (process.env.NODE_ENV === "production" && !process.env.REFRESH_JWT_SECRET) {
     throw new Error(
       "[FATAL] REFRESH_JWT_SECRET ist nicht gesetzt. Ohne getrenntes Refresh-Secret können Access-Tokens als Refresh-Tokens missbraucht werden."
     );
   }
+  return new TextEncoder().encode(
+    process.env.REFRESH_JWT_SECRET ?? "dev-refresh-secret-CHANGE-IN-PRODUCTION-min-32-chars"
+  );
 }
-
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET ?? "dev-secret-CHANGE-IN-PRODUCTION-min-32-chars"
-);
-
-// Separates Secret für Refresh-Tokens — verhindert, dass ein kompromittierter
-// Access-Token als Refresh-Token akzeptiert wird (Key-Separation).
-const REFRESH_JWT_SECRET = new TextEncoder().encode(
-  process.env.REFRESH_JWT_SECRET ?? "dev-refresh-secret-CHANGE-IN-PRODUCTION-min-32-chars"
-);
 
 export interface TokenPayload extends JWTPayload {
   userId:  string;
@@ -74,7 +74,7 @@ export async function signAccessToken(payload: Omit<TokenPayload, keyof JWTPaylo
     .setIssuer("eucx.eu")
     .setAudience("eucx-api")
     .setJti(globalThis.crypto.randomUUID())
-    .sign(JWT_SECRET);
+    .sign(getJwtSecret());
 }
 
 // Refresh Token: 30 Tage — signiert mit separatem REFRESH_JWT_SECRET
@@ -86,11 +86,11 @@ export async function signRefreshToken(userId: string, sessionStart?: number): P
     .setIssuedAt()
     .setExpirationTime("30d")
     .setIssuer("eucx.eu")
-    .sign(REFRESH_JWT_SECRET);
+    .sign(getRefreshJwtSecret());
 }
 
 export async function verifyAccessToken(token: string): Promise<TokenPayload> {
-  const { payload } = await jwtVerify(token, JWT_SECRET, {
+  const { payload } = await jwtVerify(token, getJwtSecret(), {
     issuer:   "eucx.eu",
     audience: "eucx-api",
   });
@@ -98,7 +98,7 @@ export async function verifyAccessToken(token: string): Promise<TokenPayload> {
 }
 
 export async function verifyRefreshToken(token: string): Promise<{ userId: string; sessionStart: number }> {
-  const { payload } = await jwtVerify(token, REFRESH_JWT_SECRET, {
+  const { payload } = await jwtVerify(token, getRefreshJwtSecret(), {
     issuer: "eucx.eu",
   });
   return {
@@ -119,11 +119,11 @@ export async function signPending2faToken(userId: string): Promise<string> {
     .setIssuedAt()
     .setExpirationTime("5m")
     .setIssuer("eucx.eu")
-    .sign(JWT_SECRET);
+    .sign(getJwtSecret());
 }
 
 export async function verifyPending2faToken(token: string): Promise<{ userId: string }> {
-  const { payload } = await jwtVerify(token, JWT_SECRET, {
+  const { payload } = await jwtVerify(token, getJwtSecret(), {
     issuer: "eucx.eu",
   });
   if (payload["type"] !== "pending_2fa") throw new Error("Falscher Token-Typ");
