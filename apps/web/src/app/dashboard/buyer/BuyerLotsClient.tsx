@@ -280,6 +280,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [description,      setDescription]      = useState("");
   const [formError,        setFormError]        = useState<string | null>(null);
   const [greenSteel,       setGreenSteel]       = useState(false);
+  const [showCbam,         setShowCbam]         = useState(false);
+  const [showContract,     setShowContract]     = useState(false);
   // CBAM form state
   const [cbamCategory,     setCbamCategory]     = useState<CbamGroupId | "">("");
   const [co2PerTonne,      setCo2PerTonne]      = useState("");   // kg CO₂-Äq./t (EU-Default oder Werkswert)
@@ -1600,7 +1602,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     value={selectedPreset}
                     onChange={(e) => { setSelectedPreset(e.target.value); if (e.target.value) applyPreset(e.target.value); }}
                   >
-                    <option value="">- Vorlage wählen (optional) -</option>
+                    <option value="">Vorlage auswählen</option>
                     {SIDEBAR.map((sektion) => {
                       const sektionProdukte = sektion.kategorien.flatMap((kat) => CATALOG_BY_KAT.get(kat.id) ?? []);
                       if (sektionProdukte.length === 0) return null;
