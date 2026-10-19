@@ -1325,7 +1325,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     <input
                       className="bl-input"
                       style={{ paddingRight: 42 }}
-                      placeholder='Produkt suchen - "Beton", "pipe", "angle", "B240A" …'
+                      placeholder="Produkt suchen…"
                       value={catalogQuery}
                       autoComplete="off"
                       onChange={(e) => {
