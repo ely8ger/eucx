@@ -133,6 +133,11 @@ export async function POST(req: NextRequest) {
       data: { userId: user.id, email, code, expiresAt },
     });
 
+    // Dev-Hilfe: Code in Konsole loggen, damit Tester ohne echte E-Mail-Zustellung testen können
+    if (process.env.NODE_ENV !== "production") {
+      console.info(`\n[DEV] E-Mail-Verifikation\n  userId: ${user.id}\n  code:   ${code}\n  POST /api/auth/verify-email  { "userId": "${user.id}", "code": "${code}" }\n`);
+    }
+
     await sendAuctionMail({
       to:       email,
       subject:  "EUCX - Bestätigen Sie Ihre E-Mail-Adresse",

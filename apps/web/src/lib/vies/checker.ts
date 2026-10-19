@@ -39,6 +39,11 @@ export async function checkVatId(
   country:   string,
   vatNumber: string,
 ): Promise<ViesResult> {
+  // Dev-Bypass: VIES_DISABLED=true in .env.local überspringt die EU-API-Prüfung
+  if (process.env.VIES_DISABLED === "true") {
+    return { valid: true, unchecked: true };
+  }
+
   const cc = country.toUpperCase();
 
   // Nicht-EU-Länder: kein VIES
