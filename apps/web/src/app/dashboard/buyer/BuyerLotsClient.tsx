@@ -929,7 +929,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
               role="buyer"
               kycStatus={kyc.verificationStatus}
               firstActionDone={lots.length > 0}
-              onStartFirstAction={() => setShowPreflight(true)}
+              onStartFirstAction={() => preflightOk ? setShowForm(true) : setShowPreflight(true)}
             />
           )}
 
@@ -1061,7 +1061,11 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
               </p>
               {/* CTA */}
               <button
-                onClick={() => { if (showForm) { setShowForm(false); setShowPreflight(false); } else setShowPreflight((v) => !v); }}
+                onClick={() => {
+                  if (showForm) { setShowForm(false); setShowPreflight(false); }
+                  else if (preflightOk) { setShowForm(true); }
+                  else { setShowPreflight(true); }
+                }}
                 style={{
                   padding: "12px 28px",
                   background: "#154194", color: "#fff",
