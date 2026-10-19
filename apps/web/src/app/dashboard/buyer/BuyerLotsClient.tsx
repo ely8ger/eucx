@@ -1316,12 +1316,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 {/* ── Produktkatalog-Suche ── */}
                 <div style={{ marginBottom: 20, position: "relative" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, paddingLeft: 12, borderLeft: "3px solid #154194" }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase" as const }}>Produktkatalog</span>
-                    <span style={{ fontSize: 11, color: "#9ca3af" }}>
-                      {catalogStats
-                        ? `${catalogStats.products.toLocaleString("de-DE")} Produkte · ${catalogStats.sizes.toLocaleString("de-DE")} Abmessungen`
-                        : "Katalog wird geladen…"}
-                    </span>
+                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase" as const }}>Produkt suchen</span>
                     {catalogProduct && (
                       <span style={{ fontSize: 11, color: "#154194", fontWeight: 600, marginLeft: 4 }}>· {catalogProduct.nameEn}</span>
                     )}
