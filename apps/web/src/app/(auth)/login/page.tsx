@@ -150,6 +150,9 @@ export default function LoginPage() {
     if (!password) fe.password = t("login_pw_req");
     if (Object.keys(fe).length) { setErrors(fe); return; }
     setErrors({});
+    setPendingAccount(false);
+    setEmailNotVerified(false);
+    setAccountRejected(false);
     setLoading(true);
     try {
       const res  = await fetch("/api/auth/login", {
@@ -171,8 +174,12 @@ export default function LoginPage() {
         } else if (res.status === 423) {
           setAttempts(5); // roten Lock-Banner auslösen, Submit deaktivieren
           setErrors({ password: data.message ?? t("login_locked_desc") });
-        } else if (res.status === 403 && (data as { code?: string }).code === "ACCOUNT_INACTIVE") {
-          setPendingAccount(true);
+        } else if (res.status === 403) {
+          const code403 = (data as { code?: string }).code;
+          if (code403 === "ACCOUNT_INACTIVE")    setPendingAccount(true);
+          else if (code403 === "EMAIL_NOT_VERIFIED") setEmailNotVerified(true);
+          else if (code403 === "ACCOUNT_REJECTED")   setAccountRejected(true);
+          else setErrors({ email: data.message ?? t("login_err_conn") });
         } else {
           setErrors({ email: data.message ?? t("login_err_conn") });
         }
@@ -215,7 +222,9 @@ export default function LoginPage() {
     finally  { setLoading(false); }
   }
 
-  const [pendingAccount, setPendingAccount] = useState(false);
+  const [pendingAccount,   setPendingAccount  ] = useState(false);
+  const [emailNotVerified, setEmailNotVerified] = useState(false);
+  const [accountRejected,  setAccountRejected ] = useState(false);
   const locked = attempts >= 5;
 
   return (
@@ -315,6 +324,37 @@ export default function LoginPage() {
                       <p style={{ fontSize: 12, color: "#92400e", margin: 0, lineHeight: 1.6, fontFamily: F }}>
                         Ihr Konto wird noch geprüft. Nach der Freischaltung durch EUCX erhalten Sie Zugang.
                         Fragen: <a href="mailto:support@eucx.eu" style={{ color: "#92400e", fontWeight: 600 }}>support@eucx.eu</a>
+                      </p>
+                    </div>
+                  )}
+
+                  {/* E-Mail nicht bestätigt */}
+                  {emailNotVerified && (
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", backgroundColor: "#eff6ff", borderLeft: `3px solid ${BLUE}` }}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, marginTop: 2, color: BLUE }} aria-hidden="true">
+                        <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.3"/>
+                        <line x1="7" y1="4" x2="7" y2="8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                        <circle cx="7" cy="10" r="0.7" fill="currentColor"/>
+                      </svg>
+                      <p style={{ fontSize: 12, color: "#1e40af", margin: 0, lineHeight: 1.6, fontFamily: F }}>
+                        Ihre E-Mail-Adresse wurde noch nicht bestätigt. Bitte prüfen Sie Ihren Posteingang (auch Spam).
+                        Kein E-Mail erhalten?{" "}
+                        <a href="/resend-verification" style={{ color: BLUE, fontWeight: 600 }}>Erneut senden</a>
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Konto abgelehnt */}
+                  {accountRejected && (
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", backgroundColor: "#fff5f5", borderLeft: `3px solid ${RED}` }}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, marginTop: 2, color: RED }} aria-hidden="true">
+                        <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.3"/>
+                        <line x1="7" y1="4" x2="7" y2="8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                        <circle cx="7" cy="10" r="0.7" fill="currentColor"/>
+                      </svg>
+                      <p style={{ fontSize: 12, color: RED, margin: 0, lineHeight: 1.6, fontFamily: F }}>
+                        Ihre Registrierung wurde abgelehnt. Für Rückfragen wenden Sie sich an{" "}
+                        <a href="mailto:support@eucx.eu" style={{ color: RED, fontWeight: 600 }}>support@eucx.eu</a>.
                       </p>
                     </div>
                   )}

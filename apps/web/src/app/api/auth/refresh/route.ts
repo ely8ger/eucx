@@ -39,7 +39,10 @@ export async function POST(req: NextRequest) {
 
   // 2. In DB suchen + Revokations-Check
   const tokenHash = createHash("sha256").update(refreshToken).digest("hex");
-  const stored = await db.refreshToken.findUnique({ where: { tokenHash } });
+  const stored = await db.refreshToken.findUnique({
+    where:   { tokenHash },
+    include: { user: { select: { email: true } } },
+  });
 
   if (!stored) {
     return NextResponse.json({ error: "Refresh-Token unbekannt" }, { status: 401 });
@@ -58,20 +61,13 @@ export async function POST(req: NextRequest) {
       userId: stored.userId,
       detail: "Bereits revozierter Refresh-Token wurde erneut eingereicht — alle Sessions invalidiert",
     });
+    const alertEmail = stored.user?.email ?? "";
     sendAuctionMail({
-      to:       stored.userId, // wird unten durch echte Email ersetzt wenn User geladen
-      subject:  "EUCX Sicherheitswarnung: Verdächtige Anmeldeaktivität",
+      to:       alertEmail,
+      subject:  "EUCX Sicherheitswarnung: Alle Sitzungen wurden beendet",
       template: "account_locked",
-      data:     { email: "" },
+      data:     { email: alertEmail },
     }).catch(() => {});
-    // User-Email für die Mail nachladen (async, Fehler ignorieren)
-    void db.user.findUnique({ where: { id: stored.userId }, select: { email: true } })
-      .then(u => u && sendAuctionMail({
-        to:       u.email,
-        subject:  "EUCX Sicherheitswarnung: Alle Sitzungen wurden beendet",
-        template: "account_locked",
-        data:     { email: u.email },
-      })).catch(() => {});
     return NextResponse.json({ error: "Sicherheitsvorfall erkannt. Bitte erneut anmelden." }, { status: 401 });
   }
 
