@@ -1899,7 +1899,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">Lieferbedingung <span>(INCOTERMS® 2020)</span></label>
+                    <label className="bl-label">Lieferbedingung</label>
                     <select
                       className="bl-select"
                       value={incoterms}
