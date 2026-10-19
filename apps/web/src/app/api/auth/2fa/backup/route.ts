@@ -168,7 +168,7 @@ export async function POST(req: NextRequest) {
     secure:   process.env.NODE_ENV === "production",
     sameSite: "strict",
     maxAge:   0,
-    path:     "/api/auth/2fa",
+    path:     "/",
   });
 
   return res;

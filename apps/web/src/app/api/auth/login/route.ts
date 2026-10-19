@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
         secure:   process.env.NODE_ENV === "production",
         sameSite: "strict",
         maxAge:   300, // 5 Minuten
-        path:     "/api/auth/2fa",
+        path:     "/",  // __Host- Cookies erfordern path="/"
       });
       return res;
     }
