@@ -66,8 +66,7 @@ const productionOnlyChecks = (env: z.infer<typeof serverEnvSchema>) => {
     "RESEND_API_KEY",             // mailer.ts wirft ohne Key
     "CRON_SECRET",                // cron-handler prüft Signatur, kein Fallback
     "BLOB_READ_WRITE_TOKEN",      // put() in upload/route.ts wirft ohne Token
-    "UPSTASH_REDIS_REST_URL",     // Rate Limiting + JTI-Blacklist — kein In-Memory in Prod (Vercel multi-instance)
-    "UPSTASH_REDIS_REST_TOKEN",   // Pflicht wenn URL gesetzt
+    // UPSTASH ist optional: ENABLE_MEMORY_RATE_LIMIT=true aktiviert In-Memory-Fallback
   ];
 
   const missing = required.filter((k) => !env[k]);
