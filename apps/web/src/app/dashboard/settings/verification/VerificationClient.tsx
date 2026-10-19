@@ -360,7 +360,7 @@ export function VerificationClient() {
   return (
     <>
       <style>{`
-        .ver { font-family:"IBM Plex Sans",Arial,sans-serif; background:#f0f2f5; min-height:100vh; color:#0d1b2a; }
+        .ver { font-family:"IBM Plex Sans",Arial,sans-serif; background:#f7f9fc; min-height:100vh; color:#0d1b2a; }
         .ver-main { max-width:760px; margin:0 auto; padding:32px 16px 64px; }
         .ver-title { font-size:26px; font-weight:300; margin-bottom:6px; }
         .ver-title strong { font-weight:700; }
