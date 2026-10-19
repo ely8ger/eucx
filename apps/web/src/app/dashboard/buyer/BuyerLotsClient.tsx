@@ -1819,7 +1819,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         <input
                           className="bl-input"
                           type="text"
-                          placeholder="Land eingeben, z.B. Türkei, China, DE…"
+                          placeholder="Deutschland"
                           value={countryInput}
                           onChange={(e) => onCountryInput(e.target.value)}
                           autoComplete="off"
