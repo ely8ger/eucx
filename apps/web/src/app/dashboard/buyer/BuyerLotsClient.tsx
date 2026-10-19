@@ -1653,8 +1653,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                   <div className="bl-form-group">
                     <label className="bl-label">
-                      max. EUR pro {unit || "Einheit"}{" "}
-                      <span>(optional)</span>
+                      max. EUR pro {unit || "Einheit"}
                     </label>
                     <div style={{ position: "relative" }}>
                       <input
@@ -1795,7 +1794,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">CO₂-Emissionsfaktor <span>(optional, kg CO₂-Äq./t)</span></label>
+                    <label className="bl-label">CO₂-Emissionsfaktor <span style={{fontWeight:400,color:"#6b7280",fontSize:"11px"}}>kg CO₂-Äq./t</span></label>
                     <input
                       className="bl-input"
                       type="number"
@@ -1814,7 +1813,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">Herkunftsland <span>(optional, fur CBAM-Praferenz)</span></label>
+                    <label className="bl-label">Herkunftsland</label>
                     <div ref={countryRef} style={{ position: "relative" }}>
                       <div style={{ position: "relative" }}>
                         <input
@@ -1894,7 +1893,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">CBAM-Registry-ID (Produktionsstätte) <span>(optional)</span></label>
+                    <label className="bl-label">CBAM-Registry-ID (Produktionsstätte)</label>
                     <input
                       className="bl-input"
                       type="text"
@@ -2036,7 +2035,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                   {/* Technische Spezifikationen (optional, Key-Value) */}
                   <div className="bl-form-group full">
-                    <label className="bl-label">Technische Spezifikationen (optional)</label>
+                    <label className="bl-label">Technische Spezifikationen</label>
                     {specRows.map((row, i) => (
                       <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
                         <input
