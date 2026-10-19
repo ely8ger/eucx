@@ -125,7 +125,7 @@ export function OnboardingWidget({ role, kycStatus, firstActionDone, onStartFirs
     }}>
       {/* Header */}
       <div style={{
-        background: NAVY,
+        background: BLUE,
         padding: "14px 20px",
         display: "flex",
         alignItems: "center",
@@ -137,8 +137,8 @@ export function OnboardingWidget({ role, kycStatus, firstActionDone, onStartFirs
             {role === "buyer" ? "Käufer-Einstieg" : "Verkäufer-Einstieg"}
           </span>
           <span style={{
-            fontSize: 11, fontWeight: 700, color: NAVY,
-            background: "#7cb3f8", padding: "2px 8px", letterSpacing: "0.06em",
+            fontSize: 11, fontWeight: 700, color: BLUE,
+            background: "#c8d9f4", padding: "2px 8px", letterSpacing: "0.06em",
           }}>
             {completedCount}/{steps.length} Schritte
           </span>
@@ -148,7 +148,7 @@ export function OnboardingWidget({ role, kycStatus, firstActionDone, onStartFirs
           title="Ausblenden"
           style={{
             background: "none", border: "none", cursor: "pointer",
-            color: "#7cb3f8", fontSize: 18, lineHeight: 1, padding: "0 2px",
+            color: "#c8d9f4", fontSize: 18, lineHeight: 1, padding: "0 2px",
           }}
         >
           ×
@@ -156,7 +156,7 @@ export function OnboardingWidget({ role, kycStatus, firstActionDone, onStartFirs
       </div>
 
       {/* Progress bar */}
-      <div style={{ height: 3, background: "#d1e0f7" }}>
+      <div style={{ height: 4, background: "#b8cfe8" }}>
         <div style={{
           height: "100%", width: `${pct}%`,
           background: BLUE,
