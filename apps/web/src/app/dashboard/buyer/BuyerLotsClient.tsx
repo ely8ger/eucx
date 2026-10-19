@@ -1751,7 +1751,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       value={cbamCategory}
                       onChange={(e) => setCbamCategory(e.target.value as CbamGroupId | "")}
                     >
-                      <option value="">- Keine / Nicht CBAM-pflichtig -</option>
+                      <option value="">Nicht CBAM-pflichtig</option>
                       <optgroup label="Eisen &amp; Stahl">
                         {CBAM_GROUPS.filter(g => g.id.startsWith("STEEL")).map(g => (
                           <option key={g.id} value={g.id}>{g.label} ({g.kn})</option>
