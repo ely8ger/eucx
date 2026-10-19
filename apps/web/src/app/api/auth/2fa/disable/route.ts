@@ -5,7 +5,7 @@
  * Löscht totpSecret und setzt totpEnabled = false.
  */
 import { NextRequest, NextResponse } from "next/server";
-import { verify as totpVerify }      from "otplib";
+import { verifySync as totpVerify }  from "otplib";
 import { db }                        from "@/lib/db/client";
 import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
 import { checkRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     if (!body.code || body.code.length !== 6) {
       return NextResponse.json({ error: "Bitte 6-stelligen Code eingeben." }, { status: 422 });
     }
-    const valid = await totpVerify({ token: body.code, secret: user.totpSecret });
+    const valid = totpVerify({ token: body.code, secret: user.totpSecret, epochTolerance: 60 }).valid;
     if (!valid) {
       return NextResponse.json({ error: "Code ungültig." }, { status: 400 });
     }

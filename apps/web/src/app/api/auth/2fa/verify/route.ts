@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   }
 
   // TOTP-Code prüfen
-  const isValid = verifySync({ secret: user.totpSecret, token: parsed.data.code, epochTolerance: 30 }).valid;
+  const isValid = verifySync({ secret: user.totpSecret, token: parsed.data.code, epochTolerance: 60 }).valid;
 
   if (!isValid) {
     return NextResponse.json({ error: "Code ungültig. Bitte erneut versuchen." }, { status: 400 });
