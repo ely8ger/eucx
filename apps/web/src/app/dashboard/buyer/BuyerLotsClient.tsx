@@ -1059,28 +1059,91 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
               <p style={{ fontSize: 13, color: "#7a8aa0", maxWidth: 420, margin: "0 auto 26px", lineHeight: 1.65 }}>
                 Beschreiben Sie Ihren Bedarf — innerhalb von 48 Stunden erhalten Sie qualifizierte Angebote von verifizierten Lieferanten auf der EUCX-Plattform.
               </p>
-              {/* CTA */}
-              <button
-                onClick={() => {
-                  if (showForm) { setShowForm(false); setShowPreflight(false); }
-                  else if (preflightOk) { setShowForm(true); }
-                  else { setShowPreflight(true); }
-                }}
-                style={{
-                  padding: "12px 28px",
-                  background: "#154194", color: "#fff",
-                  border: "none", cursor: "pointer",
-                  fontSize: 14, fontWeight: 600,
-                  fontFamily: "'IBM Plex Sans', Arial, sans-serif",
-                  letterSpacing: ".02em",
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M7 2v10M2 7h10" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-                Ausschreibung starten
-              </button>
+              {/* CTA mit Tooltip wenn Onboarding unvollständig */}
+              {(() => {
+                const kycSubmitted = kyc?.verificationStatus !== "GUEST" && kyc?.verificationStatus != null;
+                const kycPending   = kyc?.verificationStatus === "PENDING_VERIFICATION";
+                const canStart     = isVerified;
+                const tooltipRows: { color: string; text: string }[] = [
+                  { color: "#22c55e", text: "Schritt 1 — Konto erstellt" },
+                  {
+                    color: kycSubmitted ? "#22c55e" : "#f87171",
+                    text:  kycSubmitted ? "Schritt 2 — KYC eingereicht" : "Schritt 2 — KYC noch nicht eingereicht",
+                  },
+                  {
+                    color: isVerified ? "#22c55e" : kycPending ? "#fbbf24" : "#f87171",
+                    text:  isVerified ? "Schritt 3 — KYC genehmigt"
+                         : kycPending ? "Schritt 3 — KYC-Prüfung läuft noch"
+                         :              "Schritt 3 — KYC noch nicht genehmigt",
+                  },
+                ];
+                return (
+                  <div style={{ position: "relative", display: "inline-block" }}
+                    className="esh-btn-wrap">
+                    <style>{`
+                      .esh-btn-wrap:hover .esh-tooltip { opacity: 1; pointer-events: auto; }
+                    `}</style>
+                    <button
+                      disabled={!canStart}
+                      onClick={() => {
+                        if (!canStart) return;
+                        if (showForm) { setShowForm(false); setShowPreflight(false); }
+                        else { setShowForm(true); }
+                      }}
+                      style={{
+                        padding: "12px 28px",
+                        background: canStart ? "#154194" : "#9ca3af",
+                        color: "#fff",
+                        border: "none",
+                        cursor: canStart ? "pointer" : "not-allowed",
+                        fontSize: 14, fontWeight: 600,
+                        fontFamily: "'IBM Plex Sans', Arial, sans-serif",
+                        letterSpacing: ".02em",
+                        display: "inline-flex", alignItems: "center", gap: 8,
+                        opacity: canStart ? 1 : 0.55,
+                        transition: "background .15s, opacity .15s",
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M7 2v10M2 7h10" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                      Ausschreibung starten
+                    </button>
+                    {!canStart && (
+                      <div className="esh-tooltip" style={{
+                        position: "absolute",
+                        bottom: "calc(100% + 10px)",
+                        left: "50%", transform: "translateX(-50%)",
+                        background: "#0d1b2a", color: "#fff",
+                        fontSize: 12, lineHeight: 1.55,
+                        padding: "10px 14px",
+                        whiteSpace: "nowrap",
+                        opacity: 0, pointerEvents: "none",
+                        transition: "opacity .15s",
+                        zIndex: 50,
+                        boxShadow: "0 4px 16px rgba(0,0,0,.25)",
+                        textAlign: "left",
+                      }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".07em", textTransform: "uppercase" as const, color: "#9ca3af", marginBottom: 8 }}>
+                          Noch ausstehend
+                        </div>
+                        {tooltipRows.map((r, i) => (
+                          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginTop: i > 0 ? 5 : 0 }}>
+                            <div style={{ width: 8, height: 8, borderRadius: "50%", background: r.color, flexShrink: 0 }} />
+                            <span>{r.text}</span>
+                          </div>
+                        ))}
+                        {/* Pfeil */}
+                        <div style={{
+                          position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)",
+                          borderWidth: 6, borderStyle: "solid",
+                          borderColor: "#0d1b2a transparent transparent transparent",
+                        }} />
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
               {/* So funktioniert es */}
               <div style={{ marginTop: 40, paddingTop: 28, borderTop: "1px solid #e8edf3" }}>
                 <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase" as const, color: "#7a8aa0", marginBottom: 20 }}>
