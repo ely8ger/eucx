@@ -12,6 +12,7 @@ import { z }                         from "zod";
 import { db }                        from "@/lib/db/client";
 import { hashPassword }              from "@/lib/auth/password";
 import { isPwnedPassword }           from "@/lib/auth/pwned-password";
+import { sendAuctionMail }           from "@/lib/notifications/mailer";
 
 export const dynamic = "force-dynamic";
 
@@ -91,6 +92,16 @@ export async function POST(req: NextRequest) {
         data:  { revoked: true },
       }),
     ]);
+
+    sendAuctionMail({
+      to:       resetToken.user.email,
+      subject:  "Ihr EUCX-Passwort wurde zurückgesetzt",
+      template: "password_changed",
+      data: {
+        changedAt: new Date().toLocaleString("de-DE", { timeZone: "Europe/Berlin" }),
+        ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "—",
+      },
+    }).catch((err: unknown) => console.error("[reset-password] Mailer-Fehler:", err));
 
     return NextResponse.json({
       data: { message: "Passwort erfolgreich zurückgesetzt. Sie können sich jetzt anmelden." },

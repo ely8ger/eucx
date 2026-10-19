@@ -17,6 +17,8 @@ import { signAccessToken, signRefreshToken, verifyPending2faToken } from "@/lib/
 import { COOKIE_ACCESS_TOKEN, COOKIE_REFRESH_TOKEN, COOKIE_PENDING_2FA } from "@/lib/auth/cookie-names";
 import { checkRateLimit, rateLimitHeaders }  from "@/lib/rate-limit";
 import { getClientIp }                       from "@/lib/net/get-client-ip";
+import { logSecurityEvent, persistAuditLog } from "@/lib/audit/log-event";
+import { sendAuctionMail }                   from "@/lib/notifications/mailer";
 import { z }                                 from "zod";
 
 export const dynamic = "force-dynamic";
@@ -124,6 +126,20 @@ export async function POST(req: NextRequest) {
       userAgent: req.headers.get("user-agent") ?? "unbekannt",
     },
   });
+
+  // Audit-Log + Sicherheitsmail: Backup-Code-Nutzung ist ein sicherheitsrelevantes Ereignis
+  logSecurityEvent({ event: "AUTH_BACKUP_CODE_USED", ip, userId });
+  void persistAuditLog({
+    action: "AUTH_BACKUP_CODE_USED", userId, entityType: "user", entityId: userId,
+    ipAddress: ip, userAgent: req.headers.get("user-agent") ?? undefined,
+    meta: { codeHash },
+  });
+  sendAuctionMail({
+    to:       user.email,
+    subject:  "EUCX – Backup-Code für Login verwendet",
+    template: "account_locked",
+    data:     { email: user.email },
+  }).catch(() => {});
 
   // Verbleibende Backup-Code-Anzahl für Warnung
   const remaining = await db.backupCode.count({

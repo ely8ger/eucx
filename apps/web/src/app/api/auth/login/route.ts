@@ -8,7 +8,6 @@ import { loginSchema }               from "@/lib/validation/schemas";
 import { sendAuctionMail }           from "@/lib/notifications/mailer";
 import { getClientIp }               from "@/lib/net/get-client-ip";
 import { logSecurityEvent, persistAuditLog } from "@/lib/audit/log-event";
-import { checkRateLimit, rateLimitHeaders }  from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -16,15 +15,7 @@ const MAX_FAILED_ATTEMPTS = 5;
 
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
-
-  // IP-basiertes Rate-Limit: 5 Versuche/Minute pro IP (verhindert Account-Enumeration)
-  const rl = await checkRateLimit(ip, "auth");
-  if (!rl.allowed) {
-    return NextResponse.json(
-      { code: "RATE_LIMITED", message: "Zu viele Anmeldeversuche von dieser IP. Bitte warten Sie eine Minute." },
-      { status: 429, headers: rateLimitHeaders(rl) },
-    );
-  }
+  // IP-Rate-Limit wird von der Middleware übernommen (middleware.ts isRateLimited-Block)
 
   try {
     const body   = await req.json() as unknown;

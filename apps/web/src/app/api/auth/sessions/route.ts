@@ -1,6 +1,6 @@
 /**
  * GET  /api/auth/sessions  - aktive Sessions des Nutzers
- * DELETE /api/auth/sessions - alle anderen Sessions beenden (Remote Logout)
+ * DELETE /api/auth/sessions - alle Sessions beenden inkl. der aktuellen (vollständiger Logout)
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db }                        from "@/lib/db/client";
@@ -34,7 +34,7 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
   }
 
-  // Alle aktiven Sessions widerrufen außer der aktuellen (anhand IP)
+  // Alle aktiven Sessions widerrufen (inkl. der aktuellen — vollständiger Abmelde-Vorgang)
   await db.refreshToken.updateMany({
     where: { userId: payload.userId, revoked: false },
     data:  { revoked: true },
