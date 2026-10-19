@@ -2092,7 +2092,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       onChange={(e) => setDeliveryPeriod(e.target.value)}
                       required
                     >
-                      <option value="">- Bitte wählen -</option>
+                      <option value="">Auswählen</option>
                       <option value="max. 1 Woche ab Zuschlag">max. 1 Woche ab Zuschlag</option>
                       <option value="max. 2 Wochen ab Zuschlag">max. 2 Wochen ab Zuschlag</option>
                       <option value="max. 3 Wochen ab Zuschlag">max. 3 Wochen ab Zuschlag</option>
@@ -2204,7 +2204,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       onChange={(e) => setPaymentTerms(e.target.value)}
                       required
                     >
-                      <option value="">- Bitte wählen -</option>
+                      <option value="">Auswählen</option>
                       <optgroup label="Vorauszahlung">
                         <option value="Vorkasse 100 % vor Lieferung">Vorkasse - 100 % vor Lieferung</option>
                         <option value="Anzahlung 10 % bei Zuschlag, Rest bei Lieferung">Anzahlung 10 % bei Zuschlag, Rest bei Lieferung</option>
@@ -2238,7 +2238,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       value={vatTreatment}
                       onChange={(e) => setVatTreatment(e.target.value)}
                     >
-                      <option value="">- Bitte wählen -</option>
+                      <option value="">Auswählen</option>
                       <option value="Umsatzsteuer 19 % (Regelbesteuerung)">Umsatzsteuer 19 % (Regelbesteuerung)</option>
                       <option value="Steuerschuldumkehr §13b UStG (Reverse Charge)">Steuerschuldumkehr §13b UStG (Reverse Charge)</option>
                       <option value="Innergemeinschaftliche Lieferung §4 Nr. 1b UStG (0 %)">Innergemeinschaftliche Lieferung §4 Nr. 1b UStG (0 %)</option>
