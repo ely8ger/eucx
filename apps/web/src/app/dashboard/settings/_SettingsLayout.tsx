@@ -64,6 +64,7 @@ const TEXT      = "#0d1b2a";
 
 function BottomNav({ pathname }: { pathname: string }) {
   return (
+    <div style={{ background: "#f7f9fc", padding: "0 0 0" }}>
     <div style={{ maxWidth: 700, margin: "0 auto", padding: "0 32px 48px", fontFamily: F }}>
       <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 28, marginTop: 8 }}>
         <p style={{
@@ -109,11 +110,13 @@ function BottomNav({ pathname }: { pathname: string }) {
         </div>
       </div>
     </div>
+    </div>
   );
 }
 
 function PageFooter() {
   return (
+    <div style={{ background: "#f7f9fc" }}>
     <div style={{ maxWidth: 700, margin: "0 auto", padding: "0 32px 48px", fontFamily: F }}>
       <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 20 }}>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 20px", marginBottom: 8 }}>
@@ -136,6 +139,7 @@ function PageFooter() {
           © 2026 EUCX GmbH · Frankfurt am Main · Reguliert durch die BaFin · MiFID II OTF-Zulassung
         </p>
       </div>
+    </div>
     </div>
   );
 }
