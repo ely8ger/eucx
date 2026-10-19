@@ -8,12 +8,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { verify as totpVerify }      from "otplib";
 import { db }                        from "@/lib/db/client";
 import { verifyAccessToken, requireAuth } from "@/lib/auth/jwt";
-import { audit }                     from "@/lib/audit/logger";
 import { checkRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
+import { getClientIp }               from "@/lib/net/get-client-ip";
+import { logSecurityEvent, persistAuditLog } from "@/lib/audit/log-event";
+import { sendAuctionMail }           from "@/lib/notifications/mailer";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+
   let tokenPayload;
   try { tokenPayload = await requireAuth(req); }
   catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Nicht autorisiert" }, { status: 401 }); }
@@ -31,7 +35,10 @@ export async function POST(req: NextRequest) {
   let body: { code?: string } = {};
   try { body = await req.json() as { code?: string }; } catch { /* code optional */ }
 
-  const user = await db.user.findUnique({ where: { id: tokenPayload.userId }, select: { totpSecret: true, totpEnabled: true } });
+  const user = await db.user.findUnique({
+    where:  { id: tokenPayload.userId },
+    select: { totpSecret: true, totpEnabled: true, email: true },
+  });
   if (user?.totpEnabled && user.totpSecret) {
     if (!body.code || body.code.length !== 6) {
       return NextResponse.json({ error: "Bitte 6-stelligen Code eingeben." }, { status: 422 });
@@ -47,15 +54,24 @@ export async function POST(req: NextRequest) {
     data:  { totpEnabled: false, totpSecret: null },
   });
 
-  await audit({
+  logSecurityEvent({ event: "AUTH_2FA_DISABLED", ip, userId: tokenPayload.userId });
+  void persistAuditLog({
+    action:     "AUTH_2FA_DISABLED",
     userId:     tokenPayload.userId,
-    action:     "ADMIN_ACTION",
-    entityType: "User",
+    entityType: "user",
     entityId:   tokenPayload.userId,
-    ipAddress:  req.headers.get("x-forwarded-for") ?? "unknown",
-    userAgent:  req.headers.get("user-agent") ?? "",
-    meta:       { twoFaAction: "DISABLED" },
+    ipAddress:  ip,
+    userAgent:  req.headers.get("user-agent") ?? undefined,
   });
+
+  if (user?.email) {
+    sendAuctionMail({
+      to:       user.email,
+      subject:  "EUCX – Zwei-Faktor-Authentifizierung deaktiviert",
+      template: "account_locked",
+      data:     { email: user.email },
+    }).catch(() => {});
+  }
 
   return NextResponse.json({ ok: true });
 }

@@ -424,8 +424,10 @@ export function SecuritySettingsClient() {
         method: "DELETE",
         headers: { } });
       if (res.ok) {
-        setRevokeMsg("✓ Alle anderen Sitzungen wurden beendet.");
+        // Alle Sessions inkl. der aktuellen werden widerrufen → User wird abgemeldet
+        setRevokeMsg("✓ Alle Sitzungen wurden beendet. Sie werden abgemeldet…");
         setSessions([]);
+        setTimeout(() => { window.location.href = "/login"; }, 1500);
       } else {
         setRevokeMsg("Fehler beim Beenden der Sitzungen.");
       }
@@ -453,16 +455,23 @@ export function SecuritySettingsClient() {
   }
 
   const ACTION_LABELS: Record<string, string> = {
-    LOGIN:                   "Anmeldung",
-    LOGOUT:                  "Abmeldung",
-    PASSWORD_CHANGED:        "Passwort geändert",
-    PASSWORD_RESET:          "Passwort zurückgesetzt",
-    "2FA_ENABLED":           "2FA aktiviert",
-    "2FA_DISABLED":          "2FA deaktiviert",
-    BACKUP_CODES_GENERATED:  "Backup-Codes generiert",
-    SESSION_REVOKED:         "Sitzung beendet",
-    ADMIN_ACTION:            "Admin-Aktion",
-    ACCOUNT_LOCKED:          "Konto gesperrt" };
+    LOGIN:                          "Anmeldung",
+    LOGOUT:                         "Abmeldung",
+    AUTH_LOGIN_SUCCESS:             "Anmeldung",
+    AUTH_LOGIN_FAILED:              "Fehlgeschlagene Anmeldung",
+    AUTH_LOGOUT:                    "Abmeldung",
+    PASSWORD_CHANGED:               "Passwort geändert",
+    PASSWORD_RESET:                 "Passwort zurückgesetzt",
+    "2FA_ENABLED":                  "2FA aktiviert",
+    "2FA_DISABLED":                 "2FA deaktiviert",
+    AUTH_2FA_DISABLED:              "2FA deaktiviert",
+    BACKUP_CODES_GENERATED:         "Backup-Codes generiert",
+    AUTH_BACKUP_CODES_GENERATED:    "Backup-Codes generiert",
+    AUTH_BACKUP_CODE_USED:          "Backup-Code verwendet",
+    SESSION_REVOKED:                "Sitzung beendet",
+    AUTH_ACCOUNT_LOCKED:            "Konto gesperrt",
+    ADMIN_ACTION:                   "Admin-Aktion",
+    ACCOUNT_LOCKED:                 "Konto gesperrt" };
 
   return (
     <SettingsLayout>
@@ -635,10 +644,27 @@ export function SecuritySettingsClient() {
             title="Backup-Codes"
             subtitle="Einmalcodes für den Notfallzugang wenn Ihre Authenticator-App nicht verfügbar ist."
           >
+            {backupCount !== null && backupCount <= 2 && (
+              <div style={{ marginBottom: 12, background: backupCount === 0 ? "#fef2f2" : "#fffbeb", border: `1px solid ${backupCount === 0 ? "#fecaca" : "#fde68a"}`, borderLeft: `3px solid ${backupCount === 0 ? RED : "#d97706"}`, padding: "12px 16px", display: "flex", gap: 10, alignItems: "flex-start" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={backupCount === 0 ? RED : "#d97706"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <div>
+                  <p style={{ margin: "0 0 2px", fontSize: 12, fontWeight: 700, color: backupCount === 0 ? RED : "#92400e" }}>
+                    {backupCount === 0 ? "Keine Backup-Codes mehr verfügbar" : `Nur noch ${backupCount} Backup-Code${backupCount === 1 ? "" : "s"} übrig`}
+                  </p>
+                  <p style={{ margin: 0, fontSize: 11, color: MUTED, lineHeight: 1.5 }}>
+                    {backupCount === 0
+                      ? "Generieren Sie neue Codes, um den Notfallzugang zu sichern."
+                      : "Bitte generieren Sie neue Backup-Codes, bevor diese aufgebraucht sind."}
+                  </p>
+                </div>
+              </div>
+            )}
             <Row
               label="Verbleibende Codes"
               value={
-                <span style={{ fontSize: 12, color: MUTED }}>
+                <span style={{ fontSize: 12, color: backupCount !== null && backupCount <= 2 ? (backupCount === 0 ? RED : "#d97706") : MUTED, fontWeight: backupCount !== null && backupCount <= 2 ? 600 : 400 }}>
                   {backupCount === null ? "Wird geladen…" : `${backupCount} von 8 Codes noch verfügbar`}
                 </span>
               }
@@ -775,10 +801,10 @@ export function SecuritySettingsClient() {
           )}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
             <Btn
-              label={revokeLoading ? "Wird beendet…" : "Alle anderen Sitzungen beenden"}
+              label={revokeLoading ? "Wird beendet…" : "Alle Sitzungen beenden"}
               variant="danger"
               onClick={() => void handleRevokeSessions()}
-              disabled={revokeLoading || sessions.length === 0}
+              disabled={revokeLoading}
             />
             {revokeMsg && (
               <p style={{ margin: 0, fontSize: 12, color: revokeMsg.startsWith("✓") ? GREEN : RED }}>{revokeMsg}</p>

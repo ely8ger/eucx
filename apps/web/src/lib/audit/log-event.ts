@@ -19,7 +19,10 @@ export type SecurityEvent =
   | "AUTH_LOGIN_FAILED"
   | "AUTH_LOGIN_SUCCESS"
   | "AUTH_LOGOUT"
-  | "AUTH_ACCOUNT_LOCKED";
+  | "AUTH_ACCOUNT_LOCKED"
+  | "AUTH_BACKUP_CODE_USED"
+  | "AUTH_BACKUP_CODES_GENERATED"
+  | "AUTH_2FA_DISABLED";
 
 interface SecurityLogPayload {
   event:    SecurityEvent;
