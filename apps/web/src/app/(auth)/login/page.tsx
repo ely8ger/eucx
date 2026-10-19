@@ -179,7 +179,7 @@ export default function LoginPage() {
         return;
       }
       setPendingAccount(false);
-      if (data.totpRequired) { setStep("totp"); return; }
+      if ((data as { code?: string }).code === "TOTP_REQUIRED") { setStep("totp"); return; }
       if (data.data?.accessToken) {
         const expiresAt = data.data.expiresAt ?? Date.now() + 15 * 60 * 1000;
         if (data.data.user) setAuth(data.data.user, expiresAt, data.data.accessToken);
