@@ -1745,7 +1745,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 </div>
                 <div className="bl-form-grid">
                   <div className="bl-form-group full">
-                    <label className="bl-label">CBAM-Warengruppe <span>(EU-Verordnung 2023/956, Anhang I)</span></label>
+                    <label className="bl-label">CBAM-Warengruppe</label>
                     <select
                       className="bl-select"
                       value={cbamCategory}
