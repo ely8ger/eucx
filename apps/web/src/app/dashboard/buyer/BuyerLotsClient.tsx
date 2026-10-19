@@ -1789,13 +1789,13 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   </div>
 
                   <div className="bl-form-group">
-                    <label className="bl-label">CO₂-Emissionsfaktor <span style={{fontWeight:400,color:"#6b7280",fontSize:"11px"}}>kg CO₂-Äq./t</span></label>
+                    <label className="bl-label">CO₂-Emissionsfaktor</label>
                     <input
                       className="bl-input"
                       type="number"
                       step="1"
                       min="0"
-                      placeholder="Wird aus CBAM-Warengruppe geladen"
+                      placeholder="kg CO₂-Äq./t"
                       value={co2PerTonne}
                       onChange={(e) => setCo2PerTonne(e.target.value)}
                     />
