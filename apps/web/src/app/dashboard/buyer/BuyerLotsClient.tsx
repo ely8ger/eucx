@@ -674,6 +674,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     active:     lots.filter((l) => (l.phase === "PROPOSAL" || l.phase === "REDUCTION") && !isLotExpired(l)).length,
     collection: lots.filter((l) => l.phase === "COLLECTION").length,
     concluded:  lots.filter((l) => l.phase === "CONCLUSION").length };
+  const isEmpty = stats.total === 0;
 
   // CO₂-Fußabdruck aus abgeschlossenen Lots (nur wenn co2PerTonne vorhanden)
   const co2Lots = lots.filter((l) => l.co2PerTonne && l.phase === "CONCLUSION");
@@ -1027,6 +1028,86 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
             </div>
           )}
 
+          {/* Empty State Hero — nur wenn keine Ausschreibungen */}
+          {isEmpty && (
+            <div style={{
+              background: "#fff",
+              border: "1px solid #d4d8e0",
+              padding: "52px 48px",
+              textAlign: "center",
+              marginBottom: 28,
+              boxShadow: "0 1px 4px rgba(13,27,42,.07)",
+              fontFamily: "'IBM Plex Sans', Arial, sans-serif",
+            }}>
+              {/* Icon */}
+              <div style={{
+                width: 68, height: 68, margin: "0 auto 22px",
+                background: "#eef2fb", borderRadius: "50%",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+                  <rect x="5" y="3" width="22" height="26" rx="1" stroke="#154194" strokeWidth="1.8" fill="none"/>
+                  <path d="M10 10h12M10 15h8" stroke="#154194" strokeWidth="1.6" strokeLinecap="round" opacity=".5"/>
+                  <circle cx="23" cy="23" r="7" fill="#154194"/>
+                  <path d="M20.5 23h5M23 20.5v5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/>
+                </svg>
+              </div>
+              {/* Titel + Text */}
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: "#0d1b2a", marginBottom: 10, fontFamily: "inherit" }}>
+                Erste Ausschreibung erstellen
+              </h2>
+              <p style={{ fontSize: 13, color: "#7a8aa0", maxWidth: 420, margin: "0 auto 26px", lineHeight: 1.65 }}>
+                Beschreiben Sie Ihren Bedarf — innerhalb von 48 Stunden erhalten Sie qualifizierte Angebote von verifizierten Lieferanten auf der EUCX-Plattform.
+              </p>
+              {/* CTA */}
+              <button
+                onClick={() => { if (showForm) { setShowForm(false); setShowPreflight(false); } else setShowPreflight((v) => !v); }}
+                style={{
+                  padding: "12px 28px",
+                  background: "#154194", color: "#fff",
+                  border: "none", cursor: "pointer",
+                  fontSize: 14, fontWeight: 600,
+                  fontFamily: "'IBM Plex Sans', Arial, sans-serif",
+                  letterSpacing: ".02em",
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M7 2v10M2 7h10" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+                Ausschreibung starten
+              </button>
+              {/* So funktioniert es */}
+              <div style={{ marginTop: 40, paddingTop: 28, borderTop: "1px solid #e8edf3" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase" as const, color: "#7a8aa0", marginBottom: 20 }}>
+                  So funktioniert es
+                </div>
+                <div style={{ display: "flex", justifyContent: "center", gap: 0, maxWidth: 520, margin: "0 auto" }}>
+                  {[
+                    { n: "1", title: "Bedarf beschreiben", sub: "Produkt, Menge, Lieferdatum" },
+                    { n: "2", title: "Angebote erhalten",  sub: "Verifizierte Lieferanten bieten innerhalb 48h" },
+                    { n: "3", title: "Auftrag vergeben",   sub: "Angebot auswählen & Vertrag schließen" },
+                  ].map((s, i, arr) => (
+                    <div key={s.n} style={{ flex: 1, textAlign: "center", position: "relative" }}>
+                      {i < arr.length - 1 && (
+                        <div style={{ position: "absolute", left: "50%", top: 15, width: "100%", height: 1, background: "#d4d8e0" }} />
+                      )}
+                      <div style={{
+                        width: 30, height: 30, borderRadius: "50%",
+                        background: "#154194", color: "#fff",
+                        fontSize: 13, fontWeight: 700,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        margin: "0 auto 10px", position: "relative", zIndex: 1,
+                      }}>{s.n}</div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: "#3d5066", marginBottom: 4 }}>{s.title}</div>
+                      <div style={{ fontSize: 11, color: "#7a8aa0", lineHeight: 1.4 }}>{s.sub}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Heading + New Button */}
           <div className="bl-heading-row">
             <span className="bl-heading">Meine Ausschreibungen</span>
@@ -1038,15 +1119,25 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
               >
                 ↻ Aktualisieren
               </button>
-              <button
-                className="bl-btn-new"
-                onClick={() => {
-                  if (showForm) { setShowForm(false); setShowPreflight(false); }
-                  else setShowPreflight((v) => !v);
-                }}
-              >
-                {(showForm || showPreflight) ? "✕ Abbrechen" : "+ Neue Ausschreibung"}
-              </button>
+              {!isEmpty && (
+                <button
+                  className="bl-btn-new"
+                  onClick={() => {
+                    if (showForm) { setShowForm(false); setShowPreflight(false); }
+                    else setShowPreflight((v) => !v);
+                  }}
+                >
+                  {(showForm || showPreflight) ? "✕ Abbrechen" : "+ Neue Ausschreibung"}
+                </button>
+              )}
+              {isEmpty && (showForm || showPreflight) && (
+                <button
+                  className="bl-btn-new"
+                  onClick={() => { setShowForm(false); setShowPreflight(false); }}
+                >
+                  ✕ Abbrechen
+                </button>
+              )}
             </div>
           </div>
 
