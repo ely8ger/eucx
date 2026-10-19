@@ -43,12 +43,13 @@ export const revalidate = 300; // alle 5 Minuten neu berechnen
 
 async function fetchStats() {
   try {
-    const [memberCount, contractCount, volumeAgg, concludedCount, totalCount] = await Promise.all([
+    const [memberCount, contractCount, volumeAgg, concludedCount, totalCount, cbamGroups] = await Promise.all([
       db.organization.count({ where: { isVerified: true } }),
       db.lotContract.count(),
       db.lotContract.aggregate({ _sum: { totalValue: true } }),
       db.lot.count({ where: { phase: "CONCLUSION" } }),
       db.lot.count({ where: { isDraft: false } }),
+      db.lot.findMany({ select: { cbamCategory: true }, distinct: ["cbamCategory"], where: { cbamCategory: { not: null } } }),
     ]);
 
     const totalValue = new Decimal(volumeAgg._sum.totalValue?.toString() ?? "0");
@@ -64,9 +65,20 @@ async function fetchStats() {
       ? `${(concludedCount / totalCount * 100).toFixed(1)} %`
       : "—";
 
-    return { memberCount, contractCount, volumeStr, execRate };
+    // Sektoren: distinkter Präfix der cbamCategory (STEEL_/ALUMINIUM_ → Metalle, FERTILIZER_ → Dünger)
+    const sectorSet = new Set(cbamGroups.map((l) => {
+      const c = l.cbamCategory ?? "";
+      if (c.startsWith("STEEL_") || c.startsWith("ALUMINIUM_") || c.startsWith("IRON_")) return "METALS";
+      if (c.startsWith("FERTILIZER_")) return "FERTILIZER";
+      if (c.startsWith("CEMENT_"))     return "CEMENT";
+      if (c === "HYDROGEN")            return "HYDROGEN";
+      return "OTHER";
+    }));
+    const sectorCount = sectorSet.size > 0 ? sectorSet.size : 2;
+
+    return { memberCount, contractCount, volumeStr, execRate, sectorCount };
   } catch {
-    return { memberCount: 0, contractCount: 0, volumeStr: "—", execRate: "—" };
+    return { memberCount: 0, contractCount: 0, volumeStr: "—", execRate: "—", sectorCount: 2 };
   }
 }
 
@@ -124,50 +136,127 @@ export default async function HomePage() {
       {/* ── Hero ── */}
       <section className="r-section-hero" style={{ backgroundColor: "#0b1e36" }}>
         <div className="r-container">
-          <div className="inline-flex items-center gap-3" style={{
-            border: "1px solid rgba(52,211,153,.35)",
-            backgroundColor: "rgba(52,211,153,.07)",
-            padding: "8px 18px",
-            marginBottom: 32,
-          }}>
-            <span style={{
-              width: 9, height: 9, backgroundColor: "#34d399", display: "inline-block", borderRadius: "50%",
-              boxShadow: "0 0 0 3px rgba(52,211,153,.25)", flexShrink: 0,
-            }} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#34d399", letterSpacing: "0.02em" }}>
-              {t("hero_trading_hours")}
-            </span>
-            <span style={{ width: 1, height: 14, backgroundColor: "rgba(255,255,255,.15)", flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,.45)", letterSpacing: "0.02em" }}>
-              {t("hero_trading_hours_hint")}
-            </span>
-          </div>
-
-          <h1 className="r-hero-h1">{t("hero_h1")}</h1>
-          <p className="r-hero-sub">{t("hero_sub")}</p>
-
-          <div className="flex flex-wrap gap-4">
-            <Link href="/register" className="hp-cta-primary"
-              style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, color: "#154194", padding: "13px 28px", textDecoration: "none" }}>
-              {t("hero_cta_portal")} <ArrowRight size={15} />
-            </Link>
-            <a href="#wie-es-funktioniert" className="hp-cta-ghost"
-              style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,.8)", border: "1px solid rgba(255,255,255,.2)", padding: "13px 28px", textDecoration: "none" }}>
-              {t("hero_cta_more")}
-            </a>
-          </div>
-
-          <div className="flex flex-wrap gap-6" style={{ marginTop: 48, paddingTop: 36, borderTop: "1px solid rgba(255,255,255,.08)" }}>
-            {([
-              { icon: Package2,  key: "hero_bafin" as const },
-              { icon: Lock,      key: "hero_eu"    as const },
-              { icon: UserCheck, key: "hero_iso"   as const },
-              { icon: FileText,  key: "hero_dsgvo" as const },
-            ]).map(({ icon: Icon, key }) => (
-              <div key={key} className="flex items-center gap-2" style={{ fontSize: 13, color: "rgba(255,255,255,.35)" }}>
-                <Icon size={14} /> {t(key)}
+          <div className="r-hero-grid">
+            {/* Linke Spalte — Text */}
+            <div>
+              <div className="inline-flex items-center gap-3" style={{
+                border: "1px solid rgba(52,211,153,.35)",
+                backgroundColor: "rgba(52,211,153,.07)",
+                padding: "8px 18px",
+                marginBottom: 32,
+              }}>
+                <span style={{
+                  width: 9, height: 9, backgroundColor: "#34d399", display: "inline-block", borderRadius: "50%",
+                  boxShadow: "0 0 0 3px rgba(52,211,153,.25)", flexShrink: 0,
+                }} />
+                <span style={{ fontSize: 14, fontWeight: 600, color: "#34d399", letterSpacing: "0.02em" }}>
+                  {t("hero_trading_hours")}
+                </span>
+                <span style={{ width: 1, height: 14, backgroundColor: "rgba(255,255,255,.15)", flexShrink: 0 }} />
+                <span style={{ fontSize: 12, color: "rgba(255,255,255,.45)", letterSpacing: "0.02em" }}>
+                  {t("hero_trading_hours_hint")}
+                </span>
               </div>
-            ))}
+
+              <h1 className="r-hero-h1">{t("hero_h1")}</h1>
+              <p className="r-hero-sub">{t("hero_sub")}</p>
+
+              <div className="flex flex-wrap gap-4">
+                <Link href="/register" className="hp-cta-primary"
+                  style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, color: "#154194", padding: "13px 28px", textDecoration: "none" }}>
+                  {t("hero_cta_portal")} <ArrowRight size={15} />
+                </Link>
+                <a href="#wie-es-funktioniert" className="hp-cta-ghost"
+                  style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,.8)", border: "1px solid rgba(255,255,255,.2)", padding: "13px 28px", textDecoration: "none" }}>
+                  {t("hero_cta_more")}
+                </a>
+              </div>
+
+              <div className="flex flex-wrap gap-6" style={{ marginTop: 48, paddingTop: 36, borderTop: "1px solid rgba(255,255,255,.08)" }}>
+                {([
+                  { icon: Package2,  key: "hero_bafin" as const },
+                  { icon: Lock,      key: "hero_eu"    as const },
+                  { icon: UserCheck, key: "hero_iso"   as const },
+                  { icon: FileText,  key: "hero_dsgvo" as const },
+                ]).map(({ icon: Icon, key }) => (
+                  <div key={key} className="flex items-center gap-2" style={{ fontSize: 13, color: "rgba(255,255,255,.35)" }}>
+                    <Icon size={14} /> {t(key)}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Rechte Spalte — Orderbuch-Widget */}
+            <div className="r-hero-right">
+              <div style={{
+                width: "100%",
+                border: "1px solid rgba(255,255,255,.10)",
+                backgroundColor: "rgba(255,255,255,.04)",
+                padding: "20px 0",
+              }}>
+                {/* Header */}
+                <div style={{ padding: "0 20px 16px", borderBottom: "1px solid rgba(255,255,255,.08)" }}>
+                  <div className="flex items-center justify-between">
+                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", color: "rgba(255,255,255,.4)", textTransform: "uppercase" as const }}>
+                      Orderbuch
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#34d399", display: "inline-block" }} />
+                      <span style={{ fontSize: 11, color: "#34d399" }}>Live</span>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 10 }}>
+                    <span style={{ fontSize: 22, fontWeight: 300, color: "#fff" }}>Kupferkathode</span>
+                    <span style={{ fontSize: 12, color: "rgba(255,255,255,.35)", marginLeft: 10 }}>Grade A · LME-zert.</span>
+                  </div>
+                </div>
+                {/* Spaltenköpfe */}
+                <div className="flex" style={{ padding: "10px 20px 4px", gap: 0 }}>
+                  {["Menge (t)", "Preis (€/t)", "Menge (t)"].map((h, i) => (
+                    <div key={i} style={{ flex: 1, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "rgba(255,255,255,.25)", textAlign: i === 1 ? "center" : i === 0 ? "left" : "right" }}>{h}</div>
+                  ))}
+                </div>
+                {/* Verkäufer (Angebot) */}
+                {[
+                  { qty: "50", price: "8 420", ask: "25" },
+                  { qty: "120", price: "8 385", ask: "80" },
+                  { qty: "75", price: "8 350", ask: "100" },
+                ].map((row, i) => (
+                  <div key={i} className="flex" style={{ padding: "5px 20px", position: "relative" }}>
+                    <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: `${[20,32,40][i]}%`, backgroundColor: "rgba(239,68,68,.07)" }} />
+                    <div style={{ flex: 1, fontSize: 13, fontWeight: 300, color: "rgba(255,255,255,.5)", position: "relative", zIndex: 1 }}>{row.qty}</div>
+                    <div style={{ flex: 1, fontSize: 13, fontWeight: 500, color: "#f87171", textAlign: "center", position: "relative", zIndex: 1 }}>{row.price}</div>
+                    <div style={{ flex: 1, fontSize: 13, fontWeight: 300, color: "rgba(255,255,255,.5)", textAlign: "right", position: "relative", zIndex: 1 }}>{row.ask}</div>
+                  </div>
+                ))}
+                {/* Spread */}
+                <div className="flex items-center" style={{ padding: "8px 20px", borderTop: "1px solid rgba(255,255,255,.06)", borderBottom: "1px solid rgba(255,255,255,.06)", margin: "4px 0" }}>
+                  <div style={{ flex: 1, height: 1, backgroundColor: "rgba(255,255,255,.06)" }} />
+                  <span style={{ fontSize: 11, color: "rgba(255,255,255,.3)", padding: "0 12px" }}>Spread 8 290 – 8 310</span>
+                  <div style={{ flex: 1, height: 1, backgroundColor: "rgba(255,255,255,.06)" }} />
+                </div>
+                {/* Käufer (Nachfrage) */}
+                {[
+                  { bid: "100", price: "8 310", qty: "60" },
+                  { bid: "200", price: "8 290", qty: "150" },
+                  { bid: "80",  price: "8 260", qty: "45" },
+                ].map((row, i) => (
+                  <div key={i} className="flex" style={{ padding: "5px 20px", position: "relative" }}>
+                    <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${[42,60,34][i]}%`, backgroundColor: "rgba(52,211,153,.07)" }} />
+                    <div style={{ flex: 1, fontSize: 13, fontWeight: 300, color: "rgba(255,255,255,.5)", position: "relative", zIndex: 1 }}>{row.bid}</div>
+                    <div style={{ flex: 1, fontSize: 13, fontWeight: 500, color: "#34d399", textAlign: "center", position: "relative", zIndex: 1 }}>{row.price}</div>
+                    <div style={{ flex: 1, fontSize: 13, fontWeight: 300, color: "rgba(255,255,255,.5)", textAlign: "right", position: "relative", zIndex: 1 }}>{row.qty}</div>
+                  </div>
+                ))}
+                {/* Footer */}
+                <div style={{ padding: "14px 20px 0", borderTop: "1px solid rgba(255,255,255,.08)", marginTop: 8 }}>
+                  <div className="flex items-center justify-between">
+                    <span style={{ fontSize: 11, color: "rgba(255,255,255,.25)" }}>Letzte Transaktion</span>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: "rgba(255,255,255,.6)" }}>8 300 €/t · 25t</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -179,7 +268,7 @@ export default async function HomePage() {
             {([
               { v: stats.volumeStr,                    l: t("stat_volume_l"),  s: t("stat_volume_s")  },
               { v: stats.memberCount > 0 ? `${stats.memberCount}` : "—", l: t("stat_members_l"), s: t("stat_members_s") },
-              { v: "2",                                l: t("stat_sectors_l"), s: t("stat_sectors_s") },
+              { v: `${stats.sectorCount}`,              l: t("stat_sectors_l"), s: t("stat_sectors_s") },
               { v: stats.execRate,                     l: t("stat_exec_l"),    s: t("stat_exec_s")    },
             ]).map(({ v, l, s }, i) => (
               <div key={l} className={i > 0 ? "r-stat-item" : ""}
