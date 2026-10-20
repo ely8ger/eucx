@@ -1370,7 +1370,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   {catalogOpen && catalogResults.length > 0 && (
                     <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 2px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 360, overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
                       {/* Kopfzeile */}
-                      <div style={{ display: "grid", gridTemplateColumns: "36px 1fr 140px 52px", gap: "0 12px", padding: "6px 14px", background: "#f0f5ff", borderBottom: "1px solid #c7d7fc", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase" as const }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "36px 1fr 140px 52px", gap: "0 12px", padding: "6px 14px", background: "#f0f5ff", borderBottom: "1px solid #c7d7fc", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase" as const, position: "sticky", top: 0, zIndex: 1 }}>
                         <div>Nr</div>
                         <div>{catalogBrowseMode ? `Alle Produkte (${catalogResults.length}+)` : "Produkt"}</div>
                         <div>Norm</div>
