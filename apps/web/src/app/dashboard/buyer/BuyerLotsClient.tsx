@@ -1781,7 +1781,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     </div>
                     {maxVol && (
                       <div style={{ fontSize: 11, color: "#6b7280", marginTop: 4 }}>
-                        = max. {fmtEurInt(maxVol)} Gesamtvolumen ({quantity}&nbsp;{unit}&nbsp;×&nbsp;{parseFloat(startPrice).toLocaleString("de-DE")}&nbsp;€/{unit})
+                        = max. {fmtEurInt(maxVol)} Gesamtvolumen ({quantity}&nbsp;{unit}&nbsp;×&nbsp;{parseFloat(startPrice).toLocaleString("de-DE", { minimumFractionDigits: 2 })}&nbsp;€/{unit})
                       </div>
                     )}
                   </div>
@@ -2496,7 +2496,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 </div>
                 <div className="bl-sum-row">
                   <span className="bl-sum-label">Max. Preis</span>
-                  <span className="bl-sum-value">{startPrice ? `${parseFloat(startPrice).toLocaleString("de-DE")} €/${unit}` : "-"}</span>
+                  <span className="bl-sum-value">{startPrice ? `${parseFloat(startPrice).toLocaleString("de-DE", { minimumFractionDigits: 2 })} €/${unit}` : "-"}</span>
                 </div>
                 <div className="bl-sum-row">
                   <span className="bl-sum-label">Lieferort</span>
