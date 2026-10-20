@@ -233,6 +233,56 @@ interface KycInfo {
 
 const UNITS = ["TON", "KG", "CBM", "LITER", "PIECE", "SQM", "MWH"] as const;
 
+const UNIT_META: Record<string, string> = {
+  TON: "Tonne (metrisch)", KG: "Kilogramm", CBM: "Kubikmeter",
+  LITER: "Liter", PIECE: "Stück", SQM: "Quadratmeter", MWH: "Megawattstunde",
+};
+
+const DELIVERY_PERIODS = [
+  "max. 1 Woche ab Zuschlag", "max. 2 Wochen ab Zuschlag", "max. 3 Wochen ab Zuschlag",
+  "max. 4 Wochen ab Zuschlag", "max. 6 Wochen ab Zuschlag", "max. 2 Monate ab Zuschlag",
+  "max. 3 Monate ab Zuschlag", "max. 4 Monate ab Zuschlag", "max. 6 Monate ab Zuschlag",
+  "max. 9 Monate ab Zuschlag", "max. 12 Monate ab Zuschlag",
+];
+
+const PAYMENT_GROUPS = [
+  { group: "Vorauszahlung", options: [
+    "Vorkasse 100 % vor Lieferung",
+    "Anzahlung 10 % bei Zuschlag, Rest bei Lieferung",
+    "Anzahlung 25 % bei Zuschlag, Rest bei Lieferung",
+    "Anzahlung 50 % bei Zuschlag, Rest bei Lieferung",
+  ]},
+  { group: "Bei Lieferung", options: [
+    "Zahlung bei Lieferung (sofort)",
+    "20 Tage netto, Ende des Monats nach Lieferung",
+  ]},
+  { group: "Netto-Zahlungsziele", options: [
+    "14 Tage netto nach Lieferung", "30 Tage netto nach Lieferung",
+    "45 Tage netto nach Lieferung", "60 Tage netto nach Lieferung",
+    "90 Tage netto nach Lieferung",
+  ]},
+  { group: "Ende des Monats (EOM)", options: [
+    "20 Tage netto, Ende des Folgemonats", "30 Tage netto, Ende des Folgemonats",
+    "45 Tage netto, Ende des Folgemonats", "60 Tage netto, Ende des Folgemonats",
+  ]},
+];
+
+const VAT_OPTIONS = [
+  { para: "19 %",   label: "Umsatzsteuer 19 % (Regelbesteuerung)" },
+  { para: "§ 13b",  label: "Steuerschuldumkehr §13b UStG (Reverse Charge)" },
+  { para: "§ 4/1b", label: "Innergemeinschaftliche Lieferung §4 Nr. 1b UStG (0 %)" },
+  { para: "§ 4/1a", label: "Ausfuhrlieferung steuerfrei §4 Nr. 1a UStG" },
+  { para: "§ 25a",  label: "Differenzbesteuerung §25a UStG" },
+];
+
+const CBAM_SECTIONS = [
+  { label: "Eisen & Stahl", ids: ["STEEL_PRIMARY", "STEEL_PROCESSED"] },
+  { label: "Aluminium",     ids: ["ALUMINIUM_UNWROUGHT", "ALUMINIUM_PROCESSED"] },
+  { label: "Zement",        ids: ["CEMENT_CLINKER", "CEMENT_HYDRAULIC"] },
+  { label: "Düngemittel",   ids: ["FERTILIZER_AMMONIA", "FERTILIZER_UREA", "FERTILIZER_AN", "FERTILIZER_MIXED"] },
+  { label: "Wasserstoff",   ids: ["HYDROGEN"] },
+];
+
 const PHASE_LABEL: Record<Phase, string> = {
   COLLECTION: "Registrierung",
   PROPOSAL:   "Angebotsphase",
@@ -322,6 +372,24 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [selectedPrimary,   setSelectedPrimary]   = useState("");
   const [sizeQuery,         setSizeQuery]         = useState("");
   const [catalogStats,      setCatalogStats]      = useState<{ products: number; sizes: number } | null>(null);
+
+  // Custom-Combobox open states
+  const [presetOpen,         setPresetOpen]         = useState(false);
+  const [unitOpen,           setUnitOpen]           = useState(false);
+  const [cbamOpen,           setCbamOpen]           = useState(false);
+  const [co2Open,            setCo2Open]            = useState(false);
+  const [incotermsOpen,      setIncotermsOpen]      = useState(false);
+  const [deliveryPeriodOpen, setDeliveryPeriodOpen] = useState(false);
+  const [paymentTermsOpen,   setPaymentTermsOpen]   = useState(false);
+  const [vatOpen,            setVatOpen]            = useState(false);
+  const presetRef         = useRef<HTMLDivElement>(null);
+  const unitRef           = useRef<HTMLDivElement>(null);
+  const cbamRef           = useRef<HTMLDivElement>(null);
+  const co2Ref            = useRef<HTMLDivElement>(null);
+  const incotermsRef      = useRef<HTMLDivElement>(null);
+  const deliveryPeriodRef = useRef<HTMLDivElement>(null);
+  const paymentTermsRef   = useRef<HTMLDivElement>(null);
+  const vatRef            = useRef<HTMLDivElement>(null);
 
   const token = useAuthStore(s => s.accessToken) ?? "";
 
@@ -426,6 +494,23 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     }
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
+  // Klick außerhalb schließt alle Custom-Comboboxes
+  useEffect(() => {
+    function closeComboboxes(e: MouseEvent) {
+      const t = e.target as Node;
+      if (presetRef.current && !presetRef.current.contains(t)) setPresetOpen(false);
+      if (unitRef.current && !unitRef.current.contains(t)) setUnitOpen(false);
+      if (cbamRef.current && !cbamRef.current.contains(t)) setCbamOpen(false);
+      if (co2Ref.current && !co2Ref.current.contains(t)) setCo2Open(false);
+      if (incotermsRef.current && !incotermsRef.current.contains(t)) setIncotermsOpen(false);
+      if (deliveryPeriodRef.current && !deliveryPeriodRef.current.contains(t)) setDeliveryPeriodOpen(false);
+      if (paymentTermsRef.current && !paymentTermsRef.current.contains(t)) setPaymentTermsOpen(false);
+      if (vatRef.current && !vatRef.current.contains(t)) setVatOpen(false);
+    }
+    document.addEventListener("mousedown", closeComboboxes);
+    return () => document.removeEventListener("mousedown", closeComboboxes);
   }, []);
 
   // ── Herkunftsland-Autocomplete (client-seitig, kein API-Call) ────────
@@ -1592,24 +1677,50 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                     <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "#6b7280", textTransform: "uppercase" as const }}>Warenvorlage</span>
                     <span style={{ fontSize: 11, color: "#9ca3af" }}>Felder werden automatisch befüllt</span>
                   </div>
-                  <select
-                    className="bl-select"
-                    value={selectedPreset}
-                    onChange={(e) => { setSelectedPreset(e.target.value); if (e.target.value) applyPreset(e.target.value); }}
-                  >
-                    <option value="">Vorlage auswählen</option>
-                    {SIDEBAR.map((sektion) => {
-                      const sektionProdukte = sektion.kategorien.flatMap((kat) => CATALOG_BY_KAT.get(kat.id) ?? []);
-                      if (sektionProdukte.length === 0) return null;
-                      return (
-                        <optgroup key={sektion.key} label={sektion.label}>
-                          {sektionProdukte.map((p) => (
-                            <option key={p.id} value={p.id}>{p.name}</option>
-                          ))}
-                        </optgroup>
-                      );
-                    })}
-                  </select>
+                  <div ref={presetRef} style={{ position: "relative" }}>
+                    <div
+                      style={{ width: "100%", boxSizing: "border-box", height: 40, border: "1px solid #d1d5db", padding: "0 36px 0 12px", fontSize: 14, fontFamily: "inherit", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", userSelect: "none", position: "relative", color: selectedPreset ? "#111827" : "#6b7280" }}
+                      onClick={() => setPresetOpen(!presetOpen)}
+                    >
+                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {selectedPreset
+                          ? (SIDEBAR.flatMap(s => s.kategorien.flatMap(k => CATALOG_BY_KAT.get(k.id) ?? [])).find(p => p.id === selectedPreset)?.name ?? "Vorlage auswählen")
+                          : "Vorlage auswählen"}
+                      </span>
+                      <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                      </span>
+                    </div>
+                    {presetOpen && (
+                      <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 2px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 360, overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 120px", gap: "0 12px", padding: "6px 14px", background: "#f0f5ff", borderBottom: "1px solid #c7d7fc", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase", position: "sticky", top: 0, zIndex: 1 }}>
+                          <div>Warenbezeichnung</div>
+                          <div>Norm</div>
+                        </div>
+                        {SIDEBAR.map((sektion) => {
+                          const produkte = sektion.kategorien.flatMap(k => CATALOG_BY_KAT.get(k.id) ?? []);
+                          if (produkte.length === 0) return null;
+                          return (
+                            <div key={sektion.key}>
+                              <div style={{ padding: "5px 14px", background: "#f8fafc", borderBottom: "1px solid #e9edf5", fontSize: 10, fontWeight: 700, letterSpacing: ".06em", color: "#6b7280", textTransform: "uppercase" }}>{sektion.label}</div>
+                              {produkte.map((p) => (
+                                <div
+                                  key={p.id}
+                                  onMouseDown={(e) => { e.preventDefault(); setSelectedPreset(p.id); applyPreset(p.id); setPresetOpen(false); }}
+                                  style={{ display: "grid", gridTemplateColumns: "1fr 120px", gap: "0 12px", padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f1f5f9", fontSize: 13, background: selectedPreset === p.id ? "#eef2fb" : "#fff" }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.background = "#eef2fb"; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.background = selectedPreset === p.id ? "#eef2fb" : "#fff"; }}
+                                >
+                                  <div style={{ fontWeight: selectedPreset === p.id ? 600 : 400 }}>{p.name}</div>
+                                  <div style={{ fontSize: 11, color: "#6b7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.norm || "—"}</div>
+                                </div>
+                              ))}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="bl-form-grid">
@@ -1641,9 +1752,37 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                   <div className="bl-form-group">
                     <label className="bl-label">Einheit *</label>
-                    <select className="bl-select" value={unit} onChange={(e) => setUnit(e.target.value as typeof UNITS[number])}>
-                      {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
-                    </select>
+                    <div ref={unitRef} style={{ position: "relative" }}>
+                      <div
+                        style={{ width: "100%", boxSizing: "border-box", height: 40, border: "1px solid #d1d5db", padding: "0 36px 0 12px", fontSize: 14, fontFamily: "inherit", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", position: "relative", userSelect: "none", color: "#111827" }}
+                        onClick={() => setUnitOpen(!unitOpen)}
+                      >
+                        <span>{unit}</span>
+                        <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                      </div>
+                      {unitOpen && (
+                        <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 2px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 320, overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                          <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", gap: "0 12px", padding: "6px 14px", background: "#f0f5ff", borderBottom: "1px solid #c7d7fc", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase", position: "sticky", top: 0, zIndex: 1 }}>
+                            <div>Kürzel</div>
+                            <div>Einheit</div>
+                          </div>
+                          {UNITS.map((u) => (
+                            <div
+                              key={u}
+                              onMouseDown={(e) => { e.preventDefault(); setUnit(u); setUnitOpen(false); }}
+                              style={{ display: "grid", gridTemplateColumns: "80px 1fr", gap: "0 12px", padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f1f5f9", fontSize: 13, background: unit === u ? "#eef2fb" : "#fff" }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = "#eef2fb"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = unit === u ? "#eef2fb" : "#fff"; }}
+                            >
+                              <div style={{ fontWeight: 700, color: "#154194", fontFamily: "IBM Plex Mono, monospace" }}>{u}</div>
+                              <div style={{ color: "#374151" }}>{UNIT_META[u]}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="bl-form-group">
@@ -1746,38 +1885,52 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 <div className="bl-form-grid">
                   <div className="bl-form-group full">
                     <label className="bl-label">CBAM-Warengruppe</label>
-                    <select
-                      className="bl-select"
-                      value={cbamCategory}
-                      onChange={(e) => setCbamCategory(e.target.value as CbamGroupId | "")}
-                    >
-                      <option value="">Nicht CBAM-pflichtig</option>
-                      <optgroup label="Eisen &amp; Stahl">
-                        {CBAM_GROUPS.filter(g => g.id.startsWith("STEEL")).map(g => (
-                          <option key={g.id} value={g.id}>{g.label} ({g.kn})</option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="Aluminium">
-                        {CBAM_GROUPS.filter(g => g.id.startsWith("ALUMINIUM")).map(g => (
-                          <option key={g.id} value={g.id}>{g.label} ({g.kn})</option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="Zement">
-                        {CBAM_GROUPS.filter(g => g.id.startsWith("CEMENT")).map(g => (
-                          <option key={g.id} value={g.id}>{g.label} ({g.kn})</option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="Düngemittel">
-                        {CBAM_GROUPS.filter(g => g.id.startsWith("FERTILIZER")).map(g => (
-                          <option key={g.id} value={g.id}>{g.label} ({g.kn})</option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="Wasserstoff">
-                        {CBAM_GROUPS.filter(g => g.id === "HYDROGEN").map(g => (
-                          <option key={g.id} value={g.id}>{g.label} ({g.kn})</option>
-                        ))}
-                      </optgroup>
-                    </select>
+                    <div ref={cbamRef} style={{ position: "relative" }}>
+                      <div
+                        style={{ width: "100%", boxSizing: "border-box", height: 40, border: "1px solid #d1d5db", padding: "0 36px 0 12px", fontSize: 14, fontFamily: "inherit", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", position: "relative", userSelect: "none", color: cbamCategory ? "#111827" : "#6b7280" }}
+                        onClick={() => setCbamOpen(!cbamOpen)}
+                      >
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {cbamCategory ? (CBAM_GROUPS.find(g => g.id === cbamCategory)?.label ?? cbamCategory) : "Nicht CBAM-pflichtig"}
+                        </span>
+                        <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                      </div>
+                      {cbamOpen && (
+                        <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 2px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 360, overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 130px 90px", gap: "0 12px", padding: "6px 14px", background: "#f0f5ff", borderBottom: "1px solid #c7d7fc", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase", position: "sticky", top: 0, zIndex: 1 }}>
+                            <div>Warengruppe</div>
+                            <div>KN-Pos.</div>
+                            <div style={{ textAlign: "right" }}>EU-Faktor</div>
+                          </div>
+                          <div
+                            onMouseDown={(e) => { e.preventDefault(); setCbamCategory(""); setCbamOpen(false); }}
+                            style={{ padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #e9edf5", fontSize: 13, color: "#6b7280", background: cbamCategory === "" ? "#eef2fb" : "#fff" }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = "#eef2fb"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = cbamCategory === "" ? "#eef2fb" : "#fff"; }}
+                          >Nicht CBAM-pflichtig</div>
+                          {CBAM_SECTIONS.map((section) => (
+                            <div key={section.label}>
+                              <div style={{ padding: "5px 14px", background: "#f8fafc", borderBottom: "1px solid #e9edf5", fontSize: 10, fontWeight: 700, letterSpacing: ".06em", color: "#6b7280", textTransform: "uppercase" }}>{section.label}</div>
+                              {CBAM_GROUPS.filter(g => section.ids.includes(g.id)).map(g => (
+                                <div
+                                  key={g.id}
+                                  onMouseDown={(e) => { e.preventDefault(); setCbamCategory(g.id as CbamGroupId); setCbamOpen(false); }}
+                                  style={{ display: "grid", gridTemplateColumns: "1fr 130px 90px", gap: "0 12px", padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f1f5f9", fontSize: 13, background: cbamCategory === g.id ? "#eef2fb" : "#fff" }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.background = "#eef2fb"; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.background = cbamCategory === g.id ? "#eef2fb" : "#fff"; }}
+                                >
+                                  <div style={{ fontWeight: cbamCategory === g.id ? 600 : 400 }}>{g.label}</div>
+                                  <div style={{ fontSize: 11, color: "#6b7280", fontFamily: "IBM Plex Mono, monospace" }}>{g.kn}</div>
+                                  <div style={{ fontSize: 11, color: "#374151", textAlign: "right", fontFamily: "IBM Plex Mono, monospace" }}>{(g.factor / 1000).toFixed(3)}</div>
+                                </div>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                     {cbamCategory && (() => {
                       const grp = CBAM_GROUPS.find(g => g.id === cbamCategory);
                       return grp ? (
@@ -1790,15 +1943,47 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                   <div className="bl-form-group">
                     <label className="bl-label">CO₂-Emissionsfaktor</label>
-                    <input
-                      className="bl-input"
-                      type="number"
-                      step="1"
-                      min="0"
-                      placeholder="kg CO₂-Äq./t"
-                      value={co2PerTonne}
-                      onChange={(e) => setCo2PerTonne(e.target.value)}
-                    />
+                    <div ref={co2Ref} style={{ position: "relative" }}>
+                      <div style={{ position: "relative" }}>
+                        <input
+                          className="bl-input"
+                          type="number"
+                          step="1"
+                          min="0"
+                          placeholder="kg CO₂-Äq./t"
+                          value={co2PerTonne}
+                          onChange={(e) => setCo2PerTonne(e.target.value)}
+                          style={{ paddingRight: 36, width: "100%", boxSizing: "border-box" }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setCo2Open(!co2Open)}
+                          style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 34, background: "#f0f5ff", border: "none", borderLeft: "1px solid #d1d5db", cursor: "pointer", color: "#154194", display: "flex", alignItems: "center", justifyContent: "center" }}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#154194" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                      </div>
+                      {co2Open && (
+                        <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 2px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 320, overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 90px", gap: "0 12px", padding: "6px 14px", background: "#f0f5ff", borderBottom: "1px solid #c7d7fc", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase", position: "sticky", top: 0, zIndex: 1 }}>
+                            <div>Warengruppe</div>
+                            <div style={{ textAlign: "right" }}>kg CO₂-Äq./t</div>
+                          </div>
+                          {CBAM_GROUPS.map(g => (
+                            <div
+                              key={g.id}
+                              onMouseDown={(e) => { e.preventDefault(); setCo2PerTonne(String(g.factor)); setCo2Open(false); }}
+                              style={{ display: "grid", gridTemplateColumns: "1fr 90px", gap: "0 12px", padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f1f5f9", fontSize: 13 }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = "#eef2fb"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; }}
+                            >
+                              <div style={{ color: "#374151" }}>{g.label}</div>
+                              <div style={{ fontWeight: 700, color: "#154194", textAlign: "right", fontFamily: "IBM Plex Mono, monospace" }}>{g.factor.toLocaleString("de-DE")}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                     {co2PerTonne && quantity && (
                       <span style={{ fontSize: 11, color: "#6b7280", marginTop: 3, display: "block" }}>
                         Gesamt: {(parseFloat(co2PerTonne) * parseFloat(quantity)).toLocaleString("de-DE", { maximumFractionDigits: 0 })} kg CO₂-Äq.
@@ -1900,15 +2085,39 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                   <div className="bl-form-group">
                     <label className="bl-label">Lieferbedingung</label>
-                    <select
-                      className="bl-select"
-                      value={incoterms}
-                      onChange={(e) => setIncoterms(e.target.value)}
-                    >
-                      {INCOTERMS_LIST.map((t) => (
-                        <option key={t.code} value={t.code}>{t.label}</option>
-                      ))}
-                    </select>
+                    <div ref={incotermsRef} style={{ position: "relative" }}>
+                      <div
+                        style={{ width: "100%", boxSizing: "border-box", height: 40, border: "1px solid #d1d5db", padding: "0 36px 0 12px", fontSize: 14, fontFamily: "inherit", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", position: "relative", userSelect: "none", color: "#111827" }}
+                        onClick={() => setIncotermsOpen(!incotermsOpen)}
+                      >
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {INCOTERMS_LIST.find(t => t.code === incoterms)?.label ?? incoterms}
+                        </span>
+                        <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                      </div>
+                      {incotermsOpen && (
+                        <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 2px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 360, overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                          <div style={{ display: "grid", gridTemplateColumns: "52px 1fr", gap: "0 12px", padding: "6px 14px", background: "#f0f5ff", borderBottom: "1px solid #c7d7fc", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase", position: "sticky", top: 0, zIndex: 1 }}>
+                            <div>Code</div>
+                            <div>Vollname</div>
+                          </div>
+                          {INCOTERMS_LIST.map((t) => (
+                            <div
+                              key={t.code}
+                              onMouseDown={(e) => { e.preventDefault(); setIncoterms(t.code); setIncotermsOpen(false); }}
+                              style={{ display: "grid", gridTemplateColumns: "52px 1fr", gap: "0 12px", padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f1f5f9", fontSize: 13, background: incoterms === t.code ? "#eef2fb" : "#fff" }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = "#eef2fb"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = incoterms === t.code ? "#eef2fb" : "#fff"; }}
+                            >
+                              <div style={{ fontWeight: 700, color: "#154194", fontFamily: "IBM Plex Mono, monospace" }}>{t.code}</div>
+                              <div style={{ color: "#374151", fontWeight: incoterms === t.code ? 600 : 400 }}>{t.label.replace(`${t.code} - `, "")}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -2081,25 +2290,39 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                   <div className="bl-form-group">
                     <label className="bl-label">Max. Lieferzeit *</label>
-                    <select
-                      className="bl-select"
-                      value={deliveryPeriod}
-                      onChange={(e) => setDeliveryPeriod(e.target.value)}
-                      required
-                    >
-                      <option value="">Auswählen</option>
-                      <option value="max. 1 Woche ab Zuschlag">max. 1 Woche ab Zuschlag</option>
-                      <option value="max. 2 Wochen ab Zuschlag">max. 2 Wochen ab Zuschlag</option>
-                      <option value="max. 3 Wochen ab Zuschlag">max. 3 Wochen ab Zuschlag</option>
-                      <option value="max. 4 Wochen ab Zuschlag">max. 4 Wochen ab Zuschlag</option>
-                      <option value="max. 6 Wochen ab Zuschlag">max. 6 Wochen ab Zuschlag</option>
-                      <option value="max. 2 Monate ab Zuschlag">max. 2 Monate ab Zuschlag</option>
-                      <option value="max. 3 Monate ab Zuschlag">max. 3 Monate ab Zuschlag</option>
-                      <option value="max. 4 Monate ab Zuschlag">max. 4 Monate ab Zuschlag</option>
-                      <option value="max. 6 Monate ab Zuschlag">max. 6 Monate ab Zuschlag</option>
-                      <option value="max. 9 Monate ab Zuschlag">max. 9 Monate ab Zuschlag</option>
-                      <option value="max. 12 Monate ab Zuschlag">max. 12 Monate ab Zuschlag</option>
-                    </select>
+                    <div ref={deliveryPeriodRef} style={{ position: "relative" }}>
+                      <div
+                        style={{ width: "100%", boxSizing: "border-box", height: 40, border: "1px solid #d1d5db", padding: "0 36px 0 12px", fontSize: 14, fontFamily: "inherit", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", position: "relative", userSelect: "none", color: deliveryPeriod ? "#111827" : "#6b7280" }}
+                        onClick={() => setDeliveryPeriodOpen(!deliveryPeriodOpen)}
+                      >
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {deliveryPeriod || "Auswählen"}
+                        </span>
+                        <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                      </div>
+                      {deliveryPeriodOpen && (
+                        <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 2px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 360, overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                          <div style={{ display: "grid", gridTemplateColumns: "36px 1fr", gap: "0 12px", padding: "6px 14px", background: "#f0f5ff", borderBottom: "1px solid #c7d7fc", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase", position: "sticky", top: 0, zIndex: 1 }}>
+                            <div>Nr</div>
+                            <div>Lieferfrist</div>
+                          </div>
+                          {DELIVERY_PERIODS.map((p, i) => (
+                            <div
+                              key={p}
+                              onMouseDown={(e) => { e.preventDefault(); setDeliveryPeriod(p); setDeliveryPeriodOpen(false); }}
+                              style={{ display: "grid", gridTemplateColumns: "36px 1fr", gap: "0 12px", padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f1f5f9", fontSize: 13, background: deliveryPeriod === p ? "#eef2fb" : "#fff" }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = "#eef2fb"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = deliveryPeriod === p ? "#eef2fb" : "#fff"; }}
+                            >
+                              <div style={{ fontSize: 11, color: "#9ca3af", fontFamily: "IBM Plex Mono, monospace" }}>{String(i + 1).padStart(2, "0")}</div>
+                              <div style={{ color: "#374151", fontWeight: deliveryPeriod === p ? 600 : 400 }}>{p}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="bl-form-group">
@@ -2193,53 +2416,81 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
                   <div className="bl-form-group">
                     <label className="bl-label">Zahlungsbedingungen *</label>
-                    <select
-                      className="bl-select"
-                      value={paymentTerms}
-                      onChange={(e) => setPaymentTerms(e.target.value)}
-                      required
-                    >
-                      <option value="">Auswählen</option>
-                      <optgroup label="Vorauszahlung">
-                        <option value="Vorkasse 100 % vor Lieferung">Vorkasse - 100 % vor Lieferung</option>
-                        <option value="Anzahlung 10 % bei Zuschlag, Rest bei Lieferung">Anzahlung 10 % bei Zuschlag, Rest bei Lieferung</option>
-                        <option value="Anzahlung 25 % bei Zuschlag, Rest bei Lieferung">Anzahlung 25 % bei Zuschlag, Rest bei Lieferung</option>
-                        <option value="Anzahlung 50 % bei Zuschlag, Rest bei Lieferung">Anzahlung 50 % bei Zuschlag, Rest bei Lieferung</option>
-                      </optgroup>
-                      <optgroup label="Bei Lieferung">
-                        <option value="Zahlung bei Lieferung (sofort)">Zahlung bei Lieferung (sofort)</option>
-                        <option value="20 Tage netto, Ende des Monats nach Lieferung">20 Tage netto, Ende des Monats nach Lieferung</option>
-                      </optgroup>
-                      <optgroup label="Netto-Zahlungsziele">
-                        <option value="14 Tage netto nach Lieferung">14 Tage netto nach Lieferung</option>
-                        <option value="30 Tage netto nach Lieferung">30 Tage netto nach Lieferung</option>
-                        <option value="45 Tage netto nach Lieferung">45 Tage netto nach Lieferung</option>
-                        <option value="60 Tage netto nach Lieferung">60 Tage netto nach Lieferung</option>
-                        <option value="90 Tage netto nach Lieferung">90 Tage netto nach Lieferung</option>
-                      </optgroup>
-                      <optgroup label="Ende des Monats (EOM)">
-                        <option value="20 Tage netto, Ende des Folgemonats">20 Tage netto, Ende des Folgemonats</option>
-                        <option value="30 Tage netto, Ende des Folgemonats">30 Tage netto, Ende des Folgemonats</option>
-                        <option value="45 Tage netto, Ende des Folgemonats">45 Tage netto, Ende des Folgemonats</option>
-                        <option value="60 Tage netto, Ende des Folgemonats">60 Tage netto, Ende des Folgemonats</option>
-                      </optgroup>
-                    </select>
+                    <div ref={paymentTermsRef} style={{ position: "relative" }}>
+                      <div
+                        style={{ width: "100%", boxSizing: "border-box", height: 40, border: "1px solid #d1d5db", padding: "0 36px 0 12px", fontSize: 14, fontFamily: "inherit", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", position: "relative", userSelect: "none", color: paymentTerms ? "#111827" : "#6b7280" }}
+                        onClick={() => setPaymentTermsOpen(!paymentTermsOpen)}
+                      >
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {paymentTerms || "Auswählen"}
+                        </span>
+                        <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                      </div>
+                      {paymentTermsOpen && (
+                        <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 2px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 360, overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                          <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: "0 12px", padding: "6px 14px", background: "#f0f5ff", borderBottom: "1px solid #c7d7fc", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase", position: "sticky", top: 0, zIndex: 1 }}>
+                            <div>Kategorie</div>
+                            <div>Bedingung</div>
+                          </div>
+                          {PAYMENT_GROUPS.map((group) => (
+                            <div key={group.group}>
+                              <div style={{ padding: "5px 14px", background: "#f8fafc", borderBottom: "1px solid #e9edf5", fontSize: 10, fontWeight: 700, letterSpacing: ".06em", color: "#6b7280", textTransform: "uppercase" }}>{group.group}</div>
+                              {group.options.map((opt) => (
+                                <div
+                                  key={opt}
+                                  onMouseDown={(e) => { e.preventDefault(); setPaymentTerms(opt); setPaymentTermsOpen(false); }}
+                                  style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: "0 12px", padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f1f5f9", fontSize: 13, background: paymentTerms === opt ? "#eef2fb" : "#fff" }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.background = "#eef2fb"; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.background = paymentTerms === opt ? "#eef2fb" : "#fff"; }}
+                                >
+                                  <div style={{ fontSize: 11, color: "#6b7280" }}>{group.group}</div>
+                                  <div style={{ color: "#374151", fontWeight: paymentTerms === opt ? 600 : 400 }}>{opt}</div>
+                                </div>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="bl-form-group full">
                     <label className="bl-label">USt.-Behandlung *</label>
-                    <select
-                      className="bl-select"
-                      value={vatTreatment}
-                      onChange={(e) => setVatTreatment(e.target.value)}
-                    >
-                      <option value="">Auswählen</option>
-                      <option value="Umsatzsteuer 19 % (Regelbesteuerung)">Umsatzsteuer 19 % (Regelbesteuerung)</option>
-                      <option value="Steuerschuldumkehr §13b UStG (Reverse Charge)">Steuerschuldumkehr §13b UStG (Reverse Charge)</option>
-                      <option value="Innergemeinschaftliche Lieferung §4 Nr. 1b UStG (0 %)">Innergemeinschaftliche Lieferung §4 Nr. 1b UStG (0 %)</option>
-                      <option value="Ausfuhrlieferung steuerfrei §4 Nr. 1a UStG">Ausfuhrlieferung steuerfrei §4 Nr. 1a UStG</option>
-                      <option value="Differenzbesteuerung §25a UStG">Differenzbesteuerung §25a UStG</option>
-                    </select>
+                    <div ref={vatRef} style={{ position: "relative" }}>
+                      <div
+                        style={{ width: "100%", boxSizing: "border-box", height: 40, border: "1px solid #d1d5db", padding: "0 36px 0 12px", fontSize: 14, fontFamily: "inherit", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", position: "relative", userSelect: "none", color: vatTreatment ? "#111827" : "#6b7280" }}
+                        onClick={() => setVatOpen(!vatOpen)}
+                      >
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {vatTreatment || "Auswählen"}
+                        </span>
+                        <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                      </div>
+                      {vatOpen && (
+                        <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 2px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 320, overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                          <div style={{ display: "grid", gridTemplateColumns: "70px 1fr", gap: "0 12px", padding: "6px 14px", background: "#f0f5ff", borderBottom: "1px solid #c7d7fc", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase", position: "sticky", top: 0, zIndex: 1 }}>
+                            <div>Regelung</div>
+                            <div>Beschreibung</div>
+                          </div>
+                          {VAT_OPTIONS.map((v) => (
+                            <div
+                              key={v.label}
+                              onMouseDown={(e) => { e.preventDefault(); setVatTreatment(v.label); setVatOpen(false); }}
+                              style={{ display: "grid", gridTemplateColumns: "70px 1fr", gap: "0 12px", padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f1f5f9", fontSize: 13, background: vatTreatment === v.label ? "#eef2fb" : "#fff" }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = "#eef2fb"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = vatTreatment === v.label ? "#eef2fb" : "#fff"; }}
+                            >
+                              <div style={{ fontWeight: 700, color: "#154194", fontFamily: "IBM Plex Mono, monospace", fontSize: 11 }}>{v.para}</div>
+                              <div style={{ color: "#374151", fontWeight: vatTreatment === v.label ? 600 : 400 }}>{v.label}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
