@@ -33,16 +33,30 @@ const createLotSchema = z.object({
   productionSiteId: z.string().max(50).optional(),
   incoterms:        z.enum(INCOTERMS_VALUES).optional(),
   greenSteel:       z.boolean().optional(),
-  // Handels- und Vertragsangaben (Pflichtfelder - vertragswesentlich nach §§ 433, 434 BGB)
-  hsCode:           z.string().min(1, "HS-Code ist erforderlich").max(20),
-  qualityGrade:     z.string().min(1, "Güte / Qualitätsnorm ist erforderlich").max(120),
-  deliveryPeriod:   z.string().min(1, "Max. Lieferzeit ist erforderlich").max(120),
-  deliveryLocation: z.string().min(1, "Lieferort ist erforderlich").max(200),
-  paymentTerms:     z.string().min(1, "Zahlungsbedingungen sind erforderlich").max(120),
-  vatTreatment:     z.string().min(1, "USt.-Behandlung ist erforderlich").max(120),
+  // Handels- und Vertragsangaben (Pflicht bei Veröffentlichung, optional bei Entwurf)
+  hsCode:           z.string().max(20).optional(),
+  qualityGrade:     z.string().max(120).optional(),
+  deliveryPeriod:   z.string().max(120).optional(),
+  deliveryLocation: z.string().max(200).optional(),
+  paymentTerms:     z.string().max(120).optional(),
+  vatTreatment:     z.string().max(120).optional(),
   specs:            z.record(z.string().min(1).max(80), z.string().min(1).max(200)).optional(),
   publish:          z.boolean().optional(), // true = sofort veröffentlichen (isDraft=false)
   scheduledStart:   z.string().datetime().optional(), // ISO-8601: geplanter Auto-Start (Cron)
+}).superRefine((data, ctx) => {
+  if (data.publish) {
+    const req = [
+      ["hsCode",          "HS-Code ist erforderlich"],
+      ["qualityGrade",    "Güte / Qualitätsnorm ist erforderlich"],
+      ["deliveryPeriod",  "Max. Lieferzeit ist erforderlich"],
+      ["deliveryLocation","Lieferort ist erforderlich"],
+      ["paymentTerms",    "Zahlungsbedingungen sind erforderlich"],
+      ["vatTreatment",    "USt.-Behandlung ist erforderlich"],
+    ] as const;
+    for (const [field, msg] of req) {
+      if (!data[field]?.trim()) ctx.addIssue({ code: "custom", path: [field], message: msg });
+    }
+  }
 });
 
 export async function POST(req: NextRequest) {

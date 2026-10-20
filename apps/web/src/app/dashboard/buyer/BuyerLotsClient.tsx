@@ -577,7 +577,18 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     if (!commodity.trim())   { setFormError("Ware ist erforderlich."); return; }
     const qty = parseFloat(quantity);
     if (!qty || qty <= 0)    { setFormError("Menge muss größer als 0 sein."); return; }
-    if (!description.trim()) { setFormError("Beschreibung ist erforderlich - bitte technische Details, Zeugnis, Lieferort und Verpackung angeben."); return; }
+
+    // Pflichtfelder nur bei Veröffentlichung prüfen
+    if (publish) {
+      if (!description.trim())    { setFormError("Beschreibung ist erforderlich."); return; }
+      if (!hsCode.trim())         { setFormError("Zolltarifnummer (HS-Code) ist erforderlich."); return; }
+      if (!qualityGrade.trim())   { setFormError("Güte / Qualitätsnorm ist erforderlich."); return; }
+      if (!deliveryPeriod.trim()) { setFormError("Max. Lieferzeit ist erforderlich."); return; }
+      const locCheck = deliveryLocation.trim() || addrInput.trim();
+      if (!locCheck)              { setFormError("Lieferort ist erforderlich."); return; }
+      if (!paymentTerms.trim())   { setFormError("Zahlungsbedingungen sind erforderlich."); return; }
+      if (!vatTreatment)          { setFormError("USt.-Behandlung muss ausgewählt werden."); return; }
+    }
 
     setSubmitting(true);
     try {
@@ -598,19 +609,14 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       body.greenSteel = greenSteel;
       if (productionSiteId) body.productionSiteId = productionSiteId.trim();
       if (incoterms)        body.incoterms        = incoterms;
-      // Pflichtfelder - vertragswesentlich
-      if (!hsCode.trim())         { setFormError("Zolltarifnummer (HS-Code) ist erforderlich.");     setSubmitting(false); return; }
-      if (!qualityGrade.trim())   { setFormError("Güte / Qualitätsnorm ist erforderlich.");          setSubmitting(false); return; }
-      if (!deliveryPeriod.trim())   { setFormError("Max. Lieferzeit ist erforderlich.");               setSubmitting(false); return; }
-      if (!deliveryLocation.trim()) { setFormError("Lieferort ist erforderlich.");                     setSubmitting(false); return; }
-      if (!paymentTerms.trim())     { setFormError("Zahlungsbedingungen sind erforderlich.");          setSubmitting(false); return; }
-      if (!vatTreatment)          { setFormError("USt.-Behandlung muss ausgewählt werden.");         setSubmitting(false); return; }
-      body.hsCode         = hsCode.trim();
-      body.qualityGrade   = qualityGrade.trim();
-      body.deliveryPeriod   = deliveryPeriod.trim();
-      body.deliveryLocation = deliveryLocation.trim();
-      body.paymentTerms     = paymentTerms.trim();
-      body.vatTreatment   = vatTreatment;
+      // Handels-/Vertragsfelder — immer senden wenn ausgefüllt, auch bei Entwurf
+      if (hsCode.trim())         body.hsCode         = hsCode.trim();
+      if (qualityGrade.trim())   body.qualityGrade   = qualityGrade.trim();
+      if (deliveryPeriod.trim()) body.deliveryPeriod = deliveryPeriod.trim();
+      const locFinal = deliveryLocation.trim() || addrInput.trim();
+      if (locFinal)              body.deliveryLocation = locFinal;
+      if (paymentTerms.trim())   body.paymentTerms   = paymentTerms.trim();
+      if (vatTreatment)          body.vatTreatment   = vatTreatment;
       const specsObj = Object.fromEntries(
         specRows.filter((r) => r.key.trim() && r.val.trim())
                 .map((r) => [r.key.trim(), r.val.trim()])
