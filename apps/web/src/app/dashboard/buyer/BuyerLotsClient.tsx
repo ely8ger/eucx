@@ -854,6 +854,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
         /* Create form */
         @keyframes bl-form-in { from { opacity:0; transform:translateY(-14px); } to { opacity:1; transform:none; } }
+        @keyframes eucx-pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.35; transform:scale(.7); } }
         .bl-form-wrap { background:#fff; border:1px solid #e9edf5; border-top:3px solid #154194; margin-bottom:24px; animation:bl-form-in .28s ease-out; scroll-margin-top:80px; }
         .bl-form-header { padding:16px 28px; border-bottom:2px solid #eef2fb; background:#fff; position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between; }
         .bl-form-title { font-size:15px; font-weight:700; color:#154194; margin:0; letter-spacing:-.01em; }
@@ -2735,9 +2736,28 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           )}
                           {lot.phase === "COLLECTION" && !lot.isDraft && (
                             lot._count.registrations === 0 ? (
-                              <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                                <span style={{ fontSize: 10, fontWeight: 700, color: "#d97706", letterSpacing: ".03em" }}>⏳ Schritt 2 von 3</span>
-                                <span style={{ fontSize: 10.5, color: "#6b7280", lineHeight: 1.4 }}>Warten auf<br/>Verkäufer-Anmeldungen</span>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                                {/* Schritt-Label mit EUCX-Mark */}
+                                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                                  <svg width="12" height="12" viewBox="0 0 36 36" style={{ flexShrink: 0 }}>
+                                    <rect width="36" height="36" fill="#154194"/>
+                                    <rect x="7" y="10"    width="15" height="2.5" fill="#fff" opacity="0.9"/>
+                                    <rect x="7" y="16.75" width="22" height="2.5" fill="#fff" opacity="0.55"/>
+                                    <rect x="7" y="23.5"  width="10" height="2.5" fill="#fff" opacity="0.9"/>
+                                    <rect x="27" y="8" width="2" height="20" fill="#fff" opacity="0.25"/>
+                                  </svg>
+                                  <span style={{ fontSize: 10, fontWeight: 700, color: "#154194", letterSpacing: ".04em" }}>SCHRITT 2 VON 3</span>
+                                </div>
+                                {/* Pulsierende Aktivitätsanzeige */}
+                                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                                  <span style={{
+                                    display: "inline-block", width: 7, height: 7,
+                                    borderRadius: "50%", background: "#f59e0b", flexShrink: 0,
+                                    animation: "eucx-pulse 1.6s ease-in-out infinite"
+                                  }}/>
+                                  <span style={{ fontSize: 10.5, color: "#374151", fontWeight: 600, lineHeight: 1.3 }}>Ausschreibung aktiv</span>
+                                </div>
+                                <span style={{ fontSize: 10, color: "#6b7280", lineHeight: 1.4 }}>Verkäufer können sich<br/>jetzt anmelden — Sie<br/>werden benachrichtigt.</span>
                               </div>
                             ) : (
                               <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
