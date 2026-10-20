@@ -7,7 +7,7 @@
  */
 
 import { useAuthStore, refreshAccessToken } from "@/store/authStore";
-import { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { EucxHeader } from "@/components/layout/EucxHeader";
 import { toast } from "sonner";
@@ -336,6 +336,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [greenSteel,       setGreenSteel]       = useState(false);
   const [showCbam,         setShowCbam]         = useState(false);
   const [showContract,     setShowContract]     = useState(false);
+  const [previewLotId,     setPreviewLotId]     = useState<string | null>(null);
   // CBAM form state
   const [cbamCategory,     setCbamCategory]     = useState<CbamGroupId | "">("");
   const [co2PerTonne,      setCo2PerTonne]      = useState("");   // kg CO₂-Äq./t (EU-Default oder Werkswert)
@@ -2642,7 +2643,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       : null;
 
                     return (
-                      <tr key={lot.id}>
+                      <React.Fragment key={lot.id}>
+                      <tr>
                         {/* Ware + Menge */}
                         <td>
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -2714,7 +2716,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         {/* Aktion */}
                         <td style={{ whiteSpace: "nowrap" }}>
                           {lot.phase === "COLLECTION" && lot.isDraft && (
-                            <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                               <span style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", letterSpacing: ".03em" }}>Privater Entwurf</span>
                               <button
                                 className="bl-btn-open"
@@ -2722,6 +2724,12 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                                 style={{ fontSize: 11, whiteSpace: "nowrap" }}
                               >
                                 Veröffentlichen →
+                              </button>
+                              <button
+                                onClick={() => setPreviewLotId(previewLotId === lot.id ? null : lot.id)}
+                                style={{ fontSize: 11, whiteSpace: "nowrap", background: "none", border: "1px solid #d1d5db", padding: "4px 10px", cursor: "pointer", color: "#374151", fontFamily: "inherit" }}
+                              >
+                                {previewLotId === lot.id ? "Schließen ✕" : "Vorschau →"}
                               </button>
                             </div>
                           )}
@@ -2764,6 +2772,52 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           )}
                         </td>
                       </tr>
+                      {/* Vorschau-Zeile für Entwürfe */}
+                      {previewLotId === lot.id && (
+                        <tr>
+                          <td colSpan={4} style={{ background: "#f8fafc", borderTop: "none", padding: "16px 20px 20px" }}>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "10px 24px" }}>
+                              {[
+                                ["Ware / Commodity",       lot.commodity],
+                                ["Menge",                  `${Number(lot.quantity).toLocaleString("de-DE")} ${lot.unit}`],
+                                ["Max. Preis",             lot.startPrice ? `${fmtEur(lot.startPrice)}/${lot.unit === "TON" ? "t" : lot.unit}` : null],
+                                ["HS-Code",                lot.hsCode],
+                                ["Güte / Qualitätsnorm",  lot.qualityGrade],
+                                ["Lieferbedingung",        lot.incoterms],
+                                ["Lieferort",              lot.deliveryLocation],
+                                ["Max. Lieferzeit",        lot.deliveryPeriod],
+                                ["Zahlungsbedingungen",    lot.paymentTerms],
+                                ["USt.-Behandlung",        lot.vatTreatment],
+                                ["CBAM-Warengruppe",       lot.cbamCategory ? (CBAM_GROUPS.find(g => g.id === lot.cbamCategory)?.label ?? lot.cbamCategory) : null],
+                                ["CO₂-Faktor",             lot.co2PerTonne ? `${lot.co2PerTonne} kg CO₂/t` : null],
+                                ["Herkunftsland",          lot.countryOfOrigin],
+                              ].filter(([, v]) => v).map(([label, value]) => (
+                                <div key={String(label)}>
+                                  <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 2 }}>{label}</div>
+                                  <div style={{ fontSize: 13, color: "#111827", fontWeight: 500 }}>{value}</div>
+                                </div>
+                              ))}
+                              {lot.description && (
+                                <div style={{ gridColumn: "1 / -1" }}>
+                                  <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 2 }}>Beschreibung</div>
+                                  <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{lot.description}</div>
+                                </div>
+                              )}
+                              {lot.specs && Object.keys(lot.specs).length > 0 && (
+                                <div style={{ gridColumn: "1 / -1" }}>
+                                  <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 6 }}>Technische Spezifikationen</div>
+                                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                                    {Object.entries(lot.specs).map(([k, v]) => (
+                                      <span key={k} style={{ background: "#e0e7ff", color: "#1e40af", padding: "2px 8px", fontSize: 12, fontWeight: 600 }}>{k}: {v}</span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                      </React.Fragment>
                     );
                   })}
                 </tbody>
