@@ -799,7 +799,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     const p = parseFloat(startPrice);
     return !isNaN(q) && q > 0 && !isNaN(p) && p > 0 ? q * p : null;
   })();
-  const fmtEurInt = (v: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
+  const fmtEurInt = (v: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
 
   return (
     <>
