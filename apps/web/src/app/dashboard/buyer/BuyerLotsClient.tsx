@@ -357,7 +357,6 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const addrRef      = useRef<HTMLDivElement>(null);
   const [paymentTerms,     setPaymentTerms]     = useState("");
   const [vatTreatment,     setVatTreatment]     = useState("");
-  const [selectedPreset,   setSelectedPreset]   = useState("");
   const [presetBanner,     setPresetBanner]     = useState<{ name: string; fields: string[] } | null>(null);
   const [specRows,         setSpecRows]         = useState<Array<{ key: string; val: string }>>([{ key: "", val: "" }]);
 
@@ -375,7 +374,6 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [catalogStats,      setCatalogStats]      = useState<{ products: number; sizes: number } | null>(null);
 
   // Custom-Combobox open states
-  const [presetOpen,         setPresetOpen]         = useState(false);
   const [unitOpen,           setUnitOpen]           = useState(false);
   const [cbamOpen,           setCbamOpen]           = useState(false);
   const [co2Open,            setCo2Open]            = useState(false);
@@ -383,7 +381,6 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [deliveryPeriodOpen, setDeliveryPeriodOpen] = useState(false);
   const [paymentTermsOpen,   setPaymentTermsOpen]   = useState(false);
   const [vatOpen,            setVatOpen]            = useState(false);
-  const presetRef         = useRef<HTMLDivElement>(null);
   const unitRef           = useRef<HTMLDivElement>(null);
   const cbamRef           = useRef<HTMLDivElement>(null);
   const co2Ref            = useRef<HTMLDivElement>(null);
@@ -501,7 +498,6 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   useEffect(() => {
     function closeComboboxes(e: MouseEvent) {
       const t = e.target as Node;
-      if (presetRef.current && !presetRef.current.contains(t)) setPresetOpen(false);
       if (unitRef.current && !unitRef.current.contains(t)) setUnitOpen(false);
       if (cbamRef.current && !cbamRef.current.contains(t)) setCbamOpen(false);
       if (co2Ref.current && !co2Ref.current.contains(t)) setCo2Open(false);
@@ -642,7 +638,6 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         setCommodity(""); setQuantity(""); setUnit("TON"); setStartPrice(""); setDescription(""); setGreenSteel(false);
         setCbamCategory(""); setCo2PerTonne(""); setCountryOfOrigin(""); setProductionSiteId(""); setIncoterms("DAP");
         setHsCode(""); setQualityGrade(""); setDeliveryPeriod(""); setDeliveryLocation(""); setPaymentTerms(""); setVatTreatment("");
-        setSelectedPreset("");
         setCatalogQuery(""); setCatalogResults([]); setCatalogOpen(false); setCatalogBrowseMode(false);
         setCatalogProduct(null); setCatalogSizes([]); setSelectedSize(""); setSelectedPrimary(""); setSizeQuery("");
         setShowForm(false);
@@ -1474,8 +1469,14 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                             setCatalogQuery(r.nameDe ?? r.nameEn);
                             setCatalogOpen(false);
                             setSelectedSize(""); setSelectedPrimary(""); setSizeQuery("");
-                            setCommodity(r.nameDe ?? r.nameEn);
-                            if (r.norm) setQualityGrade(r.norm);
+                            // Warenvorlage: passenden TradeableProduct suchen und alle 7 Felder befüllen
+                            const match = COMMODITY_CATALOG.find(p => p.id === r.slug || p.name === (r.nameDe ?? r.nameEn));
+                            if (match) {
+                              applyPreset(match.id);
+                            } else {
+                              setCommodity(r.nameDe ?? r.nameEn);
+                              if (r.norm) setQualityGrade(r.norm);
+                            }
                           }}
                           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#f0f5ff"; }}
                           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ""; }}
@@ -1530,6 +1531,27 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: "#9ca3af", fontSize: 18, lineHeight: 1, padding: "2px 4px" }}
                         title="Auswahl zurücksetzen"
                       >×</button>
+                    </div>
+                  )}
+
+                  {/* Bestätigungs-Banner nach Produktauswahl */}
+                  {presetBanner && (
+                    <div style={{ marginTop: 8, display: "flex", alignItems: "flex-start", gap: 12, padding: "11px 14px", background: "#f0fdf4", border: "1px solid #bbf7d0" }}>
+                      <div style={{ width: 20, height: 20, background: "#16a34a", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "#15803d", marginBottom: 6 }}>
+                          &bdquo;{presetBanner.name}&ldquo; &mdash; {presetBanner.fields.length} Felder automatisch befüllt
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                          {presetBanner.fields.map(f => (
+                            <span key={f} style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", background: "#dcfce7", color: "#15803d", border: "1px solid #bbf7d0" }}>✓ {f}</span>
+                          ))}
+                        </div>
+                      </div>
+                      <button type="button" onClick={() => setPresetBanner(null)}
+                        style={{ background: "none", border: "none", fontSize: 14, color: "#86efac", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0 }}>✕</button>
                     </div>
                   )}
                   </div>
@@ -1675,81 +1697,6 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                   );
                 })()}
 
-                {/* ── Warenvorlage (Schnellauswahl) ── */}
-                <div style={{ marginBottom: 20 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, paddingLeft: 12, borderLeft: "3px solid #9ca3af" }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "#6b7280", textTransform: "uppercase" as const }}>Warenvorlage</span>
-                    <span style={{ fontSize: 11, color: "#9ca3af" }}>Auswahl befüllt Ware, HS-Code, Güte, Beschreibung, CBAM, Lieferbedingung und USt. automatisch</span>
-                  </div>
-                  <div ref={presetRef} style={{ position: "relative" }}>
-                    <div
-                      style={{ width: "100%", boxSizing: "border-box", height: 40, border: "1px solid #d1d5db", padding: "0 36px 0 12px", fontSize: 14, fontFamily: "inherit", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", userSelect: "none", position: "relative", color: selectedPreset ? "#111827" : "#6b7280" }}
-                      onClick={() => setPresetOpen(!presetOpen)}
-                    >
-                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {selectedPreset
-                          ? (SIDEBAR.flatMap(s => s.kategorien.flatMap(k => CATALOG_BY_KAT.get(k.id) ?? [])).find(p => p.id === selectedPreset)?.name ?? "Vorlage auswählen")
-                          : "Vorlage auswählen"}
-                      </span>
-                      <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                      </span>
-                    </div>
-                    {presetOpen && (
-                      <div style={{ position: "absolute", left: 0, right: 0, top: "calc(100% + 2px)", background: "#fff", border: "1px solid #d1d5db", borderTop: "2px solid #154194", zIndex: 200, maxHeight: 360, overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 120px", gap: "0 12px", padding: "6px 14px", background: "#f0f5ff", borderBottom: "1px solid #c7d7fc", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", color: "#154194", textTransform: "uppercase", position: "sticky", top: 0, zIndex: 1 }}>
-                          <div>Warenbezeichnung</div>
-                          <div>Norm</div>
-                        </div>
-                        {SIDEBAR.map((sektion) => {
-                          const produkte = sektion.kategorien.flatMap(k => CATALOG_BY_KAT.get(k.id) ?? []);
-                          if (produkte.length === 0) return null;
-                          return (
-                            <div key={sektion.key}>
-                              <div style={{ padding: "5px 14px", background: "#f8fafc", borderBottom: "1px solid #e9edf5", fontSize: 10, fontWeight: 700, letterSpacing: ".06em", color: "#6b7280", textTransform: "uppercase" }}>{sektion.label}</div>
-                              {produkte.map((p) => (
-                                <div
-                                  key={p.id}
-                                  onMouseDown={(e) => { e.preventDefault(); setSelectedPreset(p.id); applyPreset(p.id); setPresetOpen(false); }}
-                                  style={{ display: "grid", gridTemplateColumns: "1fr 120px", gap: "0 12px", padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid #f1f5f9", fontSize: 13, background: selectedPreset === p.id ? "#eef2fb" : "#fff" }}
-                                  onMouseEnter={(e) => { e.currentTarget.style.background = "#eef2fb"; }}
-                                  onMouseLeave={(e) => { e.currentTarget.style.background = selectedPreset === p.id ? "#eef2fb" : "#fff"; }}
-                                >
-                                  <div style={{ fontWeight: selectedPreset === p.id ? 600 : 400 }}>{p.name}</div>
-                                  <div style={{ fontSize: 11, color: "#6b7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.norm || "—"}</div>
-                                </div>
-                              ))}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Bestätigungs-Banner nach Vorlagenauswahl */}
-                  {presetBanner && (
-                    <div style={{ marginTop: 10, display: "flex", alignItems: "flex-start", gap: 12, padding: "11px 14px", background: "#f0fdf4", border: "1px solid #bbf7d0" }}>
-                      <div style={{ width: 20, height: 20, background: "#16a34a", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "#15803d", marginBottom: 6 }}>
-                          Vorlage &bdquo;{presetBanner.name}&ldquo; geladen &mdash; {presetBanner.fields.length} Felder automatisch befüllt
-                        </div>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                          {presetBanner.fields.map(f => (
-                            <span key={f} style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", background: "#dcfce7", color: "#15803d", border: "1px solid #bbf7d0" }}>✓ {f}</span>
-                          ))}
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setPresetBanner(null)}
-                        style={{ background: "none", border: "none", fontSize: 14, color: "#86efac", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0 }}
-                      >✕</button>
-                    </div>
-                  )}
-                </div>
 
                 <div className="bl-form-grid">
                   <div className="bl-form-group">
