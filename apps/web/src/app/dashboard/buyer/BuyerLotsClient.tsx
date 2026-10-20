@@ -358,6 +358,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [paymentTerms,     setPaymentTerms]     = useState("");
   const [vatTreatment,     setVatTreatment]     = useState("");
   const [selectedPreset,   setSelectedPreset]   = useState("");
+  const [presetBanner,     setPresetBanner]     = useState<{ name: string; fields: string[] } | null>(null);
   const [specRows,         setSpecRows]         = useState<Array<{ key: string; val: string }>>([{ key: "", val: "" }]);
 
   // Katalog-Suche
@@ -564,6 +565,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     if (p.cbam) setCbamCategory(p.cbam);
     setIncoterms(p.inco);
     setVatTreatment(p.vat);
+    const filled = ["Ware / Commodity", "HS-Code", "Güte / Qualitätsnorm", "Beschreibung", "Lieferbedingung", "USt.-Behandlung"];
+    if (p.cbam) filled.splice(4, 0, "CBAM-Warengruppe");
+    setPresetBanner({ name: p.name, fields: filled });
   }
 
   // ── Ausschreibung erstellen ───────────────────────────────────────
@@ -1675,7 +1679,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                 <div style={{ marginBottom: 20 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, paddingLeft: 12, borderLeft: "3px solid #9ca3af" }}>
                     <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "#6b7280", textTransform: "uppercase" as const }}>Warenvorlage</span>
-                    <span style={{ fontSize: 11, color: "#9ca3af" }}>Felder werden automatisch befüllt</span>
+                    <span style={{ fontSize: 11, color: "#9ca3af" }}>Auswahl befüllt Ware, HS-Code, Güte, Beschreibung, CBAM, Lieferbedingung und USt. automatisch</span>
                   </div>
                   <div ref={presetRef} style={{ position: "relative" }}>
                     <div
@@ -1721,6 +1725,30 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                       </div>
                     )}
                   </div>
+
+                  {/* Bestätigungs-Banner nach Vorlagenauswahl */}
+                  {presetBanner && (
+                    <div style={{ marginTop: 10, display: "flex", alignItems: "flex-start", gap: 12, padding: "11px 14px", background: "#f0fdf4", border: "1px solid #bbf7d0" }}>
+                      <div style={{ width: 20, height: 20, background: "#16a34a", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "#15803d", marginBottom: 6 }}>
+                          Vorlage &bdquo;{presetBanner.name}&ldquo; geladen &mdash; {presetBanner.fields.length} Felder automatisch befüllt
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                          {presetBanner.fields.map(f => (
+                            <span key={f} style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", background: "#dcfce7", color: "#15803d", border: "1px solid #bbf7d0" }}>✓ {f}</span>
+                          ))}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setPresetBanner(null)}
+                        style={{ background: "none", border: "none", fontSize: 14, color: "#86efac", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0 }}
+                      >✕</button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="bl-form-grid">
