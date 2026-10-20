@@ -82,6 +82,7 @@ async function _GET(req: NextRequest) {
   const products = await db.catalogProduct.findMany({
     where: {
       isActive: true,
+      inco: { not: null }, // Nur handelbare Produkte (haben vollständige Handelsdaten)
       ...(sector ? { sector } : {}),
       OR: [
         { nameDe: { contains: q, mode: "insensitive" } },

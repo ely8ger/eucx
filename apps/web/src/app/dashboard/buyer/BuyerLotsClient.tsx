@@ -585,7 +585,11 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     setIncoterms(p.inco);
     setVatTreatment(p.vat);
     const filled = ["Ware / Commodity", "HS-Code", "Güte / Qualitätsnorm", "Beschreibung", "Lieferbedingung", "USt.-Behandlung"];
-    if (p.cbam) filled.splice(4, 0, "CBAM-Warengruppe");
+    if (p.cbam) {
+      const grp = CBAM_GROUPS.find(g => g.id === p.cbam);
+      filled.splice(4, 0, "CBAM-Warengruppe");
+      if (grp) filled.splice(5, 0, `CO₂-Emissionsfaktor (${grp.factor} kg/t)`);
+    }
     setPresetBanner({ name: p.name, fields: filled });
   }
 
