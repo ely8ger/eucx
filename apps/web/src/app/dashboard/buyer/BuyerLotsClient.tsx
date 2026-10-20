@@ -385,6 +385,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [deliveryPeriodOpen, setDeliveryPeriodOpen] = useState(false);
   const [paymentTermsOpen,   setPaymentTermsOpen]   = useState(false);
   const [vatOpen,            setVatOpen]            = useState(false);
+  const formRef           = useRef<HTMLDivElement>(null);
   const unitRef           = useRef<HTMLDivElement>(null);
   const cbamRef           = useRef<HTMLDivElement>(null);
   const co2Ref            = useRef<HTMLDivElement>(null);
@@ -513,6 +514,15 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
     document.addEventListener("mousedown", closeComboboxes);
     return () => document.removeEventListener("mousedown", closeComboboxes);
   }, []);
+
+  // ── Scroll zum Formular wenn es sich öffnet ───────────────────────
+  useEffect(() => {
+    if (showForm && formRef.current) {
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
+    }
+  }, [showForm]);
 
   // ── Herkunftsland-Autocomplete (client-seitig, kein API-Call) ────────
   function onCountryInput(v: string) {
@@ -829,9 +839,10 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         .bl-btn-new:disabled { opacity:.5; cursor:not-allowed; }
 
         /* Create form */
-        .bl-form-wrap { background:#fff; border:1px solid #e9edf5; border-top:3px solid #154194; margin-bottom:24px; }
-        .bl-form-header { padding:20px 28px; border-bottom:1px solid #f1f5f9; }
-        .bl-form-title { font-size:15px; font-weight:700; color:#111827; margin:0; }
+        @keyframes bl-form-in { from { opacity:0; transform:translateY(-14px); } to { opacity:1; transform:none; } }
+        .bl-form-wrap { background:#fff; border:1px solid #e9edf5; border-top:3px solid #154194; margin-bottom:24px; animation:bl-form-in .28s ease-out; scroll-margin-top:80px; }
+        .bl-form-header { padding:16px 28px; border-bottom:2px solid #eef2fb; background:#fff; position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between; }
+        .bl-form-title { font-size:15px; font-weight:700; color:#154194; margin:0; letter-spacing:-.01em; }
         .bl-form-body { display:flex; align-items:flex-start; }
         .bl-form-left { flex:1; min-width:0; padding:24px 28px 28px; }
         .bl-form-summary { width:272px; flex-shrink:0; border-left:1px solid #e9edf5; background:#f8fafc; padding:24px 20px; position:sticky; top:100px; align-self:flex-start; }
@@ -1399,9 +1410,15 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
 
           {/* Create Form */}
           {showForm && (
-            <div className="bl-form-wrap">
+            <div className="bl-form-wrap" ref={formRef}>
               <div className="bl-form-header">
                 <div className="bl-form-title">Neue Ausschreibung erstellen</div>
+                <button
+                  type="button"
+                  onClick={() => { setShowForm(false); setFormError(null); }}
+                  style={{ background:"none", border:"none", cursor:"pointer", color:"#9ca3af", fontSize:20, lineHeight:1, padding:"0 4px", marginLeft:"auto" }}
+                  title="Formular schließen"
+                >×</button>
               </div>
               <form id="bl-lot-form" onSubmit={(e) => { void createLot(e); }}>
               <div className="bl-form-body">
