@@ -1958,9 +1958,9 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                         <button
                           type="button"
                           onClick={() => setCo2Open(!co2Open)}
-                          style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 34, background: "#f0f5ff", border: "none", borderLeft: "1px solid #d1d5db", cursor: "pointer", color: "#154194", display: "flex", alignItems: "center", justifyContent: "center" }}
+                          style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 34, background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "auto" }}
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#154194" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                         </button>
                       </div>
                       {co2Open && (
