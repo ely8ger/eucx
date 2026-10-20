@@ -456,11 +456,11 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       .then((r) => r.json())
       .then((d) => {
         setCatalogSizes(d.sizes?.map((s: { value: string }) => s.value) ?? []);
-        if (d.hsCode)      setHsCode(d.hsCode);
-        if (d.cbam)        setCbamCategory(d.cbam);
-        if (d.inco)        setIncoterms(d.inco);
-        if (d.vat)         setVatTreatment(d.vat);
-        if (d.tradeDesc)   setDescription(d.tradeDesc);
+        if (d.hsCode)    setHsCode(d.hsCode);
+        if (d.cbam && CBAM_GROUPS.some(g => g.id === d.cbam)) setCbamCategory(d.cbam as CbamGroupId);
+        if (d.inco)      setIncoterms(d.inco);
+        if (d.vat)       setVatTreatment(d.vat);
+        if (d.tradeDesc) setDescription(d.tradeDesc);
       })
       .catch(() => {});
   }, [catalogProduct, token]);
