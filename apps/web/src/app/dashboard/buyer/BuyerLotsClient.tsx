@@ -30,10 +30,14 @@ interface PhotonFeature {
   };
 }
 
+function cap(s: string) { return s.replace(/\b\w/g, c => c.toUpperCase()); }
+
 function formatPhotonAddress(p: PhotonFeature["properties"]): string {
-  const street = [p.street ?? p.name, p.housenumber].filter(Boolean).join(" ");
-  const city   = [p.postcode, p.city ?? p.state].filter(Boolean).join(" ");
-  const parts  = [street, city, p.country].filter(Boolean);
+  const street  = [p.street ?? p.name, p.housenumber].filter(Boolean).join(" ");
+  const city    = [p.postcode, p.city ? cap(p.city) : undefined].filter(Boolean).join(" ");
+  const state   = p.state && p.state !== p.city ? cap(p.state) : undefined;
+  const country = p.countrycode === "de" ? "Deutschland" : p.country;
+  const parts   = [street, city, state, country].filter(Boolean);
   return parts.join(", ");
 }
 
@@ -460,7 +464,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   function searchAddress(q: string) {
     if (q.length < 3) { setAddrSuggestions([]); return; }
     setAddrLoading(true);
-    fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=7&lang=de`)
+    fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=5&lang=de&countrycode=de`)
       .then((r) => r.json())
       .then((d) => setAddrSuggestions((d.features ?? []) as PhotonFeature[]))
       .catch(() => {})
@@ -2330,10 +2334,11 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           borderTop:"none", boxShadow:"0 4px 12px rgba(0,0,0,.10)",
                           maxHeight:280, overflowY:"auto" }}>
                           {addrSuggestions.map((f, i) => {
-                            const p   = f.properties;
-                            const plz = p.postcode ?? "";
-                            const str = [p.street ?? p.name, p.housenumber].filter(Boolean).join(" ");
-                            const ort = [p.city ?? p.state, p.country].filter(Boolean).join(", ");
+                            const p     = f.properties;
+                            const plz   = p.postcode ?? "";
+                            const str   = [p.street ?? p.name, p.housenumber].filter(Boolean).join(" ");
+                            const city  = p.city ? cap(p.city) : "";
+                            const state = p.state && p.state !== p.city ? cap(p.state) : "";
                             return (
                               <div
                                 key={i}
@@ -2352,9 +2357,10 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                                   padding:"2px 6px", letterSpacing:".04em", flexShrink:0 }}>
                                   {plz || "-"}
                                 </span>
-                                <span style={{ fontSize:13 }}>
+                                <span style={{ fontSize:13, minWidth:0 }}>
                                   <span style={{ fontWeight:600 }}>{str}</span>
-                                  {ort && <span style={{ color:"#6b7280", marginLeft:6 }}>{ort}</span>}
+                                  {city && <span style={{ color:"#374151", marginLeft:6 }}>{city}</span>}
+                                  {state && <span style={{ color:"#9ca3af", marginLeft:4, fontSize:11 }}>· {state}</span>}
                                 </span>
                               </div>
                             );
