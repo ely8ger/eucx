@@ -464,7 +464,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   function searchAddress(q: string) {
     if (q.length < 3) { setAddrSuggestions([]); return; }
     setAddrLoading(true);
-    fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=5&lang=de&countrycode=de`)
+    fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=5&lang=de&bbox=-25,34,45,72`)
       .then((r) => r.json())
       .then((d) => setAddrSuggestions((d.features ?? []) as PhotonFeature[]))
       .catch(() => {})
