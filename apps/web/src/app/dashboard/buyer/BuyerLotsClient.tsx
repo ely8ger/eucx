@@ -386,6 +386,8 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [paymentTermsOpen,   setPaymentTermsOpen]   = useState(false);
   const [vatOpen,            setVatOpen]            = useState(false);
   const formRef           = useRef<HTMLDivElement>(null);
+  // Verhindert DB-Überschreibung wenn applyPreset() bereits alle Felder gesetzt hat
+  const presetAppliedRef  = useRef(false);
   const unitRef           = useRef<HTMLDivElement>(null);
   const cbamRef           = useRef<HTMLDivElement>(null);
   const co2Ref            = useRef<HTMLDivElement>(null);
@@ -456,11 +458,14 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
       .then((r) => r.json())
       .then((d) => {
         setCatalogSizes(d.sizes?.map((s: { value: string }) => s.value) ?? []);
-        if (d.hsCode)    setHsCode(d.hsCode);
-        if (d.cbam && CBAM_GROUPS.some(g => g.id === d.cbam)) setCbamCategory(d.cbam as CbamGroupId);
-        if (d.inco)      setIncoterms(d.inco);
-        if (d.vat)       setVatTreatment(d.vat);
-        if (d.tradeDesc) setDescription(d.tradeDesc);
+        // Nur befüllen wenn kein Preset gesetzt hat (Produkt nicht in TRADEABLE_PRODUCTS)
+        if (!presetAppliedRef.current) {
+          if (d.hsCode)    setHsCode(d.hsCode);
+          if (d.cbam && CBAM_GROUPS.some(g => g.id === d.cbam)) setCbamCategory(d.cbam as CbamGroupId);
+          if (d.inco)      setIncoterms(d.inco);
+          if (d.vat)       setVatTreatment(d.vat);
+          if (d.tradeDesc) setDescription(d.tradeDesc);
+        }
       })
       .catch(() => {});
   }, [catalogProduct, token]);
@@ -1503,8 +1508,10 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                             // Warenvorlage: passenden TradeableProduct suchen und alle 7 Felder befüllen
                             const match = COMMODITY_CATALOG.find(p => p.id === r.slug || p.name === (r.nameDe ?? r.nameEn));
                             if (match) {
+                              presetAppliedRef.current = true;
                               applyPreset(match.id);
                             } else {
+                              presetAppliedRef.current = false;
                               setCommodity(r.nameDe ?? r.nameEn);
                               if (r.norm) setQualityGrade(r.norm);
                             }

@@ -66,10 +66,10 @@ async function _GET(req: NextRequest) {
     return NextResponse.json(product);
   }
 
-  // ── Browse-Modus: Alle Produkte (Dropdown-Pfeil ohne Sucheingabe) ───
+  // ── Browse-Modus: Nur handelbare Produkte (inco != null = hat Handelsdaten)
   if (browse) {
     const products = await db.catalogProduct.findMany({
-      where: { isActive: true, ...(sector ? { sector } : {}) },
+      where: { isActive: true, inco: { not: null }, ...(sector ? { sector } : {}) },
       select: SELECT,
       orderBy: { nr: "asc" },
     });

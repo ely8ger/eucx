@@ -179,7 +179,7 @@ const PRODUCTS: Product[] = [
     nameDe: "Aluminiumbarren Primär P1020",
     nameRu: "Алюминий первичный EN AW-1050A (P1020)",
     werkstoff: "Al ≥ 99,5 % (EN AW-1050A)", norm: "EN 573-3 · LME Spec.",
-    hsCode: "7601 10 00", cbam: null, inco: "CIF",
+    hsCode: "7601 10 00", cbam: "ALUMINIUM_UNWROUGHT", inco: "CIF",
     vat: "Umsatzsteuer 19 % (Regelbesteuerung)", unit: "TON",
     minLotSize: 20, lotStep: 5,
     tradeDesc: "Primär-Aluminiumbarren EN AW-1050A (P1020), Min. 99,5 % Al. LME-Spezifikation. CBAM-deklarationspflichtig ab 2026. Preis EUR/t, LME-Basis.",
