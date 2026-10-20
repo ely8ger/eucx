@@ -2772,10 +2772,15 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           )}
                         </td>
                       </tr>
-                      {/* Vorschau-Zeile für Entwürfe */}
+                      {/* Vorschau-Zeile */}
                       {previewLotId === lot.id && (
                         <tr>
-                          <td colSpan={4} style={{ background: "#f8fafc", borderTop: "none", padding: "16px 20px 20px" }}>
+                          <td colSpan={4} style={{ background: "#f8fafc", borderTop: "none", padding: "16px 20px 20px", position: "relative" }}>
+                            <button
+                              onClick={() => setPreviewLotId(null)}
+                              style={{ position: "absolute", top: 10, right: 14, background: "none", border: "none", cursor: "pointer", fontSize: 16, color: "#9ca3af", lineHeight: 1 }}
+                              title="Schließen"
+                            >✕</button>
                             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "10px 24px" }}>
                               {[
                                 ["Ware / Commodity",       lot.commodity],
