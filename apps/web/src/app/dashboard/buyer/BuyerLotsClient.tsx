@@ -337,6 +337,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
   const [showCbam,         setShowCbam]         = useState(false);
   const [showContract,     setShowContract]     = useState(false);
   const [previewLotId,     setPreviewLotId]     = useState<string | null>(null);
+  const [infoLotId,        setInfoLotId]        = useState<string | null>(null);
   // CBAM form state
   const [cbamCategory,     setCbamCategory]     = useState<CbamGroupId | "">("");
   const [co2PerTonne,      setCo2PerTonne]      = useState("");   // kg CO₂-Äq./t (EU-Default oder Werkswert)
@@ -2779,6 +2780,59 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                                   Kein Handlungsbedarf.<br/>
                                   <strong style={{ color: "#374151", fontWeight: 600 }}>E-Mail</strong> bei erstem Gebot.
                                 </span>
+                                {/* Info-Button + Popover */}
+                                <div style={{ position: "relative" }}>
+                                  <button
+                                    onClick={() => setInfoLotId(infoLotId === lot.id ? null : lot.id)}
+                                    style={{
+                                      display: "inline-flex", alignItems: "center", gap: 4,
+                                      background: "none", border: "none", cursor: "pointer",
+                                      fontSize: 10, color: "#9ca3af", fontFamily: "inherit",
+                                      padding: 0, fontWeight: 500,
+                                    }}
+                                  >
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+                                    Wie funktioniert das?
+                                  </button>
+                                  {infoLotId === lot.id && (
+                                    <div style={{
+                                      position: "absolute", bottom: "calc(100% + 8px)", right: 0,
+                                      width: 260, background: "#fff",
+                                      border: "1px solid #e2e6ed", borderTop: "3px solid #154194",
+                                      boxShadow: "0 8px 24px rgba(0,0,0,.12)",
+                                      zIndex: 300, padding: "14px 16px",
+                                    }}>
+                                      {/* Close */}
+                                      <button
+                                        onClick={() => setInfoLotId(null)}
+                                        style={{ position: "absolute", top: 8, right: 10, background: "none", border: "none", cursor: "pointer", fontSize: 14, color: "#9ca3af", lineHeight: 1 }}
+                                      >✕</button>
+                                      <div style={{ fontSize: 11, fontWeight: 700, color: "#154194", letterSpacing: ".04em", marginBottom: 10, textTransform: "uppercase" }}>
+                                        Wie läuft das ab?
+                                      </div>
+                                      {[
+                                        ["1", "Ausschreibung online", "Ihre Anforderungen sind jetzt für alle verifizierten EUCX-Lieferanten sichtbar."],
+                                        ["2", "Verkäufer melden sich an", "Lieferanten prüfen Ihre Spezifikationen. Wer liefern kann, registriert sich — kein Zeitdruck."],
+                                        ["3", "Sie starten die Auktion", "Sobald mindestens ein Verkäufer registriert ist, öffnen Sie die Bieterrunde per Klick."],
+                                        ["4", "Nur echte Gebote", "Nur angemeldete Verkäufer können bieten — das garantiert ernsthafte, kalkulierte Angebote."],
+                                      ].map(([num, title, body]) => (
+                                        <div key={num} style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+                                          <div style={{
+                                            width: 18, height: 18, borderRadius: "50%",
+                                            background: "#154194", color: "#fff",
+                                            fontSize: 9, fontWeight: 700,
+                                            display: "flex", alignItems: "center", justifyContent: "center",
+                                            flexShrink: 0, marginTop: 1,
+                                          }}>{num}</div>
+                                          <div>
+                                            <div style={{ fontSize: 11, fontWeight: 600, color: "#0d1b2a", marginBottom: 2 }}>{title}</div>
+                                            <div style={{ fontSize: 10.5, color: "#6b7280", lineHeight: 1.5 }}>{body}</div>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             ) : (
                               <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
