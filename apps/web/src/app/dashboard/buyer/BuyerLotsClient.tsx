@@ -2736,28 +2736,24 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           )}
                           {lot.phase === "COLLECTION" && !lot.isDraft && (
                             lot._count.registrations === 0 ? (
-                              <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-                                {/* Schritt-Label mit EUCX-Mark */}
-                                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                                  <svg width="12" height="12" viewBox="0 0 36 36" style={{ flexShrink: 0 }}>
-                                    <rect width="36" height="36" fill="#154194"/>
-                                    <rect x="7" y="10"    width="15" height="2.5" fill="#fff" opacity="0.9"/>
-                                    <rect x="7" y="16.75" width="22" height="2.5" fill="#fff" opacity="0.55"/>
-                                    <rect x="7" y="23.5"  width="10" height="2.5" fill="#fff" opacity="0.9"/>
-                                    <rect x="27" y="8" width="2" height="20" fill="#fff" opacity="0.25"/>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                {/* Signal-Icon + Badge: kein Schritt-Zähler */}
+                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                  {/* Concentric-arcs broadcast icon */}
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, animation: "eucx-pulse 2.4s ease-in-out infinite" }}>
+                                    <circle cx="12" cy="12" r="2.5" fill="#154194"/>
+                                    <path d="M8.5 8.5a5 5 0 0 1 7 7" stroke="#154194" strokeWidth="1.6" strokeLinecap="round" fill="none" opacity=".6"/>
+                                    <path d="M5.5 5.5a9 9 0 0 1 13 13" stroke="#154194" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity=".3"/>
                                   </svg>
-                                  <span style={{ fontSize: 10, fontWeight: 700, color: "#154194", letterSpacing: ".04em" }}>SCHRITT 2 VON 3</span>
+                                  <span style={{ fontSize: 10.5, fontWeight: 700, color: "#154194", letterSpacing: ".03em" }}>Im Markt-Netzwerk</span>
                                 </div>
-                                {/* Pulsierende Aktivitätsanzeige */}
-                                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                                  <span style={{
-                                    display: "inline-block", width: 7, height: 7,
-                                    borderRadius: "50%", background: "#f59e0b", flexShrink: 0,
-                                    animation: "eucx-pulse 1.6s ease-in-out infinite"
-                                  }}/>
-                                  <span style={{ fontSize: 10.5, color: "#374151", fontWeight: 600, lineHeight: 1.3 }}>Ausschreibung aktiv</span>
-                                </div>
-                                <span style={{ fontSize: 10, color: "#6b7280", lineHeight: 1.4 }}>Verkäufer können sich<br/>jetzt anmelden — Sie<br/>werden benachrichtigt.</span>
+                                {/* Garantie-Text: kein Handlungsbedarf */}
+                                <span style={{ fontSize: 10, color: "#374151", lineHeight: 1.5 }}>
+                                  Verkäufer kalkulieren<br/>gerade Angebote.
+                                </span>
+                                <span style={{ fontSize: 9.5, color: "#9ca3af", lineHeight: 1.5, borderTop: "1px solid #f1f5f9", paddingTop: 5 }}>
+                                  Kein Handlungsbedarf —<br/>Sie werden automatisch<br/>per E-Mail benachrichtigt.
+                                </span>
                               </div>
                             ) : (
                               <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
