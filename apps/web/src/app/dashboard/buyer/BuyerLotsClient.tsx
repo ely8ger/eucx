@@ -855,6 +855,7 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
         /* Create form */
         @keyframes bl-form-in { from { opacity:0; transform:translateY(-14px); } to { opacity:1; transform:none; } }
         @keyframes eucx-pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.35; transform:scale(.7); } }
+        @keyframes eucx-ripple { 0% { transform:translate(-50%,-50%) scale(.3); opacity:.8; } 100% { transform:translate(-50%,-50%) scale(2.6); opacity:0; } }
         .bl-form-wrap { background:#fff; border:1px solid #e9edf5; border-top:3px solid #154194; margin-bottom:24px; animation:bl-form-in .28s ease-out; scroll-margin-top:80px; }
         .bl-form-header { padding:16px 28px; border-bottom:2px solid #eef2fb; background:#fff; position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between; }
         .bl-form-title { font-size:15px; font-weight:700; color:#154194; margin:0; letter-spacing:-.01em; }
@@ -2736,23 +2737,47 @@ export function BuyerLotsClient({ initialFilter = "all" }: { initialFilter?: "al
                           )}
                           {lot.phase === "COLLECTION" && !lot.isDraft && (
                             lot._count.registrations === 0 ? (
-                              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                {/* Signal-Icon + Badge: kein Schritt-Zähler */}
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  {/* Concentric-arcs broadcast icon */}
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, animation: "eucx-pulse 2.4s ease-in-out infinite" }}>
-                                    <circle cx="12" cy="12" r="2.5" fill="#154194"/>
-                                    <path d="M8.5 8.5a5 5 0 0 1 7 7" stroke="#154194" strokeWidth="1.6" strokeLinecap="round" fill="none" opacity=".6"/>
-                                    <path d="M5.5 5.5a9 9 0 0 1 13 13" stroke="#154194" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity=".3"/>
-                                  </svg>
-                                  <span style={{ fontSize: 10.5, fontWeight: 700, color: "#154194", letterSpacing: ".03em" }}>Im Markt-Netzwerk</span>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                {/* Status-Pill × Ripple-Ring */}
+                                <div style={{
+                                  display: "inline-flex", alignItems: "center", gap: 9,
+                                  background: "#f0fdf4", border: "1px solid #bbf7d0",
+                                  padding: "5px 11px 5px 8px",
+                                  fontSize: 11.5, fontWeight: 600, color: "#16a34a",
+                                  whiteSpace: "nowrap",
+                                }}>
+                                  {/* Ripple-Ring Container */}
+                                  <span style={{ position: "relative", width: 20, height: 20, flexShrink: 0, display: "inline-block" }}>
+                                    <span style={{
+                                      position: "absolute", left: "50%", top: "50%",
+                                      width: 20, height: 20, borderRadius: "50%",
+                                      border: "1.5px solid #16a34a", opacity: 0,
+                                      animation: "eucx-ripple 2.2s ease-out infinite",
+                                    }}/>
+                                    <span style={{
+                                      position: "absolute", left: "50%", top: "50%",
+                                      width: 20, height: 20, borderRadius: "50%",
+                                      border: "1.5px solid #16a34a", opacity: 0,
+                                      animation: "eucx-ripple 2.2s ease-out .75s infinite",
+                                    }}/>
+                                    <span style={{
+                                      position: "absolute", left: "50%", top: "50%",
+                                      width: 20, height: 20, borderRadius: "50%",
+                                      border: "1.5px solid #16a34a", opacity: 0,
+                                      animation: "eucx-ripple 2.2s ease-out 1.5s infinite",
+                                    }}/>
+                                    <span style={{
+                                      position: "absolute", left: "50%", top: "50%",
+                                      transform: "translate(-50%,-50%)",
+                                      width: 7, height: 7, borderRadius: "50%",
+                                      background: "#16a34a",
+                                    }}/>
+                                  </span>
+                                  Angebotsphase aktiv
                                 </div>
-                                {/* Garantie-Text: kein Handlungsbedarf */}
-                                <span style={{ fontSize: 10, color: "#374151", lineHeight: 1.5 }}>
-                                  Verkäufer kalkulieren<br/>gerade Angebote.
-                                </span>
-                                <span style={{ fontSize: 9.5, color: "#9ca3af", lineHeight: 1.5, borderTop: "1px solid #f1f5f9", paddingTop: 5 }}>
-                                  Kein Handlungsbedarf —<br/>Sie werden automatisch<br/>per E-Mail benachrichtigt.
+                                <span style={{ fontSize: 10, color: "#6b7280", lineHeight: 1.6 }}>
+                                  Kein Handlungsbedarf.<br/>
+                                  <strong style={{ color: "#374151", fontWeight: 600 }}>E-Mail</strong> bei erstem Gebot.
                                 </span>
                               </div>
                             ) : (
